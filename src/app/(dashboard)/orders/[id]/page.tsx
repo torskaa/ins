@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
-import { Banknote, Activity } from "lucide-react"
+import { Banknote, Activity, ShoppingCart, FileText, Package } from "lucide-react"
 import { formatCurrency, formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -258,6 +258,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
  <Tabs value={tab} onValueChange={setTab}>
  <TabsList>
  <TabsTrigger value="items" className="gap-1.5">
+ <ShoppingCart className="w-4 h-4" />
  Items
  </TabsTrigger>
  <TabsTrigger value="payments" className="gap-1.5">
@@ -265,9 +266,11 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
  Payments
  </TabsTrigger>
  <TabsTrigger value="invoices" className="gap-1.5">
+ <FileText className="w-4 h-4" />
  Invoices
  </TabsTrigger>
  <TabsTrigger value="stock" className="gap-1.5">
+ <Package className="w-4 h-4" />
  Stock Movements
  </TabsTrigger>
  <TabsTrigger value="audit" className="gap-1.5">
