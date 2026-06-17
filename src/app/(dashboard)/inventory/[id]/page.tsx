@@ -539,8 +539,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
         <TabsContent value="bom">
           <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-6">
-              <Card>
+            <div className="col-span-6 flex flex-col">
+              <Card className="flex-1">
                 <CardHeader className="px-4 pt-4 pb-0">
                   <div className="flex items-center gap-2 text-sm font-semibold">
                     <Layers className="w-4 h-4 text-primary" />
@@ -548,12 +548,20 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   </div>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <DataTable columns={bomColumns} data={product.bomAsFinished || []} noBorder />
+                  {(product.bomAsFinished || []).length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <Layers className="w-8 h-8 text-muted-foreground/30 mb-3" />
+                      <p className="text-xs text-muted-foreground mb-3">No BOM linked as finished good</p>
+                      <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5"><Package className="w-3.5 h-3.5" /> Link BOM</Button>
+                    </div>
+                  ) : (
+                    <DataTable columns={bomColumns} data={product.bomAsFinished || []} noBorder compact />
+                  )}
                 </CardContent>
               </Card>
             </div>
-            <div className="col-span-6">
-              <Card>
+            <div className="col-span-6 flex flex-col">
+              <Card className="flex-1">
                 <CardHeader className="px-4 pt-4 pb-0">
                   <div className="flex items-center gap-2 text-sm font-semibold">
                     <Package className="w-4 h-4 text-primary" />
@@ -561,7 +569,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   </div>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <DataTable columns={bomColumns} data={product.bomAsMaterial || []} noBorder />
+                  {(product.bomAsMaterial || []).length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <Package className="w-8 h-8 text-muted-foreground/30 mb-3" />
+                      <p className="text-xs text-muted-foreground mb-3">Not used as a component in any BOM</p>
+                    </div>
+                  ) : (
+                    <DataTable columns={bomColumns} data={product.bomAsMaterial || []} noBorder compact />
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -577,7 +592,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </CardHeader>
             <CardContent className="p-4">
-              <DataTable columns={orderItemColumns} data={product.orderItems || []} searchable searchPlaceholder="Search orders..." noBorder />
+              <DataTable columns={orderItemColumns} data={product.orderItems || []} searchable searchPlaceholder="Search orders..." noBorder compact />
             </CardContent>
           </Card>
         </TabsContent>
@@ -591,7 +606,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </CardHeader>
             <CardContent className="p-4">
-              <DataTable columns={invoiceItemColumns} data={product.invoiceItems || []} searchable searchPlaceholder="Search invoices..." noBorder />
+              <DataTable columns={invoiceItemColumns} data={product.invoiceItems || []} searchable searchPlaceholder="Search invoices..." noBorder compact />
             </CardContent>
           </Card>
         </TabsContent>
@@ -605,7 +620,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </CardHeader>
             <CardContent className="p-4">
-              <DataTable columns={movementColumns} data={product.movements || []} searchable searchPlaceholder="Search movements..." noBorder />
+              <DataTable columns={movementColumns} data={product.movements || []} searchable searchPlaceholder="Search movements..." noBorder compact />
             </CardContent>
           </Card>
         </TabsContent>
@@ -619,7 +634,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </CardHeader>
             <CardContent className="p-4">
-              <DataTable columns={lotColumns} data={product.lots || []} searchable searchPlaceholder="Search lots..." noBorder />
+              <DataTable columns={lotColumns} data={product.lots || []} searchable searchPlaceholder="Search lots..." noBorder compact />
             </CardContent>
           </Card>
         </TabsContent>
@@ -633,7 +648,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </CardHeader>
             <CardContent className="p-4">
-              <DataTable columns={supplierPriceColumns} data={product.supplierPrices || []} searchable searchPlaceholder="Search supplier prices..." />
+              <DataTable columns={supplierPriceColumns} data={product.supplierPrices || []} searchable searchPlaceholder="Search supplier prices..." compact />
             </CardContent>
           </Card>
         </TabsContent>

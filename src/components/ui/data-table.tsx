@@ -19,17 +19,18 @@ export interface Column<T> {
 }
 
 export interface DataTableProps<T> {
- columns: Column<T>[]
- data: T[]
- searchable?: boolean
- searchPlaceholder?: string
- toolbar?: ReactNode
- onRowClick?: (item: T) => void
- loading?: boolean
- empty?: { icon?: ReactNode; icons?: ReactNode[]; title: string; description?: string; action?: { label: string; onClick: () => void } }
- pagination?: { pageSize?: number; total?: number }
- className?: string
- noBorder?: boolean
+  columns: Column<T>[]
+  data: T[]
+  searchable?: boolean
+  searchPlaceholder?: string
+  toolbar?: ReactNode
+  onRowClick?: (item: T) => void
+  loading?: boolean
+  compact?: boolean
+  empty?: { icon?: ReactNode; icons?: ReactNode[]; title: string; description?: string; action?: { label: string; onClick: () => void } }
+  pagination?: { pageSize?: number; total?: number }
+  className?: string
+  noBorder?: boolean
 }
 
 const tableVariants: Variants = {
@@ -64,21 +65,22 @@ export const statusBadge = cva("inline-flex items-center rounded-md px-2 py-0.5 
 export function DataTable<T extends { id: string }>({
  columns,
  data,
- searchable,
- searchPlaceholder = "Search...",
- toolbar,
- onRowClick,
- loading,
- empty,
- pagination,
- className,
- noBorder,
+  searchable,
+  searchPlaceholder = "Search...",
+  toolbar,
+  onRowClick,
+  loading,
+  compact,
+  empty,
+  pagination,
+  className,
+  noBorder,
 }: DataTableProps<T>) {
- const [page, setPage] = useState(1)
- const pageSize = pagination?.pageSize || 20
- const total = pagination?.total || data.length
- const totalPages = Math.max(1, Math.ceil(total / pageSize))
- const [search, setSearch] = useState("")
+  const [page, setPage] = useState(1)
+  const pageSize = pagination?.pageSize || (compact ? 50 : 20)
+  const total = pagination?.total || data.length
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+  const [search, setSearch] = useState("")
 
  const filtered = (search
  ? data.filter((item) =>
@@ -122,55 +124,56 @@ export function DataTable<T extends { id: string }>({
  {toolbar && <div className="flex items-center gap-2 ml-auto">{toolbar}</div>}
  </div>
  )}
- <div className={cn("rounded-xl border border-border overflow-hidden", className)}>
- <div className="relative w-full overflow-auto">
- <table className="w-full caption-bottom text-sm">
- <thead>
- <tr className="border-b">
- {columns.map((col) => (
- <th
- key={col.key}
- className={cn(
- "h-12 px-4 text-left align-middle font-medium text-muted-foreground",
- col.className
- )}
- >
- {col.label}
- </th>
- ))}
- </tr>
- </thead>
- <tbody>
- {filtered.map((item, index) => (
- <motion.tr
- key={item.id}
- custom={index}
- initial="hidden"
- animate="visible"
- variants={rowVariants}
- className={cn(
- "border-b transition-colors hover:bg-muted/50 last:border-0",
- onRowClick && "cursor-pointer"
- )}
- onClick={() => onRowClick?.(item)}
- >
- {columns.map((col) => (
- <td key={col.key} className={cn("p-4 align-middle", col.cellClassName)}>
- {col.render ? col.render(item) : String((item as any)[col.key] ?? "")}
- </td>
- ))}
- </motion.tr>
- ))}
- {filtered.length === 0 && (
- <tr>
- <td colSpan={columns.length} className="h-32 text-center text-muted-foreground text-sm">
- No results found.
- </td>
- </tr>
- )}
- </tbody>
- </table>
- </div>
+  <div className={cn("rounded-xl border border-border overflow-hidden", className)}>
+  <div className="relative w-full overflow-auto">
+  <table className={cn("w-full caption-bottom", compact ? "text-xs" : "text-sm")}>
+  <thead>
+  <tr className={cn("border-b", compact && "bg-muted/30")}>
+  {columns.map((col) => (
+  <th
+  key={col.key}
+  className={cn(
+  compact ? "h-9 px-2.5 text-[10px] uppercase tracking-wider" : "h-12 px-4",
+  "text-left align-middle font-medium text-muted-foreground",
+  col.className
+  )}
+  >
+  {col.label}
+  </th>
+  ))}
+  </tr>
+  </thead>
+  <tbody>
+  {filtered.map((item, index) => (
+  <motion.tr
+  key={item.id}
+  custom={index}
+  initial="hidden"
+  animate="visible"
+  variants={rowVariants}
+  className={cn(
+  "border-b transition-colors hover:bg-muted/50 last:border-0",
+  onRowClick && "cursor-pointer"
+  )}
+  onClick={() => onRowClick?.(item)}
+  >
+  {columns.map((col) => (
+  <td key={col.key} className={cn(compact ? "p-2.5" : "p-4", "align-middle", col.cellClassName)}>
+  {col.render ? col.render(item) : String((item as any)[col.key] ?? "")}
+  </td>
+  ))}
+  </motion.tr>
+  ))}
+  {filtered.length === 0 && !empty && (
+  <tr>
+  <td colSpan={columns.length} className={cn("text-center text-muted-foreground", compact ? "h-16 text-xs" : "h-32 text-sm")}>
+  No results found.
+  </td>
+  </tr>
+  )}
+  </tbody>
+  </table>
+  </div>
  {pagination && totalPages > 1 && (
  <div className="flex items-center justify-between px-4 py-3 border-t border-border">
  <p className="text-xs text-muted-foreground">
