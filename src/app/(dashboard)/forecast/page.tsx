@@ -395,11 +395,9 @@ export default function ForecastPage() {
  </tbody>
  </table>
  </div>
- ) : (
- <p className="text-sm text-muted-foreground text-center py-8">
- No historical data available for comparison.
- </p>
- )}
+  ) : (
+  <EmptyState icons={[<BarChart3 key="fc1" className="w-6 h-6" />, <Calendar key="fc2" className="w-6 h-6" />, <AlertCircle key="fc3" className="w-6 h-6" />]} title="No historical data available" description="Historical data is needed to generate forecast comparisons" size="sm" />
+  )}
  </CardContent>
  </Card>
 

@@ -7,11 +7,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { formatCurrency, formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
-import { Award, BadgePercent, Building2, CalendarDays, DollarSign, Globe, Mail, Package, Phone, ShoppingCart, Trash2, User, XCircle } from "lucide-react"
+import { Award, BadgePercent, Building2, CalendarDays, DollarSign, Globe, Mail, MoreHorizontal, Package, Phone, ShoppingCart, Trash2, User, XCircle } from "lucide-react"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 
 interface SupplierPrice {
  id: string
@@ -215,25 +217,31 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
 
  return (
  <div className="animate-fade-in space-y-6">
- {/* Back */}
- <button
- onClick={() => router.push("/suppliers")}
- className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
- >
- Back to Suppliers
- </button>
+  <Breadcrumb className="mb-4">
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/suppliers")}>Suppliers</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{supplier.name}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
 
- {/* Header */}
- <Card>
- <CardContent className="p-6">
- <div className="flex items-start justify-between flex-wrap gap-4">
- <div className="flex items-center gap-4">
- <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
- <Building2 className="w-7 h-7 text-primary" />
- </div>
- <div>
- <div className="flex items-center gap-2 mb-1">
- <h1 className="text-2xl font-semibold">{supplier.name}</h1>
+  {/* Header */}
+  <Card>
+  <CardContent className="p-6">
+  <div className="flex items-start justify-between flex-wrap gap-4">
+  <div className="flex items-center gap-4">
+  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+  <Building2 className="w-7 h-7 text-primary" />
+  </div>
+  <div>
+  <div className="flex items-center gap-2 mb-1">
+  <h1 className="text-2xl font-semibold">{supplier.name}</h1>
  <Badge variant={(statusBadge[supplier.rating] || "secondary") as any} className="capitalize text-xs">{supplier.rating}</Badge>
  </div>
  <div className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -246,14 +254,19 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  </div>
  </div>
  </div>
- <div className="flex items-center gap-2">
- <Button variant="secondary" size="sm" onClick={() => router.push(`/suppliers/${id}/edit`)} className="gap-1.5">
- Edit
- </Button>
-  <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)} className="gap-1.5">
-  <Trash2 className="w-4 h-4" /> Delete
+<div className="flex items-center gap-2">
+  <Button size="sm" onClick={() => router.push(`/suppliers/${id}/edit`)} className="gap-1.5">
+  Edit
   </Button>
- </div>
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  <DropdownMenuItem onClick={() => setShowDelete(true)} className="text-destructive"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
+  </DropdownMenuContent>
+  </DropdownMenu>
+</div>
  </div>
  </CardContent>
  </Card>
@@ -314,7 +327,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  </div>
 
   {/* Tabs */}
-  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
   <Tabs value={tab} onValueChange={setTab}>
     <TabsList className="w-full overflow-x-auto px-4">
       <TabsTrigger value="info" className="gap-1.5"><Building2 className="w-4 h-4" />Info</TabsTrigger>

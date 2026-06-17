@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Bell, Package, ShoppingCart, AlertTriangle, CheckCircle, Info } from "lucide-react"
+import { Bell, Package, ShoppingCart, AlertTriangle, CheckCircle, Info, Clock, Mail } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { Badge } from "@/components/ui/badge"
 import { timeAgo } from "@/lib/utils"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 
 const typeConfig: Record<string, { icon: any; color: string; bg: string }> = {
  warning: { icon: AlertTriangle, color: "text-warning", bg: "bg-warning/15" },
@@ -90,12 +91,13 @@ export default function NotificationsPage() {
  </div>
  ))}
  </div>
- ) : notifications.length === 0 ? (
- <div className="flex flex-col items-center py-16 text-muted-foreground">
- <Bell className="w-10 h-10 mb-3" />
- <p className="text-sm font-medium">No notifications yet</p>
- <p className="text-xs mt-1">Notifications will appear here when something happens.</p>
- </div>
+  ) : notifications.length === 0 ? (
+  <EmptyState
+  icons={[<Bell key="n1" className="w-6 h-6" />, <Clock key="n2" className="w-6 h-6" />, <Mail key="n3" className="w-6 h-6" />]}
+  title="No notifications yet"
+  description="Notifications will appear here when something happens."
+  size="lg"
+  />
  ) : (
  <div className="divide-y divide-border">
  {notifications.map((notif) => {

@@ -10,7 +10,8 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { formatCurrency, cn } from "@/lib/utils"
-import { XCircle, ShoppingCart, FileText, Package } from "lucide-react"
+import { XCircle, ShoppingCart, FileText, Package, ClipboardList } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
   <div className={cn("space-y-1.5", className)}>
@@ -143,10 +144,13 @@ function NewOrderForm() {
               </CardHeader>
               <CardContent className="p-4 space-y-3">
                 {items.length === 0 ? (
-                  <div className="text-center py-6">
-                    <p className="text-sm text-muted-foreground mb-2">No items added yet</p>
-                    <Button type="button" variant="secondary" size="sm" onClick={addItem}>Add your first item</Button>
-                  </div>
+                  <EmptyState
+                    icons={[<Package key="o1" className="w-6 h-6" />, <ShoppingCart key="o2" className="w-6 h-6" />, <ClipboardList key="o3" className="w-6 h-6" />]}
+                    title="No items added yet"
+                    description="Add products to include in this order"
+                    actions={[{ label: "Add your first item", onClick: addItem }]}
+                    size="sm"
+                  />
                 ) : (
                   items.map((item, index) => (
                     <div key={index} className="flex items-end gap-3 p-3 rounded-lg bg-surface/50">

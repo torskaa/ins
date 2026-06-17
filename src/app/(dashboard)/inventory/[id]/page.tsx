@@ -12,10 +12,16 @@ import { Select } from "@/components/ui/select"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
-import { AlertTriangle, ArrowLeft, Barcode, Boxes, Building2, Clock, DollarSign, FileText, Hash, Layers, MapPin, Package, Pencil, Ruler, ShoppingCart, Tags, Trash2, Warehouse, Weight, XCircle } from "lucide-react"
+import { AlertTriangle, ArrowLeft, Barcode, Boxes, Building2, Clock, DollarSign, FileText, Hash, Layers, MapPin, MoreHorizontal, Package, Pencil, Ruler, ShoppingCart, Tags, Trash2, Warehouse, Weight, XCircle } from "lucide-react"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
+import {
+  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
+  DropdownMenuItem, DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogFooter,
@@ -288,39 +294,64 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   return (
     <div className="animate-fade-in pb-8 space-y-4">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-20 -mx-6 -mt-6 px-6 pt-6 pb-3 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-start justify-between">
-          <div className="min-w-0 flex-1">
-            <button onClick={() => router.push("/inventory")} className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mb-2">
-              <ArrowLeft className="w-3.5 h-3.5" /> Back to Inventory
-            </button>
-            <div className="flex items-center gap-2.5 flex-wrap">
+      <div className="sticky top-0 z-20 -mx-6 -mt-6 px-8 py-6 bg-background/95 backdrop-blur-sm border-b border-border/60">
+        <div className="flex items-center justify-between gap-6 max-w-7xl mx-auto w-full">
+          {/* Left: Breadcrumb + Title + Metadata */}
+          <div className="flex flex-col gap-2 min-w-0 flex-1">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <button onClick={() => router.push("/inventory")}>Inventory</button>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{product.name}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+            <div className="flex items-center gap-3 flex-wrap">
               {editing ? (
                 <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="text-lg font-semibold h-8 w-64" />
               ) : (
-                <h1 className="text-lg font-semibold">{product.name}</h1>
+                <h1 className="text-2xl font-bold">{product.name}</h1>
               )}
-              <Badge variant="outline" className="font-mono text-[10px]">{product.sku}</Badge>
-              <Badge variant={statusVariant[product.status] || "secondary"} className="capitalize text-[10px]">{product.status}</Badge>
+              <Badge variant="outline" className="font-mono text-[11px]">{product.sku}</Badge>
+              <Badge variant={statusVariant[product.status] || "secondary"} className="capitalize text-[11px]">{product.status}</Badge>
               {isLowStock && (
-                <Badge variant="destructive" className="gap-1 text-[10px]"><AlertTriangle className="w-3 h-3" /> Low Stock</Badge>
+                <Badge variant="destructive" className="gap-1 text-[11px]"><AlertTriangle className="w-3 h-3" /> Low Stock</Badge>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Created {formatDate(new Date(product.createdAt))}{product.updatedAt && ` · Updated ${formatDate(new Date(product.updatedAt))}`}
-            </p>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <span>Created {formatDate(new Date(product.createdAt))}</span>
+              {product.updatedAt && <><span className="text-muted-foreground/30">·</span><span>Updated {formatDate(new Date(product.updatedAt))}</span></>}
+            </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0 ml-4">
+          {/* Right: Action Bar */}
+          <div className="flex items-center gap-2 shrink-0">
             {editing ? (
               <>
-                <Button size="sm" onClick={handleSave} className="gap-1.5 h-8 text-xs">Save</Button>
-                <Button variant="secondary" size="sm" onClick={cancelEdit} className="gap-1.5 h-8 text-xs">Cancel</Button>
+                <Button variant="outline" size="sm" onClick={cancelEdit} className="gap-1.5 h-9">Cancel</Button>
+                <Button size="sm" onClick={handleSave} className="gap-1.5 h-9">Save Changes</Button>
               </>
             ) : (
               <>
-                <Button variant="secondary" size="sm" onClick={() => setEditing(true)} className="gap-1.5 h-8 text-xs"><Pencil className="w-3.5 h-3.5" /> Edit</Button>
-                <Button variant="secondary" size="sm" onClick={() => setShowAdjust(true)} className="gap-1.5 h-8 text-xs"><Boxes className="w-3.5 h-3.5" /> Adjust Stock</Button>
-                <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)} className="h-8 w-8 p-0"><Trash2 className="w-3.5 h-3.5" /></Button>
+                <Button size="sm" onClick={() => setShowAdjust(true)} className="gap-1.5 h-9"><Boxes className="w-4 h-4" /> Adjust Stock</Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => setEditing(true)}>
+                      <Pencil className="w-4 h-4 mr-2" /> Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setShowDelete(true)} className="text-destructive">
+                      <Trash2 className="w-4 h-4 mr-2" /> Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             )}
           </div>
@@ -527,15 +558,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       {/* Unified Tab Module */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="w-full overflow-x-auto px-4">
-            <TabsTrigger value="bom"><Layers className="w-4 h-4" /> BOM</TabsTrigger>
-            <TabsTrigger value="orders"><ShoppingCart className="w-4 h-4" /> Orders</TabsTrigger>
-            <TabsTrigger value="invoices"><FileText className="w-4 h-4" /> Invoices</TabsTrigger>
-            <TabsTrigger value="movements"><Boxes className="w-4 h-4" /> Movements</TabsTrigger>
-            <TabsTrigger value="lots"><Hash className="w-4 h-4" /> Lots</TabsTrigger>
-            <TabsTrigger value="pricing"><DollarSign className="w-4 h-4" /> Supplier Pricing</TabsTrigger>
+            <TabsTrigger value="bom" className="gap-1.5"><Layers className="w-4 h-4" /> BOM</TabsTrigger>
+            <TabsTrigger value="orders" className="gap-1.5"><ShoppingCart className="w-4 h-4" /> Orders</TabsTrigger>
+            <TabsTrigger value="invoices" className="gap-1.5"><FileText className="w-4 h-4" /> Invoices</TabsTrigger>
+            <TabsTrigger value="movements" className="gap-1.5"><Boxes className="w-4 h-4" /> Movements</TabsTrigger>
+            <TabsTrigger value="lots" className="gap-1.5"><Hash className="w-4 h-4" /> Lots</TabsTrigger>
+            <TabsTrigger value="pricing" className="gap-1.5"><DollarSign className="w-4 h-4" /> Supplier Pricing</TabsTrigger>
           </TabsList>
 
           <TabsContent value="bom" className="p-3">
@@ -550,11 +581,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   </CardHeader>
                   <CardContent className="p-3">
                     {(product.bomAsFinished || []).length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-6 text-center">
-                        <Layers className="w-8 h-8 text-muted-foreground/30 mb-2" />
-                        <p className="text-xs text-muted-foreground mb-2">No BOM linked as finished good</p>
-                        <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5"><Package className="w-3.5 h-3.5" /> Link BOM</Button>
-                      </div>
+                      <EmptyState
+                        icons={[<Layers key="f1" className="w-6 h-6" />, <Package key="f2" className="w-6 h-6" />, <Boxes key="f3" className="w-6 h-6" />]}
+                        title="No BOM linked"
+                        description="This product is not yet linked to a bill of materials as a finished good"
+                        actions={[{ label: "Link BOM", onClick: () => {} }]}
+                        size="sm"
+                      />
                     ) : (
                       <DataTable columns={bomColumns} data={product.bomAsFinished || []} noBorder compact />
                     )}
@@ -571,10 +604,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   </CardHeader>
                   <CardContent className="p-3">
                     {(product.bomAsMaterial || []).length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-6 text-center">
-                        <Package className="w-8 h-8 text-muted-foreground/30 mb-2" />
-                        <p className="text-xs text-muted-foreground">Not used as a component in any BOM</p>
-                      </div>
+                      <EmptyState
+                        icons={[<Package key="m1" className="w-6 h-6" />, <Layers key="m2" className="w-6 h-6" />, <Boxes key="m3" className="w-6 h-6" />]}
+                        title="Not used as a component"
+                        description="This product is not referenced as a material in any BOM"
+                        size="sm"
+                      />
                     ) : (
                       <DataTable columns={bomColumns} data={product.bomAsMaterial || []} noBorder compact />
                     )}

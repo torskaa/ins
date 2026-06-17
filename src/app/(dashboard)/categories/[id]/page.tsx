@@ -9,10 +9,13 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { ArrowLeft, Bookmark, Edit, FileText, FolderOpen, Hash, Layers, Package, Tags, Trash2, XCircle } from "lucide-react"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { ArrowLeft, Bookmark, Edit, FileText, FolderOpen, Hash, Layers, MoreHorizontal, Package, Tags, Trash2, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { formatCurrency } from "@/lib/utils"
 
 type CategoryProduct = {
@@ -106,23 +109,30 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
 
  return (
  <div className="animate-fade-in space-y-6">
- <button
- onClick={() => router.push("/categories")}
- className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
- >
- Back to Categories
- </button>
+  <Breadcrumb className="mb-4">
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/categories")}>Categories</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{category.name}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
 
- <div className="flex items-start justify-between">
- <div className="flex items-start gap-4">
- <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
- </div>
- <div>
- <div className="flex items-center gap-3 mb-1">
- {editing ? (
- <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="text-2xl font-semibold h-auto py-1 w-64" />
- ) : (
- <h1 className="text-2xl font-semibold">{category.name}</h1>
+  <div className="flex items-start justify-between">
+  <div className="flex items-start gap-4">
+  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+  </div>
+  <div>
+  <div className="flex items-center gap-3 mb-1">
+  {editing ? (
+  <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="text-2xl font-semibold h-auto py-1 w-64" />
+  ) : (
+  <h1 className="text-2xl font-semibold">{category.name}</h1>
  )}
  <Badge variant="outline" className="text-xs">
  {category._count.products} product{category._count.products !== 1 ? "s" : ""}
@@ -135,23 +145,28 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
  )}
  </div>
  </div>
- <div className="flex items-center gap-2">
- {editing ? (
- <>
- <Button variant="secondary" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
- <Button size="sm" onClick={handleSave}>Save</Button>
- </>
- ) : (
- <>
- <Button variant="secondary" size="sm" className="gap-1.5" onClick={() => { setEditing(true); setEditName(category.name); setEditDescription(category.description || "") }}>
- Edit
- </Button>
- <Button variant="secondary" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={() => setDeleteOpen(true)}>
- Delete
- </Button>
- </>
- )}
- </div>
+<div className="flex items-center gap-2">
+  {editing ? (
+  <>
+  <Button variant="outline" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+  <Button size="sm" onClick={handleSave}>Save</Button>
+  </>
+  ) : (
+  <>
+  <Button size="sm" className="gap-1.5" onClick={() => { setEditing(true); setEditName(category.name); setEditDescription(category.description || "") }}>
+  Edit
+  </Button>
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
+  </DropdownMenuContent>
+  </DropdownMenu>
+  </>
+  )}
+</div>
  </div>
 
  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -192,7 +207,7 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
  </Card>
  )}
 
-  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
   <Tabs value={activeTab} onValueChange={setActiveTab}>
     <TabsList className="w-full overflow-x-auto px-4">
  <TabsTrigger value="info" className="gap-1.5">
@@ -252,15 +267,18 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
  searchPlaceholder="Search products..."
  onRowClick={(item: any) => router.push(`/products/${item.id}`)}
  />
- ) : (
- <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
- <p className="text-sm">No products in this category</p>
- </div>
- )}
- </TabsContent>
+  ) : (
+  <EmptyState
+  icons={[<Package key="p1" className="w-6 h-6" />, <Tags key="p2" className="w-6 h-6" />, <FolderOpen key="p3" className="w-6 h-6" />]}
+  title="No products in this category"
+  description="Products assigned to this category will appear here"
+  size="sm"
+  />
+  )}
+  </TabsContent>
 
   <TabsContent value="children" className="p-3">
- {category.children.length > 0 ? (
+  {category.children.length > 0 ? (
  <div className="space-y-2">
  {category.children.map((child) => (
  <button
@@ -274,12 +292,14 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
  </button>
  ))}
  </div>
- ) : (
- <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
- <Layers className="w-8 h-8 mb-2" />
- <p className="text-sm">No child categories</p>
- </div>
- )}
+  ) : (
+  <EmptyState
+  icons={[<FolderOpen key="c1" className="w-6 h-6" />, <Layers key="c2" className="w-6 h-6" />, <Bookmark key="c3" className="w-6 h-6" />]}
+  title="No child categories"
+  description="Subcategories nested under this category will appear here"
+  size="sm"
+  />
+  )}
  </TabsContent>
   </Tabs>
   </div>

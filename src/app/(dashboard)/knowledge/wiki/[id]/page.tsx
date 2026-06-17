@@ -85,7 +85,7 @@ export default function WikiArticlePage({ params }: { params: Promise<{ id: stri
 
  <Separator className="mb-6" />
 
- <div className="bg-card rounded-xl border border-border p-6 mb-6">
+ <div className="bg-card rounded-xl border border-border/60 p-6 mb-6">
  <div className="prose-sm max-w-none">
  {article.content?.split("\n").map((paragraph, i) => (
  paragraph.trim() ? (

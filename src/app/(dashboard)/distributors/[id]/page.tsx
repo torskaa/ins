@@ -10,10 +10,13 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { ArrowLeft, Calendar, ClipboardList, Edit, Hash, Mail, MapPin, Package, Phone, Trash2, Truck, User, XCircle } from "lucide-react"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { ArrowLeft, Calendar, ClipboardList, Edit, Hash, Mail, MapPin, MoreHorizontal, Package, Phone, Trash2, Truck, User, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { EmptyState } from "@/components/ui/empty-state"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { format } from "date-fns"
 
 type DeliveryItem = {
@@ -149,23 +152,30 @@ export default function DistributorDetailPage({ params }: { params: Promise<{ id
 
  return (
  <div className="animate-fade-in space-y-6">
- <button
- onClick={() => router.push("/distributors")}
- className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
- >
- Back to Distributors
- </button>
+  <Breadcrumb className="mb-4">
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/distributors")}>Distributors</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{distributor.name}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
 
- <div className="flex items-start justify-between">
- <div className="flex items-start gap-4">
- <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
- </div>
- <div>
- <div className="flex items-center gap-3 mb-1">
- {editing ? (
- <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="text-2xl font-semibold h-auto py-1 w-64" />
- ) : (
- <h1 className="text-2xl font-semibold">{distributor.name}</h1>
+  <div className="flex items-start justify-between">
+  <div className="flex items-start gap-4">
+  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+  </div>
+  <div>
+  <div className="flex items-center gap-3 mb-1">
+  {editing ? (
+  <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="text-2xl font-semibold h-auto py-1 w-64" />
+  ) : (
+  <h1 className="text-2xl font-semibold">{distributor.name}</h1>
  )}
  <Badge className={`${statusColors[distributor.status] || ""} border-0 font-medium`}>
  {distributor.status}
@@ -178,23 +188,28 @@ export default function DistributorDetailPage({ params }: { params: Promise<{ id
  )}
  </div>
  </div>
- <div className="flex items-center gap-2">
- {editing ? (
- <>
- <Button variant="secondary" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
- <Button size="sm" onClick={handleSave}>Save</Button>
- </>
- ) : (
- <>
- <Button variant="outline" size="sm" className="gap-1.5" onClick={() => router.push(`/distributors/${distributor.id}/edit`)}>
- Edit
- </Button>
- <Button variant="secondary" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={() => setDeleteOpen(true)}>
- Delete
- </Button>
- </>
- )}
- </div>
+<div className="flex items-center gap-2">
+  {editing ? (
+  <>
+  <Button variant="outline" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+  <Button size="sm" onClick={handleSave}>Save</Button>
+  </>
+  ) : (
+  <>
+  <Button size="sm" className="gap-1.5" onClick={() => router.push(`/distributors/${distributor.id}/edit`)}>
+  Edit
+  </Button>
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
+  </DropdownMenuContent>
+  </DropdownMenu>
+  </>
+  )}
+</div>
  </div>
 
  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -252,7 +267,7 @@ export default function DistributorDetailPage({ params }: { params: Promise<{ id
  </Card>
  )}
 
-  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
   <Tabs value={activeTab} onValueChange={setActiveTab}>
     <TabsList className="w-full overflow-x-auto px-4">
  <TabsTrigger value="info" className="gap-1.5">
@@ -330,9 +345,12 @@ export default function DistributorDetailPage({ params }: { params: Promise<{ id
  onRowClick={(item: any) => router.push(`/deliveries/${item.id}`)}
  />
  ) : (
- <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
- <p className="text-sm">No deliveries for this distributor</p>
- </div>
+  <EmptyState
+  icons={[<Truck key="d1" className="w-6 h-6" />, <Package key="d2" className="w-6 h-6" />, <ClipboardList key="d3" className="w-6 h-6" />]}
+  title="No deliveries"
+  description="Deliveries assigned to this distributor will appear here"
+  size="sm"
+  />
  )}
  </TabsContent>
   </Tabs>

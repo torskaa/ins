@@ -11,8 +11,9 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Circle, Settings2, XCircle } from "lucide-react"
+import { Circle, Settings2, XCircle, GitBranch, Layers, Play } from "lucide-react"
 import { toast } from "sonner"
+import { EmptyState } from "@/components/ui/empty-state"
 
 type Workflow = { id: string; name: string; entityType: string; isActive: boolean; states: WorkflowState[]; transitions: WorkflowTransition[] }
 type WorkflowState = { id: string; name: string; color: string; isInitial: boolean; isFinal: boolean }
@@ -91,7 +92,7 @@ export default function WorkflowsPage() {
  </CardContent>
  </Card>
  ))}
- {workflows.length === 0 && !loading && <p className="text-sm text-muted-foreground text-center py-8">No workflows configured yet.</p>}
+  {workflows.length === 0 && !loading && <EmptyState icons={[<GitBranch key="wf1" className="w-6 h-6" />, <Layers key="wf2" className="w-6 h-6" />, <Play key="wf3" className="w-6 h-6" />]} title="No workflows configured yet" description="Create your first workflow to automate business processes" size="sm" />}
  </div>
 
  <div className="lg:col-span-2">

@@ -6,11 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, Calendar, Clock, Download, File as FileIcon, FileArchive, FileImage, FileSpreadsheet, FileText, HardDrive, Link as LinkIcon, Tag, Trash2, User } from "lucide-react"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { ArrowLeft, Calendar, Clock, Download, File as FileIcon, FileArchive, FileImage, FileSpreadsheet, FileText, HardDrive, Link as LinkIcon, MoreHorizontal, Tag, Trash2, User } from "lucide-react"
 import { formatDate, formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 
 type Document = {
  id: string
@@ -89,76 +91,76 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
 
  return (
  <div className="animate-fade-in">
- <Button variant="ghost" size="sm" className="gap-1.5 mb-4" onClick={() => router.push("/knowledge/documents")}>
- Back to Documents
- </Button>
+  <Breadcrumb className="mb-4">
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/knowledge/documents")}>Documents</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{current.name}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
 
- <div className="flex items-center justify-between mb-6">
- <div className="flex items-center gap-4">
- <div className="w-14 h-14 rounded-xl bg-primary/5 flex items-center justify-center">
- <Icon className="w-7 h-7 text-primary" />
- </div>
- <div>
- <h1 className="text-2xl font-semibold">{current.name}</h1>
+  <div className="flex items-center justify-between mb-6">
+  <div className="flex items-center gap-4">
+  <div className="w-14 h-14 rounded-xl bg-primary/5 flex items-center justify-center">
+  <Icon className="w-7 h-7 text-primary" />
+  </div>
+  <div>
+  <h1 className="text-2xl font-semibold">{current.name}</h1>
  <div className="flex items-center gap-2 mt-1">
  <Badge variant={typeColors[current.type] || "outline"}>{current.type}</Badge>
  <span className="text-xs text-muted-foreground">{fileTypeLabels[current.fileType] || current.fileType}</span>
  </div>
  </div>
  </div>
- <div className="flex items-center gap-2">
- {current.filePath ? (
- <a href={current.filePath} download>
- <Button variant="outline" className="gap-1.5"><Download className="w-4 h-4" /> Download</Button>
- </a>
- ) : (
- <Button variant="outline" className="gap-1.5" disabled>
- No File
- </Button>
- )}
- <Button variant="destructive" size="icon" onClick={() => setDeleteOpen(true)}>
- </Button>
- </div>
+  <div className="flex items-center gap-2">
+  {current.filePath ? (
+  <a href={current.filePath} download>
+  <Button className="gap-1.5"><Download className="w-4 h-4" /> Download</Button>
+  </a>
+  ) : (
+  <Button variant="outline" className="gap-1.5" disabled>
+  No File
+  </Button>
+  )}
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
+  </DropdownMenuContent>
+  </DropdownMenu>
+</div>
  </div>
 
- <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
- <Card>
- <CardContent className="p-4">
- <div className="flex items-center gap-2 text-muted-foreground mb-1">
- <Tag className="w-3.5 h-3.5" />
- <p className="text-xs font-medium">Document Type</p>
- </div>
- <Badge variant={typeColors[current.type] || "outline"} className="mt-1">{current.type}</Badge>
- </CardContent>
- </Card>
- <Card>
- <CardContent className="p-4">
- <div className="flex items-center gap-2 text-muted-foreground mb-1">
- <HardDrive className="w-3.5 h-3.5" />
- <p className="text-xs font-medium">File Size</p>
- </div>
- <p className="text-sm font-medium mt-1">{current.size}</p>
- </CardContent>
- </Card>
- <Card>
- <CardContent className="p-4">
- <div className="flex items-center gap-2 text-muted-foreground mb-1">
- <User className="w-3.5 h-3.5" />
- <p className="text-xs font-medium">Uploaded By</p>
- </div>
- <p className="text-sm font-medium mt-1">{current.uploadedBy}</p>
- </CardContent>
- </Card>
- <Card>
- <CardContent className="p-4">
- <div className="flex items-center gap-2 text-muted-foreground mb-1">
- <Calendar className="w-3.5 h-3.5" />
- <p className="text-xs font-medium">Upload Date</p>
- </div>
- <p className="text-sm font-medium mt-1">{formatDate(new Date(current.uploadedAt))}</p>
- </CardContent>
- </Card>
- </div>
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Tag className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Document Type</p>
+  <Badge variant={typeColors[current.type] || "outline"}>{current.type}</Badge>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <HardDrive className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">File Size</p>
+  <p className="text-sm font-medium">{current.size}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <User className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Uploaded By</p>
+  <p className="text-sm font-medium">{current.uploadedBy}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Calendar className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Upload Date</p>
+  <p className="text-sm font-medium">{formatDate(new Date(current.uploadedAt))}</p>
+  </div>
+  </div>
 
  {current.relatedTo && (
  <Card className="mb-6">

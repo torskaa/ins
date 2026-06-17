@@ -8,11 +8,14 @@ import { DataTable, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { toast } from "sonner"
 
 import { formatCurrency, formatDate, cn } from "@/lib/utils"
 import { ArrowLeft, Download, Mail, Printer, MoreHorizontal, Banknote, DollarSign, AlertCircle, Clock, FileText, Package, Send, XCircle, CheckCircle2, Edit } from "lucide-react"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 
 type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "cancelled"
 
@@ -215,13 +218,24 @@ export default function InvoiceDetailPage() {
 
  return (
  <div className="animate-fade-in space-y-6">
- <div className="flex items-center justify-between">
- <div className="flex items-center gap-4">
- <Button variant="ghost" size="iconSm" onClick={() => router.push("/invoices")}>
- </Button>
- <div>
- <div className="flex items-center gap-3">
- <h1 className="text-lg font-semibold">{invoice.number}</h1>
+  <div className="flex items-center justify-between">
+  <div className="flex items-center gap-4">
+  <Breadcrumb>
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/invoices")}>Invoices</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{invoice.number}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
+  <div>
+  <div className="flex items-center gap-3">
+  <h1 className="text-lg font-semibold">{invoice.number}</h1>
  <Badge variant={statusConfig[status].variant} className="gap-1 capitalize">
  <StatusIcon className="w-3 h-3" />
  {statusConfig[status].label}
@@ -233,29 +247,32 @@ export default function InvoiceDetailPage() {
  </p>
  </div>
  </div>
- <div className="flex items-center gap-2">
- {["draft", "sent", "overdue"].includes(status) && (
- <Button variant="outline" size="sm" onClick={() => router.push(`/invoices/${invoice.id}/edit`)} className="gap-1.5">
- Edit
- </Button>
- )}
- {status === "draft" && (
- <Button size="sm" onClick={() => handleStatusAction("sent")} loading={transitioning === "sent"} className="gap-1.5">
- Send
- </Button>
- )}
- {(status === "sent" || status === "overdue") && (
- <Button variant="success" size="sm" onClick={() => handleStatusAction("paid")} loading={transitioning === "paid"} className="gap-1.5">
- Mark Paid
- </Button>
- )}
- {["draft", "sent", "overdue"].includes(status) && (
- <Button variant="ghost" size="sm" onClick={() => handleStatusAction("cancelled")} loading={transitioning === "cancelled"} className="gap-1.5 text-destructive">
- Cancel
- </Button>
- )}
- <Button variant="ghost" size="iconSm"></Button>
- </div>
+<div className="flex items-center gap-2">
+  {status === "draft" && (
+  <Button size="sm" onClick={() => handleStatusAction("sent")} loading={transitioning === "sent"} className="gap-1.5">
+  Send
+  </Button>
+  )}
+  {(status === "sent" || status === "overdue") && (
+  <Button variant="success" size="sm" onClick={() => handleStatusAction("paid")} loading={transitioning === "paid"} className="gap-1.5">
+  Mark Paid
+  </Button>
+  )}
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  {["draft", "sent", "overdue"].includes(status) && (
+  <DropdownMenuItem onClick={() => router.push(`/invoices/${invoice.id}/edit`)}><Edit className="w-4 h-4 mr-2" /> Edit</DropdownMenuItem>
+  )}
+  {["draft", "sent", "overdue"].includes(status) && <DropdownMenuSeparator />}
+  {["draft", "sent", "overdue"].includes(status) && (
+  <DropdownMenuItem onClick={() => handleStatusAction("cancelled")} className="text-destructive"><XCircle className="w-4 h-4 mr-2" /> Cancel</DropdownMenuItem>
+  )}
+  </DropdownMenuContent>
+  </DropdownMenu>
+</div>
  </div>
 
  <div className="flex gap-4">
@@ -277,13 +294,13 @@ export default function InvoiceDetailPage() {
 
  <Separator />
 
-  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
   <Tabs value={tab} onValueChange={setTab}>
     <TabsList className="w-full overflow-x-auto px-4">
-      <TabsTrigger value="items"><Package className="w-4 h-4" />Items ({invoice.items.length})</TabsTrigger>
-      <TabsTrigger value="payments"><Banknote className="w-4 h-4" />Payments ({invoice.payments.length})</TabsTrigger>
-      {invoice.order && <TabsTrigger value="order"><FileText className="w-4 h-4" />Order</TabsTrigger>}
-      <TabsTrigger value="activity"><Clock className="w-4 h-4" />Activity</TabsTrigger>
+      <TabsTrigger value="items" className="gap-1.5"><Package className="w-4 h-4" />Items ({invoice.items.length})</TabsTrigger>
+      <TabsTrigger value="payments" className="gap-1.5"><Banknote className="w-4 h-4" />Payments ({invoice.payments.length})</TabsTrigger>
+      {invoice.order && <TabsTrigger value="order" className="gap-1.5"><FileText className="w-4 h-4" />Order</TabsTrigger>}
+      <TabsTrigger value="activity" className="gap-1.5"><Clock className="w-4 h-4" />Activity</TabsTrigger>
     </TabsList>
 
   <TabsContent value="items" className="p-3">
@@ -313,18 +330,19 @@ export default function InvoiceDetailPage() {
  </div>
   </TabsContent>
 
-  <TabsContent value="payments" className="p-3">
-  <h3 className="text-sm font-medium mb-2">Payment History</h3>
-  <p className="text-xs text-muted-foreground mb-2">Recorded payments for this invoice</p>
-  {invoice.payments.length > 0 ? (
-  <DataTable columns={paymentColumns} data={invoice.payments} noBorder compact />
- ) : (
- <div className="flex flex-col items-center py-12 text-muted-foreground">
- <Banknote className="w-8 h-8 mb-3" />
- <p className="text-sm font-medium">No payments recorded</p>
- <p className="text-xs mt-1">Payments will appear here once recorded.</p>
- </div>
-  )}
+   <TabsContent value="payments" className="p-3">
+   <h3 className="text-sm font-medium mb-2">Payment History</h3>
+   <p className="text-xs text-muted-foreground mb-2">Recorded payments for this invoice</p>
+   <DataTable
+   columns={paymentColumns}
+   data={invoice.payments}
+   noBorder compact
+   empty={{
+   icons: [<Banknote key="p1" className="w-6 h-6" />, <DollarSign key="p2" className="w-6 h-6" />, <FileText key="p3" className="w-6 h-6" />],
+   title: "No payments recorded",
+   description: "Payments will appear here once recorded."
+   }}
+   />
   </TabsContent>
 
   {invoice.order && (
@@ -378,12 +396,14 @@ export default function InvoiceDetailPage() {
  </div>
  ))}
  </div>
- ) : (
- <div className="flex flex-col items-center py-12 text-muted-foreground">
- <p className="text-sm font-medium">No activity yet</p>
- <p className="text-xs mt-1">Changes to this invoice will appear here.</p>
- </div>
- )}
+  ) : (
+  <EmptyState
+  icons={[<Clock key="a1" className="w-6 h-6" />, <FileText key="a2" className="w-6 h-6" />, <AlertCircle key="a3" className="w-6 h-6" />]}
+  title="No activity yet"
+  description="Changes to this invoice will appear here."
+  size="sm"
+  />
+  )}
   </TabsContent>
   </Tabs>
   </div>

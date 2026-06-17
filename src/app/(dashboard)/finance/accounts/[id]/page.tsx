@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { formatDate } from "@/lib/utils"
-import { Trash2 } from "lucide-react"
+import { Clock, Tag, Trash2, Wallet } from "lucide-react"
 
 type Account = { id: string; code: string; name: string; type: string; currentBalance: number; openingBalance: number; isActive: boolean; group: { name: string; type: string } }
 type JournalLine = { id: string; debit: number; credit: number; description: string; entry: { number: string; date: string } }
@@ -44,11 +44,23 @@ export default function AccountDetailPage({ params }: { params: Promise<{ id: st
  <Button variant="ghost" size="sm" onClick={() => { if (window.confirm("Delete this account?")) fetch(`/api/finance/accounts/${id}`, { method: "DELETE" }).then(() => { toast.success("Deleted"); router.push("/finance/accounts") }).catch(() => toast.error("Failed")) }} className="gap-1.5 text-destructive"><Trash2 className="w-4 h-4" /> Delete</Button>
  </div>
  </div>
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
- <Card><CardContent className="p-4 text-center"><p className={`text-2xl font-semibold ${account.currentBalance >= 0 ? "text-emerald-600" : "text-red-600"}`}>฿{account.currentBalance.toLocaleString()}</p><p className="text-xs text-muted-foreground">Current Balance</p></CardContent></Card>
- <Card><CardContent className="p-4 text-center"><p className="text-2xl font-semibold">฿{account.openingBalance.toLocaleString()}</p><p className="text-xs text-muted-foreground">Opening Balance</p></CardContent></Card>
- <Card><CardContent className="p-4 text-center"><p className="text-2xl font-semibold capitalize">{account.type.replace("_", " ")}</p><p className="text-xs text-muted-foreground">Account Type</p></CardContent></Card>
- </div>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Wallet className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Current Balance</p>
+  <p className={`text-2xl font-semibold ${account.currentBalance >= 0 ? "text-emerald-600" : "text-red-600"}`}>฿{account.currentBalance.toLocaleString()}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Clock className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Opening Balance</p>
+  <p className="text-2xl font-semibold">฿{account.openingBalance.toLocaleString()}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Tag className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Account Type</p>
+  <p className="text-2xl font-semibold capitalize">{account.type.replace("_", " ")}</p>
+  </div>
+  </div>
  <Card><CardHeader><CardTitle>Details</CardTitle></CardHeader>
  <CardContent className="space-y-3">
  <div className="grid grid-cols-2 gap-4 text-sm">

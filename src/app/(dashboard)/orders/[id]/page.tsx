@@ -7,11 +7,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 
-import { Banknote, Activity, ShoppingCart, FileText, Package } from "lucide-react"
+import { Banknote, Activity, DollarSign, FileText, MoreHorizontal, Package, ShoppingCart, XCircle } from "lucide-react"
 import { formatCurrency, formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 
 const statusColors: Record<string, "default" | "secondary" | "success" | "destructive" | "warning" | "outline"> = {
  draft: "secondary",
@@ -142,21 +144,28 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
  return (
  <div className="animate-fade-in space-y-6">
- <button
- onClick={() => router.push("/orders")}
- className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
- >
- Back to Orders
- </button>
+ <Breadcrumb className="mb-4">
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/orders")}>Orders</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{order.number}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
 
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
- <div className="lg:col-span-2 space-y-6">
- <Card>
- <CardHeader>
- <div className="flex items-start justify-between">
- <div className="space-y-1">
- <div className="flex items-center gap-2">
- <CardTitle className="text-xl">{order.number}</CardTitle>
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div className="lg:col-span-2 space-y-6">
+  <Card>
+  <CardHeader>
+  <div className="flex items-start justify-between">
+  <div className="space-y-1">
+  <div className="flex items-center gap-2">
+  <CardTitle className="text-xl">{order.number}</CardTitle>
  <Badge variant={order.type === "sales" ? "default" : "warning"} className="uppercase text-[10px] tracking-wider">
  {order.type === "sales" ? "Sales" : "Purchase"}
  </Badge>
@@ -169,67 +178,69 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
  </div>
  </CardHeader>
  <CardContent>
- <div className="flex items-center gap-2 flex-wrap">
- {allowedTransitions.map((t) => (
- <Button
- key={t.status}
- size="sm"
- variant={t.variant}
- loading={transitioning === t.status}
- onClick={() => handleTransition(t.status)}
- >
- {t.label}
- </Button>
- ))}
- {isCancellable && (
- <Button
- size="sm"
- variant="destructive"
- loading={transitioning === "cancelled"}
- onClick={() => handleTransition("cancelled")}
- >
- Cancel Order
- </Button>
- )}
- </div>
+<div className="flex items-center gap-2 flex-wrap">
+  {allowedTransitions.length > 0 && (
+  <Button
+  key={allowedTransitions[0].status}
+  size="sm"
+  variant="default"
+  loading={transitioning === allowedTransitions[0].status}
+  onClick={() => handleTransition(allowedTransitions[0].status)}
+  >
+  {allowedTransitions[0].label}
+  </Button>
+  )}
+  {(allowedTransitions.length > 1 || isCancellable) && (
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  {allowedTransitions.slice(1).map((t) => (
+  <DropdownMenuItem key={t.status} onClick={() => handleTransition(t.status)}>{t.label}</DropdownMenuItem>
+  ))}
+  {isCancellable && allowedTransitions.length > 1 && <DropdownMenuSeparator />}
+  {isCancellable && (
+  <DropdownMenuItem onClick={() => handleTransition("cancelled")} className="text-destructive"><XCircle className="w-4 h-4 mr-2" /> Cancel Order</DropdownMenuItem>
+  )}
+  </DropdownMenuContent>
+  </DropdownMenu>
+  )}
+</div>
  </CardContent>
  </Card>
 
- <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
- <Card>
- <CardContent className="p-4">
- <p className="text-xs text-muted-foreground mb-1">Order Total</p>
- <p className="text-xl font-semibold font-mono">{formatCurrency(order.total)}</p>
- {order.subtotal > 0 && (
- <p className="text-xs text-muted-foreground mt-1">
- Subtotal {formatCurrency(order.subtotal)}
- {order.discount > 0 && <> &middot; -{formatCurrency(order.discount)}</>}
- {order.tax > 0 && <> &middot; Tax {formatCurrency(order.tax)}</>}
- </p>
- )}
- </CardContent>
- </Card>
- <Card>
- <CardContent className="p-4">
- <p className="text-xs text-muted-foreground mb-1">Items</p>
- <p className="text-xl font-semibold font-mono">{order.items?.length || 0}</p>
- </CardContent>
- </Card>
- <Card>
- <CardContent className="p-4">
- <p className="text-xs text-muted-foreground mb-1">Payments</p>
- <p className="text-xl font-semibold font-mono">
- {formatCurrency(order.payments?.reduce((s: number, p: any) => s + p.amount, 0) || 0)}
- </p>
- </CardContent>
- </Card>
- <Card>
- <CardContent className="p-4">
- <p className="text-xs text-muted-foreground mb-1">Invoices</p>
- <p className="text-xl font-semibold font-mono">{order.invoices?.length || 0}</p>
- </CardContent>
- </Card>
- </div>
+  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <DollarSign className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Order Total</p>
+  <p className="text-xl font-semibold font-mono">{formatCurrency(order.total)}</p>
+  {order.subtotal > 0 && (
+  <p className="text-xs text-muted-foreground">
+  Subtotal {formatCurrency(order.subtotal)}
+  {order.discount > 0 && <> &middot; -{formatCurrency(order.discount)}</>}
+  {order.tax > 0 && <> &middot; Tax {formatCurrency(order.tax)}</>}
+  </p>
+  )}
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Package className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Items</p>
+  <p className="text-xl font-semibold font-mono">{order.items?.length || 0}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Banknote className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Payments</p>
+  <p className="text-xl font-semibold font-mono">
+  {formatCurrency(order.payments?.reduce((s: number, p: any) => s + p.amount, 0) || 0)}
+  </p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <FileText className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Invoices</p>
+  <p className="text-xl font-semibold font-mono">{order.invoices?.length || 0}</p>
+  </div>
+  </div>
  </div>
 
  <div className="space-y-4">
@@ -255,7 +266,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
  </div>
  </div>
 
-  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
   <Tabs value={tab} onValueChange={setTab}>
     <TabsList className="w-full overflow-x-auto px-4">
       <TabsTrigger value="items" className="gap-1.5">

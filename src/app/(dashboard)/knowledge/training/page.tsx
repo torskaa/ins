@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Search } from "lucide-react"
+import { Search, GraduationCap, BookOpen, Layers } from "lucide-react"
 import { SkeletonCard } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 
 type Program = {
  id: string
@@ -106,11 +107,16 @@ export default function TrainingPage() {
  </CardContent>
  </Card>
  ))}
- {filtered.length === 0 && !loading && (
- <div className="col-span-full text-center py-12 text-muted-foreground">
- <p className="text-sm">No programs found</p>
- </div>
- )}
+  {filtered.length === 0 && !loading && (
+  <div className="col-span-full">
+  <EmptyState
+  icons={[<GraduationCap key="tp1" className="w-6 h-6" />, <BookOpen key="tp2" className="w-6 h-6" />, <Layers key="tp3" className="w-6 h-6" />]}
+  title="No programs found"
+  description="No training programs match your search criteria"
+  size="sm"
+  />
+  </div>
+  )}
  </div>
  )}
  </div>

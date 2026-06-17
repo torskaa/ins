@@ -9,11 +9,14 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { ArrowLeft, Building2, Calendar, Edit, Hash, Layers, MapPin, Package, PackagePlus, Trash2, Warehouse, XCircle } from "lucide-react"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { ArrowLeft, Building2, Calendar, Edit, Hash, Layers, MapPin, MoreHorizontal, Package, PackagePlus, Trash2, Warehouse, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { formatCurrency, formatDateTime } from "@/lib/utils"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 
 type WarehouseProduct = {
  id: string
@@ -148,24 +151,31 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
 
  return (
  <div className="animate-fade-in space-y-6">
- <button
- onClick={() => router.push("/warehouses")}
- className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
- >
- Back to Warehouses
- </button>
+  <Breadcrumb className="mb-4">
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/warehouses")}>Warehouses</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{warehouse.name}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
 
- <div className="flex items-start justify-between">
- <div className="flex items-start gap-4">
- <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
- <Building2 className="w-7 h-7 text-primary-dark" />
- </div>
- <div>
- <div className="flex items-center gap-3 mb-1">
- {editing ? (
- <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="text-2xl font-semibold h-auto py-1 w-64" />
- ) : (
- <h1 className="text-2xl font-semibold">{warehouse.name}</h1>
+  <div className="flex items-start justify-between">
+  <div className="flex items-start gap-4">
+  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+  <Building2 className="w-7 h-7 text-primary-dark" />
+  </div>
+  <div>
+  <div className="flex items-center gap-3 mb-1">
+  {editing ? (
+  <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="text-2xl font-semibold h-auto py-1 w-64" />
+  ) : (
+  <h1 className="text-2xl font-semibold">{warehouse.name}</h1>
  )}
  <Badge variant="outline" className="text-xs">
  {warehouse._count.products} product{warehouse._count.products !== 1 ? "s" : ""}
@@ -178,23 +188,28 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  )}
  </div>
  </div>
- <div className="flex items-center gap-2">
- {editing ? (
- <>
- <Button variant="secondary" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
- <Button size="sm" onClick={handleSave}>Save</Button>
- </>
- ) : (
- <>
- <Button variant="secondary" size="sm" className="gap-1.5" onClick={() => { setEditing(true); setEditName(warehouse.name); setEditLocation(warehouse.location || ""); setEditCapacity(warehouse.capacity?.toString() || ""); setEditBinLocation(warehouse.binLocation || "") }}>
- Edit
- </Button>
- <Button variant="secondary" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={() => setDeleteOpen(true)}>
- Delete
- </Button>
- </>
- )}
- </div>
+<div className="flex items-center gap-2">
+  {editing ? (
+  <>
+  <Button variant="outline" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+  <Button size="sm" onClick={handleSave}>Save</Button>
+  </>
+  ) : (
+  <>
+  <Button size="sm" className="gap-1.5" onClick={() => { setEditing(true); setEditName(warehouse.name); setEditLocation(warehouse.location || ""); setEditCapacity(warehouse.capacity?.toString() || ""); setEditBinLocation(warehouse.binLocation || "") }}>
+  Edit
+  </Button>
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
+  </DropdownMenuContent>
+  </DropdownMenu>
+  </>
+  )}
+</div>
  </div>
 
  <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
@@ -243,7 +258,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  </Card>
  )}
 
-  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
   <Tabs value={activeTab} onValueChange={setActiveTab}>
     <TabsList className="w-full overflow-x-auto px-4">
  <TabsTrigger value="info" className="gap-1.5">
@@ -314,9 +329,12 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  onRowClick={(item: any) => router.push(`/products/${item.id}`)}
  />
  ) : (
- <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
- <p className="text-sm">No products in this warehouse</p>
- </div>
+  <EmptyState
+  icons={[<Package key="wp1" className="w-6 h-6" />, <Layers key="wp2" className="w-6 h-6" />, <Warehouse key="wp3" className="w-6 h-6" />]}
+  title="No products"
+  description="Products stored in this warehouse will appear here"
+  size="sm"
+  />
  )}
  </TabsContent>
 
@@ -330,10 +348,12 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  searchPlaceholder="Search movements..."
  />
  ) : (
- <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
- <PackagePlus className="w-8 h-8 mb-2" />
- <p className="text-sm">No stock movements recorded</p>
- </div>
+  <EmptyState
+  icons={[<PackagePlus key="wm1" className="w-6 h-6" />, <MapPin key="wm2" className="w-6 h-6" />, <Calendar key="wm3" className="w-6 h-6" />]}
+  title="No stock movements"
+  description="Stock movements in this warehouse will appear here"
+  size="sm"
+  />
  )}
  </TabsContent>
   </Tabs>

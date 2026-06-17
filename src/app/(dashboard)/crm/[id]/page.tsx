@@ -2,458 +2,335 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { AlertCircle, ArrowLeft, Banknote, Building2, Calendar, CreditCard, DollarSign, Edit, FileCode, FileSignature, FileText, Hash, Mail, Phone, Receipt, ShoppingCart, Trash2 } from "lucide-react"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { AlertCircle, ArrowLeft, Banknote, Building2, Calendar, ClipboardList, CreditCard, DollarSign, Edit, FileCode, FileSignature, FileText, Hash, Mail, MoreHorizontal, Package, Phone, Receipt, ShoppingCart, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 
 type FinancialSummary = {
- totalOrders: number
- totalOrderValue: number
- totalInvoiced: number
- totalPaid: number
- totalDue: number
- creditRemaining: number
+  totalOrders: number
+  totalOrderValue: number
+  totalInvoiced: number
+  totalPaid: number
+  totalDue: number
+  creditRemaining: number
 }
 
-type Order = {
- id: string
- number: string
- type: string
- status: string
- total: number
- orderDate: string
-}
-
-type Quotation = {
- id: string
- number: string
- status: string
- total: number
- validUntil: string
- createdAt: string
-}
-
-type Invoice = {
- id: string
- number: string
- status: string
- total: number
- paidAmount: number
- dueDate: string
- issueDate: string
-}
-
-type Payment = {
- id: string
- amount: number
- date: string
- method: string
- reference: string
- invoice?: { number: string; id: string }
- order?: { number: string; id: string }
-}
-
+type Order = { id: string; number: string; type: string; status: string; total: number; orderDate: string }
+type Quotation = { id: string; number: string; status: string; total: number; validUntil: string; createdAt: string }
+type Invoice = { id: string; number: string; status: string; total: number; paidAmount: number; dueDate: string; issueDate: string }
+type Payment = { id: string; amount: number; date: string; method: string; reference: string; invoice?: { number: string; id: string }; order?: { number: string; id: string } }
 type Customer = {
- id: string
- name: string
- email: string
- phone: string
- company: string
- taxId: string
- creditLimit: number
- notes: string
- createdAt: string
- orders: Order[]
- quotations: Quotation[]
- invoices: Invoice[]
- payments: Payment[]
- financialSummary: FinancialSummary
+  id: string; name: string; email: string; phone: string; company: string; taxId: string
+  creditLimit: number; notes: string; createdAt: string
+  orders: Order[]; quotations: Quotation[]; invoices: Invoice[]; payments: Payment[]
+  financialSummary: FinancialSummary
+}
+
+function FieldGroup({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="min-w-0">
+      <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
+      {children}
+    </div>
+  )
 }
 
 const orderStatusColors: Record<string, "default" | "secondary" | "success" | "destructive" | "warning" | "outline"> = {
- draft: "secondary",
- confirmed: "default",
- processing: "warning",
- shipped: "default",
- delivered: "success",
- cancelled: "destructive",
+  draft: "secondary", confirmed: "default", processing: "warning", shipped: "default", delivered: "success", cancelled: "destructive",
 }
-
 const quotationStatusColors: Record<string, "default" | "secondary" | "success" | "destructive" | "warning" | "outline"> = {
- draft: "secondary",
- sent: "default",
- accepted: "success",
- rejected: "destructive",
- expired: "warning",
- converted: "outline",
+  draft: "secondary", sent: "default", accepted: "success", rejected: "destructive", expired: "warning", converted: "outline",
 }
-
 const invoiceStatusColors: Record<string, "default" | "secondary" | "success" | "destructive" | "warning" | "outline"> = {
- draft: "secondary",
- sent: "default",
- paid: "success",
- overdue: "destructive",
- cancelled: "warning",
+  draft: "secondary", sent: "default", paid: "success", overdue: "destructive", cancelled: "warning",
 }
 
 export default function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
- const [customer, setCustomer] = useState<Customer | null>(null)
- const [loading, setLoading] = useState(true)
- const [id, setId] = useState("")
- const [activeTab, setActiveTab] = useState("info")
- const [deleting, setDeleting] = useState(false)
- const router = useRouter()
+  const [customer, setCustomer] = useState<Customer | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [id, setId] = useState("")
+  const [activeTab, setActiveTab] = useState("info")
+  const [deleting, setDeleting] = useState(false)
+  const router = useRouter()
 
- useEffect(() => { params.then(({ id }) => setId(id)) }, [params])
- useEffect(() => {
- if (!id) return
- fetch(`/api/customers/${id}`)
- .then(r => r.json())
- .then(setCustomer)
- .finally(() => setLoading(false))
- }, [id])
+  useEffect(() => { params.then(({ id }) => setId(id)) }, [params])
+  useEffect(() => {
+    if (!id) return
+    fetch(`/api/customers/${id}`).then(r => r.json()).then(setCustomer).finally(() => setLoading(false))
+  }, [id])
 
- async function handleDelete() {
- if (!confirm("Are you sure you want to delete this customer?")) return
- setDeleting(true)
- try {
- const res = await fetch(`/api/customers/${id}`, { method: "DELETE" })
- if (!res.ok) throw new Error()
- toast.success("Customer deleted")
- router.push("/crm")
- } catch { toast.error("Failed to delete") }
- finally { setDeleting(false) }
- }
+  async function handleDelete() {
+    if (!confirm("Are you sure you want to delete this customer?")) return
+    setDeleting(true)
+    try {
+      const res = await fetch(`/api/customers/${id}`, { method: "DELETE" })
+      if (!res.ok) throw new Error()
+      toast.success("Customer deleted"); router.push("/crm")
+    } catch { toast.error("Failed to delete") }
+    finally { setDeleting(false) }
+  }
 
- if (loading) return <SkeletonDetail cards={6} hasChart={true} />
+  if (loading) return <SkeletonDetail cards={6} hasChart={true} />
+  if (!customer) return <p>Customer not found</p>
 
- if (!customer) return <p>Customer not found</p>
+  const { orders, quotations, invoices, payments, financialSummary: fs } = customer
 
- const { orders, quotations, invoices, payments, financialSummary: fs } = customer
+  const orderColumns: Column<Order>[] = [
+    { key: "number", label: "Order #", render: (item) => <span className="font-mono text-xs font-medium">{item.number}</span> },
+    { key: "type", label: "Type", render: (item) => <Badge variant="outline" className="capitalize text-[10px]">{item.type === "sales" ? "Sales" : "Purchase"}</Badge> },
+    { key: "status", label: "Status", render: (item) => <Badge variant={orderStatusColors[item.status] || "default"} className="capitalize text-[10px]">{item.status}</Badge> },
+    { key: "total", label: "Total", render: (item) => <span className="font-mono text-xs font-medium">{formatCurrency(item.total)}</span> },
+    { key: "orderDate", label: "Date", render: (item) => <span className="text-xs text-muted-foreground">{formatDate(new Date(item.orderDate))}</span> },
+  ]
 
- const summaryCards = [
- { label: "Total Orders", value: fs.totalOrders, icon: ShoppingCart, color: "text-blue-600 bg-blue-100" },
- { label: "Total Value", value: formatCurrency(fs.totalOrderValue), icon: DollarSign, color: "text-emerald-600 bg-emerald-100" },
- { label: "Total Invoiced", value: formatCurrency(fs.totalInvoiced), icon: Receipt, color: "text-violet-600 bg-violet-100" },
- { label: "Total Paid", value: formatCurrency(fs.totalPaid), icon: CreditCard, color: "text-green-600 bg-green-100" },
- { label: "Total Due", value: formatCurrency(fs.totalDue), icon: FileText, color: "text-rose-600 bg-rose-100" },
- { label: "Credit Remaining", value: formatCurrency(fs.creditRemaining), icon: CreditCard, color: "text-amber-600 bg-amber-100" },
- ]
+  const quotationColumns: Column<Quotation>[] = [
+    { key: "number", label: "Quotation #", render: (item) => <span className="font-mono text-xs font-medium">{item.number}</span> },
+    { key: "status", label: "Status", render: (item) => <Badge variant={quotationStatusColors[item.status] || "default"} className="capitalize text-[10px]">{item.status}</Badge> },
+    { key: "total", label: "Total", render: (item) => <span className="font-mono text-xs font-medium">{formatCurrency(item.total)}</span> },
+    { key: "validUntil", label: "Valid Until", render: (item) => <span className="text-xs text-muted-foreground">{formatDate(new Date(item.validUntil))}</span> },
+    { key: "createdAt", label: "Date", render: (item) => <span className="text-xs text-muted-foreground">{formatDate(new Date(item.createdAt))}</span> },
+  ]
 
- const orderColumns: Column<Order>[] = [
- { key: "number", label: "Order #", render: (item) => <span className="font-mono text-xs font-medium">{item.number}</span> },
- { key: "type", label: "Type", render: (item) => (
- <Badge variant="outline" className="capitalize">
- {item.type === "sales" ? "Sales" : "Purchase"}
- </Badge>
- )},
- { key: "status", label: "Status", render: (item) => (
- <Badge variant={orderStatusColors[item.status] || "default"} className="capitalize">
- {item.status}
- </Badge>
- )},
- { key: "total", label: "Total", render: (item) => <span className="font-mono text-sm font-medium">{formatCurrency(item.total)}</span> },
- { key: "orderDate", label: "Date", render: (item) => <span className="text-sm text-muted-foreground">{formatDate(new Date(item.orderDate))}</span> },
- ]
+  const invoiceColumns: Column<Invoice>[] = [
+    { key: "number", label: "Invoice #", render: (item) => <span className="font-mono text-xs font-medium">{item.number}</span> },
+    { key: "status", label: "Status", render: (item) => <Badge variant={invoiceStatusColors[item.status] || "default"} className="capitalize text-[10px]">{item.status}</Badge> },
+    { key: "total", label: "Total", render: (item) => <span className="font-mono text-xs font-medium">{formatCurrency(item.total)}</span> },
+    { key: "paidAmount", label: "Paid", render: (item) => <span className="font-mono text-xs text-muted-foreground">{formatCurrency(item.paidAmount)}</span> },
+    { key: "issueDate", label: "Issue Date", render: (item) => <span className="text-xs text-muted-foreground">{formatDate(new Date(item.issueDate))}</span> },
+    { key: "dueDate", label: "Due Date", render: (item) => <span className="text-xs text-muted-foreground">{formatDate(new Date(item.dueDate))}</span> },
+  ]
 
- const quotationColumns: Column<Quotation>[] = [
- { key: "number", label: "Quotation #", render: (item) => <span className="font-mono text-xs font-medium">{item.number}</span> },
- { key: "status", label: "Status", render: (item) => (
- <Badge variant={quotationStatusColors[item.status] || "default"} className="capitalize">
- {item.status}
- </Badge>
- )},
- { key: "total", label: "Total", render: (item) => <span className="font-mono text-sm font-medium">{formatCurrency(item.total)}</span> },
- { key: "validUntil", label: "Valid Until", render: (item) => <span className="text-sm text-muted-foreground">{formatDate(new Date(item.validUntil))}</span> },
- { key: "createdAt", label: "Date", render: (item) => <span className="text-sm text-muted-foreground">{formatDate(new Date(item.createdAt))}</span> },
- ]
+  const paymentColumns: Column<Payment>[] = [
+    { key: "date", label: "Date", render: (item) => <span className="text-xs text-muted-foreground">{formatDateTime(new Date(item.date))}</span> },
+    { key: "amount", label: "Amount", render: (item) => <span className="font-mono text-xs font-medium">{formatCurrency(item.amount)}</span> },
+    { key: "method", label: "Method", render: (item) => {
+      const labels: Record<string, string> = { bank_transfer: "Bank Transfer", cash: "Cash", credit_card: "Credit Card", cheque: "Cheque", promptpay: "PromptPay" }
+      return <span className="text-xs capitalize">{labels[item.method] || item.method}</span>
+    }},
+    { key: "reference", label: "Reference", render: (item) => <span className="text-xs text-muted-foreground font-mono">{item.reference || "—"}</span> },
+    { key: "linked", label: "Linked To", render: (item) => {
+      const inv = item.invoice; const ord = item.order
+      return <span className="text-xs text-muted-foreground">{inv ? `INV ${inv.number}` : ord ? `ORD ${ord.number}` : "—"}</span>
+    }},
+  ]
 
- const invoiceColumns: Column<Invoice>[] = [
- { key: "number", label: "Invoice #", render: (item) => <span className="font-mono text-xs font-medium">{item.number}</span> },
- { key: "status", label: "Status", render: (item) => (
- <Badge variant={invoiceStatusColors[item.status] || "default"} className="capitalize">
- {item.status}
- </Badge>
- )},
- { key: "total", label: "Total", render: (item) => <span className="font-mono text-sm font-medium">{formatCurrency(item.total)}</span> },
- { key: "paidAmount", label: "Paid", render: (item) => <span className="font-mono text-sm text-muted-foreground">{formatCurrency(item.paidAmount)}</span> },
- { key: "issueDate", label: "Issue Date", render: (item) => <span className="text-sm text-muted-foreground">{formatDate(new Date(item.issueDate))}</span> },
- { key: "dueDate", label: "Due Date", render: (item) => <span className="text-sm text-muted-foreground">{formatDate(new Date(item.dueDate))}</span> },
- ]
+  return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-20 -mx-6 -mt-6 px-6 pt-6 pb-3 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="flex items-start justify-between">
+          <div className="min-w-0 flex-1">
+            <Breadcrumb className="mb-2">
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <button onClick={() => router.push("/crm")}>CRM</button>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{customer.name}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h1 className="text-lg font-semibold">{customer.name}</h1>
+              <Badge variant="destructive" className="text-[10px] gap-1"><AlertCircle className="w-3 h-3" /> Due {formatCurrency(fs.totalDue)}</Badge>
+            </div>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+              {customer.company && <span className="flex items-center gap-1"><Building2 className="w-3 h-3" />{customer.company}</span>}
+              {customer.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{customer.email}</span>}
+              {customer.phone && <span className="flex items-center gap-1">{customer.phone}</span>}
+              <span className="text-muted-foreground/50">·</span>
+              <span>Credit Limit: {formatCurrency(customer.creditLimit)}</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 ml-4">
+            <Button size="sm" onClick={() => router.push(`/orders/new?customerId=${customer.id}`)} className="gap-1.5 h-8 text-xs"><ShoppingCart className="w-3.5 h-3.5" /> New Order</Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><MoreHorizontal className="w-3.5 h-3.5" /></Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => router.push(`/crm/${id}/edit`)}><Edit className="w-3.5 h-3.5 mr-2" /> Edit</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleDelete} className="text-destructive"><Trash2 className="w-3.5 h-3.5 mr-2" /> Delete</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </div>
 
- const paymentColumns: Column<Payment>[] = [
- { key: "date", label: "Date", render: (item) => <span className="text-sm text-muted-foreground">{formatDateTime(new Date(item.date))}</span> },
- { key: "amount", label: "Amount", render: (item) => <span className="font-mono text-sm font-medium">{formatCurrency(item.amount)}</span> },
- { key: "method", label: "Method", render: (item) => {
- const labels: Record<string, string> = {
- bank_transfer: "Bank Transfer",
- cash: "Cash",
- credit_card: "Credit Card",
- cheque: "Cheque",
- promptpay: "PromptPay",
- }
- return <span className="text-sm capitalize">{labels[item.method] || item.method}</span>
- }},
- { key: "reference", label: "Reference", render: (item) => <span className="text-sm text-muted-foreground font-mono">{item.reference || "—"}</span> },
- { key: "linked", label: "Linked To", render: (item) => {
- const inv = item.invoice
- const ord = item.order
- return (
- <span className="text-sm text-muted-foreground">
- {inv ? `INV ${inv.number}` : ord ? `ORD ${ord.number}` : "—"}
- </span>
- )
- }},
- ]
+      {/* Bento Metrics Grid */}
+      <div className="grid grid-cols-12 gap-3">
+        <Card className="col-span-6 border-border/50">
+          <CardContent className="p-3.5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0"><DollarSign className="w-4 h-4 text-emerald-600" /></div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Total Value</p>
+                <p className="text-base font-semibold font-mono mt-0.5">{formatCurrency(fs.totalOrderValue)}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="col-span-6 border-border/50">
+          <CardContent className="p-3.5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0"><CreditCard className="w-4 h-4 text-amber-600" /></div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Credit Remaining</p>
+                <p className="text-base font-semibold font-mono mt-0.5">{formatCurrency(fs.creditRemaining)}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="col-span-3 border-border/50">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-md bg-blue-100 flex items-center justify-center shrink-0"><ShoppingCart className="w-3.5 h-3.5 text-blue-600" /></div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider truncate">Total Orders</p>
+                <p className="text-sm font-semibold font-mono">{fs.totalOrders}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="col-span-3 border-border/50">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-md bg-violet-100 flex items-center justify-center shrink-0"><Receipt className="w-3.5 h-3.5 text-violet-600" /></div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider truncate">Total Invoiced</p>
+                <p className="text-sm font-semibold font-mono">{formatCurrency(fs.totalInvoiced)}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="col-span-3 border-border/50">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-md bg-green-100 flex items-center justify-center shrink-0"><CreditCard className="w-3.5 h-3.5 text-green-600" /></div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider truncate">Total Paid</p>
+                <p className="text-sm font-semibold font-mono">{formatCurrency(fs.totalPaid)}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="col-span-3 border-border/50">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-md bg-rose-100 flex items-center justify-center shrink-0"><FileText className="w-3.5 h-3.5 text-rose-600" /></div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider truncate">Total Due</p>
+                <p className="text-sm font-semibold font-mono">{formatCurrency(fs.totalDue)}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
- return (
- <div className="animate-fade-in space-y-6">
- <button
- onClick={() => router.push("/crm")}
- className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
- >
- Back to CRM
- </button>
+      {/* Unified Tab Module */}
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="w-full overflow-x-auto px-4">
+            <TabsTrigger value="info" className="gap-1.5"><Building2 className="w-4 h-4" /> Info</TabsTrigger>
+            <TabsTrigger value="orders" className="gap-1.5"><ShoppingCart className="w-4 h-4" /> Orders{orders.length > 0 && <span className="ml-1 text-[11px] text-muted-foreground">({orders.length})</span>}</TabsTrigger>
+            <TabsTrigger value="quotations" className="gap-1.5"><FileSignature className="w-4 h-4" /> Quotations{quotations.length > 0 && <span className="ml-1 text-[11px] text-muted-foreground">({quotations.length})</span>}</TabsTrigger>
+            <TabsTrigger value="invoices" className="gap-1.5"><Receipt className="w-4 h-4" /> Invoices{invoices.length > 0 && <span className="ml-1 text-[11px] text-muted-foreground">({invoices.length})</span>}</TabsTrigger>
+            <TabsTrigger value="payments" className="gap-1.5"><Banknote className="w-4 h-4" /> Payments{payments.length > 0 && <span className="ml-1 text-[11px] text-muted-foreground">({payments.length})</span>}</TabsTrigger>
+          </TabsList>
 
- <div className="flex items-start justify-between">
- <div className="flex items-start gap-4">
- <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
- <Building2 className="w-7 h-7 text-primary-dark" />
- </div>
- <div>
- <div className="flex items-center gap-3 mb-1">
- <h1 className="text-2xl font-semibold">{customer.name}</h1>
- <Badge variant="destructive" className="text-xs gap-1">
- <AlertCircle className="w-3 h-3" />
- Due {formatCurrency(fs.totalDue)}
- </Badge>
- </div>
- <div className="flex items-center gap-4 text-sm text-muted-foreground">
- {customer.company && (
- <span className="flex items-center gap-1.5">
- <Building2 className="w-3.5 h-3.5" />
- {customer.company}
- </span>
- )}
- {customer.email && (
- <span className="flex items-center gap-1.5">
- <Mail className="w-3.5 h-3.5" />
- {customer.email}
- </span>
- )}
- {customer.phone && (
- <span className="flex items-center gap-1.5">
- {customer.phone}
- </span>
- )}
- </div>
- <p className="text-xs text-muted-foreground mt-1">
- Credit Limit: {formatCurrency(customer.creditLimit)}
- </p>
- </div>
- </div>
- <div className="flex items-center gap-2">
- <Button variant="secondary" size="sm" className="gap-1.5" onClick={() => router.push(`/crm/${id}/edit`)}>
- Edit
- </Button>
- <Button variant="secondary" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
- <Button size="sm" className="gap-1.5" onClick={() => router.push(`/orders/new?customerId=${customer.id}`)}>
- New Order
- </Button>
- </div>
- </div>
+          <TabsContent value="info" className="p-3">
+            <Card className="border-border/50 rounded-lg">
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Building2 className="w-4 h-4 text-primary" />
+                  Profile Information
+                </div>
+              </CardHeader>
+              <CardContent className="p-4">
+                <div className="grid grid-cols-3 gap-x-8 gap-y-4">
+                  <FieldGroup label="Email"><p className="text-sm font-medium flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-muted-foreground shrink-0" />{customer.email || "—"}</p></FieldGroup>
+                  <FieldGroup label="Company"><p className="text-sm font-medium flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5 text-muted-foreground shrink-0" />{customer.company || "—"}</p></FieldGroup>
+                  <FieldGroup label="Credit Limit"><p className="text-sm font-medium font-mono">{formatCurrency(customer.creditLimit)}</p></FieldGroup>
+                  <FieldGroup label="Phone"><p className="text-sm font-medium">{customer.phone || "—"}</p></FieldGroup>
+                  <FieldGroup label="Tax ID"><p className="text-sm font-medium font-mono">{customer.taxId || "—"}</p></FieldGroup>
+                  <FieldGroup label="Customer Since"><p className="text-sm font-medium flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-muted-foreground shrink-0" />{formatDate(new Date(customer.createdAt))}</p></FieldGroup>
+                </div>
+                {customer.notes && (
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <p className="text-[11px] text-muted-foreground font-medium mb-1">Notes</p>
+                    <p className="text-sm text-muted-foreground">{customer.notes}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
- <div className="grid grid-cols-3 lg:grid-cols-6 gap-4">
- {summaryCards.map((card) => (
- <Card key={card.label} className="border-border/50">
- <CardContent className="p-4">
- <div className="flex items-center gap-3">
- <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${card.color}`}>
- <card.icon className="w-4 h-4" />
- </div>
- <div className="min-w-0">
- <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider truncate">
- {card.label}
- </p>
- <p className="text-sm font-semibold font-mono mt-0.5">{card.value}</p>
- </div>
- </div>
- </CardContent>
- </Card>
- ))}
- </div>
+          <TabsContent value="orders" className="p-3">
+            {orders.length > 0 ? (
+              <DataTable columns={orderColumns} data={orders} searchable searchPlaceholder="Search orders..." onRowClick={(item: any) => router.push(`/orders/${item.id}`)} noBorder compact />
+            ) : (
+              <EmptyState
+                icons={[<ShoppingCart key="o1" className="w-6 h-6" />, <ClipboardList key="o2" className="w-6 h-6" />, <Package key="o3" className="w-6 h-6" />]}
+                title="No orders yet"
+                description="Orders placed by this customer will appear here"
+                size="sm"
+              />
+            )}
+          </TabsContent>
 
-  <div className="rounded-xl border border-border bg-card overflow-hidden">
-  <Tabs value={activeTab} onValueChange={setActiveTab}>
-    <TabsList className="w-full overflow-x-auto px-4">
-      <TabsTrigger value="info" className="gap-1.5">
-        <Building2 className="w-4 h-4" />
-        Info
-      </TabsTrigger>
-      <TabsTrigger value="orders" className="gap-1.5">
-        <ShoppingCart className="w-4 h-4" />
-        Orders
-        {orders.length > 0 && (
-          <span className="ml-1 text-[11px] text-muted-foreground">({orders.length})</span>
-        )}
-      </TabsTrigger>
-      <TabsTrigger value="quotations" className="gap-1.5">
-        <FileSignature className="w-4 h-4" />
-        Quotations
-        {quotations.length > 0 && (
-          <span className="ml-1 text-[11px] text-muted-foreground">({quotations.length})</span>
-        )}
-      </TabsTrigger>
-      <TabsTrigger value="invoices" className="gap-1.5">
-        <Receipt className="w-4 h-4" />
-        Invoices
-        {invoices.length > 0 && (
-          <span className="ml-1 text-[11px] text-muted-foreground">({invoices.length})</span>
-        )}
-      </TabsTrigger>
-      <TabsTrigger value="payments" className="gap-1.5">
-        <Banknote className="w-4 h-4" />
-        Payments
-        {payments.length > 0 && (
-          <span className="ml-1 text-[11px] text-muted-foreground">({payments.length})</span>
-        )}
-      </TabsTrigger>
-    </TabsList>
+          <TabsContent value="quotations" className="p-3">
+            {quotations.length > 0 ? (
+              <DataTable columns={quotationColumns} data={quotations} searchable searchPlaceholder="Search quotations..." onRowClick={(item: any) => router.push(`/quotations/${item.id}`)} noBorder compact />
+            ) : (
+              <EmptyState
+                icons={[<FileSignature key="q1" className="w-6 h-6" />, <FileText key="q2" className="w-6 h-6" />, <FileCode key="q3" className="w-6 h-6" />]}
+                title="No quotations yet"
+                description="Quotations sent to this customer will appear here"
+                size="sm"
+              />
+            )}
+          </TabsContent>
 
-  <TabsContent value="info" className="p-3">
- <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
- <div className="space-y-4">
- <div>
- <p className="text-xs text-muted-foreground mb-1">Email</p>
- <p className="text-sm font-medium flex items-center gap-1.5">
- <Mail className="w-3.5 h-3.5 text-muted-foreground" />
- {customer.email || "—"}
- </p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground mb-1">Phone</p>
- <p className="text-sm font-medium flex items-center gap-1.5">
- {customer.phone || "—"}
- </p>
- </div>
- </div>
- <div className="space-y-4">
- <div>
- <p className="text-xs text-muted-foreground mb-1">Company</p>
- <p className="text-sm font-medium flex items-center gap-1.5">
- <Building2 className="w-3.5 h-3.5 text-muted-foreground" />
- {customer.company || "—"}
- </p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground mb-1">Tax ID</p>
- <p className="text-sm font-medium flex items-center gap-1.5">
- {customer.taxId || "—"}
- </p>
- </div>
- </div>
- <div className="space-y-4">
- <div>
- <p className="text-xs text-muted-foreground mb-1">Credit Limit</p>
- <p className="text-sm font-medium font-mono">{formatCurrency(customer.creditLimit)}</p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground mb-1">Customer Since</p>
- <p className="text-sm font-medium flex items-center gap-1.5">
- <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
- {formatDate(new Date(customer.createdAt))}
- </p>
- </div>
- </div>
- </div>
- {customer.notes && (
- <div className="mt-6 pt-5 border-t border-border">
- <p className="text-xs text-muted-foreground mb-2">Notes</p>
- <p className="text-sm">{customer.notes}</p>
- </div>
- )}
- </TabsContent>
+          <TabsContent value="invoices" className="p-3">
+            {invoices.length > 0 ? (
+              <DataTable columns={invoiceColumns} data={invoices} searchable searchPlaceholder="Search invoices..." onRowClick={(item: any) => router.push(`/invoices/${item.id}`)} noBorder compact />
+            ) : (
+              <EmptyState
+                icons={[<Receipt key="i1" className="w-6 h-6" />, <FileText key="i2" className="w-6 h-6" />, <Banknote key="i3" className="w-6 h-6" />]}
+                title="No invoices yet"
+                description="Invoices issued to this customer will appear here"
+                size="sm"
+              />
+            )}
+          </TabsContent>
 
-  <TabsContent value="orders" className="p-3">
- {orders.length > 0 ? (
-  <DataTable
-  columns={orderColumns}
-  data={orders}
-  searchable
-  searchPlaceholder="Search orders..."
-  onRowClick={(item: any) => router.push(`/orders/${item.id}`)}
-  noBorder
-  compact
-  />
- ) : (
- <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
- <p className="text-sm">No orders yet</p>
- </div>
- )}
- </TabsContent>
-
-  <TabsContent value="quotations" className="p-3">
- {quotations.length > 0 ? (
-  <DataTable
-  columns={quotationColumns}
-  data={quotations}
-  searchable
-  searchPlaceholder="Search quotations..."
-  onRowClick={(item: any) => router.push(`/quotations/${item.id}`)}
-  noBorder
-  compact
-  />
- ) : (
- <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
- <FileSignature className="w-8 h-8 mb-2" />
- <p className="text-sm">No quotations yet</p>
- </div>
- )}
- </TabsContent>
-
-  <TabsContent value="invoices" className="p-3">
- {invoices.length > 0 ? (
-  <DataTable
-  columns={invoiceColumns}
-  data={invoices}
-  searchable
-  searchPlaceholder="Search invoices..."
-  onRowClick={(item: any) => router.push(`/invoices/${item.id}`)}
-  noBorder
-  compact
-  />
- ) : (
- <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
- <Receipt className="w-8 h-8 mb-2" />
- <p className="text-sm">No invoices yet</p>
- </div>
- )}
- </TabsContent>
-
-  <TabsContent value="payments" className="p-3">
-  {payments.length > 0 ? (
-  <DataTable
-  columns={paymentColumns}
-  data={payments}
-  searchable
-  searchPlaceholder="Search payments..."
-  noBorder
-  compact
-  />
-  ) : (
- <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
- <p className="text-sm">No payments recorded</p>
- </div>
- )}
- </TabsContent>
-  </Tabs>
-  </div>
-  </div>
- )
+          <TabsContent value="payments" className="p-3">
+            {payments.length > 0 ? (
+              <DataTable columns={paymentColumns} data={payments} searchable searchPlaceholder="Search payments..." noBorder compact />
+            ) : (
+              <EmptyState
+                icons={[<Banknote key="p1" className="w-6 h-6" />, <CreditCard key="p2" className="w-6 h-6" />, <DollarSign key="p3" className="w-6 h-6" />]}
+                title="No payments recorded"
+                description="Payments made by this customer will appear here"
+                size="sm"
+              />
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  )
 }

@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { XCircle, ClipboardList, Package, Cog } from "lucide-react"
+import { XCircle, ClipboardList, Package, Cog, Beaker, Play } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 type Product = { id: string; name: string; sku: string }
 type BOM = { id: string; finishedGoodId: string; version: string; status: string }
@@ -143,7 +144,7 @@ export default function NewProductionOrderPage() {
                 </div>
               </CardHeader>
               <CardContent className="p-4 space-y-3">
-                {materials.length === 0 && <p className="text-sm text-muted-foreground">No materials added yet</p>}
+                {materials.length === 0 && <EmptyState icons={[<Package key="nm1" className="w-6 h-6" />, <Beaker key="nm2" className="w-6 h-6" />, <ClipboardList key="nm3" className="w-6 h-6" />]} title="No materials added yet" description="Add materials required for this production order" size="sm" />}
                 {materials.map((m, i) => (
                   <div key={i} className="flex items-end gap-3">
                     <div className="flex-1 space-y-1">
@@ -170,7 +171,7 @@ export default function NewProductionOrderPage() {
                 </div>
               </CardHeader>
               <CardContent className="p-4 space-y-3">
-                {operations.length === 0 && <p className="text-sm text-muted-foreground">No operations added yet</p>}
+                {operations.length === 0 && <EmptyState icons={[<Cog key="no1" className="w-6 h-6" />, <Play key="no2" className="w-6 h-6" />, <ClipboardList key="no3" className="w-6 h-6" />]} title="No operations added yet" description="Add operations for this production order" size="sm" />}
                 {operations.map((o, i) => (
                   <div key={i} className="flex items-end gap-3">
                     <div className="flex-1 space-y-1">

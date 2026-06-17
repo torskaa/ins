@@ -7,10 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { Building2, Calendar, Edit, XCircle } from "lucide-react"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Building2, Calendar, Edit, MapPin, MoreHorizontal, Package, Trash2, Truck, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { format } from "date-fns"
 
 type TrackingEntry = {
@@ -168,20 +171,27 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
 
  return (
  <div className="animate-fade-in space-y-6">
- <button
- onClick={() => router.push("/deliveries")}
- className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
- >
- Back to Deliveries
- </button>
+  <Breadcrumb className="mb-4">
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/deliveries")}>Deliveries</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{delivery.number}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
 
- <div className="flex items-start justify-between">
- <div className="flex items-start gap-4">
- <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
- </div>
- <div>
- <div className="flex items-center gap-3 mb-1">
- <h1 className="text-2xl font-semibold font-mono">{delivery.number}</h1>
+  <div className="flex items-start justify-between">
+  <div className="flex items-start gap-4">
+  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+  </div>
+  <div>
+  <div className="flex items-center gap-3 mb-1">
+  <h1 className="text-2xl font-semibold font-mono">{delivery.number}</h1>
  <Badge className={`${statusColors[delivery.status] || ""} border-0 font-medium`}>
  {delivery.status}
  </Badge>
@@ -192,22 +202,26 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
  </p>
  </div>
  </div>
- <div className="flex items-center gap-2">
- <Button variant="outline" size="sm" className="gap-1.5" onClick={() => router.push(`/deliveries/${delivery.id}/edit`)}>
- Edit
- </Button>
- {canAdvance && (
- <Button size="sm" onClick={handleAdvanceStatus} disabled={updating} className="gap-1.5">
- Advance to {nextStatus[delivery.status]}
- </Button>
- )}
- {canCancel && (
- <Button variant="secondary" size="sm" onClick={handleCancel} disabled={updating}><XCircle className="w-4 h-4" /> Cancel</Button>
- )}
- <Button variant="secondary" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={() => setDeleteOpen(true)}>
- Delete
- </Button>
- </div>
+<div className="flex items-center gap-2">
+  {canAdvance && (
+  <Button size="sm" onClick={handleAdvanceStatus} disabled={updating} className="gap-1.5">
+  Advance to {nextStatus[delivery.status]}
+  </Button>
+  )}
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+   <DropdownMenuItem onClick={() => router.push(`/deliveries/${delivery.id}/edit`)}><Edit className="w-4 h-4 mr-2" /> Edit</DropdownMenuItem>
+  {canCancel && <DropdownMenuSeparator />}
+  {canCancel && (
+  <DropdownMenuItem onClick={handleCancel}><XCircle className="w-4 h-4 mr-2" /> Cancel</DropdownMenuItem>
+  )}
+  <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
+  </DropdownMenuContent>
+  </DropdownMenu>
+</div>
  </div>
 
  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -289,9 +303,12 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
  ))}
  </div>
  ) : (
- <div className="flex flex-col items-center justify-center py-6 text-muted-foreground">
- <p className="text-xs">No tracking entries</p>
- </div>
+  <EmptyState
+  icons={[<Truck key="t1" className="w-6 h-6" />, <MapPin key="t2" className="w-6 h-6" />, <Calendar key="t3" className="w-6 h-6" />]}
+  title="No tracking entries"
+  description="Tracking updates for this delivery will appear here"
+  size="sm"
+  />
  )}
  </CardContent>
  </Card>

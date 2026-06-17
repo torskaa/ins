@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { formatCurrency, cn } from "@/lib/utils"
-import { XCircle, FileText, Package, DollarSign } from "lucide-react"
+import { XCircle, FileText, Package, DollarSign, ClipboardList } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
   <div className={cn("space-y-1.5", className)}>
@@ -138,10 +139,13 @@ export default function NewInvoicePage() {
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               {items.length === 0 ? (
-                <div className="text-center py-6">
-                  <p className="text-sm text-muted-foreground mb-2">Add line items to this invoice</p>
-                  <Button type="button" variant="secondary" size="sm" onClick={addItem}>Add Item</Button>
-                </div>
+                <EmptyState
+                  icons={[<FileText key="i1" className="w-6 h-6" />, <Package key="i2" className="w-6 h-6" />, <ClipboardList key="i3" className="w-6 h-6" />]}
+                  title="No line items yet"
+                  description="Add products or services to this invoice"
+                  actions={[{ label: "Add Item", onClick: addItem }]}
+                  size="sm"
+                />
               ) : null}
               {items.map((item, i) => (
                 <div key={i} className="flex items-end gap-3 p-3 rounded-lg bg-surface/50">

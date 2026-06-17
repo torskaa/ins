@@ -7,10 +7,12 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { toast } from "sonner"
-import { ArrowLeft, Package, ShoppingCart, Activity, Edit, Send, CheckCircle2, XCircle, Clock, RefreshCw, FileSignature, Loader2 } from "lucide-react"
+import { Activity, ArrowLeft, Calendar, DollarSign, Edit, FileText, MoreHorizontal, Package, ShoppingCart, Send, CheckCircle2, XCircle, Clock, RefreshCw, FileSignature, Loader2 } from "lucide-react"
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 
 const statusColors: Record<string, "default" | "secondary" | "success" | "destructive" | "warning" | "outline"> = {
  draft: "secondary",
@@ -90,11 +92,19 @@ export default function QuotationDetailPage({ params }: { params: Promise<{ id: 
 
  return (
  <div className="animate-fade-in space-y-6">
- <div className="flex items-center justify-between mb-2">
- <button onClick={() => router.push("/quotations")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
- Back to Quotations
- </button>
- </div>
+  <Breadcrumb className="mb-2">
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/quotations")}>Quotations</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{quotation.number}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
 
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
  <div className="lg:col-span-2 space-y-6">
@@ -108,79 +118,91 @@ export default function QuotationDetailPage({ params }: { params: Promise<{ id: 
  </div>
  <p className="text-sm text-muted-foreground">{quotation.customer?.name || "—"}</p>
  </div>
- <div className="flex items-center gap-2 flex-wrap">
- {["draft", "sent"].includes(status) && !quotation.order && (
- <Button size="sm" onClick={handleConvert} loading={actionLoading === "convert"} disabled={status === "draft"} title={status === "draft" ? "Send quotation first" : "Convert to order"} className="gap-1.5">
- Convert to Order
- </Button>
- )}
- {["draft"].includes(status) && (
- <Button variant="outline" size="sm" onClick={() => router.push(`/quotations/${id}/edit`)} className="gap-1.5">
- Edit
- </Button>
- )}
+<div className="flex items-center gap-2 flex-wrap">
+  {["draft", "sent"].includes(status) && !quotation.order && (
+  <Button size="sm" onClick={handleConvert} loading={actionLoading === "convert"} disabled={status === "draft"} title={status === "draft" ? "Send quotation first" : "Convert to order"} className="gap-1.5">
+  Convert to Order
+  </Button>
+  )}
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  {["draft"].includes(status) && (
+   <DropdownMenuItem onClick={() => router.push(`/quotations/${id}/edit`)}><Edit className="w-4 h-4 mr-2" /> Edit</DropdownMenuItem>
+  )}
+  </DropdownMenuContent>
+  </DropdownMenu>
+</div>
  </div>
- </div>
- <div className="flex items-center gap-2 mt-3 flex-wrap">
- {status === "draft" && (
- <Button size="sm" onClick={() => handleTransition("sent")} loading={actionLoading === "sent"} className="gap-1.5">
- Send
- </Button>
- )}
- {status === "sent" && (
- <>
- <Button variant="success" size="sm" onClick={() => handleTransition("confirmed")} loading={actionLoading === "confirmed"} className="gap-1.5">
- Confirm
- </Button>
- <Button variant="ghost" size="sm" onClick={() => handleTransition("expired")} loading={actionLoading === "expired"} className="gap-1.5 text-amber-600">
- Mark Expired
- </Button>
- </>
- )}
- {["draft", "sent", "confirmed"].includes(status) && (
- <Button variant="ghost" size="sm" onClick={() => handleTransition("cancelled")} loading={actionLoading === "cancelled"} className="gap-1.5 text-destructive">
- Cancel
- </Button>
- )}
- {status === "expired" && (
- <Button size="sm" onClick={() => handleTransition("sent")} loading={actionLoading === "sent"} className="gap-1.5">
- Renew
- </Button>
- )}
- </div>
+<div className="flex items-center gap-2 mt-3 flex-wrap">
+  {status === "draft" && (
+  <Button size="sm" onClick={() => handleTransition("sent")} loading={actionLoading === "sent"} className="gap-1.5">
+  Send
+  </Button>
+  )}
+  {status === "sent" && (
+  <Button variant="success" size="sm" onClick={() => handleTransition("confirmed")} loading={actionLoading === "confirmed"} className="gap-1.5">
+  Confirm
+  </Button>
+  )}
+  {status === "expired" && (
+  <Button size="sm" onClick={() => handleTransition("sent")} loading={actionLoading === "sent"} className="gap-1.5">
+  Renew
+  </Button>
+  )}
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  {status === "sent" && (
+   <DropdownMenuItem onClick={() => handleTransition("expired")} className="text-amber-600"><Clock className="w-4 h-4 mr-2" /> Mark Expired</DropdownMenuItem>
+  )}
+  {["draft", "sent", "confirmed"].includes(status) && (
+   <DropdownMenuItem onClick={() => handleTransition("cancelled")} className="text-destructive"><XCircle className="w-4 h-4 mr-2" /> Cancel</DropdownMenuItem>
+  )}
+  </DropdownMenuContent>
+  </DropdownMenu>
+</div>
  </CardHeader>
  </Card>
 
- <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
- <Card><CardContent className="p-4">
- <p className="text-xs text-muted-foreground mb-1">Total</p>
- <p className="text-xl font-semibold font-mono">{formatCurrency(quotation.total)}</p>
- {quotation.subtotal > 0 && (
- <p className="text-xs text-muted-foreground mt-1">
- Subtotal {formatCurrency(quotation.subtotal)}
- {quotation.discount > 0 && <> &middot; -{formatCurrency(quotation.discount)}</>}
- {quotation.tax > 0 && <> &middot; Tax {formatCurrency(quotation.tax)}</>}
- </p>
- )}
- </CardContent></Card>
- <Card><CardContent className="p-4">
- <p className="text-xs text-muted-foreground mb-1">Line Items</p>
- <p className="text-xl font-semibold font-mono">{itemCount}</p>
- </CardContent></Card>
- <Card><CardContent className="p-4">
- <p className="text-xs text-muted-foreground mb-1">Valid Until</p>
- <p className="text-xl font-semibold font-mono text-sm">{quotation.validUntil ? formatDate(new Date(quotation.validUntil)) : "—"}</p>
- </CardContent></Card>
- <Card><CardContent className="p-4">
- <p className="text-xs text-muted-foreground mb-1">Linked Order</p>
- {quotation.order ? (
- <div>
- <button onClick={() => router.push(`/orders/${quotation.order.id}`)} className="text-sm font-medium text-info hover:underline">{quotation.order.number}</button>
- <Badge variant={statusColors[quotation.order.status] || "default"} className="capitalize text-[10px] mt-0.5">{quotation.order.status}</Badge>
- </div>
- ) : <p className="text-sm font-mono text-muted-foreground">—</p>}
- </CardContent></Card>
- </div>
+  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <DollarSign className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Total</p>
+  <p className="text-xl font-semibold font-mono">{formatCurrency(quotation.total)}</p>
+  {quotation.subtotal > 0 && (
+  <p className="text-xs text-muted-foreground">
+  Subtotal {formatCurrency(quotation.subtotal)}
+  {quotation.discount > 0 && <> &middot; -{formatCurrency(quotation.discount)}</>}
+  {quotation.tax > 0 && <> &middot; Tax {formatCurrency(quotation.tax)}</>}
+  </p>
+  )}
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <FileText className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Line Items</p>
+  <p className="text-xl font-semibold font-mono">{itemCount}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Calendar className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Valid Until</p>
+  <p className="text-xl font-semibold font-mono text-sm">{quotation.validUntil ? formatDate(new Date(quotation.validUntil)) : "—"}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <ShoppingCart className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Linked Order</p>
+  {quotation.order ? (
+  <div className="text-center">
+  <button onClick={() => router.push(`/orders/${quotation.order.id}`)} className="text-sm font-medium text-info hover:underline">{quotation.order.number}</button>
+  <Badge variant={statusColors[quotation.order.status] || "default"} className="capitalize text-[10px] mt-0.5">{quotation.order.status}</Badge>
+  </div>
+  ) : <p className="text-sm font-mono text-muted-foreground">—</p>}
+  </div>
+  </div>
  </div>
 
  <div className="space-y-4">
@@ -210,7 +232,7 @@ export default function QuotationDetailPage({ params }: { params: Promise<{ id: 
  </div>
  </div>
 
-  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
   <Tabs value={tab} onValueChange={setTab}>
     <TabsList className="w-full overflow-x-auto px-4">
   <TabsTrigger value="items" className="gap-1.5">

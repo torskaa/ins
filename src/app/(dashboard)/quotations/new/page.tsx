@@ -10,7 +10,8 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { cn, formatCurrency } from "@/lib/utils"
-import { FileText, Package, Receipt, XCircle } from "lucide-react"
+import { FileText, Package, Receipt, XCircle, ShoppingCart } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 function Field({ label, required, className, children }: { label: string; required?: boolean; className?: string; children: React.ReactNode }) {
   return (
@@ -162,12 +163,13 @@ export default function NewQuotationPage() {
                 </div>
               ))}
               {items.length === 0 && (
-                <div className="text-center py-8">
-                  <p className="text-sm text-muted-foreground mb-3">Select products from your catalog to add</p>
-                  <Button type="button" variant="secondary" size="sm" onClick={addItem}>
-                    Browse Catalog
-                  </Button>
-                </div>
+                <EmptyState
+                  icons={[<Package key="q1" className="w-6 h-6" />, <Receipt key="q2" className="w-6 h-6" />, <ShoppingCart key="q3" className="w-6 h-6" />]}
+                  title="No items added yet"
+                  description="Select products from your catalog to add to this quotation"
+                  actions={[{ label: "Browse Catalog", onClick: addItem }]}
+                  size="sm"
+                />
               )}
             </CardContent>
           </Card>

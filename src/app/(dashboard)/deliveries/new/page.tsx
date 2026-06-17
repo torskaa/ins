@@ -10,7 +10,8 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { Truck, MapPin, Package, FileText, Building2, Calendar, Warehouse, Plus, Trash2, XCircle } from "lucide-react"
+import { Truck, MapPin, Package, FileText, Building2, Calendar, Warehouse, Plus, Trash2, XCircle, ClipboardList } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
   <div className={cn("space-y-1.5", className)}>
@@ -208,9 +209,12 @@ export default function NewDeliveryPage() {
               </CardHeader>
               <CardContent className="p-4 space-y-3">
                 {items.length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-                    <p className="text-sm">No items yet. Click "Add Item" to add products.</p>
-                  </div>
+                  <EmptyState
+                    icons={[<Package key="d1" className="w-6 h-6" />, <ClipboardList key="d2" className="w-6 h-6" />, <FileText key="d3" className="w-6 h-6" />]}
+                    title="No items yet"
+                    description='Click "Add Item" to add products to this delivery'
+                    size="sm"
+                  />
                 )}
                 {items.map((item, idx) => (
                   <div key={idx} className="flex items-end gap-3 p-3 rounded-lg border border-border bg-surface/50">

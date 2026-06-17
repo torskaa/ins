@@ -7,10 +7,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { toast } from "sonner"
-import { Edit, Beaker, CheckCircle, Play } from "lucide-react"
+import { Calendar, CheckCircle, Cog, DollarSign, Edit, Beaker, ClipboardList, MoreHorizontal, Package, Play } from "lucide-react"
 import { format } from "date-fns"
 import { Skeleton } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 
 const statusColors: Record<string, string> = {
  draft: "bg-slate-100 text-slate-600",
@@ -95,14 +98,24 @@ export default function ProductionOrderDetailPage() {
 
  return (
  <div className="animate-fade-in max-w-4xl">
- <button onClick={() => router.push("/production/orders")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
- Back to Orders
- </button>
+  <Breadcrumb className="mb-4">
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/production/orders")}>Orders</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{order.number}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
 
- <div className="flex items-start justify-between mb-6">
- <div>
- <div className="flex items-center gap-3 mb-1">
- <h1 className="font-mono">{order.number}</h1>
+  <div className="flex items-start justify-between mb-6">
+  <div>
+  <div className="flex items-center gap-3 mb-1">
+  <h1 className="font-mono">{order.number}</h1>
  <Badge className={`${statusColors[order.status] || ""} border-0 font-medium`}>{order.status.replace(/_/g, " ")}</Badge>
  </div>
  <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -110,38 +123,47 @@ export default function ProductionOrderDetailPage() {
  {order.warehouse && <span className="flex items-center gap-1">{order.warehouse.name}</span>}
  </div>
  </div>
- <div className="flex items-center gap-2">
- {["draft", "confirmed"].includes(order.status) && (
- <Button variant="outline" size="sm" onClick={() => router.push(`/production/orders/${order.id}/edit`)} className="gap-1.5">
- Edit
- </Button>
- )}
- {nextAction && (
- <Button size="sm" onClick={() => handleTransition(nextAction)} loading={transitioning} className="gap-1.5">
- {(() => { const Icon = transitionIcons[order.status]; return Icon ? <><Icon className="w-4 h-4" /> {transitionLabels[order.status]}</> : transitionLabels[order.status] })()}
- </Button>
- )}
- </div>
+  <div className="flex items-center gap-2">
+  {nextAction && (
+  <Button size="sm" onClick={() => handleTransition(nextAction)} loading={transitioning} className="gap-1.5">
+  {(() => { const Icon = transitionIcons[order.status]; return Icon ? <><Icon className="w-4 h-4" /> {transitionLabels[order.status]}</> : transitionLabels[order.status] })()}
+  </Button>
+  )}
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  {["draft", "confirmed"].includes(order.status) && (
+  <DropdownMenuItem onClick={() => router.push(`/production/orders/${order.id}/edit`)}><Edit className="w-4 h-4 mr-2" /> Edit</DropdownMenuItem>
+  )}
+  </DropdownMenuContent>
+  </DropdownMenu>
+</div>
  </div>
 
- <div className="grid grid-cols-4 gap-4 mb-6">
- <Card><CardContent className="p-4">
- <p className="text-xs text-muted-foreground">Quantity</p>
- <p className="text-2xl font-semibold">{order.quantity}</p>
- </CardContent></Card>
- <Card><CardContent className="p-4">
- <p className="text-xs text-muted-foreground">Produced</p>
- <p className={`text-2xl font-semibold ${order.producedQty > 0 ? "text-emerald-600" : "text-muted-foreground"}`}>{order.producedQty || 0}</p>
- </CardContent></Card>
- <Card><CardContent className="p-4">
- <p className="text-xs text-muted-foreground">Due Date</p>
- <p className="text-lg font-medium">{order.dueDate ? format(new Date(order.dueDate), "dd/MM/yyyy") : "—"}</p>
- </CardContent></Card>
- <Card><CardContent className="p-4">
- <p className="text-xs text-muted-foreground">Est. Cost</p>
- <p className="text-lg font-medium font-mono">฿{totalCost.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
- </CardContent></Card>
- </div>
+  <div className="grid grid-cols-4 gap-4 mb-6">
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Package className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Quantity</p>
+  <p className="text-2xl font-semibold">{order.quantity}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <CheckCircle className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Produced</p>
+  <p className={`text-2xl font-semibold ${order.producedQty > 0 ? "text-emerald-600" : "text-muted-foreground"}`}>{order.producedQty || 0}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Calendar className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Due Date</p>
+  <p className="text-lg font-medium">{order.dueDate ? format(new Date(order.dueDate), "dd/MM/yyyy") : "—"}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <DollarSign className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Est. Cost</p>
+  <p className="text-lg font-medium font-mono">฿{totalCost.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+  </div>
+  </div>
 
  {order.status === "in_progress" && (
  <Card className="mb-6 border-amber-200 bg-amber-50/50">
@@ -163,7 +185,7 @@ export default function ProductionOrderDetailPage() {
  <h3 className="text-sm font-semibold flex items-center gap-2"><Beaker className="w-4 h-4" /> Materials ({order.materials.length})</h3>
  </CardHeader>
  <CardContent className="pt-0 space-y-2">
- {order.materials.length === 0 && <p className="text-sm text-muted-foreground">No materials</p>}
+  {order.materials.length === 0 && <EmptyState icons={[<Package key="pm1" className="w-6 h-6" />, <Beaker key="pm2" className="w-6 h-6" />, <ClipboardList key="pm3" className="w-6 h-6" />]} title="No materials" description="Materials for this production order will appear here" size="sm" />}
  {order.materials.map((m) => (
  <div key={m.id} className="flex items-center justify-between p-2.5 bg-surface rounded-lg">
  <div className="text-sm"><span className="font-medium">{m.product.name}</span><span className="text-xs text-muted-foreground ml-2">{m.product.sku}</span></div>
@@ -178,7 +200,7 @@ export default function ProductionOrderDetailPage() {
  <h3 className="text-sm font-semibold flex items-center gap-2">Operations ({order.operations.length})</h3>
  </CardHeader>
  <CardContent className="pt-0 space-y-2">
- {order.operations.length === 0 && <p className="text-sm text-muted-foreground">No operations</p>}
+  {order.operations.length === 0 && <EmptyState icons={[<Cog key="po1" className="w-6 h-6" />, <Play key="po2" className="w-6 h-6" />, <CheckCircle key="po3" className="w-6 h-6" />]} title="No operations" description="Operations for this production order will appear here" size="sm" />}
  {order.operations.map((o) => (
  <div key={o.id} className="flex items-center justify-between p-2.5 bg-surface rounded-lg">
  <div>

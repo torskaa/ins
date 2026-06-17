@@ -8,9 +8,12 @@ import { Button } from "@/components/ui/button"
 import { SkeletonDetail } from "@/components/ui/skeleton"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Progress } from "@/components/ui/progress"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { toast } from "sonner"
-import { ArrowLeft, Eye, Play, GraduationCap, Users, Clock, BookOpen, BarChart3, Award, Layers, CheckCircle2, ChevronRight, FileText, Star } from "lucide-react"
+import { ArrowLeft, Award, BarChart3, BookOpen, CheckCircle2, ChevronRight, Clock, Eye, FileText, GraduationCap, Layers, MoreHorizontal, Play, Star, Trash2, Users } from "lucide-react"
 
 type Program = {
  id: string
@@ -115,68 +118,69 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
 
  return (
  <div className="animate-fade-in">
- <Button variant="ghost" size="sm" className="gap-1.5 mb-4" onClick={() => router.push("/knowledge/training")}>
- Back to Training
- </Button>
+  <Breadcrumb className="mb-4">
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/knowledge/training")}>Training</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{program.title}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
 
- <div className="flex items-start justify-between mb-6">
- <div className="flex items-center gap-4">
- <div className="w-14 h-14 rounded-xl bg-primary/5 flex items-center justify-center">
- <TypeIcon className="w-7 h-7 text-primary" />
- </div>
- <div>
- <h1 className="text-2xl font-semibold">{program.title}</h1>
+  <div className="flex items-start justify-between mb-6">
+  <div className="flex items-center gap-4">
+  <div className="w-14 h-14 rounded-xl bg-primary/5 flex items-center justify-center">
+  <TypeIcon className="w-7 h-7 text-primary" />
+  </div>
+  <div>
+  <h1 className="text-2xl font-semibold">{program.title}</h1>
  <p className="text-sm text-muted-foreground">{program.description}</p>
  </div>
  </div>
- <div className="flex items-center gap-2 self-start">
- <Badge variant={levelColor as any}>{program.level}</Badge>
- <Badge variant="outline">{program.type}</Badge>
- <Button variant="ghost" size="sm" onClick={() => router.push(`/knowledge/training/${id}/edit`)} className="gap-1.5 h-8">
- Edit
- </Button>
- <Button variant="ghost" size="sm" onClick={() => { if (window.confirm("Delete this training program?")) { fetch(`/api/knowledge/training/${id}`, { method: "DELETE" }).then(() => { toast.success("Deleted"); router.push("/knowledge") }).catch(() => toast.error("Failed to delete")) } }} className="gap-1.5 h-8 text-destructive hover:text-destructive">
- Delete
- </Button>
- </div>
+  <div className="flex items-center gap-2 self-start">
+  <Badge variant={levelColor as any}>{program.level}</Badge>
+  <Badge variant="outline">{program.type}</Badge>
+  <Button size="sm" onClick={() => router.push(`/knowledge/training/${id}/edit`)} className="gap-1.5 h-8">
+  Edit
+  </Button>
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><MoreHorizontal className="w-3.5 h-3.5" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  <DropdownMenuItem onClick={() => { if (window.confirm("Delete this training program?")) { fetch(`/api/knowledge/training/${id}`, { method: "DELETE" }).then(() => { toast.success("Deleted"); router.push("/knowledge") }).catch(() => toast.error("Failed to delete")) } }} className="text-destructive"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
+  </DropdownMenuContent>
+  </DropdownMenu>
+  </div>
  </div>
 
- <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
- <Card>
- <CardContent className="p-4">
- <div className="flex items-center gap-2 text-muted-foreground mb-1">
- <Layers className="w-3.5 h-3.5" />
- <p className="text-xs font-medium">Modules</p>
- </div>
- <p className="text-lg font-semibold mt-1">{program.modules}</p>
- </CardContent>
- </Card>
- <Card>
- <CardContent className="p-4">
- <div className="flex items-center gap-2 text-muted-foreground mb-1">
- <p className="text-xs font-medium">Duration</p>
- </div>
- <p className="text-lg font-semibold mt-1">{program.duration}</p>
- </CardContent>
- </Card>
- <Card>
- <CardContent className="p-4">
- <div className="flex items-center gap-2 text-muted-foreground mb-1">
- <p className="text-xs font-medium">Enrolled</p>
- </div>
- <p className="text-lg font-semibold mt-1">{program.students}</p>
- </CardContent>
- </Card>
- <Card>
- <CardContent className="p-4">
- <div className="flex items-center gap-2 text-muted-foreground mb-1">
- <Award className="w-3.5 h-3.5" />
- <p className="text-xs font-medium">Progress</p>
- </div>
- <p className="text-lg font-semibold mt-1">{program.progress}%</p>
- </CardContent>
- </Card>
- </div>
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Layers className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Modules</p>
+  <p className="text-lg font-semibold">{program.modules}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Clock className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Duration</p>
+  <p className="text-lg font-semibold">{program.duration}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Users className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Enrolled</p>
+  <p className="text-lg font-semibold">{program.students}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Award className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Progress</p>
+  <p className="text-lg font-semibold">{program.progress}%</p>
+  </div>
+  </div>
 
  <div className="mb-6">
  <div className="flex items-center justify-between mb-2">
@@ -186,7 +190,7 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
  <Progress value={program.progress} className="h-2" />
  </div>
 
-  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
   <Tabs value={activeTab} onValueChange={setActiveTab}>
     <TabsList className="w-full overflow-x-auto px-4">
   <TabsTrigger value="overview" className="gap-1.5">
@@ -281,24 +285,29 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
  </Button>
  </div>
  </div>
- ) : (
- <div className="text-center py-8 text-muted-foreground">
- <p className="text-sm">Module content coming soon</p>
- </div>
- )}
- </CardContent>
- </Card>
- </TabsContent>
-  <TabsContent value="reviews" className="p-3">
- <Card>
- <CardContent className="p-8 text-center text-muted-foreground">
- <p className="text-sm">No reviews yet</p>
- <p className="text-xs mt-1">Reviews will appear once students complete this program</p>
- <Button variant="outline" size="sm" className="mt-4 gap-1.5">
- Write a Review
- </Button>
- </CardContent>
- </Card>
+  ) : (
+  <EmptyState
+  icons={[<BookOpen key="c1" className="w-6 h-6" />, <FileText key="c2" className="w-6 h-6" />, <Layers key="c3" className="w-6 h-6" />]}
+  title="Module content coming soon"
+  description="Learning materials for this module are being prepared"
+  size="sm"
+  />
+  )}
+  </CardContent>
+  </Card>
+  </TabsContent>
+   <TabsContent value="reviews" className="p-3">
+  <Card>
+  <CardContent className="p-8">
+  <EmptyState
+  icons={[<Star key="r1" className="w-6 h-6" />, <FileText key="r2" className="w-6 h-6" />, <Award key="r3" className="w-6 h-6" />]}
+  title="No reviews yet"
+  description="Reviews will appear once students complete this program"
+  actions={[{ label: "Write a Review", onClick: () => {} }]}
+  size="sm"
+  />
+  </CardContent>
+  </Card>
  </TabsContent>
   </Tabs>
   </div>

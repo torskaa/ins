@@ -6,11 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { History, Archive } from "lucide-react"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { DollarSign, History, Archive, MoreHorizontal, Edit, Package, ShoppingCart } from "lucide-react"
 import { formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 
 type BOMLine = {
  id: string
@@ -153,17 +155,24 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
 
  return (
  <div className="animate-fade-in">
- <button
- onClick={() => router.push("/bom")}
- className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
- >
- Back to BOM
- </button>
+  <Breadcrumb className="mb-4">
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/bom")}>BOM</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{productName}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
 
- <div className="page-header flex items-start justify-between">
- <div>
- <div className="flex items-center gap-2">
- <h1>{productName}</h1>
+  <div className="page-header flex items-start justify-between">
+  <div>
+  <div className="flex items-center gap-2">
+  <h1>{productName}</h1>
  {activeVersion && (
  <Badge variant={(statusColors[activeVersion.status] || "secondary") as any}>
  v{activeVersion.version} · {activeVersion.status}
@@ -172,25 +181,30 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
  </div>
  <p className="text-muted-foreground font-mono text-sm">{productSku}</p>
  </div>
- <div className="flex items-center gap-2">
- <Button variant="secondary" size="sm" onClick={() => router.push(`/bom/${id}/edit`)} className="gap-1.5">
- Edit
- </Button>
- <Button variant="secondary" size="sm" onClick={loadImpact} loading={loadingImpact} className="gap-1.5">
- Impact
- </Button>
- {versions.length > 1 && (
- <select
- value={selectedVersion || versions[0]?.version}
- onChange={(e) => setSelectedVersion(Number(e.target.value))}
- className="text-xs border border-border rounded-lg px-2 py-1.5 bg-background"
- >
- {versions.map((v) => (
- <option key={v.version} value={v.version}>v{v.version} ({v.status})</option>
- ))}
- </select>
- )}
- </div>
+  <div className="flex items-center gap-2">
+  <Button size="sm" onClick={loadImpact} loading={loadingImpact} className="gap-1.5">
+  Impact
+  </Button>
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  <DropdownMenuItem onClick={() => router.push(`/bom/${id}/edit`)}><Edit className="w-4 h-4 mr-2" /> Edit</DropdownMenuItem>
+  </DropdownMenuContent>
+  </DropdownMenu>
+  {versions.length > 1 && (
+  <select
+  value={selectedVersion || versions[0]?.version}
+  onChange={(e) => setSelectedVersion(Number(e.target.value))}
+  className="text-xs border border-border rounded-lg px-2 py-1.5 bg-background"
+  >
+  {versions.map((v) => (
+  <option key={v.version} value={v.version}>v{v.version} ({v.status})</option>
+  ))}
+  </select>
+  )}
+</div>
  </div>
 
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -242,20 +256,23 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
  <CardDescription>What happens if you change materials in this BOM</CardDescription>
  </CardHeader>
  <CardContent className="space-y-4">
- <div className="grid grid-cols-3 gap-4">
- <div className="p-3 rounded-lg bg-surface/50">
- <p className="text-xs text-muted-foreground">Affected Products</p>
- <p className="text-2xl font-semibold font-mono">{impact.summary.uniqueProducts}</p>
- </div>
- <div className="p-3 rounded-lg bg-surface/50">
- <p className="text-xs text-muted-foreground">Pending Orders</p>
- <p className="text-2xl font-semibold font-mono">{impact.summary.pendingOrders}</p>
- </div>
- <div className="p-3 rounded-lg bg-surface/50">
- <p className="text-xs text-muted-foreground">Stock Value at Risk</p>
- <p className="text-2xl font-semibold font-mono">{new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB" }).format(impact.summary.totalStockValue)}</p>
- </div>
- </div>
+  <div className="grid grid-cols-3 gap-4">
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Package className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Affected Products</p>
+  <p className="text-2xl font-semibold font-mono">{impact.summary.uniqueProducts}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <ShoppingCart className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Pending Orders</p>
+  <p className="text-2xl font-semibold font-mono">{impact.summary.pendingOrders}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <DollarSign className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Stock Value at Risk</p>
+  <p className="text-2xl font-semibold font-mono">{new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB" }).format(impact.summary.totalStockValue)}</p>
+  </div>
+  </div>
  {impact.affectedProducts.length > 0 && (
  <div>
  <p className="text-sm font-medium mb-2">Products that use this component:</p>

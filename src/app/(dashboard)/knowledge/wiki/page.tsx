@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Search } from "lucide-react"
+import { Search, FileText, BookOpen, Layers } from "lucide-react"
 import { SkeletonText } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 
 type Article = {
  id: string
@@ -112,11 +113,14 @@ export default function WikiPage() {
  </CardContent>
  </Card>
  ))}
- {filtered.length === 0 && (
- <div className="text-center py-12 text-muted-foreground">
- <p className="text-sm">No articles found</p>
- </div>
- )}
+  {filtered.length === 0 && (
+  <EmptyState
+  icons={[<FileText key="wk1" className="w-6 h-6" />, <BookOpen key="wk2" className="w-6 h-6" />, <Layers key="wk3" className="w-6 h-6" />]}
+  title="No articles found"
+  description="No wiki articles match your search criteria"
+  size="sm"
+  />
+  )}
  </div>
  )}
  </div>

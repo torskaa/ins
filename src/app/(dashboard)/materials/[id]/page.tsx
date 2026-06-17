@@ -9,11 +9,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
-import { AlertTriangle, Trash2, XCircle } from "lucide-react"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { AlertTriangle, DollarSign, Package, Trash2, TrendingUp, XCircle, ArrowLeftRight, ClipboardList, MoreHorizontal, Pencil } from "lucide-react"
 import { formatCurrency, formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 
 export default function MaterialDetailPage({ params }: { params: Promise<{ id: string }> }) {
  const [material, setMaterial] = useState<any>(null)
@@ -135,28 +138,35 @@ export default function MaterialDetailPage({ params }: { params: Promise<{ id: s
 
  return (
  <div className="animate-fade-in">
- <button
- onClick={() => router.push("/materials")}
- className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors"
- >
- Back to Materials
- </button>
+  <Breadcrumb className="mb-4">
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/materials")}>Materials</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{material.name}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
 
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
- <div className="lg:col-span-2 space-y-6">
- <Card>
- <CardHeader>
- <div className="flex items-start justify-between">
- <div>
- <div className="flex items-center gap-2 mb-1">
- {editing ? (
- <Input
- value={form.name}
- onChange={(e) => setForm({ ...form, name: e.target.value })}
- className="text-xl font-semibold h-9 w-64"
- />
- ) : (
- <CardTitle className="text-xl">{material.name}</CardTitle>
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div className="lg:col-span-2 space-y-6">
+  <Card>
+  <CardHeader>
+  <div className="flex items-start justify-between">
+  <div>
+  <div className="flex items-center gap-2 mb-1">
+  {editing ? (
+  <Input
+  value={form.name}
+  onChange={(e) => setForm({ ...form, name: e.target.value })}
+  className="text-xl font-semibold h-9 w-64"
+  />
+  ) : (
+  <CardTitle className="text-xl">{material.name}</CardTitle>
  )}
  <Badge variant={material.status === "active" ? "success" : "secondary"}>
  {material.status}
@@ -178,48 +188,57 @@ export default function MaterialDetailPage({ params }: { params: Promise<{ id: s
  <CardDescription>SKU: {material.sku}</CardDescription>
  )}
  </div>
- <div className="flex items-center gap-2">
- {editing ? (
- <>
- <Button size="sm" onClick={handleSave}>Save</Button>
- <Button variant="secondary" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
- </>
- ) : (
- <>
- <Button variant="secondary" size="sm" onClick={() => setEditing(true)} className="gap-1.5">
- Edit
- </Button>
- <Button variant="secondary" size="sm" onClick={() => setShowAdjust(true)}>
- Adjust Stock
- </Button>
- <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)} className="gap-1.5">
- </Button>
- </>
- )}
- </div>
+  <div className="flex items-center gap-2">
+  {editing ? (
+  <>
+  <Button size="sm" onClick={handleSave}>Save</Button>
+  <Button variant="outline" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+  </>
+  ) : (
+  <>
+  <Button size="sm" onClick={() => setShowAdjust(true)} className="gap-1.5">
+  Adjust Stock
+  </Button>
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  <DropdownMenuItem onClick={() => setEditing(true)}><Pencil className="w-4 h-4 mr-2" /> Edit</DropdownMenuItem>
+  <DropdownMenuSeparator />
+  <DropdownMenuItem onClick={() => setShowDelete(true)} className="text-destructive"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
+  </DropdownMenuContent>
+  </DropdownMenu>
+  </>
+  )}
+  </div>
  </div>
  </CardHeader>
- <CardContent>
- <div className="grid grid-cols-4 gap-6">
- <div>
- <p className="text-xs text-muted-foreground mb-1">Current Stock</p>
- <p className={`text-2xl font-semibold font-mono ${isLowStock ? "text-destructive" : ""}`}>
- {material.stock}
- </p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground mb-1">Unit Price</p>
- <p className="text-2xl font-semibold font-mono">{formatCurrency(material.unitPrice)}</p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground mb-1">Cost Price</p>
- <p className="text-2xl font-semibold font-mono">{formatCurrency(material.costPrice)}</p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground mb-1">Margin</p>
- <p className="text-2xl font-semibold font-mono">{profitMargin}%</p>
- </div>
- </div>
+  <CardContent>
+  <div className="grid grid-cols-4 gap-4">
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Package className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Current Stock</p>
+  <p className={`text-2xl font-semibold font-mono ${isLowStock ? "text-destructive" : ""}`}>
+  {material.stock}
+  </p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <DollarSign className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Unit Price</p>
+  <p className="text-2xl font-semibold font-mono">{formatCurrency(material.unitPrice)}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <DollarSign className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Cost Price</p>
+  <p className="text-2xl font-semibold font-mono">{formatCurrency(material.costPrice)}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <TrendingUp className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Margin</p>
+  <p className="text-2xl font-semibold font-mono">{profitMargin}%</p>
+  </div>
+  </div>
  {editing ? (
  <div className="mt-4 pt-4 border-t border-border space-y-2">
  <Label htmlFor="desc-edit">Description</Label>
@@ -261,9 +280,9 @@ export default function MaterialDetailPage({ params }: { params: Promise<{ id: s
  </div>
  ))}
  </div>
- ) : (
- <p className="text-sm text-muted-foreground text-center py-8">No movements recorded</p>
- )}
+  ) : (
+  <EmptyState icons={[<Package key="m1" className="w-6 h-6" />, <ArrowLeftRight key="m2" className="w-6 h-6" />, <ClipboardList key="m3" className="w-6 h-6" />]} title="No movements recorded" description="Stock movements for this material will appear here" size="sm" />
+  )}
  </CardContent>
  </Card>
 

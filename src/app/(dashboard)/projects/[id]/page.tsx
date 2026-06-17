@@ -10,10 +10,11 @@ import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
-import { FolderKanban, Trash2, XCircle } from "lucide-react"
+import { CheckCircle2, Clock, DollarSign, FolderKanban, ListTodo, Trash2, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { formatDate, formatCurrency } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 
 type Project = { id: string; name: string; description: string; status: string; priority: string; startDate: string; dueDate: string; completedDate: string; budget: number; actualCost: number; tasks: Task[] }
 type Task = { id: string; title: string; description: string; status: string; priority: string; assigneeId: string; dueDate: string; estimatedHours: number; actualHours: number }
@@ -89,12 +90,31 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
  </div>
  </div>
 
- <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
- <Card><CardContent className="p-4 text-center"><div className="flex items-center justify-center gap-2"><p className="text-2xl font-semibold">{completedTasks}/{totalTasks}</p></div><p className="text-xs text-muted-foreground">Tasks Completed</p></CardContent></Card>
- <Card><CardContent className="p-4 text-center"><div className="flex items-center justify-center gap-2"><p className="text-2xl font-semibold">{project.tasks.reduce((s, t) => s + t.estimatedHours, 0)}h</p></div><p className="text-xs text-muted-foreground">Estimated Hours</p></CardContent></Card>
- <Card><CardContent className="p-4 text-center"><p className="text-2xl font-semibold">{formatCurrency(project.budget)}</p><p className="text-xs text-muted-foreground">Budget</p></CardContent></Card>
- <Card><CardContent className="p-4 text-center"><div className="w-full bg-surface rounded-full h-2 mt-1 mb-1"><div className="bg-primary h-2 rounded-full transition-all" style={{ width: `${progress}%` }} /></div><p className="text-xs text-muted-foreground">{progress}% Complete</p></CardContent></Card>
- </div>
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <CheckCircle2 className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Tasks Completed</p>
+  <p className="text-2xl font-semibold">{completedTasks}/{totalTasks}</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <Clock className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Estimated Hours</p>
+  <p className="text-2xl font-semibold">{project.tasks.reduce((s, t) => s + t.estimatedHours, 0)}h</p>
+  </div>
+  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+  <DollarSign className="w-5 h-5 text-muted-foreground" />
+  <p className="text-[11px] text-muted-foreground font-medium">Budget</p>
+  <p className="text-2xl font-semibold">{formatCurrency(project.budget)}</p>
+  </div>
+    <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
+    <ListTodo className="w-5 h-5 text-muted-foreground" />
+    <p className="text-[11px] text-muted-foreground font-medium">Progress</p>
+    <div className="w-full bg-muted rounded-full h-2">
+    <div className="bg-primary h-2 rounded-full transition-all" style={{ width: `${progress}%` }} />
+    </div>
+    <p className="text-xs text-muted-foreground">{progress}% Complete</p>
+   </div>
+   </div>
 
  {project.description && <Card className="mb-6"><CardContent className="p-4"><p className="text-sm">{project.description}</p></CardContent></Card>}
 
@@ -129,7 +149,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
  </div>
  </div>
  ))}
- {totalTasks === 0 && <p className="text-center text-sm text-muted-foreground py-8">No tasks yet. Click "Add Task" to get started.</p>}
+  {totalTasks === 0 && <EmptyState icons={[<ListTodo key="j1" className="w-6 h-6" />, <CheckCircle2 key="j2" className="w-6 h-6" />, <FolderKanban key="j3" className="w-6 h-6" />]} title="No tasks yet" description='Click "Add Task" to get started' size="sm" />}
  </CardContent>
  </Card>
  </div>

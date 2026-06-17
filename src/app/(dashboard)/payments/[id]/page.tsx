@@ -9,11 +9,14 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { ArrowLeft, Calendar, CreditCard, DollarSign, Edit, FileText, Hash, Landmark, Receipt, ShoppingCart, Trash2, XCircle } from "lucide-react"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { ArrowLeft, Calendar, CreditCard, DollarSign, Edit, FileText, Hash, Landmark, MoreHorizontal, Receipt, ShoppingCart, Trash2, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { EmptyState } from "@/components/ui/empty-state"
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 
 type Invoice = {
  id: string
@@ -142,23 +145,30 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
 
  return (
  <div className="animate-fade-in space-y-6">
- <button
- onClick={() => router.push("/payments")}
- className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
- >
- Back to Payments
- </button>
+  <Breadcrumb className="mb-4">
+  <BreadcrumbList>
+  <BreadcrumbItem>
+  <BreadcrumbLink asChild>
+  <button onClick={() => router.push("/payments")}>Payments</button>
+  </BreadcrumbLink>
+  </BreadcrumbItem>
+  <BreadcrumbSeparator />
+  <BreadcrumbItem>
+  <BreadcrumbPage>{payment.reference || "Payment"}</BreadcrumbPage>
+  </BreadcrumbItem>
+  </BreadcrumbList>
+  </Breadcrumb>
 
- <div className="flex items-start justify-between">
- <div className="flex items-start gap-4">
- <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
- </div>
- <div>
- <div className="flex items-center gap-3 mb-1">
- {editing ? (
- <Input value={editReference} onChange={(e) => setEditReference(e.target.value)} className="text-2xl font-semibold h-auto py-1 w-64" />
- ) : (
- <h1 className="text-2xl font-semibold">{payment.reference || "Payment"}</h1>
+  <div className="flex items-start justify-between">
+  <div className="flex items-start gap-4">
+  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+  </div>
+  <div>
+  <div className="flex items-center gap-3 mb-1">
+  {editing ? (
+  <Input value={editReference} onChange={(e) => setEditReference(e.target.value)} className="text-2xl font-semibold h-auto py-1 w-64" />
+  ) : (
+  <h1 className="text-2xl font-semibold">{payment.reference || "Payment"}</h1>
  )}
  <Badge variant="outline" className="text-xs capitalize">
  {payment.method.replace(/_/g, " ")}
@@ -169,23 +179,28 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
  </p>
  </div>
  </div>
- <div className="flex items-center gap-2">
- {editing ? (
- <>
- <Button variant="secondary" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
- <Button size="sm" onClick={handleSave}>Save</Button>
- </>
- ) : (
- <>
- <Button variant="secondary" size="sm" className="gap-1.5" onClick={() => { setEditing(true); setEditAmount(String(payment.amount)); setEditMethod(payment.method); setEditReference(payment.reference || ""); setEditDate(payment.date.split("T")[0]); setEditNotes(payment.notes || "") }}>
- Edit
- </Button>
- <Button variant="secondary" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={() => setDeleteOpen(true)}>
- Delete
- </Button>
- </>
- )}
- </div>
+<div className="flex items-center gap-2">
+  {editing ? (
+  <>
+  <Button variant="outline" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+  <Button size="sm" onClick={handleSave}>Save</Button>
+  </>
+  ) : (
+  <>
+  <Button size="sm" className="gap-1.5" onClick={() => { setEditing(true); setEditAmount(String(payment.amount)); setEditMethod(payment.method); setEditReference(payment.reference || ""); setEditDate(payment.date.split("T")[0]); setEditNotes(payment.notes || "") }}>
+  Edit
+  </Button>
+  <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+  <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
+  </DropdownMenuContent>
+  </DropdownMenu>
+  </>
+  )}
+</div>
  </div>
 
  <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
@@ -250,7 +265,7 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
  </Card>
  )}
 
-  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
   <Tabs value={activeTab} onValueChange={setActiveTab}>
     <TabsList className="w-full overflow-x-auto px-4">
       <TabsTrigger value="info" className="gap-1.5">
@@ -320,10 +335,12 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
  </Button>
  </div>
  ) : (
- <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
- <Receipt className="w-8 h-8 mb-2" />
- <p className="text-sm">No linked invoice</p>
- </div>
+  <EmptyState
+  icons={[<Receipt key="pi1" className="w-6 h-6" />, <FileText key="pi2" className="w-6 h-6" />, <DollarSign key="pi3" className="w-6 h-6" />]}
+  title="No linked invoice"
+  description="This payment is not linked to any invoice"
+  size="sm"
+  />
  )}
  </TabsContent>
 
@@ -351,9 +368,12 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
  </Button>
  </div>
  ) : (
- <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
- <p className="text-sm">No linked order</p>
- </div>
+  <EmptyState
+  icons={[<ShoppingCart key="po1" className="w-6 h-6" />, <FileText key="po2" className="w-6 h-6" />, <DollarSign key="po3" className="w-6 h-6" />]}
+  title="No linked order"
+  description="This payment is not linked to any order"
+  size="sm"
+  />
  )}
  </TabsContent>
   </Tabs>

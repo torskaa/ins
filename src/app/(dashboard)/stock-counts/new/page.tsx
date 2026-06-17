@@ -10,7 +10,8 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { ClipboardList, Package, FileText, Calendar, Warehouse, Plus, Trash2, XCircle } from "lucide-react"
+import { ClipboardList, Package, FileText, Calendar, Warehouse, Plus, Trash2, XCircle, Barcode } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
   <div className={cn("space-y-1.5", className)}>
@@ -159,9 +160,12 @@ export default function NewStockCountPage() {
               </CardHeader>
               <CardContent className="p-4 space-y-3">
                 {items.length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-                    <p className="text-sm">No items yet. Add products to count.</p>
-                  </div>
+                  <EmptyState
+                    icons={[<Package key="s1" className="w-6 h-6" />, <Barcode key="s2" className="w-6 h-6" />, <ClipboardList key="s3" className="w-6 h-6" />]}
+                    title="No items yet"
+                    description="Add products to include in this stock count"
+                    size="sm"
+                  />
                 )}
                 {items.map((item, idx) => (
                   <div key={idx} className="flex items-end gap-3 p-3 rounded-lg border border-border bg-surface/50">
