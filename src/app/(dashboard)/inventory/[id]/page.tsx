@@ -461,23 +461,26 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
  <Tabs value={tab} onValueChange={setTab}>
  <TabsList className="w-full overflow-x-auto">
- <TabsTrigger value="info">Info</TabsTrigger>
+ <TabsTrigger value="info"><Package className="w-4 h-4" />Info</TabsTrigger>
  <TabsTrigger value="bom">
  <Layers className="w-3.5 h-3.5 mr-1.5" />
  BOM
  </TabsTrigger>
  <TabsTrigger value="orders">
- Orders
+ <ShoppingCart className="w-4 h-4" />
+  Orders
  </TabsTrigger>
  <TabsTrigger value="invoices">
- Invoices
+ <FileText className="w-4 h-4" />
+  Invoices
  </TabsTrigger>
  <TabsTrigger value="inventory">
  <Boxes className="w-3.5 h-3.5 mr-1.5" />
  Inventory
  </TabsTrigger>
  <TabsTrigger value="pricing">
- Pricing
+ <DollarSign className="w-4 h-4" />
+  Pricing
  </TabsTrigger>
  </TabsList>
 

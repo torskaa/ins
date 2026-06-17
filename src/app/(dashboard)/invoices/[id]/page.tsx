@@ -279,10 +279,10 @@ export default function InvoiceDetailPage() {
 
  <Tabs value={tab} onValueChange={setTab}>
  <TabsList>
- <TabsTrigger value="items">Items ({invoice.items.length})</TabsTrigger>
- <TabsTrigger value="payments">Payments ({invoice.payments.length})</TabsTrigger>
- {invoice.order && <TabsTrigger value="order">Order</TabsTrigger>}
- <TabsTrigger value="activity">Activity</TabsTrigger>
+  <TabsTrigger value="items"><Package className="w-4 h-4" />Items ({invoice.items.length})</TabsTrigger>
+  <TabsTrigger value="payments"><Banknote className="w-4 h-4" />Payments ({invoice.payments.length})</TabsTrigger>
+  {invoice.order && <TabsTrigger value="order"><FileText className="w-4 h-4" />Order</TabsTrigger>}
+  <TabsTrigger value="activity"><Clock className="w-4 h-4" />Activity</TabsTrigger>
  </TabsList>
 
  <TabsContent value="items">
