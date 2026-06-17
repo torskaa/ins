@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Download, RefreshCw, FileText, FileSpreadsheet, Layout, SlidersHorizontal, ChevronDown } from "lucide-react"
+import { FileSpreadsheet, Layout } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
  DropdownMenu,

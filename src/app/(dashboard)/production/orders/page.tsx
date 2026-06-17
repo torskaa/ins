@@ -7,7 +7,7 @@ import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Plus, Factory, Package, Calendar } from "lucide-react"
+import { Calendar } from "lucide-react"
 import { format } from "date-fns"
 
 type ProdOrder = {
@@ -70,8 +70,7 @@ export default function ProductionOrdersPage() {
  <div className="animate-fade-in">
  <div className="page-header flex items-center justify-between">
  <div><h1>Production Orders</h1><p>Plan and track manufacturing orders</p></div>
- <Button onClick={handleNew} className="gap-1.5">
- <Plus className="w-4 h-4" /> New Order <ShortcutBadge shortcut="⌘C" />
+ <Button onClick={handleNew} className="gap-1.5">New Order <ShortcutBadge shortcut="⌘C" />
  </Button>
  </div>
  <div className="flex items-center gap-2 mb-4 flex-wrap">

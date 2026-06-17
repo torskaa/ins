@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { ArrowLeft, Wrench} from "lucide-react"
 import { SkeletonForm } from "@/components/ui/skeleton"
 
 export default function EditWorkCenterPage({ params }: { params: Promise<{ id: string }> }) {

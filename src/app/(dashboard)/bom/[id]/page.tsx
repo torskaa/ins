@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, Package, GitBranch, Layers3, CheckCircle2, Clock, AlertTriangle, BarChart3, FileText, History, Send, Archive, RotateCcw, Edit3 } from "lucide-react"
+import { History, Archive } from "lucide-react"
 import { formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"

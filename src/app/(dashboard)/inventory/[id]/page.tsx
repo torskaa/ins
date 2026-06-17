@@ -12,12 +12,7 @@ import { Select } from "@/components/ui/select"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
-import {
- ArrowLeft, Pencil, Trash2, ExternalLink, AlertTriangle,
- Package, DollarSign, Building2, Warehouse, Tags, MapPin,
- Ruler, Weight, Barcode, Layers, ShoppingCart, FileText, Boxes,
- Hash, CheckCircle2, XCircle, X, Clock, RefreshCw, Minus, Plus
-} from "lucide-react"
+import { ArrowLeft, Pencil, Trash2, ExternalLink, AlertTriangle, Package, DollarSign, Building2, Warehouse, Tags, MapPin, Ruler, Weight, Barcode, Layers, ShoppingCart, FileText, Boxes, Hash, CheckCircle2, XCircle, X, Clock, RefreshCw, Minus, Plus } from "lucide-react"
 import { formatCurrency, formatNumber, formatDate, formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -880,7 +875,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
  </DialogHeader>
  <DialogFooter>
  <Button variant="secondary" onClick={() => setShowDelete(false)}>Cancel</Button>
- <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
+ <Button variant="destructive" onClick={handleDelete} loading={deleting}>Delete</Button>
  </DialogFooter>
  </DialogContent>
  </Dialog>

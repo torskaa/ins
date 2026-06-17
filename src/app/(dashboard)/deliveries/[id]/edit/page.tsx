@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { ArrowLeft, Truck, MapPin, Calendar, Hash, Building2, Warehouse, Save } from "lucide-react"
+import { Calendar, Building2, Warehouse, Save } from "lucide-react"
 import { SkeletonForm } from "@/components/ui/skeleton"
 
 const STATUS_OPTIONS = [
@@ -182,7 +182,7 @@ export default function EditDeliveryPage({ params }: { params: Promise<{ id: str
 
  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
  <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
- <Button type="submit" loading={saving}><Save className="w-4 h-4" /> Save Changes</Button>
+ <Button type="submit" loading={saving}>Save Changes</Button>
  </div>
  </form>
  </div>

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Search, Play, GraduationCap, FileText, BarChart3, Clock, Users, Plus } from "lucide-react"
+import { Search } from "lucide-react"
 import { SkeletonCard } from "@/components/ui/skeleton"
 
 type Program = {
@@ -49,8 +49,7 @@ export default function TrainingPage() {
  <h1>Training Hub</h1>
  <p>Exercises, video tutorials, and learning paths</p>
  </div>
- <Button className="gap-1.5" onClick={handleNew}>
- <Plus className="w-4 h-4" /> New Program <ShortcutBadge shortcut="⌘C" />
+ <Button className="gap-1.5" onClick={handleNew}>New Program <ShortcutBadge shortcut="⌘C" />
  </Button>
  </div>
 

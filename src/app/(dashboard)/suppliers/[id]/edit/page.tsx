@@ -10,7 +10,7 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { User, Mail, Phone, MapPin, Globe, Building2, FileText, DollarSign, CreditCard, Calendar, Award, Tag, ArrowLeft, Upload, Search, Save } from "lucide-react"
+import { User, Mail, Phone, Globe, Building2, Calendar, Upload, Search, Save } from "lucide-react"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
 
@@ -331,7 +331,7 @@ export default function EditSupplierPage({ params }: { params: Promise<{ id: str
  </p>
  <div className="flex items-center gap-3">
  <Button type="button" variant="secondary" onClick={() => router.back()}>Cancel</Button>
- <Button type="submit" loading={saving}><Save className="w-4 h-4" /> Save Changes</Button>
+ <Button type="submit" loading={saving}>Save Changes</Button>
  </div>
  </div>
  </form>

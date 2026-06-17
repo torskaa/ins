@@ -22,20 +22,7 @@ import {
  Cell,
  Legend,
 } from "recharts"
-import {
- DollarSign,
- Package,
- ShoppingCart,
- Users,
- AlertTriangle,
- Download,
- TrendingUp,
- BarChart3,
- Calendar,
- Tag,
- Globe,
- Truck,
-} from "lucide-react"
+import { DollarSign, Package, ShoppingCart, Users, AlertTriangle, Download, TrendingUp, BarChart3, Calendar, Tag, Globe, Truck } from "lucide-react"
 
 type DashboardData = {
  totalRevenue: number

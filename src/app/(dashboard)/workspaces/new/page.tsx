@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Building2, Plus } from "lucide-react"
+import { Building2 } from "lucide-react"
 import { toast } from "sonner"
 
 export default function NewWorkspacePage() {
@@ -54,7 +54,7 @@ export default function NewWorkspacePage() {
  </Card>
  <div className="flex gap-3">
  <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
- <Button type="submit" loading={loading} className="gap-1.5"><Plus className="w-4 h-4" /> Create Workspace
+ <Button type="submit" loading={loading} className="gap-1.5">Create Workspace
 </Button>
  </div>
  </form>

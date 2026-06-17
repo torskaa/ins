@@ -10,17 +10,7 @@ import {
  CommandItem,
  CommandList,
 } from "@/components/ui/command"
-import {
- Package,
- ShoppingCart,
- FileText,
- Users,
- FileSpreadsheet,
- Truck,
- Briefcase,
- Building2,
- Plus,
-} from "lucide-react"
+import { Package, ShoppingCart, FileText, Users, FileSpreadsheet, Truck, Briefcase, Building2, Plus } from "lucide-react"
 
 const createActions = [
  { id: "product", icon: Package, label: "New Product", description: "Add a product to inventory", shortcut: "C then P" },

@@ -11,23 +11,7 @@ import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 
 import { formatCurrency, formatDate, cn } from "@/lib/utils"
-import {
- ArrowLeft,
- Download,
- Mail,
- Printer,
- MoreHorizontal,
- Banknote,
- DollarSign,
- AlertCircle,
- Clock,
- FileText,
- Package,
- Send,
- XCircle,
- CheckCircle2,
- Edit,
-} from "lucide-react"
+import { ArrowLeft, Download, Mail, Printer, MoreHorizontal, Banknote, DollarSign, AlertCircle, Clock, FileText, Package, Send, XCircle, CheckCircle2, Edit } from "lucide-react"
 import { SkeletonDetail } from "@/components/ui/skeleton"
 
 type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "cancelled"

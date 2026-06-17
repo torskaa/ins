@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/sheet"
 import { WIDGET_REGISTRY, type WidgetConfig } from "./widget-registry"
 import { useWidgetStore } from "./widget-store"
-import { Plus, X, LayoutDashboard, Search } from "lucide-react"
+import { LayoutDashboard, Search } from "lucide-react"
 
 interface WidgetSidebarProps {
  open: boolean

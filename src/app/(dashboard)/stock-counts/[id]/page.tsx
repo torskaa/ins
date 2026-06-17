@@ -7,9 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
- ArrowLeft, ClipboardList, Calculator, Trash2,
- AlertTriangle, FileText, Barcode, Sparkles, Scan, CheckCircle, Edit} from "lucide-react"
+import { ArrowLeft, ClipboardList, Calculator, Trash2, AlertTriangle, FileText, Barcode, Sparkles, Scan, CheckCircle, Edit } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { format } from "date-fns"
@@ -354,7 +352,7 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
  <Card className={discrepancies.length > 0 ? "border-red-200/50" : ""}>
  <CardHeader>
  <CardTitle className={`text-base flex items-center gap-2 ${discrepancies.length > 0 ? "text-red-700" : "text-emerald-700"}`}>
-  {discrepancies.length > 0 ? <AlertTriangle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+ {discrepancies.length > 0 ? <AlertTriangle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
  Discrepancy Report ({discrepancies.length})
  </CardTitle>
  </CardHeader>

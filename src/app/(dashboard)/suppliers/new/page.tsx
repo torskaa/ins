@@ -12,11 +12,7 @@ import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import {
- Truck, Mail, Phone, User, MapPin, FileText, Globe,
- Upload, X, Building2, BadgePercent, CalendarDays,
- Tag, MessageSquare, ChevronRight,
-} from "lucide-react"
+import { Truck, Mail, Phone, User, MapPin, FileText, Globe, Upload, X, Building2, BadgePercent, CalendarDays, Tag, MessageSquare, ChevronRight } from "lucide-react"
 
 const STATUS_OPTIONS = [
  { value: "active", label: "Active" },
@@ -219,7 +215,7 @@ export default function NewSupplierPage() {
  <CardContent className="space-y-3 pt-0">
  <p className="text-xs text-muted-foreground">Upload contracts, quotations, or business registration documents.</p>
  <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.png,.doc,.docx,.xls,.xlsx" onChange={handleFileUpload} className="hidden" />
- <Button type="button" variant="outline" size="sm" onClick={handleUpload} className="gap-1.5 h-8 text-xs"><Upload className="w-4 h-4" /> Upload Document <ShortcutBadge shortcut="⌘U" /></Button>
+ <Button type="button" variant="outline" size="sm" onClick={handleUpload} className="gap-1.5 h-8 text-xs">Upload Document <ShortcutBadge shortcut="⌘U" /></Button>
  {documents.length > 0 && (
  <div className="space-y-1.5">
  {documents.map((doc) => (

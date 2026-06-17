@@ -9,10 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import {
- ArrowLeft, ClipboardList, Warehouse, Calendar,
- Hash, Plus, Trash2, Package,
-} from "lucide-react"
+import { ArrowLeft, ClipboardList, Warehouse, Calendar, Hash, Plus, Trash2, Package } from "lucide-react"
 
 const STATUS_OPTIONS = [
  { value: "draft", label: "Draft" },
@@ -145,8 +142,7 @@ export default function NewStockCountPage() {
  <CardHeader className="pb-3">
  <div className="flex items-center justify-between">
  <h3 className="text-sm font-semibold">Items to Count</h3>
- <Button type="button" variant="outline" size="sm" onClick={addItem} className="gap-1.5">
- <Plus className="w-4 h-4" /> Add Product
+ <Button type="button" variant="outline" size="sm" onClick={addItem} className="gap-1.5">Add Product
 </Button>
  </div>
  </CardHeader>

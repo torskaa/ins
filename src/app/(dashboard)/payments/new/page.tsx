@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
-import { ArrowLeft, Banknote, Plus } from "lucide-react"
+import { Banknote } from "lucide-react"
 import { toast } from "sonner"
 
 export default function NewPaymentPage() {
@@ -104,7 +104,7 @@ export default function NewPaymentPage() {
  </Card>
  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
  <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
- <Button type="submit" loading={loading}><Plus className="w-4 h-4" /> Record Payment</Button>
+ <Button type="submit" loading={loading}>Record Payment</Button>
  </div>
  </form>
  </div>

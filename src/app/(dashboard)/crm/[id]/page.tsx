@@ -7,11 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import {
- ArrowLeft, Mail, Phone, Building2, Edit, Trash2,
- ShoppingCart, FileText, FileSignature, DollarSign,
- Receipt, CreditCard, Hash, FileCode, Calendar, AlertCircle,
-} from "lucide-react"
+import { ArrowLeft, Mail, Phone, Building2, Edit, Trash2, ShoppingCart, FileText, FileSignature, DollarSign, Receipt, CreditCard, Hash, FileCode, Calendar, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -266,7 +262,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
  <Button variant="secondary" size="sm" className="gap-1.5" onClick={() => router.push(`/crm/${id}/edit`)}>
  Edit
  </Button>
- <Button variant="secondary" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
+ <Button variant="secondary" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={handleDelete} loading={deleting}>Delete</Button>
  <Button size="sm" className="gap-1.5" onClick={() => router.push(`/orders/new?customerId=${customer.id}`)}>
  New Order
  </Button>

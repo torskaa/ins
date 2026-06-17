@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { DataTable, statusBadge, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
-import { ChevronLeft, ChevronRight, ClipboardList, Search, Activity } from "lucide-react"
+import { Search, Activity } from "lucide-react"
 import { formatDateTime } from "@/lib/utils"
 
 type AuditEntry = {

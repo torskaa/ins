@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Plus, Users, Building2, Mail, Phone, Search } from "lucide-react"
+import { Users, Building2, Mail, Phone, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -117,8 +117,7 @@ export default function CRMPage() {
  "separator",
  { label: "Refresh", icon: ActionIcons.Refresh },
  ]} />
- <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
- <Plus className="w-4 h-4" /> Add Customer <ShortcutBadge shortcut="⌘C" />
+ <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>Add Customer <ShortcutBadge shortcut="⌘C" />
  </Button>
  </div>
  </div>
@@ -129,7 +128,7 @@ export default function CRMPage() {
  onRowClick={(item) => router.push(`/crm/${item.id}`)}
  loading={loading}
  empty={{
-  icons: [<Users className="w-5 h-5" />, <Building2 className="w-5 h-5" />, <Mail className="w-5 h-5" />],
+ icons: [<Users className="w-5 h-5" />, <Building2 className="w-5 h-5" />, <Mail className="w-5 h-5" />],
  title: "No customers yet",
  description: "Add your first customer to start tracking relationships.",
  action: { label: "Add Customer", onClick: () => router.push("/crm/new") },

@@ -7,7 +7,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Select } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { BarChart3, TrendingUp, TrendingDown, DollarSign } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 
 export default function FinanceReportsPage() {

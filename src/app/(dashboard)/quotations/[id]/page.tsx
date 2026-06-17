@@ -8,10 +8,7 @@ import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { toast } from "sonner"
-import {
- ArrowLeft, Package, ShoppingCart, Activity, Edit, Send, CheckCircle2,
- XCircle, Clock, RefreshCw, FileSignature, Loader2,
-} from "lucide-react"
+import { ArrowLeft, Package, ShoppingCart, Activity, Edit, Send, CheckCircle2, XCircle, Clock, RefreshCw, FileSignature, Loader2 } from "lucide-react"
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils"
 import { SkeletonDetail } from "@/components/ui/skeleton"
 

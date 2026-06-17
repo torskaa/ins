@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { Building2, ChevronDown, Plus, Check, LayoutGrid } from "lucide-react"
+import { Building2, ChevronDown } from "lucide-react"
 
 type Workspace = {
  id: string
@@ -94,7 +94,7 @@ export default function WorkspaceSwitcher({ collapsed }: { collapsed?: boolean }
  <p className="truncate text-sm">{w.name}</p>
  <p className="truncate text-xs text-muted-foreground capitalize">{w.role}</p>
  </div>
-  {w.id === active?.id && null}
+ {w.id === active?.id && null}
  </motion.button>
  ))}
  <div className="border-t border-border mt-1 pt-1 pb-1">

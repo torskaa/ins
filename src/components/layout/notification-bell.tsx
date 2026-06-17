@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Bell, CheckCheck, Settings, MessageSquare, UserPlus, Mail, FileText, AtSign, Heart } from "lucide-react"
+import { Bell, CheckCheck, MessageSquare, UserPlus, Mail, FileText, AtSign, Heart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"

@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { formatCurrency } from "@/lib/utils"
 
@@ -135,7 +134,7 @@ function NewOrderForm() {
  <CardHeader>
  <div className="flex items-center justify-between">
  <CardTitle>Order Items</CardTitle>
- <Button type="button" variant="secondary" size="sm" onClick={addItem}><Plus className="w-4 h-4" /> Add Item</Button>
+ <Button type="button" variant="secondary" size="sm" onClick={addItem}>Add Item</Button>
  </div>
  </CardHeader>
  <CardContent>

@@ -10,10 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import {
- ArrowLeft, Truck, MapPin, Phone, Mail, User, Edit, Trash2,
- Hash, Calendar, Package, ClipboardList,
-} from "lucide-react"
+import { ArrowLeft, Truck, MapPin, Phone, Mail, User, Edit, Trash2, Hash, Calendar, Package, ClipboardList } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { SkeletonDetail } from "@/components/ui/skeleton"

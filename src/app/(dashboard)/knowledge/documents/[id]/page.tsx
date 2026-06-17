@@ -6,10 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import {
- ArrowLeft, FileText, FileSpreadsheet, FileImage, FileArchive, File as FileIcon,
- Download, Trash2, Calendar, User, Tag, Link as LinkIcon, Clock, HardDrive,
-} from "lucide-react"
+import { ArrowLeft, FileText, FileSpreadsheet, FileImage, FileArchive, File as FileIcon, Download, Trash2, Calendar, User, Tag, Link as LinkIcon, Clock, HardDrive } from "lucide-react"
 import { formatDate, formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
@@ -112,7 +109,7 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
  <div className="flex items-center gap-2">
  {current.filePath ? (
  <a href={current.filePath} download>
- <Button variant="outline" className="gap-1.5"><Download className="w-4 h-4" /> Download</Button>
+ <Button variant="outline" className="gap-1.5">Download</Button>
  </a>
  ) : (
  <Button variant="outline" className="gap-1.5" disabled>

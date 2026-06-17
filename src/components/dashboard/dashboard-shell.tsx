@@ -14,7 +14,7 @@ import { PaymentStatusWidget } from "./widget/payment-status"
 import { CustomerAcquisitionWidget } from "./widget/customer-acquisition"
 import { RichMenu } from "./rich-menu"
 import { WidgetSidebar } from "./widget-sidebar"
-import { LayoutDashboard, RotateCcw, X } from "lucide-react"
+import { LayoutDashboard } from "lucide-react"
 
 type WidgetComponent = React.FC<{ compact?: boolean }>
 

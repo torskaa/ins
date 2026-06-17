@@ -9,10 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import {
- ArrowLeft, Building2, User, MapPin, Phone, Mail,
- FileText, Hash, Calendar, MessageSquare,
-} from "lucide-react"
+import { ArrowLeft, Building2, User, MapPin, Phone, Mail, FileText, Hash, Calendar, MessageSquare } from "lucide-react"
 
 const STATUS_OPTIONS = [
  { value: "active", label: "Active" },

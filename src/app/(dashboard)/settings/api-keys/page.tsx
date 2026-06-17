@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { toast } from "sonner"
-import { Plus, Key, Trash2, ShieldAlert, Lock } from "lucide-react"
+import { Key, ShieldAlert } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 
 type ApiKey = {
@@ -75,7 +75,7 @@ export default function ApiKeysPage() {
  <div className="animate-fade-in">
  <div className="page-header flex items-center justify-between">
  <div><h1>API Keys</h1><p>Manage API keys for programmatic access</p></div>
- <Link href="/settings/api-keys/new"><Button className="gap-1.5"><Plus className="w-4 h-4" /> Create API Key <ShortcutBadge shortcut="⌘C" /></Button></Link>
+ <Link href="/settings/api-keys/new"><Button className="gap-1.5">Create API Key <ShortcutBadge shortcut="⌘C" /></Button></Link>
  </div>
  <DataTable
  columns={columns} data={keys} searchable searchPlaceholder="Search API keys..." loading={loading}

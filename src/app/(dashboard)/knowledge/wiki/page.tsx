@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Search, Plus, BookOpen, ChevronRight, Clock, Edit3, Trash2 } from "lucide-react"
+import { Search } from "lucide-react"
 import { SkeletonText } from "@/components/ui/skeleton"
 
 type Article = {
@@ -52,8 +52,7 @@ export default function WikiPage() {
  <h1>Knowledge Base</h1>
  <p>Wiki articles, guides, and documentation</p>
  </div>
- <Button className="gap-1.5" onClick={handleNew}>
- <Plus className="w-4 h-4" /> New Article <ShortcutBadge shortcut="⌘C" />
+ <Button className="gap-1.5" onClick={handleNew}>New Article <ShortcutBadge shortcut="⌘C" />
  </Button>
  </div>
 

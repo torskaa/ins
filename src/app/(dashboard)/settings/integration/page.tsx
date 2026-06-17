@@ -4,7 +4,6 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
-import { Link2, Plus, Webhook, Database, RefreshCw, Trash2, CheckCircle2, XCircle } from "lucide-react"
 import { toast } from "sonner"
 
 const INTEGRATIONS = [

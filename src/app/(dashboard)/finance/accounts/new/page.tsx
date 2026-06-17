@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, BookOpen } from "lucide-react"
 import { toast } from "sonner"
 
 const ACCOUNT_TYPES = [

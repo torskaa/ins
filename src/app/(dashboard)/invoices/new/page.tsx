@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Plus, Trash2, ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 import { formatCurrency } from "@/lib/utils"
 
@@ -118,7 +117,7 @@ export default function NewInvoicePage() {
  <CardHeader>
  <div className="flex items-center justify-between">
  <CardTitle>Invoice Items</CardTitle>
- <Button type="button" variant="secondary" size="sm" onClick={addItem}><Plus className="w-4 h-4" /> Add Item</Button>
+ <Button type="button" variant="secondary" size="sm" onClick={addItem}>Add Item</Button>
  </div>
  </CardHeader>
  <CardContent>
@@ -146,7 +145,7 @@ export default function NewInvoicePage() {
  {items.length === 0 && (
  <div className="text-center py-8">
  <p className="text-sm text-muted-foreground mb-3">Add line items to this invoice</p>
- <Button type="button" variant="secondary" size="sm" onClick={addItem}><Plus className="w-4 h-4" /> Add Item</Button>
+ <Button type="button" variant="secondary" size="sm" onClick={addItem}>Add Item</Button>
  </div>
  )}
  </CardContent>
@@ -156,7 +155,7 @@ export default function NewInvoicePage() {
  <div className="text-lg font-semibold">Subtotal: <span className="font-mono">{formatCurrency(subtotal)}</span></div>
  <div className="flex gap-3">
  <Button variant="secondary" onClick={() => router.back()}>Cancel</Button>
- <Button onClick={handleSave} loading={saving}><Plus className="w-4 h-4" /> Create Invoice</Button>
+ <Button onClick={handleSave} loading={saving}>Create Invoice</Button>
  </div>
  </div>
  </div>

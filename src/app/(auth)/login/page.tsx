@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { LogIn, Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 
 function LoginForm() {
@@ -58,8 +58,7 @@ function LoginForm() {
  </button>
  </div>
  </div>
- <Button type="submit" className="w-full gap-2" loading={loading}>
- <LogIn className="w-4 h-4" /> Sign In
+ <Button type="submit" className="w-full gap-2" loading={loading}>Sign In
  </Button>
  </form>
  <p className="text-center text-xs text-muted-foreground mt-4">

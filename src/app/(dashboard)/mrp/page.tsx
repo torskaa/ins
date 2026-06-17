@@ -7,7 +7,7 @@ import { Select } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { EmptyState } from "@/components/ui/empty-state"
-import { BarChart3, AlertTriangle, CheckCircle2, RefreshCw, ShoppingCart, Package } from "lucide-react"
+import { BarChart3, AlertTriangle, ShoppingCart, Package } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import { toast } from "sonner"
 
@@ -40,7 +40,7 @@ export default function MRPPage() {
  <div><h1>Material Requirements Planning</h1><p>Calculate material needs based on sales orders and BOMs</p></div>
  <div className="flex items-center gap-3">
  <Select options={[{ value: "15", label: "15 days" }, { value: "30", label: "30 days" }, { value: "60", label: "60 days" }, { value: "90", label: "90 days" }]} value={horizon} onChange={(e: any) => setHorizon(e.target.value)} className="w-32" />
- <Button onClick={runMRP} loading={loading} className="gap-1.5"><RefreshCw className="w-4 h-4" /> Run MRP</Button>
+ <Button onClick={runMRP} loading={loading} className="gap-1.5">Run MRP</Button>
  </div>
  </div>
 

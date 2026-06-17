@@ -7,7 +7,6 @@ import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Plus, BookOpen, DollarSign, FileText } from "lucide-react"
 import { formatDate, formatCurrency } from "@/lib/utils"
 
 type JournalEntry = { id: string; number: string; date: string; description: string; totalDebit: number; totalCredit: number; status: string; referenceType: string; lines: { account: { name: string } }[] }
@@ -37,7 +36,7 @@ export default function JournalEntriesPage() {
  <div className="animate-fade-in">
  <div className="page-header flex items-center justify-between">
  <div><h1>Journal Entries</h1><p>Record and manage general ledger entries</p></div>
- <Button onClick={handleNew} className="gap-1.5"><Plus className="w-4 h-4" /> New Entry <ShortcutBadge shortcut="⌘C" /></Button>
+ <Button onClick={handleNew} className="gap-1.5">New Entry <ShortcutBadge shortcut="⌘C" /></Button>
  </div>
  <DataTable columns={columns} data={entries} searchable searchPlaceholder="Search entries..." loading={loading}
  onRowClick={(item) => router.push(`/finance/journal-entries/${item.id}`)}

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { generateCustomerAcquisition } from "@/components/dashboard/mock-data"
-import { Users } from "lucide-react"
 
 export function CustomerAcquisitionWidget({ compact }: { compact?: boolean }) {
  const [data, setData] = useState<any[]>([])

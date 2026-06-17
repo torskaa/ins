@@ -76,7 +76,7 @@ export default function SettingsPage() {
  <Label htmlFor="phone">Phone</Label>
  <Input id="phone" value={org.phone} onChange={(e) => setOrg({ ...org, phone: e.target.value })} placeholder="+66 2 123 4567" />
  </div>
- <Button className="gap-1.5"><Save className="w-4 h-4" /> Save Changes</Button>
+ <Button className="gap-1.5">Save Changes</Button>
  </CardContent>
  </Card>
 
@@ -121,7 +121,7 @@ export default function SettingsPage() {
  onChange={(e: any) => setPrefs({ ...prefs, timezone: e.target.value })}
  />
  </div>
- <Button onClick={handleSavePrefs} loading={saving.prefs} className="gap-1.5"><Save className="w-4 h-4" /> Save Preferences</Button>
+ <Button onClick={handleSavePrefs} loading={saving.prefs} className="gap-1.5">Save Preferences</Button>
  </CardContent>
  </Card>
  </div>

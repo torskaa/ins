@@ -1,7 +1,6 @@
 "use client"
 
 import { MetricCard } from "./metric-card"
-import { DollarSign, Package, ShoppingCart, Users } from "lucide-react"
 
 function generateChartData(base: number, change: number, seed: number): number[] {
  const points = 7

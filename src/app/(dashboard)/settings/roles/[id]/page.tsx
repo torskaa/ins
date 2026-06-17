@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
-import { ArrowLeft, Shield, Trash2, Check, Save, CheckCircle } from "lucide-react"
+import { Check, Save } from "lucide-react"
 import { SkeletonPageHeader, SkeletonForm } from "@/components/ui/skeleton"
 
 const FALLBACK_ENTITIES = ["products", "orders", "invoices", "bom", "materials", "customers", "suppliers", "categories", "warehouses", "quotations", "payments", "accounts", "journal", "tax", "projects", "tasks", "workflows", "roles", "apiKeys", "auditLogs", "users", "settings"]
@@ -141,7 +141,7 @@ export default function EditRolePage({ params: paramsPromise }: { params: Promis
  confirmDelete ? (
  <div className="flex items-center gap-2">
  <span className="text-xs text-destructive">Are you sure?</span>
- <Button variant="destructive" size="sm" loading={deleting} onClick={handleDelete} className="gap-1"><CheckCircle className="w-4 h-4" /> Confirm</Button>
+ <Button variant="destructive" size="sm" loading={deleting} onClick={handleDelete} className="gap-1">Confirm</Button>
  <Button variant="ghost" size="sm" onClick={() => setConfirmDelete(false)}>Cancel</Button>
  </div>
  ) : (
@@ -153,7 +153,7 @@ export default function EditRolePage({ params: paramsPromise }: { params: Promis
  </div>
  <div className="flex items-center gap-3">
  <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
- <Button loading={saving}><Save className="w-4 h-4" /> Save Changes</Button>
+ <Button loading={saving}>Save Changes</Button>
  </div>
  </div>
  </form>

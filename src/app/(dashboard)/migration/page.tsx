@@ -8,9 +8,7 @@ import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import {
- Upload, Database, ArrowLeft, ArrowRight, CheckCircle2, XCircle,
- AlertTriangle, FileSpreadsheet, Table2, MapPin, Download, ChevronRight} from "lucide-react"
+import { Upload, Database, ArrowLeft, ArrowRight, CheckCircle2, XCircle, AlertTriangle, FileSpreadsheet, Table2, Download } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { SkeletonPageHeader, Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
@@ -189,12 +187,12 @@ export default function MigrationPage() {
  setMapping((prev) => ({ ...prev, [field]: column }))
  }
 
-  const handleImportKey = useCallback(() => { if (step === 2 && !importing) handleImport() }, [step, importing])
-  useHotkey("u", handleImportKey)
+ const handleImportKey = useCallback(() => { if (step === 2 && !importing) handleImport() }, [step, importing])
+ useHotkey("u", handleImportKey)
 
-  async function handleImport() {
-  if (!file || !selectedEntity) return
-  setImporting(true)
+ async function handleImport() {
+ if (!file || !selectedEntity) return
+ setImporting(true)
  try {
  const formData = new FormData()
  formData.append("file", file)
@@ -416,14 +414,14 @@ export default function MigrationPage() {
 
  <div className="flex items-center justify-between pt-4 border-t border-border">
  <Button variant="ghost" onClick={() => setStep(1)}>Back</Button>
-  <Button
-  onClick={handleImport}
-  disabled={!allRequiredMapped || importing}
-  loading={importing}
-  className="gap-1.5"
-  >
-  Import {previewData.length}+ Records <ShortcutBadge shortcut="⌘U" />
-  </Button>
+ <Button
+ onClick={handleImport}
+ disabled={!allRequiredMapped || importing}
+ loading={importing}
+ className="gap-1.5"
+ >
+ Import {previewData.length}+ Records <ShortcutBadge shortcut="⌘U" />
+ </Button>
  </div>
  </div>
  )}

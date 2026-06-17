@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { UserPlus, Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 
 export default function RegisterPage() {
@@ -74,8 +74,7 @@ export default function RegisterPage() {
  <Label htmlFor="orgName">Organization Name <span className="text-destructive">*</span></Label>
  <Input id="orgName" value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="My Company" required />
  </div>
- <Button type="submit" className="w-full gap-2" loading={loading}>
- <UserPlus className="w-4 h-4" /> Create Account
+ <Button type="submit" className="w-full gap-2" loading={loading}>Create Account
  </Button>
  </form>
  <p className="text-center text-xs text-muted-foreground mt-4">

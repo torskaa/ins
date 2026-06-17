@@ -9,7 +9,6 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { toast } from "sonner"
-import { Plus, ClipboardList, Trash2, ChevronDown, ChevronRight, Package, Layers3, FileText, GitBranch } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { useRouter } from "next/navigation"
 import { downloadCSV, downloadPDF } from "@/lib/export"
@@ -160,8 +159,7 @@ export default function BOMPage() {
  <span className="text-warning ml-1"> · {draft.length} draft</span>
  </p>
  </div>
- <Button onClick={handleNew} className="gap-1.5">
- <Plus className="w-4 h-4" /> New BOM <ShortcutBadge shortcut="⌘C" />
+ <Button onClick={handleNew} className="gap-1.5">New BOM <ShortcutBadge shortcut="⌘C" />
  </Button>
  </div>
 

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
-import { ArrowLeft, AlertTriangle, Pencil, Trash2 } from "lucide-react"
+import { AlertTriangle } from "lucide-react"
 import { formatCurrency, formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
@@ -428,7 +428,7 @@ export default function MaterialDetailPage({ params }: { params: Promise<{ id: s
  </DialogHeader>
  <DialogFooter>
  <Button variant="secondary" onClick={() => setShowDelete(false)}>Cancel</Button>
- <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
+ <Button variant="destructive" onClick={handleDelete} loading={deleting}>Delete</Button>
  </DialogFooter>
  </DialogContent>
  </Dialog>

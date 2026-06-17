@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Percent, DollarSign, FileText } from "lucide-react"
 import { formatCurrency, formatDate } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 

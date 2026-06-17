@@ -13,18 +13,7 @@ import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import {
- ChevronDown,
- ChevronRight,
- Upload,
- X,
- ImageIcon,
- Link2,
- CheckCircle,
- AlertCircle,
- Plus,
- Trash2,
- DollarSign} from "lucide-react"
+import { ChevronDown, ChevronRight, Upload, X, ImageIcon, Link2, CheckCircle, AlertCircle, Plus, Trash2 } from "lucide-react"
 
 const CURRENCIES = [
  { value: "THB", label: "THB (฿)" },
@@ -332,7 +321,7 @@ export default function NewMaterialPage() {
  </div>
  <div className="space-y-2 flex-1">
  <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageFile} className="hidden" />
- <Button type="button" variant="outline" size="sm" onClick={handleUpload} className="gap-1.5 text-xs h-8"><Upload className="w-4 h-4" /> Upload Image <ShortcutBadge shortcut="⌘U" /></Button>
+ <Button type="button" variant="outline" size="sm" onClick={handleUpload} className="gap-1.5 text-xs h-8">Upload Image <ShortcutBadge shortcut="⌘U" /></Button>
  <div className="flex items-center gap-2">
  <Input placeholder="Or paste image URL..." value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="h-8 text-xs" />
  <Button type="button" variant="secondary" size="sm" onClick={handleImageUrl} disabled={!imageUrl} className="h-8 text-xs">
@@ -414,7 +403,7 @@ export default function NewMaterialPage() {
  <div className="space-y-3">
  <div className="flex items-center justify-between">
  <Label className="text-sm font-medium">Alternative Suppliers & Pricing</Label>
- <Button type="button" variant="outline" size="sm" onClick={addSupplierPrice} className="h-7 text-xs gap-1"><Plus className="w-4 h-4" /> Add Supplier</Button>
+ <Button type="button" variant="outline" size="sm" onClick={addSupplierPrice} className="h-7 text-xs gap-1">Add Supplier</Button>
  </div>
  {supplierPrices.length === 0 && (
  <p className="text-xs text-muted-foreground">Add alternative suppliers with different prices and lead times.</p>

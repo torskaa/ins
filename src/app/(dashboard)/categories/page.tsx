@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { Plus, Tags, FolderOpen, Bookmark, Search } from "lucide-react"
+import { Tags, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -115,8 +115,7 @@ export default function CategoriesPage() {
  { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Name", "Description", "Products"], categories.map(c => [c.name, c.description, c._count?.products]), "categories.csv") },
  { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Categories", []) },
  ]} />
- <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
- <Plus className="w-4 h-4" /> Add Category <ShortcutBadge shortcut="⌘C" />
+ <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>Add Category <ShortcutBadge shortcut="⌘C" />
  </Button>
  </div>
  </div>

@@ -13,9 +13,7 @@ import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import {
- ChevronDown, ChevronRight, Upload, X, ImageIcon, Link2,
- CheckCircle, AlertCircle, DollarSign, Sparkles} from "lucide-react"
+import { ChevronDown, ChevronRight, Upload, X, ImageIcon, Link2, AlertCircle } from "lucide-react"
 
 const UOM_OPTIONS = [
  { value: "pcs", label: "Pieces (pcs)" },
@@ -302,7 +300,7 @@ export default function NewProductPage() {
  </div>
  <div className="space-y-2 flex-1">
  <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageFile} className="hidden" />
- <Button type="button" variant="outline" size="sm" onClick={handleUpload} className="gap-1.5 text-xs h-8"><Upload className="w-4 h-4" /> Upload Image <ShortcutBadge shortcut="⌘U" /></Button>
+ <Button type="button" variant="outline" size="sm" onClick={handleUpload} className="gap-1.5 text-xs h-8">Upload Image <ShortcutBadge shortcut="⌘U" /></Button>
  <div className="flex items-center gap-2">
  <Input placeholder="Or paste image URL..." value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="h-8 text-xs" />
  <Button type="button" variant="secondary" size="sm" onClick={handleImageUrl} disabled={!imageUrl} className="h-8 text-xs"></Button>

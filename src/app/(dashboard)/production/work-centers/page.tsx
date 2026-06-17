@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { Wrench, Plus, MapPin, Hash, Factory, Settings } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
@@ -63,7 +62,7 @@ export default function WorkCentersPage() {
  <h1>Work Centers</h1>
  <p>Manage production work centers and cost rates</p>
  </div>
- <Button onClick={handleNew} className="gap-1.5"><Plus className="w-4 h-4" /> New Work Center <ShortcutBadge shortcut="⌘C" /></Button>
+ <Button onClick={handleNew} className="gap-1.5">New Work Center <ShortcutBadge shortcut="⌘C" /></Button>
  </div>
  <DataTable columns={columns} data={data} searchable searchPlaceholder="Search work centers..." loading={loading}
  onRowClick={(item) => router.push(`/production/work-centers/${item.id}`)}

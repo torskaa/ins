@@ -9,10 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import {
- ArrowLeft, DollarSign, CreditCard, Landmark, Edit, Trash2,
- Hash, Calendar, FileText, Receipt, ShoppingCart,
-} from "lucide-react"
+import { ArrowLeft, DollarSign, CreditCard, Landmark, Edit, Trash2, Hash, Calendar, FileText, Receipt, ShoppingCart } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils"

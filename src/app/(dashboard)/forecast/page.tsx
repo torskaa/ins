@@ -9,10 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { EmptyState } from "@/components/ui/empty-state"
 import { formatCurrency } from "@/lib/utils"
-import {
- TrendingUp, TrendingDown, Minus, Package, Save,
- BarChart3, AlertCircle, Calendar
-} from "lucide-react"
+import { TrendingUp, TrendingDown, Minus, Package, Save, BarChart3, AlertCircle, Calendar } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { SkeletonKPICard, SkeletonChart } from "@/components/ui/skeleton"
 import {

@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
 import { toast } from "sonner"
-import { ArrowLeft, Factory, Plus, Trash2 } from "lucide-react"
 
 type Product = { id: string; name: string; sku: string }
 type BOM = { id: string; finishedGoodId: string; version: string; status: string }

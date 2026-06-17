@@ -10,10 +10,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
 import { toast } from "sonner"
-import {
- ArrowLeft, Play, GraduationCap, Users, Clock, BookOpen, BarChart3,
- Award, Layers, CheckCircle2, ChevronRight, FileText, Star,
- Edit3, Trash2} from "lucide-react"
+import { ArrowLeft, Play, GraduationCap, Users, Clock, BookOpen, BarChart3, Award, Layers, CheckCircle2, ChevronRight, FileText, Star } from "lucide-react"
 
 type Program = {
  id: string

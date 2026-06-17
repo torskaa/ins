@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { generatePaymentStatus } from "@/components/dashboard/mock-data"
-import { CreditCard } from "lucide-react"
 
 const STATUS_CONFIG = {
  paid: { label: "Paid", color: "bg-emerald-500", textColor: "text-emerald-600", bg: "bg-emerald-50" },

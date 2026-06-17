@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Plus, Shield, Lock, Users } from "lucide-react"
 
 type Role = {
  id: string
@@ -62,7 +61,7 @@ export default function RolesPage() {
  <h1>Roles</h1>
  <p>Manage access control roles and permissions</p>
  </div>
- <Link href="/settings/roles/new"><Button className="gap-1.5"><Plus className="w-4 h-4" /> Create Role <ShortcutBadge shortcut="⌘C" /></Button></Link>
+ <Link href="/settings/roles/new"><Button className="gap-1.5">Create Role <ShortcutBadge shortcut="⌘C" /></Button></Link>
  </div>
  <DataTable
  columns={columns} data={roles} searchable searchPlaceholder="Search roles..."

@@ -5,11 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
-import { 
- AlertTriangle, Package, ShoppingCart, Truck, TrendingUp, 
- AlertCircle, CheckCircle2, Clock, DollarSign, ArrowRight,
- Layers3, FileText, BarChart3
-} from "lucide-react"
+import { AlertTriangle, Package, ShoppingCart, Truck, TrendingUp, AlertCircle, CheckCircle2, Clock, DollarSign, ArrowRight, Layers3, FileText, BarChart3 } from "lucide-react"
 import { formatCurrency, formatNumber } from "@/lib/utils"
 import { SkeletonCard } from "@/components/ui/skeleton"
 

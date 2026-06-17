@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
-import { Plus, DollarSign, CreditCard, Landmark, Search } from "lucide-react"
+import { Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -120,7 +120,7 @@ export default function PaymentsPage() {
  { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Date", "Source", "Amount", "Method", "Reference"], payments.map(p => [p.date, p.invoice?.number || p.order?.number || "", p.amount, p.method, p.reference]), "payments.csv") },
  { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Payments", []) },
  ]} />
- <Button size="sm" className="h-9 gap-1.5" onClick={handleCreate}><Plus className="w-4 h-4" /> Record Payment <ShortcutBadge shortcut="⌘C" /></Button>
+ <Button size="sm" className="h-9 gap-1.5" onClick={handleCreate}>Record Payment <ShortcutBadge shortcut="⌘C" /></Button>
  </div>
  </div>
 

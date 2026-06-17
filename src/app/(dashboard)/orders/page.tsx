@@ -6,7 +6,7 @@ import { DataTable, statusBadge, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, ShoppingCart, Package, Truck, Search } from "lucide-react"
+import { Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -135,8 +135,7 @@ function OrdersContent() {
  "separator",
  { label: "Refresh", icon: ActionIcons.Refresh },
  ]} />
- <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
- <Plus className="w-4 h-4" /> New Order <ShortcutBadge shortcut="⌘C" />
+ <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>New Order <ShortcutBadge shortcut="⌘C" />
  </Button>
  </div>
  </div>

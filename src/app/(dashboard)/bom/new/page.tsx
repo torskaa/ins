@@ -9,7 +9,6 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
-import { Plus, Trash2, ChevronDown, ChevronRight, GitBranch } from "lucide-react"
 type Option = { id: string; name: string; sku: string; type: string }
 type MaterialRow = {
  key: string
@@ -259,8 +258,7 @@ export default function NewBOMPage() {
  )
  })}
 
- <Button type="button" variant="secondary" size="sm" onClick={addRow} className="gap-1.5 mt-2">
- <Plus className="w-4 h-4" /> Add Material
+ <Button type="button" variant="secondary" size="sm" onClick={addRow} className="gap-1.5 mt-2">Add Material
 </Button>
 
  {rows.filter((r) => r.materialId).length > 0 && (

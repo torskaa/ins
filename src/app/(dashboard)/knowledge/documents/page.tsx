@@ -10,11 +10,7 @@ import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { DataTable, type Column } from "@/components/ui/data-table"
 
-import {
- Search, Plus, Upload, FileText, FileSpreadsheet, FileImage,
- FileArchive, Download, Eye, MoreHorizontal, FolderOpen, Trash2,
- File as FileIcon,
-} from "lucide-react"
+import { Search, Plus, Upload, FileText, FileSpreadsheet, FileImage, FileArchive, Download, Eye, MoreHorizontal, FolderOpen, Trash2, File as FileIcon } from "lucide-react"
 import { formatDate, formatCurrency } from "@/lib/utils"
 
 type Document = {
@@ -116,7 +112,7 @@ export default function DocumentsPage() {
  <h1>Document Center</h1>
  <p>Uploaded files — PO, invoices, delivery notes, and more</p>
  </div>
- <Button className="gap-1.5" onClick={handleUpload}><Upload className="w-4 h-4" /> Upload Document <ShortcutBadge shortcut="⌘U" /></Button>
+ <Button className="gap-1.5" onClick={handleUpload}>Upload Document <ShortcutBadge shortcut="⌘U" /></Button>
  </div>
 
  <div className="flex items-center gap-3 mb-6 flex-wrap">

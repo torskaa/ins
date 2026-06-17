@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Projector, FolderKanban, Calendar, Search } from "lucide-react"
+import { Projector, FolderKanban, Calendar, Search } from "lucide-react"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
@@ -78,7 +78,7 @@ export default function ProjectsPage() {
  <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
  </>
  )}
- <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}><Plus className="w-4 h-4" /> New Project <ShortcutBadge shortcut="⌘C" /></Button>
+ <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>New Project <ShortcutBadge shortcut="⌘C" /></Button>
  </div>
  </div>
  <DataTable columns={columns} data={filtered} loading={loading}

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Building2, Plus, Layers, Settings, ArrowRight } from "lucide-react"
+import { Building2, Layers, Settings } from "lucide-react"
 
 type Workspace = {
  id: string
@@ -38,7 +38,7 @@ export default function WorkspacesPage() {
  <div className="page-header flex items-center justify-between">
  <div><h1>Workspaces</h1><p>Manage your brands and organizations</p></div>
  <Link href="/workspaces/new">
- <Button className="gap-1.5"><Plus className="w-4 h-4" /> New Workspace <ShortcutBadge shortcut="⌘C" /></Button>
+ <Button className="gap-1.5">New Workspace <ShortcutBadge shortcut="⌘C" /></Button>
  </Link>
  </div>
 

@@ -7,7 +7,7 @@ import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Plus, FolderOpen, Layers, Bookmark } from "lucide-react"
+import { Layers } from "lucide-react"
 
 type Group = { id: string; name: string; code: string; type: string; description: string; _count: { accounts: number } }
 
@@ -36,7 +36,7 @@ export default function AccountGroupsPage() {
  <div className="animate-fade-in">
  <div className="page-header flex items-center justify-between">
  <div><h1>Account Groups</h1><p>Organize accounts into groups for reporting</p></div>
- <Button onClick={handleNew} className="gap-1.5"><Plus className="w-4 h-4" /> New Group <ShortcutBadge shortcut="⌘C" /></Button>
+ <Button onClick={handleNew} className="gap-1.5">New Group <ShortcutBadge shortcut="⌘C" /></Button>
  </div>
  <DataTable columns={columns} data={groups} searchable searchPlaceholder="Search groups..." loading={loading}
  empty={{ icons: [, <Layers className="w-5 h-5" />, ], title: "No groups yet", description: "Account groups help organize your chart of accounts." }}

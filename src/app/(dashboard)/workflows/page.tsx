@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Plus, GitBranch, Settings2, Trash2, ArrowRight, Circle } from "lucide-react"
+import { Settings2, Circle } from "lucide-react"
 import { toast } from "sonner"
 
 type Workflow = { id: string; name: string; entityType: string; isActive: boolean; states: WorkflowState[]; transitions: WorkflowTransition[] }
@@ -65,7 +65,7 @@ export default function WorkflowsPage() {
  <div className="animate-fade-in">
  <div className="page-header flex items-center justify-between">
  <div><h1>Workflow Engine</h1><p>Configure status transitions for orders, invoices, and more</p></div>
- <Button onClick={handleNew} className="gap-1.5"><Plus className="w-4 h-4" /> New Workflow <ShortcutBadge shortcut="⌘C" /></Button>
+ <Button onClick={handleNew} className="gap-1.5">New Workflow <ShortcutBadge shortcut="⌘C" /></Button>
  </div>
 
  {showNew && (

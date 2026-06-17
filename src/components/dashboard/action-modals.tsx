@@ -4,9 +4,7 @@ import { useState, useCallback, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import {
- RefreshCw, FileText, FileSpreadsheet,
- Layout, SlidersHorizontal, Check, Copy, Download, Loader2, Trash2} from "lucide-react"
+import { RefreshCw, FileText, FileSpreadsheet, Layout, Copy, Download, Loader2 } from "lucide-react"
 import { useDashboardStore } from "./dashboard-store"
 import { WIDGET_REGISTRY } from "./widget-registry"
 

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Package, Truck, Clock, Plus, Search } from "lucide-react"
+import { Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
@@ -143,8 +143,7 @@ export default function DeliveriesPage() {
  { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Number", "Status", "Distributor", "Carrier", "Est.Date", "Items", "Value"], filtered.map(d => [d.number, d.status, d.distributor.name, d.carrier || "", d.estimatedDate, d.totalItems, d.totalValue]), "deliveries.csv") },
  { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Deliveries", []) },
  ]} />
- <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
- <Plus className="w-4 h-4" /> New Delivery <ShortcutBadge shortcut="⌘C" />
+ <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>New Delivery <ShortcutBadge shortcut="⌘C" />
  </Button>
  </div>
  </div>

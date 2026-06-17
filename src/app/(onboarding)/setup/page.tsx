@@ -11,9 +11,7 @@ import { Select } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
- Building2, Settings2, Users, CheckCircle2, ArrowRight, ArrowLeft,
- Sparkles, Mail, Plus, X} from "lucide-react"
+import { Building2, Settings2, Users, CheckCircle2, ArrowRight, ArrowLeft, X } from "lucide-react"
 import { toast } from "sonner"
 
 const STEPS = [

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { DataTable, statusBadge, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Plus, FileText, DollarSign, Calendar, Search } from "lucide-react"
+import { Calendar, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -126,7 +126,7 @@ export default function InvoicesPage() {
  "separator",
  { label: "Record Payment", href: "/payments", icon: ActionIcons.AddNew },
  ]} />
- <Button size="sm" className="h-9 gap-1.5" onClick={handleCreate}><Plus className="w-4 h-4" /> Create Invoice <ShortcutBadge shortcut="⌘C" /></Button>
+ <Button size="sm" className="h-9 gap-1.5" onClick={handleCreate}>Create Invoice <ShortcutBadge shortcut="⌘C" /></Button>
  </div>
  </div>
 

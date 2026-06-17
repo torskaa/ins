@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { Eye, EyeOff, Save, User, Shield } from "lucide-react"
+import { Eye, EyeOff, User } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 export default function ProfilePage() {
@@ -85,7 +85,7 @@ export default function ProfilePage() {
  </button>
  </div>
  </div>
- <Button type="submit" loading={loading} className="gap-2"><Save className="w-4 h-4" /> Change Password</Button>
+ <Button type="submit" loading={loading} className="gap-2">Change Password</Button>
  </form>
  </CardContent>
  </Card>

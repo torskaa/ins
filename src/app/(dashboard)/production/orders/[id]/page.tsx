@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { ArrowLeft, Edit, Factory, Package, Calendar, Clock, Wrench, Beaker, CheckCircle, XCircle, Play, ArrowUpRight } from "lucide-react"
+import { Edit, Beaker, CheckCircle, Play } from "lucide-react"
 import { format } from "date-fns"
 import { Skeleton } from "@/components/ui/skeleton"
 

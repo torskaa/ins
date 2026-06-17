@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { DataTable, statusBadge, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Plus, AlertTriangle, Layers3, Package, Box, Search } from "lucide-react"
+import { AlertTriangle, Box, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -130,8 +130,7 @@ export default function MaterialsPage() {
  "separator",
  { label: "Refresh", icon: ActionIcons.Refresh },
  ]} />
- <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
- <Plus className="w-4 h-4" /> Add Material <ShortcutBadge shortcut="⌘C" />
+ <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>Add Material <ShortcutBadge shortcut="⌘C" />
  </Button>
  </div>
  </div>

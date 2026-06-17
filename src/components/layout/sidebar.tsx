@@ -8,40 +8,7 @@ import { cn } from "@/lib/utils"
 import { useTheme } from "@/components/theme-provider"
 import WorkspaceSwitcher from "@/components/workspace/workspace-switcher"
 import { LanguageSwitcher } from "@/components/layout/language-switcher"
-import {
- LayoutDashboard,
- Package,
- ShoppingCart,
- Users,
- FileText,
- Receipt,
- BarChart3,
- Settings,
- ChevronLeft,
- Truck,
- Tags,
- Warehouse,
- FileSignature,
- GitBranch,
- Layers3,
- Layers,
- TrendingUp,
- BookOpen,
- GraduationCap,
- FolderOpen,
- ChevronDown,
- Moon,
- Sun,
- ClipboardList,
- Factory,
- Wrench,
- Activity,
- FolderKanban,
- Percent,
- Shield,
- Building2,
- Link2,
-} from "lucide-react"
+import { LayoutDashboard, Package, ShoppingCart, Users, FileText, Receipt, BarChart3, Settings, ChevronLeft, Truck, Tags, Warehouse, FileSignature, GitBranch, Layers3, Layers, TrendingUp, BookOpen, GraduationCap, FolderOpen, ChevronDown, Moon, Sun, ClipboardList, Factory, Wrench, Activity, FolderKanban, Percent, Shield, Building2, Link2 } from "lucide-react"
 
 type SubMenuItem = { label: string; href: string; icon?: any }
 type MenuItem = {

@@ -9,10 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import {
- ArrowLeft, Package, Truck, MapPin, Calendar,
- Hash, Building2, Plus, Trash2, Warehouse,
-} from "lucide-react"
+import { ArrowLeft, Package, Truck, MapPin, Calendar, Hash, Building2, Plus, Trash2, Warehouse } from "lucide-react"
 
 const STATUS_OPTIONS = [
  { value: "draft", label: "Draft" },
@@ -201,8 +198,7 @@ export default function NewDeliveryPage() {
  <CardHeader className="pb-3">
  <div className="flex items-center justify-between">
  <h3 className="text-sm font-semibold">Items</h3>
- <Button type="button" variant="outline" size="sm" onClick={addItem} className="gap-1.5">
- <Plus className="w-4 h-4" /> Add Item
+ <Button type="button" variant="outline" size="sm" onClick={addItem} className="gap-1.5">Add Item
 </Button>
  </div>
  </CardHeader>

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { ArrowLeft, Building2, Save, Trash2, Users } from "lucide-react"
+import { Building2, Save } from "lucide-react"
 
 export default function WorkspaceSettingsPage() {
  const router = useRouter()
@@ -91,9 +91,9 @@ export default function WorkspaceSettingsPage() {
  </Card>
 
  <div className="flex gap-3">
- <Button type="submit" loading={saving} className="gap-1.5"><Save className="w-4 h-4" /> Save Changes</Button>
+ <Button type="submit" loading={saving} className="gap-1.5">Save Changes</Button>
  {role === "owner" && (
- <Button type="button" variant="destructive" onClick={handleDelete} className="gap-1.5 ml-auto"><Trash2 className="w-4 h-4" /> Delete</Button>
+ <Button type="button" variant="destructive" onClick={handleDelete} className="gap-1.5 ml-auto">Delete</Button>
  )}
  </div>
  </form>

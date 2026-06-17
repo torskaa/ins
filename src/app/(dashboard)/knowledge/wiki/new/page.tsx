@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
-import { ArrowLeft, BookOpen } from "lucide-react"
 import { toast } from "sonner"
 
 export default function NewWikiArticlePage() {

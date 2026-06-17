@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { ArrowLeft, Package, Truck, MapPin, Calendar, Clock, Edit, Trash2, ExternalLink, Phone, User, Building2, Hash, FileText, XCircle } from "lucide-react"
+import { Calendar, Edit, Building2 } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -202,7 +202,7 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
  </Button>
  )}
  {canCancel && (
- <Button variant="secondary" size="sm" onClick={handleCancel} disabled={updating}><XCircle className="w-4 h-4" /> Cancel</Button>
+ <Button variant="secondary" size="sm" onClick={handleCancel} disabled={updating}>Cancel</Button>
  )}
  <Button variant="secondary" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={() => setDeleteOpen(true)}>
  Delete

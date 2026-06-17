@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, FolderKanban } from "lucide-react"
+import { FolderKanban } from "lucide-react"
 import { toast } from "sonner"
 
 export default function NewProjectPage() {

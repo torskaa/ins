@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Bell, Package, ShoppingCart, AlertTriangle, CheckCircle, Info, Mail } from "lucide-react"
+import { Bell, Package, ShoppingCart, AlertTriangle, CheckCircle, Info } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { Badge } from "@/components/ui/badge"
 import { timeAgo } from "@/lib/utils"

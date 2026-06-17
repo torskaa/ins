@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { Truck, Users, MapPin, Phone, Plus } from "lucide-react"
+import { Phone } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
@@ -101,8 +101,7 @@ export default function DistributorsPage() {
  <p>Manage your distribution network</p>
  </div>
  <div className="flex items-center gap-2">
- <Button onClick={handleNew} className="gap-1.5">
- <Plus className="w-4 h-4" /> New Distributor <ShortcutBadge shortcut="⌘C" />
+ <Button onClick={handleNew} className="gap-1.5">New Distributor <ShortcutBadge shortcut="⌘C" />
  </Button>
  <MoreMenu actions={[
  { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Name", "Contact", "Phone", "Territory", "Status", "Deliveries"], distributors.map(d => [d.name, d.contactPerson || "", d.phone || "", d.territory || "", d.status, d._count?.deliveries]), "distributors.csv") },

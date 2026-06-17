@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formatCurrency, formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
-import { ArrowLeft, Building2, ShoppingCart, Package, Truck, CheckCircle2, Clock, MapPin, Mail, Phone, FileText, Pencil, Trash2, Globe, User, Award, BadgePercent, Hash, DollarSign, CalendarDays, ClipboardList } from "lucide-react"
+import { Building2, Mail, Phone, Globe, User, Award, BadgePercent, CalendarDays } from "lucide-react"
 import { SkeletonDetail } from "@/components/ui/skeleton"
 
 interface SupplierPrice {
@@ -483,7 +483,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  </DialogHeader>
  <DialogFooter>
  <Button variant="secondary" onClick={() => setShowDelete(false)}>Cancel</Button>
- <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
+ <Button variant="destructive" onClick={handleDelete} loading={deleting}>Delete</Button>
  </DialogFooter>
  </DialogContent>
  </Dialog>

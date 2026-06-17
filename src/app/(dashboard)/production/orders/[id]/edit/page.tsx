@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
 import { toast } from "sonner"
-import { ArrowLeft, Factory } from "lucide-react"
 import { SkeletonForm } from "@/components/ui/skeleton"
 
 export default function EditProductionOrderPage() {

@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { Trash2 } from "lucide-react"
 import {
  Dialog,
  DialogContent,
@@ -37,7 +36,7 @@ export function ConfirmDialog({
  <Button variant="outline" onClick={() => onOpenChange(false)}>
  Cancel
  </Button>
- <Button variant="destructive" onClick={onConfirm} loading={loading}><Trash2 className="w-4 h-4" /> Delete</Button>
+ <Button variant="destructive" onClick={onConfirm} loading={loading}>Delete</Button>
  </div>
  </DialogContent>
  </Dialog>

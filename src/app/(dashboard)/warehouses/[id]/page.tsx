@@ -9,10 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import {
- ArrowLeft, Warehouse, MapPin, Building2, Edit, Trash2,
- Package, PackagePlus, Hash, Layers, Calendar,
-} from "lucide-react"
+import { ArrowLeft, Warehouse, MapPin, Building2, Edit, Trash2, Package, PackagePlus, Hash, Layers, Calendar } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { formatCurrency, formatDateTime } from "@/lib/utils"

@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { Plus, Trash2, ArrowLeft, GitBranch } from "lucide-react"
 import { SkeletonForm } from "@/components/ui/skeleton"
 
 type MaterialRow = { key: string; materialId: string; quantity: string; scrapAllowance: string; unit: string; wastePercent: string }
