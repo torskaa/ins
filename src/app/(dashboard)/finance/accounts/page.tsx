@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import { BookOpen, Building2, DollarSign } from "lucide-react"
 import { useHotkey } from "@/hooks/use-hotkey"
 
 type Account = { id: string; code: string; name: string; type: string; currentBalance: number; isActive: boolean; group: { name: string } }
@@ -40,7 +41,7 @@ export default function ChartOfAccountsPage() {
  </div>
  <DataTable columns={columns} data={accounts} searchable searchPlaceholder="Search accounts..." loading={loading}
  onRowClick={(item) => router.push(`/finance/accounts/${item.id}`)}
- empty={{ icons: [, , ], title: "No accounts yet", description: "Add your first GL account to start tracking finances." }}
+ empty={{ icons: [<BookOpen className="w-5 h-5" />, <Building2 className="w-5 h-5" />, <DollarSign className="w-5 h-5" />], title: "No accounts yet", description: "Add your first GL account to start tracking finances." }}
  />
  </div>
  )

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { toast } from "sonner"
-import { Key, ShieldAlert } from "lucide-react"
+import { Key, Settings2, ShieldAlert } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 
 type ApiKey = {
@@ -79,7 +79,7 @@ export default function ApiKeysPage() {
  </div>
  <DataTable
  columns={columns} data={keys} searchable searchPlaceholder="Search API keys..." loading={loading}
- empty={{ icons: [, <ShieldAlert className="w-5 h-5" />, ], title: "No API keys yet", description: "Create an API key to enable programmatic access." }}
+ empty={{ icons: [<Key className="w-5 h-5" />, <ShieldAlert className="w-5 h-5" />, <Settings2 className="w-5 h-5" />], title: "No API keys yet", description: "Create an API key to enable programmatic access." }}
  />
  </div>
  )

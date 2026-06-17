@@ -7,6 +7,7 @@ import { DataTable, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import { Settings2, Shield, Users } from "lucide-react"
 import { useHotkey } from "@/hooks/use-hotkey"
 
 type Role = {
@@ -67,7 +68,7 @@ export default function RolesPage() {
  columns={columns} data={roles} searchable searchPlaceholder="Search roles..."
  onRowClick={(item) => router.push(`/settings/roles/${item.id}`)}
  loading={loading}
- empty={{ icons: [, , ], title: "No roles yet", description: "Create your first role to define access permissions." }}
+ empty={{ icons: [<Shield className="w-5 h-5" />, <Users className="w-5 h-5" />, <Settings2 className="w-5 h-5" />], title: "No roles yet", description: "Create your first role to define access permissions." }}
  />
  </div>
  )

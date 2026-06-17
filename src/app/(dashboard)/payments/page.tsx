@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
-import { Search } from "lucide-react"
+import { Banknote, DollarSign, Receipt, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -129,7 +129,7 @@ export default function PaymentsPage() {
  data={filtered}
  loading={loading}
  empty={{
- icons: [, , ],
+ icons: [<DollarSign className="w-5 h-5" />, <Banknote className="w-5 h-5" />, <Receipt className="w-5 h-5" />],
  title: "No payments recorded",
  description: "Record your first payment to start tracking transactions.",
  action: { label: "Record Payment", onClick: () => setShowCreate(true) },

@@ -22,7 +22,7 @@ import {
  Cell,
  Legend,
 } from "recharts"
-import { DollarSign, Package, ShoppingCart, Users, AlertTriangle, Download, TrendingUp, BarChart3, Calendar, Tag, Globe, Truck } from "lucide-react"
+import { Activity, AlertTriangle, BarChart3, Calendar, DollarSign, Download, FileText, Globe, Package, ShoppingCart, Tag, TrendingUp, Truck, Users } from "lucide-react"
 
 type DashboardData = {
  totalRevenue: number
@@ -550,7 +550,7 @@ export default function ReportsPage() {
  data={topProducts}
  loading={loading}
  empty={{
- icons: [, , ],
+ icons: [<BarChart3 className="w-5 h-5" />, <FileText className="w-5 h-5" />, <Activity className="w-5 h-5" />],
  title: "No sales data",
  description: "Delivered orders will appear here.",
  }}

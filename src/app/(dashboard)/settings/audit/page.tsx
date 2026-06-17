@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { DataTable, statusBadge, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
-import { Search, Activity } from "lucide-react"
+import { Activity, FileText, Search, Shield } from "lucide-react"
 import { formatDateTime } from "@/lib/utils"
 
 type AuditEntry = {
@@ -84,7 +84,7 @@ export default function AuditPage() {
  </div>
 
  <DataTable columns={columns} data={entries} loading={loading}
- empty={{ icons: [, , <Activity className="w-5 h-5" />], title: "No audit entries found", description: "Activity will appear here as users interact with the system." }} />
+ empty={{ icons: [<Shield className="w-5 h-5" />, <Activity className="w-5 h-5" />, <FileText className="w-5 h-5" />], title: "No audit entries found", description: "Activity will appear here as users interact with the system." }} />
 
  {total > limit && (
  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">

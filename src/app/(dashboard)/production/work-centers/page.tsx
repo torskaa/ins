@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import { Wrench, Activity, Settings2 } from "lucide-react"
 import { useHotkey } from "@/hooks/use-hotkey"
 
 type WorkCenter = {
@@ -66,7 +67,7 @@ export default function WorkCentersPage() {
  </div>
  <DataTable columns={columns} data={data} searchable searchPlaceholder="Search work centers..." loading={loading}
  onRowClick={(item) => router.push(`/production/work-centers/${item.id}`)}
- empty={{ icons: [, , ], title: "No work centers yet", description: "Add your first work center to start production planning." }}
+ empty={{ icons: [<Wrench className="w-5 h-5" />, <Activity className="w-5 h-5" />, <Settings2 className="w-5 h-5" />], title: "No work centers yet", description: "Add your first work center to start production planning." }}
  />
  </div>
  )

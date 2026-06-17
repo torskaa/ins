@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import { BadgePercent, Percent, Receipt } from "lucide-react"
 import { useHotkey } from "@/hooks/use-hotkey"
 
 type TaxRate = { id: string; name: string; rate: number; type: string; isDefault: boolean; isActive: boolean }
@@ -40,7 +41,7 @@ export default function TaxRatesPage() {
  </div>
  <DataTable columns={columns} data={rates} searchable searchPlaceholder="Search tax rates..." loading={loading}
  onRowClick={(item) => router.push(`/tax-rates/${item.id}/edit`)}
- empty={{ icons: [, , ], title: "No tax rates", description: "Add VAT and withholding tax rates." }}
+ empty={{ icons: [<Percent className="w-5 h-5" />, <BadgePercent className="w-5 h-5" />, <Receipt className="w-5 h-5" />], title: "No tax rates", description: "Add VAT and withholding tax rates." }}
  />
  </div>
  )

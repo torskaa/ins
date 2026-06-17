@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Warehouse, Calculator, Search } from "lucide-react"
+import { Calculator, ClipboardList, Search, Warehouse } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
@@ -147,7 +147,7 @@ export default function StockCountsPage() {
  data={filtered}
  loading={loading}
  empty={{
- icons: [, <Warehouse className="w-5 h-5" />, <Calculator className="w-5 h-5" />],
+ icons: [<ClipboardList className="w-5 h-5" />, <Warehouse className="w-5 h-5" />, <Calculator className="w-5 h-5" />],
  title: "No stock counts yet",
  description: "Start your first inventory count session.",
  }}

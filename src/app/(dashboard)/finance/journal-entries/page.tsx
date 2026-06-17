@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import { BookOpen, FileText, Receipt } from "lucide-react"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { formatDate, formatCurrency } from "@/lib/utils"
 
@@ -40,7 +41,7 @@ export default function JournalEntriesPage() {
  </div>
  <DataTable columns={columns} data={entries} searchable searchPlaceholder="Search entries..." loading={loading}
  onRowClick={(item) => router.push(`/finance/journal-entries/${item.id}`)}
- empty={{ icons: [, , ], title: "No journal entries yet", description: "Create your first journal entry." }}
+ empty={{ icons: [<BookOpen className="w-5 h-5" />, <FileText className="w-5 h-5" />, <Receipt className="w-5 h-5" />], title: "No journal entries yet", description: "Create your first journal entry." }}
  />
  </div>
  )

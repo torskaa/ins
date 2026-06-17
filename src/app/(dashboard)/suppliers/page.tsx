@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { DataTable, statusBadge, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Globe, Search } from "lucide-react"
+import { Award, Building2, Globe, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -123,7 +123,7 @@ export default function SuppliersPage() {
  onRowClick={(item) => router.push(`/suppliers/${item.id}`)}
  loading={loading}
  empty={{
- icons: [, , <Globe className="w-5 h-5" />],
+ icons: [<Building2 className="w-5 h-5" />, <Globe className="w-5 h-5" />, <Award className="w-5 h-5" />],
  title: "No suppliers yet",
  description: "Add your first supplier to start managing vendor relationships.",
  action: { label: "Add Supplier", onClick: () => router.push("/suppliers/new") },

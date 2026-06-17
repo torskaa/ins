@@ -6,7 +6,7 @@ import { DataTable, statusBadge, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search } from "lucide-react"
+import { Calendar, ClipboardList, Search, ShoppingCart } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -155,7 +155,7 @@ function OrdersContent() {
  onRowClick={(item) => router.push(`/orders/${item.id}`)}
  loading={loading}
  empty={{
- icons: [, , ],
+ icons: [<ShoppingCart className="w-5 h-5" />, <ClipboardList className="w-5 h-5" />, <Calendar className="w-5 h-5" />],
  title: `No ${type} orders`,
  description: `Create your first ${type} order to get started.`,
  action: { label: "New Order", onClick: () => router.push(`/orders/new?type=${type}`) },

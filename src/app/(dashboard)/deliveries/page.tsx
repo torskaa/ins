@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
+import { MapPin, Package, Search, Truck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
@@ -169,7 +169,7 @@ export default function DeliveriesPage() {
  data={filtered}
  loading={loading}
  empty={{
- icons: [, , ],
+ icons: [<Truck className="w-5 h-5" />, <Package className="w-5 h-5" />, <MapPin className="w-5 h-5" />],
  title: "No deliveries found",
  description: statusFilter !== "all" ? "No deliveries with this status." : "Create your first delivery.",
  }}

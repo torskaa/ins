@@ -7,7 +7,7 @@ import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Calendar } from "lucide-react"
+import { Calendar, ClipboardList, Package } from "lucide-react"
 import { format } from "date-fns"
 
 type ProdOrder = {
@@ -81,7 +81,7 @@ export default function ProductionOrdersPage() {
  ))}
  </div>
  <DataTable columns={columns} data={filtered} searchable searchPlaceholder="Search orders..." loading={loading}
- empty={{ icons: [, , <Calendar className="w-5 h-5" />],
+ empty={{ icons: [<ClipboardList className="w-5 h-5" />, <Package className="w-5 h-5" />, <Calendar className="w-5 h-5" />],
  title: "No production orders", description: "Create your first manufacturing order." }}
  />
  </div>

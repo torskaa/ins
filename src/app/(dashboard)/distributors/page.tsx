@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { Phone } from "lucide-react"
+import { Building2, Globe, Phone, Users } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
@@ -117,7 +117,7 @@ export default function DistributorsPage() {
  searchPlaceholder="Search distributors..."
  loading={loading}
  empty={{
- icons: [, , ],
+ icons: [<Building2 className="w-5 h-5" />, <Users className="w-5 h-5" />, <Globe className="w-5 h-5" />],
  title: "No distributors yet",
  description: "Add your first distributor to start managing distribution.",
  }}

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { DataTable, statusBadge, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Calendar, Search } from "lucide-react"
+import { Calendar, FileText, Receipt, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -136,7 +136,7 @@ export default function InvoicesPage() {
  onRowClick={(item) => router.push(`/invoices/${item.id}`)}
  loading={loading}
  empty={{
- icons: [, , <Calendar className="w-5 h-5" />],
+ icons: [<FileText className="w-5 h-5" />, <Receipt className="w-5 h-5" />, <Calendar className="w-5 h-5" />],
  title: "No invoices yet",
  description: "Create your first invoice to start tracking payments.",
  action: { label: "Create Invoice", onClick: () => router.push("/invoices/new") },

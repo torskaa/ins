@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { Tags, Search } from "lucide-react"
+import { FolderOpen, Layers, Search, Tags } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -125,7 +125,7 @@ export default function CategoriesPage() {
  data={filtered}
  loading={loading}
  empty={{
- icons: [<Tags className="w-5 h-5" />, , ],
+ icons: [<Tags className="w-5 h-5" />, <Layers className="w-5 h-5" />, <FolderOpen className="w-5 h-5" />],
  title: "No categories yet",
  description: "Create your first category to organize products.",
  action: { label: "Add Category", onClick: () => setShowCreate(true) },

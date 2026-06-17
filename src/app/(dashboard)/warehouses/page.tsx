@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { Warehouse, Building2, Search } from "lucide-react"
+import { Building2, MapPin, Search, Warehouse } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -132,7 +132,7 @@ export default function WarehousesPage() {
  data={filtered}
  loading={loading}
  empty={{
- icons: [<Warehouse className="w-5 h-5" />, , <Building2 className="w-5 h-5" />],
+ icons: [<Warehouse className="w-5 h-5" />, <Building2 className="w-5 h-5" />, <MapPin className="w-5 h-5" />],
  title: "No warehouses yet",
  description: "Create your first warehouse to manage storage locations.",
  action: { label: "Add Warehouse", onClick: () => setShowCreate(true) },

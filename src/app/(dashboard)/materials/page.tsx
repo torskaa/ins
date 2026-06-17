@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { DataTable, statusBadge, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { AlertTriangle, Box, Search } from "lucide-react"
+import { AlertTriangle, Box, Package, Search, Truck } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -141,7 +141,7 @@ export default function MaterialsPage() {
  onRowClick={(item) => router.push(`/materials/${item.id}`)}
  loading={loading}
  empty={{
- icons: [, , <Box className="w-5 h-5" />],
+ icons: [<Package className="w-5 h-5" />, <Box className="w-5 h-5" />, <Truck className="w-5 h-5" />],
  title: "No materials yet",
  description: "Add your first raw material to start building BOMs.",
  action: { label: "Add Material", onClick: () => router.push("/materials/new") },

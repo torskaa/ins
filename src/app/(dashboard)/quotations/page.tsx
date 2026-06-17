@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { DataTable, statusBadge, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { FileSignature, File, Search } from "lucide-react"
+import { File, FileSignature, FileText, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -132,7 +132,7 @@ export default function QuotationsPage() {
  onRowClick={(item) => router.push(`/quotations/${item.id}`)}
  loading={loading}
  empty={{
- icons: [<FileSignature className="w-5 h-5" />, , <File className="w-5 h-5" />],
+ icons: [<FileSignature className="w-5 h-5" />, <FileText className="w-5 h-5" />, <File className="w-5 h-5" />],
  title: "No quotations yet",
  description: "Create your first quotation from product catalog data.",
  action: { label: "Create Quotation", onClick: () => router.push("/quotations/new") },
