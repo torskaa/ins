@@ -526,133 +526,105 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
-      {/* Tabs — Full Width Below */}
-      <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="w-full overflow-x-auto">
-          <TabsTrigger value="bom"><Layers className="w-4 h-4" /> BOM</TabsTrigger>
-          <TabsTrigger value="orders"><ShoppingCart className="w-4 h-4" /> Orders</TabsTrigger>
-          <TabsTrigger value="invoices"><FileText className="w-4 h-4" /> Invoices</TabsTrigger>
-          <TabsTrigger value="movements"><Boxes className="w-4 h-4" /> Movements</TabsTrigger>
-          <TabsTrigger value="lots"><Hash className="w-4 h-4" /> Lots</TabsTrigger>
-          <TabsTrigger value="pricing"><DollarSign className="w-4 h-4" /> Supplier Pricing</TabsTrigger>
-        </TabsList>
+      {/* Unified Tab Module */}
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <Tabs value={tab} onValueChange={setTab}>
+          <TabsList className="w-full overflow-x-auto px-4 bg-muted/20">
+            <TabsTrigger value="bom"><Layers className="w-4 h-4" /> BOM</TabsTrigger>
+            <TabsTrigger value="orders"><ShoppingCart className="w-4 h-4" /> Orders</TabsTrigger>
+            <TabsTrigger value="invoices"><FileText className="w-4 h-4" /> Invoices</TabsTrigger>
+            <TabsTrigger value="movements"><Boxes className="w-4 h-4" /> Movements</TabsTrigger>
+            <TabsTrigger value="lots"><Hash className="w-4 h-4" /> Lots</TabsTrigger>
+            <TabsTrigger value="pricing"><DollarSign className="w-4 h-4" /> Supplier Pricing</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="bom">
-          <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-6 flex flex-col">
-              <Card className="flex-1">
-                <CardHeader className="px-4 pt-4 pb-0">
-                  <div className="flex items-center gap-2 text-sm font-semibold">
-                    <Layers className="w-4 h-4 text-primary" />
-                    As Finished Good
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4">
-                  {(product.bomAsFinished || []).length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-8 text-center">
-                      <Layers className="w-8 h-8 text-muted-foreground/30 mb-3" />
-                      <p className="text-xs text-muted-foreground mb-3">No BOM linked as finished good</p>
-                      <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5"><Package className="w-3.5 h-3.5" /> Link BOM</Button>
+          <TabsContent value="bom" className="p-4">
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-6 flex flex-col">
+                <Card className="flex-1">
+                  <CardHeader className="px-4 pt-4 pb-0">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <Layers className="w-4 h-4 text-primary" />
+                      As Finished Good
                     </div>
-                  ) : (
-                    <DataTable columns={bomColumns} data={product.bomAsFinished || []} noBorder compact />
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-            <div className="col-span-6 flex flex-col">
-              <Card className="flex-1">
-                <CardHeader className="px-4 pt-4 pb-0">
-                  <div className="flex items-center gap-2 text-sm font-semibold">
-                    <Package className="w-4 h-4 text-primary" />
-                    Where Used
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4">
-                  {(product.bomAsMaterial || []).length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-8 text-center">
-                      <Package className="w-8 h-8 text-muted-foreground/30 mb-3" />
-                      <p className="text-xs text-muted-foreground mb-3">Not used as a component in any BOM</p>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    {(product.bomAsFinished || []).length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-8 text-center">
+                        <Layers className="w-8 h-8 text-muted-foreground/30 mb-3" />
+                        <p className="text-xs text-muted-foreground mb-3">No BOM linked as finished good</p>
+                        <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5"><Package className="w-3.5 h-3.5" /> Link BOM</Button>
+                      </div>
+                    ) : (
+                      <DataTable columns={bomColumns} data={product.bomAsFinished || []} noBorder compact />
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+              <div className="col-span-6 flex flex-col">
+                <Card className="flex-1">
+                  <CardHeader className="px-4 pt-4 pb-0">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <Package className="w-4 h-4 text-primary" />
+                      Where Used
                     </div>
-                  ) : (
-                    <DataTable columns={bomColumns} data={product.bomAsMaterial || []} noBorder compact />
-                  )}
-                </CardContent>
-              </Card>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    {(product.bomAsMaterial || []).length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-8 text-center">
+                        <Package className="w-8 h-8 text-muted-foreground/30 mb-3" />
+                        <p className="text-xs text-muted-foreground mb-3">Not used as a component in any BOM</p>
+                      </div>
+                    ) : (
+                      <DataTable columns={bomColumns} data={product.bomAsMaterial || []} noBorder compact />
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
-        </TabsContent>
+          </TabsContent>
 
-        <TabsContent value="orders">
-          <Card>
-            <CardHeader className="px-4 pt-4 pb-0">
-              <div className="flex items-center gap-2 text-sm font-semibold">
-                <ShoppingCart className="w-4 h-4 text-primary" />
-                Order History ({product.orderItems?.length || 0})
-              </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              <DataTable columns={orderItemColumns} data={product.orderItems || []} searchable searchPlaceholder="Search orders..." noBorder compact />
-            </CardContent>
-          </Card>
-        </TabsContent>
+          <TabsContent value="orders" className="p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-3">
+              <ShoppingCart className="w-4 h-4 text-primary" />
+              Order History ({product.orderItems?.length || 0})
+            </div>
+            <DataTable columns={orderItemColumns} data={product.orderItems || []} searchable searchPlaceholder="Search orders..." noBorder compact />
+          </TabsContent>
 
-        <TabsContent value="invoices">
-          <Card>
-            <CardHeader className="px-4 pt-4 pb-0">
-              <div className="flex items-center gap-2 text-sm font-semibold">
-                <FileText className="w-4 h-4 text-primary" />
-                Invoices ({product.invoiceItems?.length || 0})
-              </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              <DataTable columns={invoiceItemColumns} data={product.invoiceItems || []} searchable searchPlaceholder="Search invoices..." noBorder compact />
-            </CardContent>
-          </Card>
-        </TabsContent>
+          <TabsContent value="invoices" className="p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-3">
+              <FileText className="w-4 h-4 text-primary" />
+              Invoices ({product.invoiceItems?.length || 0})
+            </div>
+            <DataTable columns={invoiceItemColumns} data={product.invoiceItems || []} searchable searchPlaceholder="Search invoices..." noBorder compact />
+          </TabsContent>
 
-        <TabsContent value="movements">
-          <Card>
-            <CardHeader className="px-4 pt-4 pb-0">
-              <div className="flex items-center gap-2 text-sm font-semibold">
-                <Boxes className="w-4 h-4 text-primary" />
-                Stock Movements
-              </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              <DataTable columns={movementColumns} data={product.movements || []} searchable searchPlaceholder="Search movements..." noBorder compact />
-            </CardContent>
-          </Card>
-        </TabsContent>
+          <TabsContent value="movements" className="p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-3">
+              <Boxes className="w-4 h-4 text-primary" />
+              Stock Movements
+            </div>
+            <DataTable columns={movementColumns} data={product.movements || []} searchable searchPlaceholder="Search movements..." noBorder compact />
+          </TabsContent>
 
-        <TabsContent value="lots">
-          <Card>
-            <CardHeader className="px-4 pt-4 pb-0">
-              <div className="flex items-center gap-2 text-sm font-semibold">
-                <Hash className="w-4 h-4 text-primary" />
-                Lot / Serial Number Tracking
-              </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              <DataTable columns={lotColumns} data={product.lots || []} searchable searchPlaceholder="Search lots..." noBorder compact />
-            </CardContent>
-          </Card>
-        </TabsContent>
+          <TabsContent value="lots" className="p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-3">
+              <Hash className="w-4 h-4 text-primary" />
+              Lot / Serial Number Tracking
+            </div>
+            <DataTable columns={lotColumns} data={product.lots || []} searchable searchPlaceholder="Search lots..." noBorder compact />
+          </TabsContent>
 
-        <TabsContent value="pricing">
-          <Card>
-            <CardHeader className="px-4 pt-4 pb-0">
-              <div className="flex items-center gap-2 text-sm font-semibold">
-                <DollarSign className="w-4 h-4 text-primary" />
-                Supplier Prices
-              </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              <DataTable columns={supplierPriceColumns} data={product.supplierPrices || []} searchable searchPlaceholder="Search supplier prices..." compact />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="pricing" className="p-4">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-3">
+              <DollarSign className="w-4 h-4 text-primary" />
+              Supplier Prices
+            </div>
+            <DataTable columns={supplierPriceColumns} data={product.supplierPrices || []} searchable searchPlaceholder="Search supplier prices..." noBorder compact />
+          </TabsContent>
+        </Tabs>
+      </div>
 
       {/* Dialogs */}
       <Dialog open={showAdjust} onOpenChange={setShowAdjust}>
