@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { AlertTriangle, DollarSign, Package, Trash2, TrendingUp, XCircle, ArrowLeftRight, ClipboardList, MoreHorizontal, Pencil } from "lucide-react"
+import { AlertTriangle, Building2, Clock, DollarSign, MapPin, Package, Tags, Trash2, TrendingUp, Warehouse, XCircle, ArrowLeftRight, ClipboardList, MoreHorizontal, Pencil } from "lucide-react"
 import { formatCurrency, formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -322,85 +322,129 @@ export default function MaterialDetailPage({ params }: { params: Promise<{ id: s
  </div>
 
  <div className="space-y-6">
- {editing ? (
- <Card>
- <CardHeader>
- <CardTitle>Relations</CardTitle>
- </CardHeader>
- <CardContent className="space-y-4">
- <div className="space-y-2">
- <Label htmlFor="edit-categoryId">Category</Label>
- <Select
- id="edit-categoryId"
- options={categories.map(c => ({ value: c.id, label: c.name }))}
- placeholder="Select category"
- value={form.categoryId}
- onChange={(e: any) => setForm({ ...form, categoryId: e.target.value })}
- />
- </div>
- <div className="space-y-2">
- <Label htmlFor="edit-supplierId">Supplier</Label>
- <Select
- id="edit-supplierId"
- options={suppliers.map(s => ({ value: s.id, label: s.name }))}
- placeholder="Select supplier"
- value={form.supplierId}
- onChange={(e: any) => setForm({ ...form, supplierId: e.target.value })}
- />
- </div>
- <div className="space-y-2">
- <Label htmlFor="edit-warehouseId">Warehouse</Label>
- <Select
- id="edit-warehouseId"
- options={warehouses.map(w => ({ value: w.id, label: w.name }))}
- placeholder="Select warehouse"
- value={form.warehouseId}
- onChange={(e: any) => setForm({ ...form, warehouseId: e.target.value })}
- />
- </div>
- <div className="space-y-2">
- <Label htmlFor="edit-location">Location</Label>
- <Input id="edit-location" placeholder="Aisle-Bin" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
- </div>
- </CardContent>
- </Card>
- ) : (
- <Card>
- <CardHeader>
- <CardTitle>Details</CardTitle>
- </CardHeader>
- <CardContent className="space-y-3">
- <div>
- <p className="text-xs text-muted-foreground">Category</p>
- <p className="text-sm font-medium">{material.category?.name || "—"}</p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground">Supplier</p>
- <p className="text-sm font-medium">{material.supplier?.name || "—"}</p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground">Warehouse</p>
- <p className="text-sm font-medium">{material.warehouse?.name || "—"}</p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground">Location</p>
- <p className="text-sm font-medium">{material.location || "—"}</p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground">Min Stock Level</p>
- <p className="text-sm font-medium font-mono">{material.minStock}</p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground">Max Stock Level</p>
- <p className="text-sm font-medium font-mono">{material.maxStock || "—"}</p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground">Created</p>
- <p className="text-sm font-medium">{formatDateTime(new Date(material.createdAt))}</p>
- </div>
- </CardContent>
- </Card>
- )}
+  {editing ? (
+  <>
+    <Card>
+      <CardHeader className="px-4 pt-4 pb-0">
+        <div className="flex items-center gap-2 text-sm font-semibold">
+          <Building2 className="w-4 h-4 text-primary" />
+          Organization
+        </div>
+      </CardHeader>
+      <CardContent className="p-4 space-y-3">
+        <div className="space-y-2">
+          <Label htmlFor="edit-categoryId">Category</Label>
+          <Select
+            id="edit-categoryId"
+            options={categories.map(c => ({ value: c.id, label: c.name }))}
+            placeholder="Select category"
+            value={form.categoryId}
+            onChange={(e: any) => setForm({ ...form, categoryId: e.target.value })}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="edit-supplierId">Supplier</Label>
+          <Select
+            id="edit-supplierId"
+            options={suppliers.map(s => ({ value: s.id, label: s.name }))}
+            placeholder="Select supplier"
+            value={form.supplierId}
+            onChange={(e: any) => setForm({ ...form, supplierId: e.target.value })}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="edit-warehouseId">Warehouse</Label>
+          <Select
+            id="edit-warehouseId"
+            options={warehouses.map(w => ({ value: w.id, label: w.name }))}
+            placeholder="Select warehouse"
+            value={form.warehouseId}
+            onChange={(e: any) => setForm({ ...form, warehouseId: e.target.value })}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="edit-location">Location</Label>
+          <Input id="edit-location" placeholder="Aisle-Bin" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+        </div>
+      </CardContent>
+    </Card>
+    <Card>
+      <CardHeader className="px-4 pt-4 pb-0">
+        <div className="flex items-center gap-2 text-sm font-semibold">
+          <Clock className="w-4 h-4 text-primary" />
+          Stock & Metadata
+        </div>
+      </CardHeader>
+      <CardContent className="p-4 space-y-3">
+        <div className="space-y-2">
+          <Label htmlFor="edit-minStock">Min Stock Level</Label>
+          <Input id="edit-minStock" type="number" value={form.minStock} onChange={(e) => setForm({ ...form, minStock: e.target.value })} className="h-8 text-sm" />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="edit-maxStock">Max Stock Level</Label>
+          <Input id="edit-maxStock" type="number" value={form.maxStock} onChange={(e) => setForm({ ...form, maxStock: e.target.value })} className="h-8 text-sm" />
+        </div>
+      </CardContent>
+    </Card>
+  </>
+  ) : (
+  <>
+    <Card>
+      <CardHeader className="px-4 pt-4 pb-0">
+        <div className="flex items-center gap-2 text-sm font-semibold">
+          <Building2 className="w-4 h-4 text-primary" />
+          Organization
+        </div>
+      </CardHeader>
+      <CardContent className="p-4 space-y-2.5">
+        <div className="flex items-center gap-2.5">
+          <Tags className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+          <span className="text-xs text-muted-foreground">Category</span>
+          <span className="text-sm font-medium ml-auto">{material.category?.name || "—"}</span>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <Building2 className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+          <span className="text-xs text-muted-foreground">Supplier</span>
+          <span className="text-sm font-medium ml-auto">{material.supplier?.name || "—"}</span>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <Warehouse className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+          <span className="text-xs text-muted-foreground">Warehouse</span>
+          <span className="text-sm font-medium ml-auto">{material.warehouse?.name || "—"}</span>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <MapPin className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+          <span className="text-xs text-muted-foreground">Location</span>
+          <span className="text-sm font-medium ml-auto">{material.location || "—"}</span>
+        </div>
+      </CardContent>
+    </Card>
+    <Card>
+      <CardHeader className="px-4 pt-4 pb-0">
+        <div className="flex items-center gap-2 text-sm font-semibold">
+          <Clock className="w-4 h-4 text-primary" />
+          Stock & Metadata
+        </div>
+      </CardHeader>
+      <CardContent className="p-4 space-y-2.5">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+          <div className="min-w-0">
+            <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">Min Stock Level</p>
+            <p className="text-sm font-mono font-medium">{material.minStock}</p>
+          </div>
+          <div className="min-w-0">
+            <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">Max Stock Level</p>
+            <p className="text-sm font-mono font-medium">{material.maxStock || "—"}</p>
+          </div>
+        </div>
+        <div className="pt-2 border-t border-border/60">
+          <p className="text-[11px] text-muted-foreground font-medium mb-0.5">Created</p>
+          <p className="text-sm font-medium">{formatDateTime(new Date(material.createdAt))}</p>
+        </div>
+      </CardContent>
+    </Card>
+  </>
+  )}
  </div>
  </div>
 
