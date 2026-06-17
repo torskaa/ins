@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import { XCircle } from "lucide-react"
 
 export default function NewRolePage() {
  const router = useRouter()
@@ -61,7 +62,7 @@ export default function NewRolePage() {
  </CardContent>
  </Card>
  <div className="flex items-center justify-end gap-3">
- <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button loading={loading}>Create Role</Button>
  </div>
  </form>

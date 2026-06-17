@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { formatDate } from "@/lib/utils"
+import { Trash2 } from "lucide-react"
 
 type Account = { id: string; code: string; name: string; type: string; currentBalance: number; openingBalance: number; isActive: boolean; group: { name: string; type: string } }
 type JournalLine = { id: string; debit: number; credit: number; description: string; entry: { number: string; date: string } }
@@ -40,7 +41,7 @@ export default function AccountDetailPage({ params }: { params: Promise<{ id: st
  </div>
  <div className="flex items-center gap-2">
  <Button variant="secondary" size="sm" onClick={() => router.push(`/finance/accounts/${id}/edit`)} className="gap-1.5">Edit</Button>
- <Button variant="ghost" size="sm" onClick={() => { if (window.confirm("Delete this account?")) fetch(`/api/finance/accounts/${id}`, { method: "DELETE" }).then(() => { toast.success("Deleted"); router.push("/finance/accounts") }).catch(() => toast.error("Failed")) }} className="gap-1.5 text-destructive">Delete</Button>
+ <Button variant="ghost" size="sm" onClick={() => { if (window.confirm("Delete this account?")) fetch(`/api/finance/accounts/${id}`, { method: "DELETE" }).then(() => { toast.success("Deleted"); router.push("/finance/accounts") }).catch(() => toast.error("Failed")) }} className="gap-1.5 text-destructive"><Trash2 className="w-4 h-4" /> Delete</Button>
  </div>
  </div>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

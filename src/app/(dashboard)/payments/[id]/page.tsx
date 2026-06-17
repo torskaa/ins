@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { ArrowLeft, DollarSign, CreditCard, Landmark, Edit, Trash2, Hash, Calendar, FileText, Receipt, ShoppingCart } from "lucide-react"
+import { ArrowLeft, Calendar, CreditCard, DollarSign, Edit, FileText, Hash, Landmark, Receipt, ShoppingCart, Trash2, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils"
@@ -172,7 +172,7 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
  <div className="flex items-center gap-2">
  {editing ? (
  <>
- <Button variant="secondary" size="sm" onClick={() => setEditing(false)}>Cancel</Button>
+ <Button variant="secondary" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button size="sm" onClick={handleSave}>Save</Button>
  </>
  ) : (

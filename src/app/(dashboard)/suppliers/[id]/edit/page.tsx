@@ -10,7 +10,7 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { User, Mail, Phone, Globe, Building2, Calendar, Upload, Search, Save } from "lucide-react"
+import { Building2, Calendar, Globe, Mail, Phone, Save, Search, Upload, User, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
 
@@ -330,8 +330,8 @@ export default function EditSupplierPage({ params }: { params: Promise<{ id: str
  <kbd className="px-1.5 py-0.5 rounded border border-border bg-surface text-xs font-mono">⌘S</kbd> to save
  </p>
  <div className="flex items-center gap-3">
- <Button type="button" variant="secondary" onClick={() => router.back()}>Cancel</Button>
- <Button type="submit" loading={saving}>Save Changes</Button>
+ <Button type="button" variant="secondary" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
+ <Button type="submit" loading={saving}><Save className="w-4 h-4" /> Save Changes</Button>
  </div>
  </div>
  </form>

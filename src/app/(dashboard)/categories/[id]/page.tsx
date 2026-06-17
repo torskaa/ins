@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { ArrowLeft, Tags, FolderOpen, Bookmark, Edit, Trash2, Package, Layers, Hash, FileText } from "lucide-react"
+import { ArrowLeft, Bookmark, Edit, FileText, FolderOpen, Hash, Layers, Package, Tags, Trash2, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -138,7 +138,7 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
  <div className="flex items-center gap-2">
  {editing ? (
  <>
- <Button variant="secondary" size="sm" onClick={() => setEditing(false)}>Cancel</Button>
+ <Button variant="secondary" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button size="sm" onClick={handleSave}>Save</Button>
  </>
  ) : (

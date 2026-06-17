@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { FolderOpen, Layers, Search, Tags } from "lucide-react"
+import { FolderOpen, Layers, Search, Tags, XCircle } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -149,7 +149,7 @@ export default function CategoriesPage() {
  </div>
  </div>
  <DialogFooter>
- <Button variant="secondary" onClick={() => setShowCreate(false)}>Cancel</Button>
+ <Button variant="secondary" onClick={() => setShowCreate(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button onClick={handleCreate}>Create</Button>
  </DialogFooter>
  </DialogContent>

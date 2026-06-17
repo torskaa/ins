@@ -10,6 +10,7 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { formatCurrency } from "@/lib/utils"
+import { XCircle } from "lucide-react"
 
 export default function NewQuotationPage() {
  const router = useRouter()
@@ -152,7 +153,7 @@ export default function NewQuotationPage() {
  <div className="flex items-center justify-between border-t pt-4 mt-6">
  <div className="text-lg font-semibold">Total: <span className="font-mono">{formatCurrency(total)}</span></div>
  <div className="flex gap-3">
- <Button variant="secondary" onClick={() => router.back()}>Cancel</Button>
+ <Button variant="secondary" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save Quotation"}</Button>
  </div>
  </div>

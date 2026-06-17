@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { Box } from "lucide-react"
+import { Box, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
 
@@ -74,7 +74,7 @@ export default function EditMaterialPage({ params }: { params: Promise<{ id: str
  </CardContent>
  </Card>
  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
- <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button type="submit" loading={saving}>Update Material</Button>
  </div>
  </form>

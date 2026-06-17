@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Building2 } from "lucide-react"
+import { Building2, ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { SkeletonPageHeader, SkeletonCard } from "@/components/ui/skeleton"
 import { toast } from "sonner"
@@ -179,7 +179,7 @@ function BillingContent() {
  <p className="text-xs text-muted-foreground">Manage through Stripe Customer Portal</p>
  </div>
  </div>
- <Button variant="outline" size="sm" onClick={handlePortal} className="gap-1.5">Open Portal</Button>
+ <Button variant="outline" size="sm" onClick={handlePortal} className="gap-1.5"><ExternalLink className="w-4 h-4" /> Open Portal</Button>
  </div>
  ) : (
  <div className="p-4 rounded-lg bg-surface/50 text-center">

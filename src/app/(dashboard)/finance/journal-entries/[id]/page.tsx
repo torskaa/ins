@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatDate, formatCurrency } from "@/lib/utils"
+import { Trash2 } from "lucide-react"
 
 type JournalEntry = { id: string; number: string; date: string; description: string; totalDebit: number; totalCredit: number; status: string; referenceType: string; referenceId: string; lines: { id: string; debit: number; credit: number; description: string; account: { code: string; name: string; type: string; group: { name: string } } }[] }
 
@@ -33,7 +34,7 @@ export default function JournalEntryDetailPage({ params }: { params: Promise<{ i
  <div className="flex items-center gap-2"><h1>Journal Entry #{entry.number}</h1><Badge>{entry.status}</Badge></div>
  <p className="text-muted-foreground text-sm">{formatDate(new Date(entry.date))}{entry.referenceType ? ` · ${entry.referenceType}` : ""}</p>
  </div>
- <Button variant="ghost" size="sm" onClick={() => { if (window.confirm("Delete this entry?")) fetch(`/api/finance/journal-entries/${id}`, { method: "DELETE" }).then(() => { toast.success("Deleted"); router.push("/finance/journal-entries") }).catch(() => toast.error("Failed")) }} className="gap-1.5 text-destructive">Delete</Button>
+ <Button variant="ghost" size="sm" onClick={() => { if (window.confirm("Delete this entry?")) fetch(`/api/finance/journal-entries/${id}`, { method: "DELETE" }).then(() => { toast.success("Deleted"); router.push("/finance/journal-entries") }).catch(() => toast.error("Failed")) }} className="gap-1.5 text-destructive"><Trash2 className="w-4 h-4" /> Delete</Button>
  </div>
  {entry.description && <p className="mb-6 text-sm">{entry.description}</p>}
 

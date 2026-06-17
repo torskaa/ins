@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SkeletonDetail } from "@/components/ui/skeleton"
-import { ArrowLeft, BookOpen, Clock, User, Calendar, Edit3, ThumbsUp, ThumbsDown, Share2, Bookmark, Printer, Tag } from "lucide-react"
+import { ArrowLeft, BookOpen, Bookmark, Calendar, Clock, Edit3, Printer, Share2, Tag, ThumbsDown, ThumbsUp, User } from "lucide-react"
 import { toast } from "sonner"
 
 type Article = {
@@ -119,7 +119,7 @@ export default function WikiArticlePage({ params }: { params: Promise<{ id: stri
  <Share2 className="w-3.5 h-3.5" />
  Share
  </Button>
- <Button variant="ghost" size="sm" className="gap-1.5 h-8">Print</Button>
+ <Button variant="ghost" size="sm" className="gap-1.5 h-8"><Printer className="w-4 h-4" /> Print</Button>
  <Button variant="ghost" size="sm" className="gap-1.5 h-8" onClick={() => router.push(`/knowledge/wiki/${id}/edit`)}>
  Edit
  </Button>

@@ -10,6 +10,7 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
+import { XCircle } from "lucide-react"
 
 const TYPE_OPTIONS = [
  { value: "Course", label: "Course" },
@@ -102,7 +103,7 @@ export default function EditTrainingPage({ params }: { params: Promise<{ id: str
  </Card>
 
  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
- <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button type="submit" loading={saving}>Update Program</Button>
  </div>
  </form>

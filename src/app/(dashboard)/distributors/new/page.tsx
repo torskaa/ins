@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { ArrowLeft, Building2, User, MapPin, Phone, Mail, FileText, Hash, Calendar, MessageSquare } from "lucide-react"
+import { ArrowLeft, Building2, Calendar, FileText, Hash, Mail, MapPin, MessageSquare, Phone, User, XCircle } from "lucide-react"
 
 const STATUS_OPTIONS = [
  { value: "active", label: "Active" },
@@ -167,7 +167,7 @@ export default function NewDistributorPage() {
  </Card>
 
  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
- <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button type="submit" loading={loading}>Create Distributor</Button>
  </div>
  </form>

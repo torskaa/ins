@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
 import { toast } from "sonner"
+import { XCircle } from "lucide-react"
 
 type Product = { id: string; name: string; sku: string }
 type BOM = { id: string; finishedGoodId: string; version: string; status: string }
@@ -178,7 +179,7 @@ export default function NewProductionOrderPage() {
  </Card>
 
  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
- <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button type="submit" loading={loading}>Create Production Order</Button>
  </div>
  </form>

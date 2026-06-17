@@ -9,6 +9,7 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
+import { XCircle } from "lucide-react"
 type Option = { id: string; name: string; sku: string; type: string }
 type MaterialRow = {
  key: string
@@ -278,7 +279,7 @@ export default function NewBOMPage() {
  <kbd className="px-1.5 py-0.5 rounded border border-border bg-surface text-xs font-mono">⌘S</kbd> to save
  </p>
  <div className="flex items-center gap-3">
- <Button type="button" variant="secondary" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="secondary" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button type="submit" loading={saving}>Create BOM</Button>
  </div>
  </div>

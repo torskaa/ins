@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Upload, FileIcon } from "lucide-react"
+import { FileIcon, Upload, XCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 
@@ -148,7 +148,7 @@ export default function NewDocumentPage() {
  </CardContent>
  </Card>
  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
- <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button type="submit" disabled={!file} loading={loading} className="gap-1.5">Upload Document <ShortcutBadge shortcut="⌘U" /></Button>
  </div>
  </form>

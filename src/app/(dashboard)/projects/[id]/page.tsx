@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
-import { FolderKanban } from "lucide-react"
+import { FolderKanban, Trash2, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { formatDate, formatCurrency } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -85,7 +85,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
  </div>
  )}
  <Button variant="ghost" size="sm" onClick={() => router.push(`/projects/${id}/edit`)} className="gap-1.5">Edit</Button>
- <Button variant="ghost" size="sm" onClick={() => { if (window.confirm("Delete project?")) fetch(`/api/projects/${id}`, { method: "DELETE" }).then(() => { toast.success("Deleted"); router.push("/projects") }) }} className="gap-1.5 text-destructive">Delete</Button>
+ <Button variant="ghost" size="sm" onClick={() => { if (window.confirm("Delete project?")) fetch(`/api/projects/${id}`, { method: "DELETE" }).then(() => { toast.success("Deleted"); router.push("/projects") }) }} className="gap-1.5 text-destructive"><Trash2 className="w-4 h-4" /> Delete</Button>
  </div>
  </div>
 
@@ -111,7 +111,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
  <div className="space-y-2"><Label>Due</Label><Input type="date" value={taskForm.dueDate} onChange={(e) => setTaskForm({ ...taskForm, dueDate: e.target.value })} /></div>
  <div className="space-y-2"><Label>Hours</Label><Input type="number" min="0" value={taskForm.estimatedHours} onChange={(e) => setTaskForm({ ...taskForm, estimatedHours: e.target.value })} /></div>
  </div>
- <div className="flex justify-end gap-2 pt-2"><Button type="button" variant="ghost" size="sm" onClick={() => setShowAddTask(false)}>Cancel</Button><Button type="submit" size="sm">Add</Button></div>
+ <div className="flex justify-end gap-2 pt-2"><Button type="button" variant="ghost" size="sm" onClick={() => setShowAddTask(false)}><XCircle className="w-4 h-4" /> Cancel</Button><Button type="submit" size="sm">Add</Button></div>
  </form>
  )}
 

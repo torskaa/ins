@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { ArrowLeft, Warehouse, MapPin, Building2, Edit, Trash2, Package, PackagePlus, Hash, Layers, Calendar } from "lucide-react"
+import { ArrowLeft, Building2, Calendar, Edit, Hash, Layers, MapPin, Package, PackagePlus, Trash2, Warehouse, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { formatCurrency, formatDateTime } from "@/lib/utils"
@@ -181,7 +181,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  <div className="flex items-center gap-2">
  {editing ? (
  <>
- <Button variant="secondary" size="sm" onClick={() => setEditing(false)}>Cancel</Button>
+ <Button variant="secondary" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button size="sm" onClick={handleSave}>Save</Button>
  </>
  ) : (

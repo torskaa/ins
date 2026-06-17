@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { ArrowLeft, Truck, MapPin, Phone, Mail, User, Edit, Trash2, Hash, Calendar, Package, ClipboardList } from "lucide-react"
+import { ArrowLeft, Calendar, ClipboardList, Edit, Hash, Mail, MapPin, Package, Phone, Trash2, Truck, User, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -181,7 +181,7 @@ export default function DistributorDetailPage({ params }: { params: Promise<{ id
  <div className="flex items-center gap-2">
  {editing ? (
  <>
- <Button variant="secondary" size="sm" onClick={() => setEditing(false)}>Cancel</Button>
+ <Button variant="secondary" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button size="sm" onClick={handleSave}>Save</Button>
  </>
  ) : (
@@ -260,6 +260,7 @@ export default function DistributorDetailPage({ params }: { params: Promise<{ id
  Info
  </TabsTrigger>
  <TabsTrigger value="deliveries" className="gap-1.5">
+ <Truck className="w-4 h-4" />
  Deliveries
  {distributor._count.deliveries > 0 && (
  <span className="ml-1 text-[11px] text-muted-foreground">({distributor._count.deliveries})</span>

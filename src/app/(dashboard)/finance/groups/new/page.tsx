@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import { XCircle } from "lucide-react"
 
 const GROUP_TYPES = [
  { value: "asset", label: "Asset" }, { value: "liability", label: "Liability" },
@@ -49,7 +50,7 @@ export default function NewGroupPage() {
  </CardContent>
  </Card>
  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
- <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button type="submit" loading={loading}>Create Group</Button>
  </div>
  </form>

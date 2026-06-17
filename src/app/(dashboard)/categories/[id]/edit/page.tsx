@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
+import { XCircle } from "lucide-react"
 
 export default function EditCategoryPage({ params }: { params: Promise<{ id: string }> }) {
  const { id } = use(params)
@@ -64,7 +65,7 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
  </CardContent>
  </Card>
  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
- <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button type="submit" loading={loading}>Update Category</Button>
  </div>
  </form>

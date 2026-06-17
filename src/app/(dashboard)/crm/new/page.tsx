@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import { XCircle } from "lucide-react"
 
 export default function NewCustomerPage() {
  const router = useRouter()
@@ -82,7 +83,7 @@ export default function NewCustomerPage() {
  </div>
  <div className="flex items-center gap-3 pt-4">
  <Button type="submit" loading={loading}>Create Customer</Button>
- <Button type="button" variant="secondary" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="secondary" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  </div>
  </CardContent>
  </Card>

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Warehouse } from "lucide-react"
+import { Warehouse, XCircle } from "lucide-react"
 import { toast } from "sonner"
 
 export default function NewWarehousePage() {
@@ -61,7 +61,7 @@ export default function NewWarehousePage() {
  </CardContent>
  </Card>
  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
- <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button type="submit" loading={loading}>Create Warehouse</Button>
  </div>
  </form>

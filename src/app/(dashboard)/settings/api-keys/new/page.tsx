@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { Key, Copy } from "lucide-react"
+import { Copy, Key, XCircle } from "lucide-react"
 
 export default function NewApiKeyPage() {
  const router = useRouter()
@@ -90,7 +90,7 @@ export default function NewApiKeyPage() {
  </CardContent>
  </Card>
  <div className="flex items-center justify-end gap-3">
- <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button loading={loading}>Create API Key</Button>
  </div>
  </form>

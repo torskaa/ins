@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { formatCurrency } from "@/lib/utils"
+import { XCircle } from "lucide-react"
 
 export default function NewInvoicePage() {
  const router = useRouter()
@@ -154,7 +155,7 @@ export default function NewInvoicePage() {
  <div className="flex items-center justify-between border-t pt-4">
  <div className="text-lg font-semibold">Subtotal: <span className="font-mono">{formatCurrency(subtotal)}</span></div>
  <div className="flex gap-3">
- <Button variant="secondary" onClick={() => router.back()}>Cancel</Button>
+ <Button variant="secondary" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button onClick={handleSave} loading={saving}>Create Invoice</Button>
  </div>
  </div>

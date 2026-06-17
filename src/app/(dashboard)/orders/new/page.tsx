@@ -10,6 +10,7 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { formatCurrency } from "@/lib/utils"
+import { XCircle } from "lucide-react"
 
 function NewOrderForm() {
  const router = useRouter()
@@ -183,7 +184,7 @@ function NewOrderForm() {
  Total: <span className="font-mono">{formatCurrency(total)}</span>
  </div>
  <div className="flex items-center gap-3">
- <Button type="button" variant="secondary" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="secondary" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button type="submit" loading={loading}>Create Order</Button>
  </div>
  </div>

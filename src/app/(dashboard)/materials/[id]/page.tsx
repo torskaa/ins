@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
-import { AlertTriangle } from "lucide-react"
+import { AlertTriangle, Trash2, XCircle } from "lucide-react"
 import { formatCurrency, formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
@@ -182,7 +182,7 @@ export default function MaterialDetailPage({ params }: { params: Promise<{ id: s
  {editing ? (
  <>
  <Button size="sm" onClick={handleSave}>Save</Button>
- <Button variant="secondary" size="sm" onClick={() => setEditing(false)}>Cancel</Button>
+ <Button variant="secondary" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
  </>
  ) : (
  <>
@@ -412,7 +412,7 @@ export default function MaterialDetailPage({ params }: { params: Promise<{ id: s
  </div>
  </div>
  <DialogFooter>
- <Button variant="secondary" onClick={() => setShowAdjust(false)}>Cancel</Button>
+ <Button variant="secondary" onClick={() => setShowAdjust(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button onClick={handleAdjust}>Save</Button>
  </DialogFooter>
  </DialogContent>
@@ -427,8 +427,8 @@ export default function MaterialDetailPage({ params }: { params: Promise<{ id: s
  </DialogDescription>
  </DialogHeader>
  <DialogFooter>
- <Button variant="secondary" onClick={() => setShowDelete(false)}>Cancel</Button>
- <Button variant="destructive" onClick={handleDelete} loading={deleting}>Delete</Button>
+ <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+ <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
  </DialogFooter>
  </DialogContent>
  </Dialog>

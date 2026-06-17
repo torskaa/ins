@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { ArrowLeft, ClipboardList, Warehouse, Calendar, Hash, Plus, Trash2, Package } from "lucide-react"
+import { ArrowLeft, Calendar, ClipboardList, Hash, Package, Plus, Trash2, Warehouse, XCircle } from "lucide-react"
 
 const STATUS_OPTIONS = [
  { value: "draft", label: "Draft" },
@@ -182,7 +182,7 @@ export default function NewStockCountPage() {
  </Card>
 
  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
- <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button type="submit" loading={loading}>Create Stock Count</Button>
  </div>
  </form>

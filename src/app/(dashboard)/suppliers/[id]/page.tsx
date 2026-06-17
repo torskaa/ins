@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formatCurrency, formatDateTime } from "@/lib/utils"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
-import { Building2, Mail, Phone, Globe, User, Award, BadgePercent, CalendarDays } from "lucide-react"
+import { Award, BadgePercent, Building2, CalendarDays, DollarSign, Globe, Mail, Package, Phone, ShoppingCart, Trash2, User, XCircle } from "lucide-react"
 import { SkeletonDetail } from "@/components/ui/skeleton"
 
 interface SupplierPrice {
@@ -250,8 +250,9 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  <Button variant="secondary" size="sm" onClick={() => router.push(`/suppliers/${id}/edit`)} className="gap-1.5">
  Edit
  </Button>
- <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)} className="gap-1.5">
- </Button>
+  <Button variant="destructive" size="sm" onClick={() => setShowDelete(true)} className="gap-1.5">
+  <Trash2 className="w-4 h-4" /> Delete
+  </Button>
  </div>
  </div>
  </CardContent>
@@ -316,11 +317,11 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  <Tabs value={tab} onValueChange={setTab}>
  <div className="px-6 pt-4 border-b border-border">
  <TabsList>
- <TabsTrigger value="info" className="gap-1.5"><Building2 className="w-4 h-4" />Info</TabsTrigger>
- <TabsTrigger value="products" className="gap-1.5">Products</TabsTrigger>
- <TabsTrigger value="purchase-orders" className="gap-1.5">Purchase Orders</TabsTrigger>
- <TabsTrigger value="lots" className="gap-1.5">Lots</TabsTrigger>
- <TabsTrigger value="pricing" className="gap-1.5">Pricing</TabsTrigger>
+  <TabsTrigger value="info" className="gap-1.5"><Building2 className="w-4 h-4" />Info</TabsTrigger>
+  <TabsTrigger value="products" className="gap-1.5"><Package className="w-4 h-4" />Products</TabsTrigger>
+  <TabsTrigger value="purchase-orders" className="gap-1.5"><ShoppingCart className="w-4 h-4" />Purchase Orders</TabsTrigger>
+  <TabsTrigger value="lots" className="gap-1.5"><Package className="w-4 h-4" />Lots</TabsTrigger>
+  <TabsTrigger value="pricing" className="gap-1.5"><DollarSign className="w-4 h-4" />Pricing</TabsTrigger>
  </TabsList>
  </div>
 
@@ -482,8 +483,8 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  </DialogDescription>
  </DialogHeader>
  <DialogFooter>
- <Button variant="secondary" onClick={() => setShowDelete(false)}>Cancel</Button>
- <Button variant="destructive" onClick={handleDelete} loading={deleting}>Delete</Button>
+ <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+ <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
  </DialogFooter>
  </DialogContent>
  </Dialog>

@@ -13,7 +13,7 @@ import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { ChevronDown, ChevronRight, Upload, X, ImageIcon, Link2, CheckCircle, AlertCircle, Plus, Trash2 } from "lucide-react"
+import { AlertCircle, CheckCircle, ChevronDown, ChevronRight, ImageIcon, Link2, Plus, Trash2, Upload, X, XCircle } from "lucide-react"
 
 const CURRENCIES = [
  { value: "THB", label: "THB (฿)" },
@@ -546,7 +546,7 @@ export default function NewMaterialPage() {
  <span className="hidden sm:inline"><kbd className="px-1.5 py-0.5 rounded border border-border bg-surface text-[10px] font-mono">⌘S</kbd> to save</span>
  </div>
  <div className="flex items-center gap-3">
- <Button type="button" variant="ghost" onClick={() => router.back()} className="text-sm text-muted-foreground hover:text-foreground">Cancel</Button>
+ <Button type="button" variant="ghost" onClick={() => router.back()} className="text-sm text-muted-foreground hover:text-foreground"><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button loading={loading} onClick={() => formRef.current?.requestSubmit()} className="px-6">Create Material</Button>
  </div>
  </div>

@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { formatCurrency } from "@/lib/utils"
 import { SkeletonForm } from "@/components/ui/skeleton"
+import { XCircle } from "lucide-react"
 
 export default function EditInvoicePage() {
  const router = useRouter()
@@ -88,7 +89,7 @@ export default function EditInvoicePage() {
  </CardContent>
  </Card>
  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
- <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button type="submit" loading={loading}>Update Invoice</Button>
  </div>
  </form>

@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Settings2, Circle } from "lucide-react"
+import { Circle, Settings2, XCircle } from "lucide-react"
 import { toast } from "sonner"
 
 type Workflow = { id: string; name: string; entityType: string; isActive: boolean; states: WorkflowState[]; transitions: WorkflowTransition[] }
@@ -75,7 +75,7 @@ export default function WorkflowsPage() {
  <div className="space-y-1"><Label>Name</Label><Input value={newForm.name} onChange={(e) => setNewForm({ ...newForm, name: e.target.value })} placeholder="Order Workflow" /></div>
  <div className="space-y-1"><Label>Entity Type</Label><Select options={ENTITY_TYPES} value={newForm.entityType} onChange={(e: any) => setNewForm({ ...newForm, entityType: e.target.value })} /></div>
  </div>
- <div className="flex justify-end gap-2 pt-2"><Button variant="ghost" onClick={() => setShowNew(false)}>Cancel</Button><Button onClick={createWorkflow}>Create</Button></div>
+ <div className="flex justify-end gap-2 pt-2"><Button variant="ghost" onClick={() => setShowNew(false)}><XCircle className="w-4 h-4" /> Cancel</Button><Button onClick={createWorkflow}>Create</Button></div>
  </CardContent>
  </Card>
  )}
