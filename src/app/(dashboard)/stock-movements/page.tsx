@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { Select } from "@/components/ui/select"
-import { Activity, Warehouse, Search } from "lucide-react"
+import { Activity, Package, Warehouse, Search } from "lucide-react"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
 import { formatDate, formatCurrency } from "@/lib/utils"
@@ -84,7 +84,7 @@ export default function StockMovementsPage() {
  </div>
  </div>
  <DataTable columns={columns} data={filtered} loading={loading}
- empty={{ icons: [<Activity className="w-5 h-5" />, , <Warehouse className="w-5 h-5" />], title: "No movements yet", description: "Stock movements are recorded automatically." }}
+  empty={{ icons: [<Activity className="w-5 h-5" />, <Package className="w-5 h-5" />, <Warehouse className="w-5 h-5" />], title: "No movements yet", description: "Stock movements are recorded automatically." }}
  />
  </div>
  )
