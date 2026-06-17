@@ -80,7 +80,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       <div className="page-header mb-5"><h1>Edit Product</h1><p>{form.sku} · {form.name}</p></div>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-8 space-y-4">
+          <div className="col-span-8 flex flex-col gap-4">
             <Card>
               <CardHeader className="px-4 pt-4 pb-0">
                 <div className="flex items-center gap-2 text-sm font-semibold">
@@ -105,7 +105,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="flex-1">
               <CardHeader className="px-4 pt-4 pb-0">
                 <div className="flex items-center gap-2 text-sm font-semibold">
                   <DollarSign className="w-4 h-4 text-primary" />
@@ -126,8 +126,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             </Card>
           </div>
 
-          <div className="col-span-4 space-y-4">
-            <Card>
+          <div className="col-span-4 flex flex-col gap-4">
+            <Card className="flex-1">
               <CardHeader className="px-4 pt-4 pb-0">
                 <div className="flex items-center gap-2 text-sm font-semibold">
                   <Boxes className="w-4 h-4 text-primary" />

@@ -92,7 +92,7 @@ export default function NewQuotationPage() {
       <div className="page-header"><h1>New Quotation</h1><p>Create a quotation from product catalog</p></div>
 
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-8 space-y-4">
+          <div className="col-span-8 flex flex-col gap-4">
           <Card>
             <CardHeader className="px-4 pt-4 pb-0">
               <div className="flex items-center gap-2 text-sm font-semibold">
@@ -120,9 +120,9 @@ export default function NewQuotationPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="px-4 pt-4 pb-0">
-              <div className="flex items-center justify-between">
+            <Card className="flex-1">
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm font-semibold">
                   <Package className="w-4 h-4" />
                   Items (from catalog)
@@ -173,12 +173,12 @@ export default function NewQuotationPage() {
           </Card>
         </div>
 
-        <div className="col-span-4 space-y-4">
-          <Card>
-            <CardHeader className="px-4 pt-4 pb-0">
-              <div className="flex items-center gap-2 text-sm font-semibold">
-                <Receipt className="w-4 h-4" />
-                Summary
+          <div className="col-span-4 flex flex-col gap-4">
+            <Card className="flex-1">
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Receipt className="w-4 h-4" />
+                  Summary
               </div>
             </CardHeader>
             <CardContent className="p-4 space-y-3">

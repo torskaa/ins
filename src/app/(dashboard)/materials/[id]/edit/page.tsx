@@ -62,7 +62,7 @@ export default function EditMaterialPage({ params }: { params: Promise<{ id: str
       <div className="page-header"><h1>Edit Material</h1><p>{form.sku} · {form.name}</p></div>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-8 space-y-4">
+          <div className="col-span-8 flex flex-col gap-4">
             <Card>
               <CardHeader className="px-4 pt-4 pb-0">
                 <div className="flex items-center gap-2 text-sm font-semibold">
@@ -104,11 +104,11 @@ export default function EditMaterialPage({ params }: { params: Promise<{ id: str
                 </div>
               </CardContent>
             </Card>
-
-            <Card>
+            <Card className="flex-1">
               <CardHeader className="px-4 pt-4 pb-0">
                 <div className="flex items-center gap-2 text-sm font-semibold">
-                  <Truck className="w-4 h-4" /> Procurement
+                  <Truck className="w-4 h-4" />
+                  Procurement
                 </div>
               </CardHeader>
               <CardContent className="p-4 space-y-3">
@@ -132,7 +132,7 @@ export default function EditMaterialPage({ params }: { params: Promise<{ id: str
             </Card>
           </div>
 
-          <div className="col-span-4 space-y-4" />
+          <div className="col-span-4 flex flex-col gap-4" />
         </div>
 
         <div className="sticky bottom-0 bg-background flex items-center justify-end gap-3 pt-4 border-t border-border mt-4 shadow-lg shadow-black/5">

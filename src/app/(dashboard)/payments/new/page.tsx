@@ -74,8 +74,8 @@ export default function NewPaymentPage() {
       <div className="page-header mb-5"><h1>Record Payment</h1></div>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-8 space-y-4">
-            <Card>
+          <div className="col-span-8 flex flex-col gap-4">
+            <Card className="flex-1">
               <CardHeader className="px-4 pt-4 pb-0">
                 <div className="flex items-center gap-2 text-sm font-semibold">
                   <Banknote className="w-4 h-4 text-primary" />
@@ -106,8 +106,8 @@ export default function NewPaymentPage() {
             </Card>
           </div>
 
-          <div className="col-span-4 space-y-4">
-            <Card>
+          <div className="col-span-4 flex flex-col gap-4">
+            <Card className="flex-1">
               <CardHeader className="px-4 pt-4 pb-0">
                 <div className="flex items-center gap-2 text-sm font-semibold">
                   <ShoppingCart className="w-4 h-4 text-primary" />

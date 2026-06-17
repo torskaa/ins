@@ -40,8 +40,8 @@ export default function NewTaxRatePage() {
       <div className="page-header mb-5"><h1>New Tax Rate</h1><p>Add a tax rate for VAT or withholding</p></div>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-8 space-y-4">
-            <Card>
+          <div className="col-span-8 flex flex-col gap-4">
+            <Card className="flex-1">
               <CardHeader className="px-4 pt-4 pb-0">
                 <div className="flex items-center gap-2">
                   <Percent className="w-4 h-4" />
@@ -67,7 +67,7 @@ export default function NewTaxRatePage() {
               </CardContent>
             </Card>
           </div>
-          <div className="col-span-4 space-y-4">
+          <div className="col-span-4 flex flex-col gap-4">
           </div>
         </div>
         <div className="flex items-center justify-end gap-3 pt-4 mt-4 border-t border-border">

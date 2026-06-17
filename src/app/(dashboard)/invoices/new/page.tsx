@@ -100,7 +100,7 @@ export default function NewInvoicePage() {
       <div className="page-header mb-5"><h1>New Invoice</h1><p>Create a customer invoice</p></div>
 
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-8 space-y-4">
+          <div className="col-span-8 flex flex-col gap-4">
           <Card>
             <CardHeader className="px-4 pt-4 pb-0">
               <div className="flex items-center gap-2 text-sm font-semibold">
@@ -126,12 +126,12 @@ export default function NewInvoicePage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="px-4 pt-4 pb-0">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm font-semibold">
-                  <Package className="w-4 h-4 text-primary" />
-                  Invoice Items
+            <Card className="flex-1">
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <Package className="w-4 h-4 text-primary" />
+                    Invoice Items
                 </div>
                 <Button type="button" variant="outline" size="sm" onClick={addItem} className="h-7 text-xs">Add Item</Button>
               </div>
@@ -169,12 +169,12 @@ export default function NewInvoicePage() {
           </Card>
         </div>
 
-        <div className="col-span-4 space-y-4">
-          <Card>
-            <CardHeader className="px-4 pt-4 pb-0">
-              <div className="flex items-center gap-2 text-sm font-semibold">
-                <DollarSign className="w-4 h-4 text-primary" />
-                Summary
+          <div className="col-span-4 flex flex-col gap-4">
+            <Card className="flex-1">
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <DollarSign className="w-4 h-4 text-primary" />
+                  Summary
               </div>
             </CardHeader>
             <CardContent className="p-4 space-y-3">

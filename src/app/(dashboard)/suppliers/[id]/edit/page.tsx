@@ -152,7 +152,7 @@ export default function EditSupplierPage({ params }: { params: Promise<{ id: str
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-8 space-y-4">
+          <div className="col-span-8 flex flex-col gap-4">
             <Card>
               <CardHeader className="px-4 pt-4 pb-0">
                 <div className="flex items-center gap-2">
@@ -226,7 +226,7 @@ export default function EditSupplierPage({ params }: { params: Promise<{ id: str
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="flex-1">
               <CardHeader className="px-4 pt-4 pb-0">
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-muted-foreground" />
@@ -286,8 +286,8 @@ export default function EditSupplierPage({ params }: { params: Promise<{ id: str
             </Card>
           </div>
 
-          <div className="col-span-4 space-y-4">
-            <Card>
+          <div className="col-span-4 flex flex-col gap-4">
+            <Card className="flex-1">
               <CardHeader className="px-4 pt-4 pb-0">
                 <div className="flex items-center gap-2">
                   <DollarSign className="w-4 h-4 text-muted-foreground" />

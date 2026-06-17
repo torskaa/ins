@@ -86,8 +86,8 @@ export default function NewDocumentPage() {
       <div className="page-header mb-5"><h1>Upload Document</h1><p>Add a file to Document Center</p></div>
       <form ref={formRef} onSubmit={handleSubmit}>
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-8 space-y-4">
-            <Card>
+          <div className="col-span-8 flex flex-col gap-4">
+            <Card className="flex-1">
               <CardHeader className="px-4 pt-4 pb-0">
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-muted-foreground" />
@@ -160,7 +160,7 @@ export default function NewDocumentPage() {
               </CardContent>
             </Card>
           </div>
-          <div className="col-span-4 space-y-4" />
+          <div className="col-span-4 flex flex-col gap-4" />
         </div>
         <div className="flex items-center justify-end gap-3 pt-4 mt-4 border-t border-border">
           <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>

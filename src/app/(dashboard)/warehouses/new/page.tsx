@@ -82,7 +82,7 @@ export default function NewWarehousePage() {
       </button>
       <div className="page-header"><h1>New Warehouse</h1></div>
       <form onSubmit={handleSubmit} className="grid grid-cols-12 gap-4">
-        <div className="col-span-8 space-y-4">
+        <div className="col-span-8 flex flex-col gap-4">
           <Card>
             <CardHeader className="px-4 pt-4 pb-0">
               <div className="flex items-center gap-2 text-sm font-semibold">
@@ -146,7 +146,7 @@ export default function NewWarehousePage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="flex-1">
             <CardHeader className="px-4 pt-4 pb-0">
               <div className="flex items-center gap-2 text-sm font-semibold">
                 <Gauge className="w-4 h-4" />
@@ -182,7 +182,7 @@ export default function NewWarehousePage() {
           </Card>
         </div>
 
-        <div className="col-span-4 space-y-4">
+        <div className="col-span-4 flex flex-col gap-4">
           <Card>
             <CardHeader className="px-4 pt-4 pb-0">
               <div className="flex items-center gap-2 text-sm font-semibold">
@@ -197,7 +197,7 @@ export default function NewWarehousePage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="flex-1">
             <CardHeader className="px-4 pt-4 pb-0">
               <div className="flex items-center gap-2 text-sm font-semibold">
                 <MapPinned className="w-4 h-4" />
