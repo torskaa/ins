@@ -1,0 +1,78 @@
+"use client"
+
+import { useState, useEffect, use } from "react"
+import { useRouter } from "next/navigation"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
+import { toast } from "sonner"
+import { SkeletonForm } from "@/components/ui/skeleton"
+
+const ACCOUNT_TYPES = [
+ { value: "asset", label: "Asset" }, { value: "liability", label: "Liability" },
+ { value: "equity", label: "Equity" }, { value: "revenue", label: "Revenue" },
+ { value: "expense", label: "Expense" }, { value: "contra_asset", label: "Contra Asset" },
+ { value: "contra_liability", label: "Contra Liability" }, { value: "contra_equity", label: "Contra Equity" },
+]
+
+export default function EditAccountPage({ params }: { params: Promise<{ id: string }> }) {
+ const router = useRouter()
+ const { id } = use(params)
+ const [saving, setSaving] = useState(false)
+ const [fetching, setFetching] = useState(true)
+ const [groups, setGroups] = useState<{ id: string; name: string; type: string }[]>([])
+ const [form, setForm] = useState({ code: "", name: "", type: "asset", groupId: "", isActive: true })
+
+ useEffect(() => {
+ Promise.all([
+ fetch(`/api/finance/accounts/${id}`).then(r => r.json()),
+ fetch("/api/finance/accounts").then(r => r.json()),
+ ]).then(([acc, d]) => {
+ if (acc.error) { toast.error("Not found"); router.push("/finance/accounts"); return }
+ setForm({ code: acc.code || "", name: acc.name || "", type: acc.type || "asset", groupId: acc.groupId || "", isActive: acc.isActive ?? true })
+ if (d.groups) setGroups(d.groups)
+ }).finally(() => setFetching(false))
+ }, [id, router])
+
+ async function handleSubmit(e: React.FormEvent) {
+ e.preventDefault()
+ if (!form.code || !form.name) { toast.error("Code and name are required"); return }
+ setSaving(true)
+ try {
+ const res = await fetch(`/api/finance/accounts/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) })
+ if (!res.ok) throw new Error()
+ toast.success("Account updated"); router.push(`/finance/accounts/${id}`); router.refresh()
+ } catch { toast.error("Failed to update") } finally { setSaving(false) }
+ }
+
+ if (fetching) return <SkeletonForm fields={5} />
+
+ return (
+ <div className="animate-fade-in max-w-2xl">
+ <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">Back</button>
+ <div className="page-header"><h1>Edit Account</h1><p>{form.code} - {form.name}</p></div>
+ <form onSubmit={handleSubmit} className="space-y-5">
+ <Card><CardHeader className="pb-3"><h3 className="text-sm font-semibold">Account Details</h3></CardHeader>
+ <CardContent className="space-y-4 pt-0">
+ <div className="grid grid-cols-2 gap-4">
+ <div className="space-y-2"><Label>Code <span className="text-destructive">*</span></Label><Input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} /></div>
+ <div className="space-y-2"><Label>Name <span className="text-destructive">*</span></Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+ </div>
+ <div className="grid grid-cols-2 gap-4">
+ <div className="space-y-2"><Label>Type</Label><Select options={ACCOUNT_TYPES} value={form.type} onChange={(e: any) => setForm({ ...form, type: e.target.value })} /></div>
+ <div className="space-y-2"><Label>Group</Label><Select options={groups.filter(g => g.type === form.type).map(g => ({ value: g.id, label: g.name }))} value={form.groupId} onChange={(e: any) => setForm({ ...form, groupId: e.target.value })} placeholder="Select group" /></div>
+ </div>
+ <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} className="rounded border-border" /><span className="text-sm">Active</span></label>
+ </CardContent>
+ </Card>
+ <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+ <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="submit" loading={saving}>Update Account</Button>
+ </div>
+ </form>
+ </div>
+ )
+}

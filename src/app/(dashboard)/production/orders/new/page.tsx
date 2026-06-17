@@ -1,0 +1,188 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
+import { Select } from "@/components/ui/select"
+import { toast } from "sonner"
+import { ArrowLeft, Factory, Plus, Trash2 } from "lucide-react"
+
+type Product = { id: string; name: string; sku: string }
+type BOM = { id: string; finishedGoodId: string; version: string; status: string }
+type Warehouse = { id: string; name: string }
+type WorkCenter = { id: string; name: string; code: string }
+
+export default function NewProductionOrderPage() {
+ const router = useRouter()
+ const [loading, setLoading] = useState(false)
+ const [products, setProducts] = useState<Product[]>([])
+ const [boms, setBoms] = useState<BOM[]>([])
+ const [warehouses, setWarehouses] = useState<Warehouse[]>([])
+ const [workCenters, setWorkCenters] = useState<WorkCenter[]>([])
+
+ const [form, setForm] = useState({ number: "", productId: "", bomId: "", quantity: "1", startDate: "", dueDate: "", notes: "", warehouseId: "" })
+ const [materials, setMaterials] = useState<Array<{ productId: string; quantityNeeded: string }>>([])
+ const [operations, setOperations] = useState<Array<{ name: string; workCenterId: string; setupTime: string; runTime: string }>>([])
+
+ useEffect(() => {
+ Promise.all([
+ fetch("/api/products").then(r => r.json()),
+ fetch("/api/bill-of-materials").then(r => r.json()).catch(() => []),
+ fetch("/api/warehouses").then(r => r.json()).catch(() => []),
+ fetch("/api/work-centers").then(r => r.json()).catch(() => []),
+ ]).then(([p, b, w, wc]) => {
+ setProducts(Array.isArray(p) ? p : [])
+ setBoms(Array.isArray(b) ? b : [])
+ setWarehouses(Array.isArray(w) ? w : [])
+ setWorkCenters(Array.isArray(wc) ? wc : [])
+ })
+ }, [])
+
+ async function handleSubmit(e: React.FormEvent) {
+ e.preventDefault()
+ if (!form.number || !form.productId) { toast.error("Order number and product are required"); return }
+ setLoading(true)
+ try {
+ const res = await fetch("/api/production-orders", {
+ method: "POST",
+ headers: { "Content-Type": "application/json" },
+ body: JSON.stringify({
+ ...form,
+ quantity: parseInt(form.quantity) || 1,
+ startDate: form.startDate || null,
+ dueDate: form.dueDate || null,
+ warehouseId: form.warehouseId || null,
+ materials: materials.filter(m => m.productId).map(m => ({ productId: m.productId, quantityNeeded: parseInt(m.quantityNeeded) || 1 })),
+ operations: operations.filter(o => o.name).map((o, i) => ({ ...o, sequence: i + 1, setupTime: parseInt(o.setupTime) || 0, runTime: parseInt(o.runTime) || 0 })),
+ }),
+ })
+ if (!res.ok) throw new Error()
+ toast.success("Production order created")
+ router.push("/production/orders")
+ router.refresh()
+ } catch { toast.error("Failed to create") }
+ finally { setLoading(false) }
+ }
+
+ function addMaterial() { setMaterials([...materials, { productId: "", quantityNeeded: "1" }]) }
+ function addOperation() { setOperations([...operations, { name: "", workCenterId: "", setupTime: "0", runTime: "0" }]) }
+
+ return (
+ <div className="animate-fade-in max-w-3xl">
+ <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
+ Back
+ </button>
+ <div className="page-header"><h1>New Production Order</h1><p>Create a manufacturing order</p></div>
+ <form onSubmit={handleSubmit} className="space-y-5">
+ <Card>
+ <CardHeader className="pb-3"><h3 className="text-sm font-semibold">Order Info</h3></CardHeader>
+ <CardContent className="space-y-4 pt-0">
+ <div className="grid grid-cols-2 gap-4">
+ <div className="space-y-2">
+ <Label htmlFor="number">Order Number <span className="text-destructive">*</span></Label>
+ <div className="relative">
+ <Input id="number" value={form.number} onChange={(e) => setForm({ ...form, number: e.target.value })} placeholder="e.g. MO-2401-001" className="pl-9" required />
+ </div>
+ </div>
+ <div className="space-y-2">
+ <Label htmlFor="productId">Product <span className="text-destructive">*</span></Label>
+ <Select id="productId" options={products.map(p => ({ value: p.id, label: `${p.name} (${p.sku})` }))} placeholder="Select product" value={form.productId} onChange={(e: any) => setForm({ ...form, productId: e.target.value })} />
+ </div>
+ </div>
+ <div className="grid grid-cols-3 gap-4">
+ <div className="space-y-2">
+ <Label htmlFor="bomId">BOM (optional)</Label>
+ <Select id="bomId" options={boms.map(b => ({ value: b.id, label: `v${b.version} ${b.status}` }))} placeholder="Select BOM" value={form.bomId} onChange={(e: any) => setForm({ ...form, bomId: e.target.value })} />
+ </div>
+ <div className="space-y-2">
+ <Label htmlFor="quantity">Quantity</Label>
+ <Input id="quantity" type="number" min="1" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
+ </div>
+ <div className="space-y-2">
+ <Label htmlFor="warehouseId">Warehouse</Label>
+ <Select id="warehouseId" options={warehouses.map(w => ({ value: w.id, label: w.name }))} placeholder="Select warehouse" value={form.warehouseId} onChange={(e: any) => setForm({ ...form, warehouseId: e.target.value })} />
+ </div>
+ </div>
+ <div className="grid grid-cols-2 gap-4">
+ <div className="space-y-2">
+ <Label htmlFor="startDate">Start Date</Label>
+ <Input id="startDate" type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} />
+ </div>
+ <div className="space-y-2">
+ <Label htmlFor="dueDate">Due Date</Label>
+ <Input id="dueDate" type="date" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} />
+ </div>
+ </div>
+ <div className="space-y-2">
+ <Label htmlFor="notes">Notes</Label>
+ <Textarea id="notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} />
+ </div>
+ </CardContent>
+ </Card>
+
+ <Card>
+ <CardHeader className="pb-3 flex flex-row items-center justify-between">
+ <h3 className="text-sm font-semibold">Materials</h3>
+ <Button type="button" variant="outline" size="sm" onClick={addMaterial} className="gap-1">Add</Button>
+ </CardHeader>
+ <CardContent className="space-y-3 pt-0">
+ {materials.length === 0 && <p className="text-sm text-muted-foreground">No materials added yet</p>}
+ {materials.map((m, i) => (
+ <div key={i} className="flex items-end gap-3">
+ <div className="flex-1 space-y-1">
+ <Label className="text-xs">Product</Label>
+ <Select options={products.map(p => ({ value: p.id, label: `${p.name} (${p.sku})` }))} placeholder="Select product" value={m.productId} onChange={(e: any) => { const a = [...materials]; a[i].productId = e.target.value; setMaterials(a) }} />
+ </div>
+ <div className="w-28 space-y-1">
+ <Label className="text-xs">Qty Needed</Label>
+ <Input type="number" min="1" value={m.quantityNeeded} onChange={(e) => { const a = [...materials]; a[i].quantityNeeded = e.target.value; setMaterials(a) }} />
+ </div>
+ <Button type="button" variant="ghost" size="icon" className="mb-0.5" onClick={() => setMaterials(materials.filter((_, j) => j !== i))}></Button>
+ </div>
+ ))}
+ </CardContent>
+ </Card>
+
+ <Card>
+ <CardHeader className="pb-3 flex flex-row items-center justify-between">
+ <h3 className="text-sm font-semibold">Operations</h3>
+ <Button type="button" variant="outline" size="sm" onClick={addOperation} className="gap-1">Add</Button>
+ </CardHeader>
+ <CardContent className="space-y-3 pt-0">
+ {operations.length === 0 && <p className="text-sm text-muted-foreground">No operations added yet</p>}
+ {operations.map((o, i) => (
+ <div key={i} className="flex items-end gap-3">
+ <div className="flex-1 space-y-1">
+ <Label className="text-xs">Operation</Label>
+ <Input value={o.name} onChange={(e) => { const a = [...operations]; a[i].name = e.target.value; setOperations(a) }} placeholder="e.g. Cut" />
+ </div>
+ <div className="w-44 space-y-1">
+ <Label className="text-xs">Work Center</Label>
+ <Select options={workCenters.map(w => ({ value: w.id, label: `${w.code} - ${w.name}` }))} placeholder="Select" value={o.workCenterId} onChange={(e: any) => { const a = [...operations]; a[i].workCenterId = e.target.value; setOperations(a) }} />
+ </div>
+ <div className="w-24 space-y-1">
+ <Label className="text-xs">Setup (min)</Label>
+ <Input type="number" min="0" value={o.setupTime} onChange={(e) => { const a = [...operations]; a[i].setupTime = e.target.value; setOperations(a) }} />
+ </div>
+ <div className="w-24 space-y-1">
+ <Label className="text-xs">Run (min)</Label>
+ <Input type="number" min="0" value={o.runTime} onChange={(e) => { const a = [...operations]; a[i].runTime = e.target.value; setOperations(a) }} />
+ </div>
+ <Button type="button" variant="ghost" size="icon" className="mb-0.5" onClick={() => setOperations(operations.filter((_, j) => j !== i))}></Button>
+ </div>
+ ))}
+ </CardContent>
+ </Card>
+
+ <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+ <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
+ <Button type="submit" loading={loading}>Create Production Order</Button>
+ </div>
+ </form>
+ </div>
+ )
+}

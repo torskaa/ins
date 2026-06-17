@@ -1,0 +1,77 @@
+"use client"
+
+import { useSession, signOut } from "next-auth/react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+ DropdownMenu,
+ DropdownMenuContent,
+ DropdownMenuItem,
+ DropdownMenuSeparator,
+ DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { LogOut, User, Users } from "lucide-react"
+import Link from "next/link"
+import { CommandPalette } from "@/components/layout/command-palette"
+import { NotificationBell } from "@/components/layout/notification-bell"
+import { QuickCreate } from "@/components/layout/quick-create"
+
+export function Header() {
+ const { data: session } = useSession()
+
+ return (
+ <header className="sticky top-0 z-30 h-14 border-b border-border bg-background/90 backdrop-blur-sm">
+ <div className="flex items-center justify-between h-full px-6 lg:px-8">
+ <div className="flex items-center gap-3 flex-1">
+ <CommandPalette />
+ </div>
+ <div className="flex items-center gap-3">
+ <QuickCreate />
+ <NotificationBell />
+ <DropdownMenu>
+ <DropdownMenuTrigger asChild>
+ <button className="group flex items-center gap-2 rounded-lg p-1.5 hover:bg-surface transition-all duration-150">
+ <p className="text-sm text-muted-foreground hidden sm:block transition-all duration-150 group-hover:text-foreground">{session?.user?.name}</p>
+ <Avatar className="w-8 h-8 ring-1 ring-border/50 transition-all duration-150 group-hover:ring-primary/40 group-hover:ring-2">
+ <AvatarImage src={session?.user?.image || undefined} />
+ <AvatarFallback className="bg-primary/10 text-primary text-xs transition-all duration-150 group-hover:bg-primary group-hover:text-white">
+ {session?.user?.name?.[0] || "U"}
+ </AvatarFallback>
+ </Avatar>
+ </button>
+ </DropdownMenuTrigger>
+ <DropdownMenuContent align="end" className="w-48">
+ <div className="px-3 py-2 border-b border-border/50">
+ <p className="text-sm font-medium">{session?.user?.name}</p>
+ <p className="text-xs text-muted-foreground">{session?.user?.email}</p>
+ </div>
+ <div className="p-1">
+ <DropdownMenuItem asChild>
+ <Link href="/settings" className="flex items-center gap-2.5 text-sm">
+ <User className="w-4 h-4" />
+ Profile
+ </Link>
+ </DropdownMenuItem>
+ <DropdownMenuItem asChild>
+ <Link href="/workspaces" className="flex items-center gap-2.5 text-sm">
+<Users className="w-4 h-4" />
+Workspace
+</Link>
+ </DropdownMenuItem>
+ </div>
+ <DropdownMenuSeparator />
+ <div className="p-1">
+ <DropdownMenuItem
+ onClick={() => signOut({ callbackUrl: "/login" })}
+ className="flex items-center gap-2.5 text-sm text-destructive"
+ >
+ <LogOut className="w-4 h-4" />
+ Sign Out
+ </DropdownMenuItem>
+ </div>
+ </DropdownMenuContent>
+ </DropdownMenu>
+ </div>
+ </div>
+ </header>
+ )
+}
