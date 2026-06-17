@@ -289,45 +289,44 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
  ))}
  </div>
 
- <Tabs value={activeTab} onValueChange={setActiveTab}>
- <div className="px-5 pt-4 pb-0 border-b border-border">
- <TabsList>
- <TabsTrigger value="info" className="gap-1.5">
- <Building2 className="w-4 h-4" />
- Info
- </TabsTrigger>
-  <TabsTrigger value="orders" className="gap-1.5">
-   <ShoppingCart className="w-4 h-4" />
-   Orders
-  {orders.length > 0 && (
- <span className="ml-1 text-[11px] text-muted-foreground">({orders.length})</span>
- )}
- </TabsTrigger>
- <TabsTrigger value="quotations" className="gap-1.5">
- <FileSignature className="w-4 h-4" />
- Quotations
- {quotations.length > 0 && (
- <span className="ml-1 text-[11px] text-muted-foreground">({quotations.length})</span>
- )}
- </TabsTrigger>
- <TabsTrigger value="invoices" className="gap-1.5">
- <Receipt className="w-4 h-4" />
- Invoices
- {invoices.length > 0 && (
- <span className="ml-1 text-[11px] text-muted-foreground">({invoices.length})</span>
- )}
- </TabsTrigger>
-  <TabsTrigger value="payments" className="gap-1.5">
-   <Banknote className="w-4 h-4" />
-   Payments
-  {payments.length > 0 && (
- <span className="ml-1 text-[11px] text-muted-foreground">({payments.length})</span>
- )}
- </TabsTrigger>
- </TabsList>
- </div>
+  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <Tabs value={activeTab} onValueChange={setActiveTab}>
+    <TabsList className="w-full overflow-x-auto px-4">
+      <TabsTrigger value="info" className="gap-1.5">
+        <Building2 className="w-4 h-4" />
+        Info
+      </TabsTrigger>
+      <TabsTrigger value="orders" className="gap-1.5">
+        <ShoppingCart className="w-4 h-4" />
+        Orders
+        {orders.length > 0 && (
+          <span className="ml-1 text-[11px] text-muted-foreground">({orders.length})</span>
+        )}
+      </TabsTrigger>
+      <TabsTrigger value="quotations" className="gap-1.5">
+        <FileSignature className="w-4 h-4" />
+        Quotations
+        {quotations.length > 0 && (
+          <span className="ml-1 text-[11px] text-muted-foreground">({quotations.length})</span>
+        )}
+      </TabsTrigger>
+      <TabsTrigger value="invoices" className="gap-1.5">
+        <Receipt className="w-4 h-4" />
+        Invoices
+        {invoices.length > 0 && (
+          <span className="ml-1 text-[11px] text-muted-foreground">({invoices.length})</span>
+        )}
+      </TabsTrigger>
+      <TabsTrigger value="payments" className="gap-1.5">
+        <Banknote className="w-4 h-4" />
+        Payments
+        {payments.length > 0 && (
+          <span className="ml-1 text-[11px] text-muted-foreground">({payments.length})</span>
+        )}
+      </TabsTrigger>
+    </TabsList>
 
- <TabsContent value="info" className="p-5 m-0">
+  <TabsContent value="info" className="p-3">
  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
  <div className="space-y-4">
  <div>
@@ -381,15 +380,17 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
  )}
  </TabsContent>
 
- <TabsContent value="orders" className="p-5 m-0">
+  <TabsContent value="orders" className="p-3">
  {orders.length > 0 ? (
- <DataTable
- columns={orderColumns}
- data={orders}
- searchable
- searchPlaceholder="Search orders..."
- onRowClick={(item: any) => router.push(`/orders/${item.id}`)}
- />
+  <DataTable
+  columns={orderColumns}
+  data={orders}
+  searchable
+  searchPlaceholder="Search orders..."
+  onRowClick={(item: any) => router.push(`/orders/${item.id}`)}
+  noBorder
+  compact
+  />
  ) : (
  <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
  <p className="text-sm">No orders yet</p>
@@ -397,15 +398,17 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
  )}
  </TabsContent>
 
- <TabsContent value="quotations" className="p-5 m-0">
+  <TabsContent value="quotations" className="p-3">
  {quotations.length > 0 ? (
- <DataTable
- columns={quotationColumns}
- data={quotations}
- searchable
- searchPlaceholder="Search quotations..."
- onRowClick={(item: any) => router.push(`/quotations/${item.id}`)}
- />
+  <DataTable
+  columns={quotationColumns}
+  data={quotations}
+  searchable
+  searchPlaceholder="Search quotations..."
+  onRowClick={(item: any) => router.push(`/quotations/${item.id}`)}
+  noBorder
+  compact
+  />
  ) : (
  <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
  <FileSignature className="w-8 h-8 mb-2" />
@@ -414,15 +417,17 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
  )}
  </TabsContent>
 
- <TabsContent value="invoices" className="p-5 m-0">
+  <TabsContent value="invoices" className="p-3">
  {invoices.length > 0 ? (
- <DataTable
- columns={invoiceColumns}
- data={invoices}
- searchable
- searchPlaceholder="Search invoices..."
- onRowClick={(item: any) => router.push(`/invoices/${item.id}`)}
- />
+  <DataTable
+  columns={invoiceColumns}
+  data={invoices}
+  searchable
+  searchPlaceholder="Search invoices..."
+  onRowClick={(item: any) => router.push(`/invoices/${item.id}`)}
+  noBorder
+  compact
+  />
  ) : (
  <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
  <Receipt className="w-8 h-8 mb-2" />
@@ -431,21 +436,24 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
  )}
  </TabsContent>
 
- <TabsContent value="payments" className="p-5 m-0">
- {payments.length > 0 ? (
- <DataTable
- columns={paymentColumns}
- data={payments}
- searchable
- searchPlaceholder="Search payments..."
- />
- ) : (
+  <TabsContent value="payments" className="p-3">
+  {payments.length > 0 ? (
+  <DataTable
+  columns={paymentColumns}
+  data={payments}
+  searchable
+  searchPlaceholder="Search payments..."
+  noBorder
+  compact
+  />
+  ) : (
  <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
  <p className="text-sm">No payments recorded</p>
  </div>
  )}
  </TabsContent>
- </Tabs>
- </div>
+  </Tabs>
+  </div>
+  </div>
  )
 }

@@ -277,22 +277,19 @@ export default function InvoiceDetailPage() {
 
  <Separator />
 
- <Tabs value={tab} onValueChange={setTab}>
- <TabsList>
-  <TabsTrigger value="items"><Package className="w-4 h-4" />Items ({invoice.items.length})</TabsTrigger>
-  <TabsTrigger value="payments"><Banknote className="w-4 h-4" />Payments ({invoice.payments.length})</TabsTrigger>
-  {invoice.order && <TabsTrigger value="order"><FileText className="w-4 h-4" />Order</TabsTrigger>}
-  <TabsTrigger value="activity"><Clock className="w-4 h-4" />Activity</TabsTrigger>
- </TabsList>
+  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <Tabs value={tab} onValueChange={setTab}>
+    <TabsList className="w-full overflow-x-auto px-4">
+      <TabsTrigger value="items"><Package className="w-4 h-4" />Items ({invoice.items.length})</TabsTrigger>
+      <TabsTrigger value="payments"><Banknote className="w-4 h-4" />Payments ({invoice.payments.length})</TabsTrigger>
+      {invoice.order && <TabsTrigger value="order"><FileText className="w-4 h-4" />Order</TabsTrigger>}
+      <TabsTrigger value="activity"><Clock className="w-4 h-4" />Activity</TabsTrigger>
+    </TabsList>
 
- <TabsContent value="items">
- <Card>
- <CardHeader className="pb-3">
- <CardTitle>Invoice Items</CardTitle>
- <CardDescription>Line items included in this invoice</CardDescription>
- </CardHeader>
- <CardContent className="p-0">
- <DataTable columns={itemColumns} data={invoice.items} noBorder />
+  <TabsContent value="items" className="p-3">
+  <h3 className="text-sm font-medium mb-2">Invoice Items</h3>
+  <p className="text-xs text-muted-foreground mb-2">Line items included in this invoice</p>
+  <DataTable columns={itemColumns} data={invoice.items} noBorder compact />
  <div className="border-t border-border px-5 py-4 space-y-1.5">
  <div className="flex justify-between text-sm">
  <span className="text-muted-foreground">Subtotal</span>
@@ -314,45 +311,34 @@ export default function InvoiceDetailPage() {
  <span className="font-mono">{formatCurrency(invoice.total)}</span>
  </div>
  </div>
- </CardContent>
- </Card>
- </TabsContent>
+  </TabsContent>
 
- <TabsContent value="payments">
- <Card>
- <CardHeader className="pb-3">
- <CardTitle>Payment History</CardTitle>
- <CardDescription>Recorded payments for this invoice</CardDescription>
- </CardHeader>
- <CardContent className="p-0">
- {invoice.payments.length > 0 ? (
- <DataTable columns={paymentColumns} data={invoice.payments} noBorder />
+  <TabsContent value="payments" className="p-3">
+  <h3 className="text-sm font-medium mb-2">Payment History</h3>
+  <p className="text-xs text-muted-foreground mb-2">Recorded payments for this invoice</p>
+  {invoice.payments.length > 0 ? (
+  <DataTable columns={paymentColumns} data={invoice.payments} noBorder compact />
  ) : (
  <div className="flex flex-col items-center py-12 text-muted-foreground">
  <Banknote className="w-8 h-8 mb-3" />
  <p className="text-sm font-medium">No payments recorded</p>
  <p className="text-xs mt-1">Payments will appear here once recorded.</p>
  </div>
- )}
- </CardContent>
- </Card>
- </TabsContent>
+  )}
+  </TabsContent>
 
- {invoice.order && (
- <TabsContent value="order">
- <Card>
- <CardHeader className="pb-3">
- <div className="flex items-center justify-between">
- <div>
- <CardTitle>Linked Order</CardTitle>
- <CardDescription>Order #{invoice.order.number}</CardDescription>
- </div>
- <Badge variant="outline" className="capitalize">{invoice.order.status}</Badge>
- </div>
- </CardHeader>
- <CardContent className="p-0">
- <DataTable
- noBorder
+  {invoice.order && (
+  <TabsContent value="order" className="p-3">
+  <div className="flex items-center justify-between mb-2">
+  <div>
+  <h3 className="text-sm font-medium">Linked Order</h3>
+  <p className="text-xs text-muted-foreground">Order #{invoice.order.number}</p>
+  </div>
+  <Badge variant="outline" className="capitalize">{invoice.order.status}</Badge>
+  </div>
+  <DataTable
+  noBorder
+  compact
  columns={[
  { key: "product", label: "Product", render: (item: any) => (
  <div>
@@ -365,19 +351,13 @@ export default function InvoiceDetailPage() {
  { key: "total", label: "Total", render: (item: any) => <span className="font-mono text-sm font-medium">{formatCurrency(item.total)}</span> },
  ]}
  data={invoice.order.items}
- />
- </CardContent>
- </Card>
- </TabsContent>
- )}
+  />
+  </TabsContent>
+  )}
 
- <TabsContent value="activity">
- <Card>
- <CardHeader className="pb-3">
- <CardTitle>Activity Log</CardTitle>
- <CardDescription>Audit trail for this invoice</CardDescription>
- </CardHeader>
- <CardContent className="p-5">
+  <TabsContent value="activity" className="p-3">
+  <h3 className="text-sm font-medium mb-2">Activity Log</h3>
+  <p className="text-xs text-muted-foreground mb-2">Audit trail for this invoice</p>
  {invoice.activities.length > 0 ? (
  <div className="space-y-0">
  {invoice.activities.map((activity, i) => (
@@ -404,10 +384,9 @@ export default function InvoiceDetailPage() {
  <p className="text-xs mt-1">Changes to this invoice will appear here.</p>
  </div>
  )}
- </CardContent>
- </Card>
- </TabsContent>
- </Tabs>
+  </TabsContent>
+  </Tabs>
+  </div>
  </div>
  )
 }

@@ -250,27 +250,24 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
  </Card>
  )}
 
- <Card>
- <CardContent className="p-0">
- <Tabs value={activeTab} onValueChange={setActiveTab}>
- <div className="px-5 pt-4 pb-0 border-b border-border">
- <TabsList>
-  <TabsTrigger value="info" className="gap-1.5">
-   <CreditCard className="w-4 h-4" />
-   Info
-  </TabsTrigger>
- <TabsTrigger value="invoice" className="gap-1.5">
- <Receipt className="w-4 h-4" />
- Linked Invoice
- </TabsTrigger>
-  <TabsTrigger value="order" className="gap-1.5">
-   <ShoppingCart className="w-4 h-4" />
-   Linked Order
-  </TabsTrigger>
- </TabsList>
- </div>
+  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <Tabs value={activeTab} onValueChange={setActiveTab}>
+    <TabsList className="w-full overflow-x-auto px-4">
+      <TabsTrigger value="info" className="gap-1.5">
+        <CreditCard className="w-4 h-4" />
+        Info
+      </TabsTrigger>
+      <TabsTrigger value="invoice" className="gap-1.5">
+        <Receipt className="w-4 h-4" />
+        Linked Invoice
+      </TabsTrigger>
+      <TabsTrigger value="order" className="gap-1.5">
+        <ShoppingCart className="w-4 h-4" />
+        Linked Order
+      </TabsTrigger>
+    </TabsList>
 
- <TabsContent value="info" className="p-5 m-0">
+  <TabsContent value="info" className="p-3">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="space-y-4">
  <div>
@@ -299,7 +296,7 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
  </div>
  </TabsContent>
 
- <TabsContent value="invoice" className="p-5 m-0">
+  <TabsContent value="invoice" className="p-3">
  {payment.invoice ? (
  <div className="space-y-4">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -330,7 +327,7 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
  )}
  </TabsContent>
 
- <TabsContent value="order" className="p-5 m-0">
+  <TabsContent value="order" className="p-3">
  {payment.order ? (
  <div className="space-y-4">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -359,9 +356,8 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
  </div>
  )}
  </TabsContent>
- </Tabs>
- </CardContent>
- </Card>
+  </Tabs>
+  </div>
 
  <ConfirmDialog
  open={deleteOpen}

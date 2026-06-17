@@ -192,9 +192,9 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
  </Card>
  )}
 
- <Tabs value={activeTab} onValueChange={setActiveTab}>
- <div className="px-5 pt-4 pb-0 border-b border-border">
- <TabsList>
+  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <Tabs value={activeTab} onValueChange={setActiveTab}>
+    <TabsList className="w-full overflow-x-auto px-4">
  <TabsTrigger value="info" className="gap-1.5">
  <Tags className="w-4 h-4" />
  Info
@@ -214,9 +214,8 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
  )}
  </TabsTrigger>
  </TabsList>
- </div>
 
- <TabsContent value="info" className="p-5 m-0">
+  <TabsContent value="info" className="p-3">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="space-y-4">
  <div>
@@ -243,10 +242,11 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
  </div>
  </TabsContent>
 
- <TabsContent value="products" className="p-5 m-0">
- {category.products && category.products.length > 0 ? (
- <DataTable
- columns={productColumns}
+  <TabsContent value="products" className="p-3">
+  {category.products && category.products.length > 0 ? (
+  <DataTable
+  noBorder compact
+  columns={productColumns}
  data={category.products}
  searchable
  searchPlaceholder="Search products..."
@@ -259,7 +259,7 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
  )}
  </TabsContent>
 
- <TabsContent value="children" className="p-5 m-0">
+  <TabsContent value="children" className="p-3">
  {category.children.length > 0 ? (
  <div className="space-y-2">
  {category.children.map((child) => (
@@ -281,9 +281,10 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
  </div>
  )}
  </TabsContent>
- </Tabs>
+  </Tabs>
+  </div>
 
- <ConfirmDialog
+  <ConfirmDialog
  open={deleteOpen}
  onOpenChange={setDeleteOpen}
  title="Delete Category"

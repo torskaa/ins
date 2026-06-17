@@ -243,9 +243,9 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  </Card>
  )}
 
- <Tabs value={activeTab} onValueChange={setActiveTab}>
- <div className="px-5 pt-4 pb-0 border-b border-border">
- <TabsList>
+  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <Tabs value={activeTab} onValueChange={setActiveTab}>
+    <TabsList className="w-full overflow-x-auto px-4">
  <TabsTrigger value="info" className="gap-1.5">
  <Warehouse className="w-4 h-4" />
  Info
@@ -265,9 +265,8 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  )}
  </TabsTrigger>
  </TabsList>
- </div>
 
- <TabsContent value="info" className="p-5 m-0">
+  <TabsContent value="info" className="p-3">
  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
  <div className="space-y-4">
  <div>
@@ -304,10 +303,11 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  </div>
  </TabsContent>
 
- <TabsContent value="products" className="p-5 m-0">
- {warehouse.products && warehouse.products.length > 0 ? (
- <DataTable
- columns={productColumns}
+  <TabsContent value="products" className="p-3">
+  {warehouse.products && warehouse.products.length > 0 ? (
+  <DataTable
+  noBorder compact
+  columns={productColumns}
  data={warehouse.products}
  searchable
  searchPlaceholder="Search products..."
@@ -320,10 +320,11 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  )}
  </TabsContent>
 
- <TabsContent value="movements" className="p-5 m-0">
- {warehouse.stockMovements && warehouse.stockMovements.length > 0 ? (
- <DataTable
- columns={movementColumns}
+  <TabsContent value="movements" className="p-3">
+  {warehouse.stockMovements && warehouse.stockMovements.length > 0 ? (
+  <DataTable
+  noBorder compact
+  columns={movementColumns}
  data={warehouse.stockMovements}
  searchable
  searchPlaceholder="Search movements..."
@@ -335,9 +336,10 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  </div>
  )}
  </TabsContent>
- </Tabs>
+  </Tabs>
+  </div>
 
- <ConfirmDialog
+  <ConfirmDialog
  open={deleteOpen}
  onOpenChange={setDeleteOpen}
  title="Delete Warehouse"

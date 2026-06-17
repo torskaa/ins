@@ -313,20 +313,19 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  </Card>
  </div>
 
- {/* Tabs */}
- <Tabs value={tab} onValueChange={setTab}>
- <div className="px-6 pt-4 border-b border-border">
- <TabsList>
-  <TabsTrigger value="info" className="gap-1.5"><Building2 className="w-4 h-4" />Info</TabsTrigger>
-  <TabsTrigger value="products" className="gap-1.5"><Package className="w-4 h-4" />Products</TabsTrigger>
-  <TabsTrigger value="purchase-orders" className="gap-1.5"><ShoppingCart className="w-4 h-4" />Purchase Orders</TabsTrigger>
-  <TabsTrigger value="lots" className="gap-1.5"><Package className="w-4 h-4" />Lots</TabsTrigger>
-  <TabsTrigger value="pricing" className="gap-1.5"><DollarSign className="w-4 h-4" />Pricing</TabsTrigger>
- </TabsList>
- </div>
+  {/* Tabs */}
+  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <Tabs value={tab} onValueChange={setTab}>
+    <TabsList className="w-full overflow-x-auto px-4">
+      <TabsTrigger value="info" className="gap-1.5"><Building2 className="w-4 h-4" />Info</TabsTrigger>
+      <TabsTrigger value="products" className="gap-1.5"><Package className="w-4 h-4" />Products</TabsTrigger>
+      <TabsTrigger value="purchase-orders" className="gap-1.5"><ShoppingCart className="w-4 h-4" />Purchase Orders</TabsTrigger>
+      <TabsTrigger value="lots" className="gap-1.5"><Package className="w-4 h-4" />Lots</TabsTrigger>
+      <TabsTrigger value="pricing" className="gap-1.5"><DollarSign className="w-4 h-4" />Pricing</TabsTrigger>
+    </TabsList>
 
- <TabsContent value="info">
- <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <TabsContent value="info" className="p-3">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
  {/* Contact */}
  <div className="space-y-4">
  <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Contact</h3>
@@ -428,50 +427,51 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  </div>
  </TabsContent>
 
- <TabsContent value="products">
- <div className="p-6">
- <DataTable
- columns={productColumns}
- data={supplier.products}
- searchable
- searchPlaceholder="Search products..."
- />
- </div>
- </TabsContent>
+  <TabsContent value="products" className="p-3">
+  <DataTable
+  columns={productColumns}
+  data={supplier.products}
+  searchable
+  searchPlaceholder="Search products..."
+  noBorder
+  compact
+  />
+  </TabsContent>
 
- <TabsContent value="purchase-orders">
- <div className="p-6">
- <DataTable
- columns={poColumns}
- data={supplier.purchaseOrders}
- searchable
- searchPlaceholder="Search orders..."
- />
- </div>
- </TabsContent>
+  <TabsContent value="purchase-orders" className="p-3">
+  <DataTable
+  columns={poColumns}
+  data={supplier.purchaseOrders}
+  searchable
+  searchPlaceholder="Search orders..."
+  noBorder
+  compact
+  />
+  </TabsContent>
 
- <TabsContent value="lots">
- <div className="p-6">
- <DataTable
- columns={lotColumns}
- data={supplier.lots}
- searchable
- searchPlaceholder="Search lots..."
- />
- </div>
- </TabsContent>
+  <TabsContent value="lots" className="p-3">
+  <DataTable
+  columns={lotColumns}
+  data={supplier.lots}
+  searchable
+  searchPlaceholder="Search lots..."
+  noBorder
+  compact
+  />
+  </TabsContent>
 
- <TabsContent value="pricing">
- <div className="p-6">
- <DataTable
- columns={pricingColumns}
- data={supplier.supplierPrices}
- searchable
- searchPlaceholder="Search prices..."
- />
- </div>
- </TabsContent>
- </Tabs>
+  <TabsContent value="pricing" className="p-3">
+  <DataTable
+  columns={pricingColumns}
+  data={supplier.supplierPrices}
+  searchable
+  searchPlaceholder="Search prices..."
+  noBorder
+  compact
+  />
+  </TabsContent>
+  </Tabs>
+  </div>
 
  {/* Delete Dialog */}
  <Dialog open={showDelete} onOpenChange={setShowDelete}>

@@ -210,8 +210,9 @@ export default function QuotationDetailPage({ params }: { params: Promise<{ id: 
  </div>
  </div>
 
- <Tabs value={tab} onValueChange={setTab}>
- <TabsList>
+  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <Tabs value={tab} onValueChange={setTab}>
+    <TabsList className="w-full overflow-x-auto px-4">
   <TabsTrigger value="items" className="gap-1.5">
    <Package className="w-4 h-4" />
    Items
@@ -222,11 +223,11 @@ export default function QuotationDetailPage({ params }: { params: Promise<{ id: 
   </TabsTrigger>
  <TabsTrigger value="activity" className="gap-1.5"><Activity className="w-4 h-4" /> Activity</TabsTrigger>
  </TabsList>
- <TabsContent value="items">
- <DataTable columns={itemsColumns} data={quotation.items || []} searchable searchPlaceholder="Search items..." />
+  <TabsContent value="items" className="p-3">
+  <DataTable noBorder compact columns={itemsColumns} data={quotation.items || []} searchable searchPlaceholder="Search items..." />
  </TabsContent>
- <TabsContent value="order">
- <Card>
+  <TabsContent value="order" className="p-3">
+  <Card>
  <CardHeader><CardTitle>Linked Order</CardTitle></CardHeader>
  <CardContent>
  {quotation.order ? (
@@ -247,10 +248,11 @@ export default function QuotationDetailPage({ params }: { params: Promise<{ id: 
  </CardContent>
  </Card>
  </TabsContent>
- <TabsContent value="activity">
- <DataTable columns={activityColumns} data={quotation.activities || []} searchable searchPlaceholder="Search activity..." />
+  <TabsContent value="activity" className="p-3">
+  <DataTable noBorder compact columns={activityColumns} data={quotation.activities || []} searchable searchPlaceholder="Search activity..." />
  </TabsContent>
- </Tabs>
- </div>
- )
+  </Tabs>
+  </div>
+  </div>
+  )
 }

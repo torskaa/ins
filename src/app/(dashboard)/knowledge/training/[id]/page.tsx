@@ -186,8 +186,9 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
  <Progress value={program.progress} className="h-2" />
  </div>
 
- <Tabs value={activeTab} onValueChange={setActiveTab}>
- <TabsList>
+  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <Tabs value={activeTab} onValueChange={setActiveTab}>
+    <TabsList className="w-full overflow-x-auto px-4">
   <TabsTrigger value="overview" className="gap-1.5">
    <Eye className="w-4 h-4" />
    Overview
@@ -204,7 +205,7 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
    Reviews
   </TabsTrigger>
  </TabsList>
- <TabsContent value="overview" className="mt-4 space-y-4">
+  <TabsContent value="overview" className="p-3">
  <Card>
  <CardContent className="p-5">
  <h3 className="font-medium mb-3 flex items-center gap-2">
@@ -241,7 +242,7 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
  </CardContent>
  </Card>
  </TabsContent>
- <TabsContent value="modules" className="mt-4">
+  <TabsContent value="modules" className="p-3">
  <Card>
  <CardHeader>
  <CardTitle className="text-sm font-medium flex items-center justify-between">
@@ -288,7 +289,7 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
  </CardContent>
  </Card>
  </TabsContent>
- <TabsContent value="reviews" className="mt-4">
+  <TabsContent value="reviews" className="p-3">
  <Card>
  <CardContent className="p-8 text-center text-muted-foreground">
  <p className="text-sm">No reviews yet</p>
@@ -299,7 +300,8 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
  </CardContent>
  </Card>
  </TabsContent>
- </Tabs>
- </div>
- )
+  </Tabs>
+  </div>
+  </div>
+  )
 }

@@ -255,75 +255,87 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
  </div>
  </div>
 
- <Tabs value={tab} onValueChange={setTab}>
- <TabsList>
- <TabsTrigger value="items" className="gap-1.5">
- <ShoppingCart className="w-4 h-4" />
- Items
- </TabsTrigger>
- <TabsTrigger value="payments" className="gap-1.5">
- <Banknote className="w-4 h-4" />
- Payments
- </TabsTrigger>
- <TabsTrigger value="invoices" className="gap-1.5">
- <FileText className="w-4 h-4" />
- Invoices
- </TabsTrigger>
- <TabsTrigger value="stock" className="gap-1.5">
- <Package className="w-4 h-4" />
- Stock Movements
- </TabsTrigger>
- <TabsTrigger value="audit" className="gap-1.5">
- <Activity className="w-4 h-4" />
- Audit Log
- </TabsTrigger>
- </TabsList>
+  <div className="rounded-xl border border-border bg-card overflow-hidden">
+  <Tabs value={tab} onValueChange={setTab}>
+    <TabsList className="w-full overflow-x-auto px-4">
+      <TabsTrigger value="items" className="gap-1.5">
+        <ShoppingCart className="w-4 h-4" />
+        Items
+      </TabsTrigger>
+      <TabsTrigger value="payments" className="gap-1.5">
+        <Banknote className="w-4 h-4" />
+        Payments
+      </TabsTrigger>
+      <TabsTrigger value="invoices" className="gap-1.5">
+        <FileText className="w-4 h-4" />
+        Invoices
+      </TabsTrigger>
+      <TabsTrigger value="stock" className="gap-1.5">
+        <Package className="w-4 h-4" />
+        Stock Movements
+      </TabsTrigger>
+      <TabsTrigger value="audit" className="gap-1.5">
+        <Activity className="w-4 h-4" />
+        Audit Log
+      </TabsTrigger>
+    </TabsList>
 
- <TabsContent value="items">
- <DataTable
- columns={itemsColumns}
- data={order.items || []}
- searchable
- searchPlaceholder="Search items..."
- />
- </TabsContent>
+  <TabsContent value="items" className="p-3">
+  <DataTable
+  columns={itemsColumns}
+  data={order.items || []}
+  searchable
+  searchPlaceholder="Search items..."
+  noBorder
+  compact
+  />
+  </TabsContent>
 
- <TabsContent value="payments">
- <DataTable
- columns={paymentsColumns}
- data={order.payments || []}
- searchable
- searchPlaceholder="Search payments..."
- />
- </TabsContent>
+  <TabsContent value="payments" className="p-3">
+  <DataTable
+  columns={paymentsColumns}
+  data={order.payments || []}
+  searchable
+  searchPlaceholder="Search payments..."
+  noBorder
+  compact
+  />
+  </TabsContent>
 
- <TabsContent value="invoices">
- <DataTable
- columns={invoicesColumns}
- data={order.invoices || []}
- searchable
- searchPlaceholder="Search invoices..."
- />
- </TabsContent>
+  <TabsContent value="invoices" className="p-3">
+  <DataTable
+  columns={invoicesColumns}
+  data={order.invoices || []}
+  searchable
+  searchPlaceholder="Search invoices..."
+  noBorder
+  compact
+  />
+  </TabsContent>
 
- <TabsContent value="stock">
- <DataTable
- columns={stockColumns}
- data={order.stockMovements || []}
- searchable
- searchPlaceholder="Search movements..."
- />
- </TabsContent>
+  <TabsContent value="stock" className="p-3">
+  <DataTable
+  columns={stockColumns}
+  data={order.stockMovements || []}
+  searchable
+  searchPlaceholder="Search movements..."
+  noBorder
+  compact
+  />
+  </TabsContent>
 
- <TabsContent value="audit">
- <DataTable
- columns={auditColumns}
- data={order.auditLogs || []}
- searchable
- searchPlaceholder="Search logs..."
- />
- </TabsContent>
- </Tabs>
+  <TabsContent value="audit" className="p-3">
+  <DataTable
+  columns={auditColumns}
+  data={order.auditLogs || []}
+  searchable
+  searchPlaceholder="Search logs..."
+  noBorder
+  compact
+  />
+  </TabsContent>
+  </Tabs>
+  </div>
  </div>
  )
 }
