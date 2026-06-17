@@ -124,11 +124,11 @@ export function DataTable<T extends { id: string }>({
  {toolbar && <div className="flex items-center gap-2 ml-auto">{toolbar}</div>}
  </div>
  )}
-  <div className={cn("rounded-xl border border-border overflow-hidden", className)}>
+  <div className={cn(!noBorder && "rounded-xl border border-border overflow-hidden", className)}>
   <div className="relative w-full overflow-auto">
   <table className={cn("w-full caption-bottom", compact ? "text-xs" : "text-sm")}>
   <thead>
-  <tr className={cn("border-b", compact && "bg-muted/30")}>
+  <tr className={cn("border-b")}>
   {columns.map((col) => (
   <th
   key={col.key}

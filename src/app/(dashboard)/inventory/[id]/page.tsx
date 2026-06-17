@@ -529,7 +529,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       {/* Unified Tab Module */}
       <div className="rounded-xl border border-border bg-card overflow-hidden">
         <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="w-full overflow-x-auto px-4 bg-muted/20">
+          <TabsList className="w-full overflow-x-auto px-4">
             <TabsTrigger value="bom"><Layers className="w-4 h-4" /> BOM</TabsTrigger>
             <TabsTrigger value="orders"><ShoppingCart className="w-4 h-4" /> Orders</TabsTrigger>
             <TabsTrigger value="invoices"><FileText className="w-4 h-4" /> Invoices</TabsTrigger>
@@ -538,21 +538,21 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             <TabsTrigger value="pricing"><DollarSign className="w-4 h-4" /> Supplier Pricing</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="bom" className="p-4">
-            <div className="grid grid-cols-12 gap-4">
+          <TabsContent value="bom" className="p-3">
+            <div className="grid grid-cols-12 gap-3">
               <div className="col-span-6 flex flex-col">
                 <Card className="flex-1">
-                  <CardHeader className="px-4 pt-4 pb-0">
+                  <CardHeader className="px-3 pt-3 pb-0">
                     <div className="flex items-center gap-2 text-sm font-semibold">
                       <Layers className="w-4 h-4 text-primary" />
                       As Finished Good
                     </div>
                   </CardHeader>
-                  <CardContent className="p-4">
+                  <CardContent className="p-3">
                     {(product.bomAsFinished || []).length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-8 text-center">
-                        <Layers className="w-8 h-8 text-muted-foreground/30 mb-3" />
-                        <p className="text-xs text-muted-foreground mb-3">No BOM linked as finished good</p>
+                      <div className="flex flex-col items-center justify-center py-6 text-center">
+                        <Layers className="w-8 h-8 text-muted-foreground/30 mb-2" />
+                        <p className="text-xs text-muted-foreground mb-2">No BOM linked as finished good</p>
                         <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5"><Package className="w-3.5 h-3.5" /> Link BOM</Button>
                       </div>
                     ) : (
@@ -563,17 +563,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
               <div className="col-span-6 flex flex-col">
                 <Card className="flex-1">
-                  <CardHeader className="px-4 pt-4 pb-0">
+                  <CardHeader className="px-3 pt-3 pb-0">
                     <div className="flex items-center gap-2 text-sm font-semibold">
                       <Package className="w-4 h-4 text-primary" />
                       Where Used
                     </div>
                   </CardHeader>
-                  <CardContent className="p-4">
+                  <CardContent className="p-3">
                     {(product.bomAsMaterial || []).length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-8 text-center">
-                        <Package className="w-8 h-8 text-muted-foreground/30 mb-3" />
-                        <p className="text-xs text-muted-foreground mb-3">Not used as a component in any BOM</p>
+                      <div className="flex flex-col items-center justify-center py-6 text-center">
+                        <Package className="w-8 h-8 text-muted-foreground/30 mb-2" />
+                        <p className="text-xs text-muted-foreground">Not used as a component in any BOM</p>
                       </div>
                     ) : (
                       <DataTable columns={bomColumns} data={product.bomAsMaterial || []} noBorder compact />
@@ -584,40 +584,40 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             </div>
           </TabsContent>
 
-          <TabsContent value="orders" className="p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold mb-3">
+          <TabsContent value="orders" className="p-3">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <ShoppingCart className="w-4 h-4 text-primary" />
               Order History ({product.orderItems?.length || 0})
             </div>
             <DataTable columns={orderItemColumns} data={product.orderItems || []} searchable searchPlaceholder="Search orders..." noBorder compact />
           </TabsContent>
 
-          <TabsContent value="invoices" className="p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold mb-3">
+          <TabsContent value="invoices" className="p-3">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <FileText className="w-4 h-4 text-primary" />
               Invoices ({product.invoiceItems?.length || 0})
             </div>
             <DataTable columns={invoiceItemColumns} data={product.invoiceItems || []} searchable searchPlaceholder="Search invoices..." noBorder compact />
           </TabsContent>
 
-          <TabsContent value="movements" className="p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold mb-3">
+          <TabsContent value="movements" className="p-3">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <Boxes className="w-4 h-4 text-primary" />
               Stock Movements
             </div>
             <DataTable columns={movementColumns} data={product.movements || []} searchable searchPlaceholder="Search movements..." noBorder compact />
           </TabsContent>
 
-          <TabsContent value="lots" className="p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold mb-3">
+          <TabsContent value="lots" className="p-3">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <Hash className="w-4 h-4 text-primary" />
               Lot / Serial Number Tracking
             </div>
             <DataTable columns={lotColumns} data={product.lots || []} searchable searchPlaceholder="Search lots..." noBorder compact />
           </TabsContent>
 
-          <TabsContent value="pricing" className="p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold mb-3">
+          <TabsContent value="pricing" className="p-3">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <DollarSign className="w-4 h-4 text-primary" />
               Supplier Prices
             </div>
