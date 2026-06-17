@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { DataTable, statusBadge, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { AlertTriangle, Tag, Search } from "lucide-react"
+import { AlertTriangle, Package, Tag, BarChart3, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -152,7 +152,7 @@ export default function InventoryPage() {
  onRowClick={(item) => router.push(`/inventory/${item.id}`)}
  loading={loading}
  empty={{
- icons: [, , <Tag className="w-5 h-5" />],
+  icons: [<Package className="w-5 h-5" />, <Tag className="w-5 h-5" />, <BarChart3 className="w-5 h-5" />],
  title: "No products yet",
  description: "Create your first product to start managing inventory.",
  action: { label: "Add Product", onClick: () => router.push("/inventory/new") },
