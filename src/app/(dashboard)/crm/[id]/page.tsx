@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTable, type Column } from "@/components/ui/data-table"
-import { AlertCircle, ArrowLeft, Building2, Calendar, CreditCard, DollarSign, Edit, FileCode, FileSignature, FileText, Hash, Mail, Phone, Receipt, ShoppingCart, Trash2 } from "lucide-react"
+import { AlertCircle, ArrowLeft, Banknote, Building2, Calendar, CreditCard, DollarSign, Edit, FileCode, FileSignature, FileText, Hash, Mail, Phone, Receipt, ShoppingCart, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -296,9 +296,10 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
  <Building2 className="w-4 h-4" />
  Info
  </TabsTrigger>
- <TabsTrigger value="orders" className="gap-1.5">
- Orders
- {orders.length > 0 && (
+  <TabsTrigger value="orders" className="gap-1.5">
+   <ShoppingCart className="w-4 h-4" />
+   Orders
+  {orders.length > 0 && (
  <span className="ml-1 text-[11px] text-muted-foreground">({orders.length})</span>
  )}
  </TabsTrigger>
@@ -316,9 +317,10 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
  <span className="ml-1 text-[11px] text-muted-foreground">({invoices.length})</span>
  )}
  </TabsTrigger>
- <TabsTrigger value="payments" className="gap-1.5">
- Payments
- {payments.length > 0 && (
+  <TabsTrigger value="payments" className="gap-1.5">
+   <Banknote className="w-4 h-4" />
+   Payments
+  {payments.length > 0 && (
  <span className="ml-1 text-[11px] text-muted-foreground">({payments.length})</span>
  )}
  </TabsTrigger>

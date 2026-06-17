@@ -10,7 +10,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
 import { toast } from "sonner"
-import { ArrowLeft, Play, GraduationCap, Users, Clock, BookOpen, BarChart3, Award, Layers, CheckCircle2, ChevronRight, FileText, Star } from "lucide-react"
+import { ArrowLeft, Eye, Play, GraduationCap, Users, Clock, BookOpen, BarChart3, Award, Layers, CheckCircle2, ChevronRight, FileText, Star } from "lucide-react"
 
 type Program = {
  id: string
@@ -188,14 +188,21 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
 
  <Tabs value={activeTab} onValueChange={setActiveTab}>
  <TabsList>
- <TabsTrigger value="overview" className="gap-1.5">Overview</TabsTrigger>
- <TabsTrigger value="modules" className="gap-1.5">
- Modules
+  <TabsTrigger value="overview" className="gap-1.5">
+   <Eye className="w-4 h-4" />
+   Overview
+  </TabsTrigger>
+  <TabsTrigger value="modules" className="gap-1.5">
+   <Layers className="w-4 h-4" />
+   Modules
  {Array.isArray(modules) && modules.length > 0 && (
  <Badge variant="secondary" className="ml-1 text-[10px] px-1 py-0">{completedModules}/{modules.length}</Badge>
  )}
  </TabsTrigger>
- <TabsTrigger value="reviews" className="gap-1.5">Reviews</TabsTrigger>
+  <TabsTrigger value="reviews" className="gap-1.5">
+   <Star className="w-4 h-4" />
+   Reviews
+  </TabsTrigger>
  </TabsList>
  <TabsContent value="overview" className="mt-4 space-y-4">
  <Card>

@@ -10,7 +10,7 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Building2, Calendar, Globe, Mail, Phone, Save, Search, Upload, User, XCircle } from "lucide-react"
+import { Building2, Calendar, DollarSign, Globe, Mail, Phone, Save, Search, Upload, User, XCircle } from "lucide-react"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
 
@@ -157,9 +157,9 @@ export default function EditSupplierPage({ params }: { params: Promise<{ id: str
  <TabsTrigger value="contact" className="gap-1.5">
  <User className="w-4 h-4" /> Contact Info
  </TabsTrigger>
- <TabsTrigger value="finance" className="gap-1.5">
- Finances & Ops
- </TabsTrigger>
+  <TabsTrigger value="finance" className="gap-1.5">
+   <DollarSign className="w-4 h-4" /> Finances & Ops
+  </TabsTrigger>
  </TabsList>
  </div>
 

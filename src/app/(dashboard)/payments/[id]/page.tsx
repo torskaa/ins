@@ -255,16 +255,18 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
  <Tabs value={activeTab} onValueChange={setActiveTab}>
  <div className="px-5 pt-4 pb-0 border-b border-border">
  <TabsList>
- <TabsTrigger value="info" className="gap-1.5">
- Info
- </TabsTrigger>
+  <TabsTrigger value="info" className="gap-1.5">
+   <CreditCard className="w-4 h-4" />
+   Info
+  </TabsTrigger>
  <TabsTrigger value="invoice" className="gap-1.5">
  <Receipt className="w-4 h-4" />
  Linked Invoice
  </TabsTrigger>
- <TabsTrigger value="order" className="gap-1.5">
- Linked Order
- </TabsTrigger>
+  <TabsTrigger value="order" className="gap-1.5">
+   <ShoppingCart className="w-4 h-4" />
+   Linked Order
+  </TabsTrigger>
  </TabsList>
  </div>
 

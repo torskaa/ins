@@ -143,7 +143,10 @@ function OrdersContent() {
  <div className="mb-6">
  <Tabs value={type} onValueChange={(v) => router.push(`/orders?type=${v}`)}>
  <TabsList>
- <TabsTrigger value="sales">Sales Orders</TabsTrigger>
+  <TabsTrigger value="sales" className="gap-1.5">
+   <ShoppingCart className="w-4 h-4" />
+   Sales Orders
+  </TabsTrigger>
  <TabsTrigger value="purchase">Purchase Orders</TabsTrigger>
  </TabsList>
  </Tabs>

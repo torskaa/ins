@@ -199,9 +199,10 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
  <Tags className="w-4 h-4" />
  Info
  </TabsTrigger>
- <TabsTrigger value="products" className="gap-1.5">
- Products
- {category._count.products > 0 && (
+  <TabsTrigger value="products" className="gap-1.5">
+   <Package className="w-4 h-4" />
+   Products
+  {category._count.products > 0 && (
  <span className="ml-1 text-[11px] text-muted-foreground">({category._count.products})</span>
  )}
  </TabsTrigger>

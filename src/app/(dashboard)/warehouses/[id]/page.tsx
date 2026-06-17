@@ -250,8 +250,9 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  <Warehouse className="w-4 h-4" />
  Info
  </TabsTrigger>
- <TabsTrigger value="products" className="gap-1.5">
- Products
+  <TabsTrigger value="products" className="gap-1.5">
+   <Package className="w-4 h-4" />
+   Products
  {warehouse._count.products > 0 && (
  <span className="ml-1 text-[11px] text-muted-foreground">({warehouse._count.products})</span>
  )}

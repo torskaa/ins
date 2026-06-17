@@ -212,8 +212,14 @@ export default function QuotationDetailPage({ params }: { params: Promise<{ id: 
 
  <Tabs value={tab} onValueChange={setTab}>
  <TabsList>
- <TabsTrigger value="items" className="gap-1.5">Items</TabsTrigger>
- <TabsTrigger value="order" className="gap-1.5">Order</TabsTrigger>
+  <TabsTrigger value="items" className="gap-1.5">
+   <Package className="w-4 h-4" />
+   Items
+  </TabsTrigger>
+  <TabsTrigger value="order" className="gap-1.5">
+   <ShoppingCart className="w-4 h-4" />
+   Order
+  </TabsTrigger>
  <TabsTrigger value="activity" className="gap-1.5"><Activity className="w-4 h-4" /> Activity</TabsTrigger>
  </TabsList>
  <TabsContent value="items">

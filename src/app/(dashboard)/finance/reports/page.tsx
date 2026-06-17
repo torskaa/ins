@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Select } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import { BarChart3, FileText, TrendingUp } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 
 export default function FinanceReportsPage() {
@@ -27,9 +28,18 @@ export default function FinanceReportsPage() {
 
  <Tabs value={reportType} onValueChange={setReportType} className="mb-6">
  <TabsList>
- <TabsTrigger value="summary">Summary</TabsTrigger>
- <TabsTrigger value="balance-sheet">Balance Sheet</TabsTrigger>
- <TabsTrigger value="profit-loss">Profit & Loss</TabsTrigger>
+  <TabsTrigger value="summary" className="gap-1.5">
+   <BarChart3 className="w-4 h-4" />
+   Summary
+  </TabsTrigger>
+  <TabsTrigger value="balance-sheet" className="gap-1.5">
+   <FileText className="w-4 h-4" />
+   Balance Sheet
+  </TabsTrigger>
+  <TabsTrigger value="profit-loss" className="gap-1.5">
+   <TrendingUp className="w-4 h-4" />
+   Profit & Loss
+  </TabsTrigger>
  <TabsTrigger value="trial-balance">Trial Balance</TabsTrigger>
  </TabsList>
 
