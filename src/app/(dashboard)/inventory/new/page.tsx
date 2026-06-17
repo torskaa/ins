@@ -14,7 +14,7 @@ import { useHotkey } from "@/hooks/use-hotkey"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { AlertCircle, ChevronDown, ChevronRight, ImageIcon, Link2, Upload, X, XCircle, Barcode, Boxes, DollarSign, ExternalLink, Hash, Layers, MapPin, Package, Ruler, ShoppingCart, Tags, Weight, Warehouse } from "lucide-react"
+import { AlertCircle, ChevronDown, ChevronRight, ImageIcon, Link2, Upload, X, XCircle, Barcode, Boxes, DollarSign, ExternalLink, Layers, MapPin, Package, Ruler, ShoppingCart, Tags, Weight, Warehouse } from "lucide-react"
 
 const UOM_OPTIONS = [
   { value: "pcs", label: "Pieces (pcs)" },
@@ -260,7 +260,7 @@ export default function NewProductPage() {
                         <button type="button" onClick={autoGenerateSku}
                           className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
                           title="Auto-generate SKU"
-                        ><Hash className="w-3.5 h-3.5" /></button>
+                        ></button>
                         {skuChecking && <div className="w-3.5 h-3.5 border-2 border-muted-foreground/30 border-t-primary rounded-full animate-spin" />}
                         {skuValid === true && !skuChecking && null}
                         {skuValid === false && !skuChecking && <AlertCircle className="w-3.5 h-3.5 text-destructive" />}
@@ -291,8 +291,8 @@ export default function NewProductPage() {
                   Inventory & Stock Controls
                 </div>
               </CardHeader>
-              <CardContent className="p-4 space-y-3">
-                <div className="grid grid-cols-4 gap-3">
+              <CardContent className="p-4 space-y-4">
+                <div className="grid grid-cols-4 gap-4">
                   <Field id="uom" label="Unit of Measure">
                     <Select id="uom" options={UOM_OPTIONS} placeholder="Select UoM" value={form.uom} onChange={(e: any) => setForm({ ...form, uom: e.target.value })} />
                   </Field>
@@ -306,7 +306,7 @@ export default function NewProductPage() {
                     <Input id="maxStock" type="number" min="0" value={form.maxStock} onChange={(e) => setForm({ ...form, maxStock: e.target.value })} />
                   </Field>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-4">
                   <Field id="safetyStock" label={<span className="flex items-center gap-1">Safety Stock <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-muted text-[9px] font-semibold text-muted-foreground cursor-help" title="Buffer stock to prevent out-of-stock">?</span></span>}>
                     <Input id="safetyStock" type="number" min="0" value={form.safetyStock} onChange={(e) => setForm({ ...form, safetyStock: e.target.value })} />
                   </Field>
@@ -353,17 +353,6 @@ export default function NewProductPage() {
                     Margin: {marginPct}%
                   </div>
                 )}
-                <div className="grid grid-cols-3 gap-3">
-                  <Field id="supplierId" label="Supplier">
-                    <Select id="supplierId" options={suppliers.map(s => ({ value: s.id, label: s.name }))} placeholder="Select supplier" value={form.supplierId} onChange={(e: any) => setForm({ ...form, supplierId: e.target.value })} />
-                  </Field>
-                  <Field id="categoryId" label="Category">
-                    <Select id="categoryId" options={categories.map(c => ({ value: c.id, label: c.name }))} placeholder="Select category" value={form.categoryId} onChange={(e: any) => setForm({ ...form, categoryId: e.target.value })} />
-                  </Field>
-                  <Field id="status" label="Status">
-                    <Select id="status" options={STATUS_OPTIONS} value={form.status} onChange={(e: any) => setForm({ ...form, status: e.target.value })} />
-                  </Field>
-                </div>
               </CardContent>
             </Card>
           </div>
@@ -432,6 +421,26 @@ export default function NewProductPage() {
             <Card>
               <CardHeader className="px-4 pt-4 pb-0">
                 <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Boxes className="w-4 h-4 text-primary" />
+                  Classification
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <Field id="supplierId" label="Supplier">
+                  <Select id="supplierId" options={suppliers.map(s => ({ value: s.id, label: s.name }))} placeholder="Select supplier" value={form.supplierId} onChange={(e: any) => setForm({ ...form, supplierId: e.target.value })} />
+                </Field>
+                <Field id="categoryId" label="Category">
+                  <Select id="categoryId" options={categories.map(c => ({ value: c.id, label: c.name }))} placeholder="Select category" value={form.categoryId} onChange={(e: any) => setForm({ ...form, categoryId: e.target.value })} />
+                </Field>
+                <Field id="status" label="Status">
+                  <Select id="status" options={STATUS_OPTIONS} value={form.status} onChange={(e: any) => setForm({ ...form, status: e.target.value })} />
+                </Field>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
                   <Tags className="w-4 h-4 text-primary" />
                   Tags & Labels
                 </div>
@@ -470,7 +479,7 @@ export default function NewProductPage() {
       </form>
 
       {/* Sticky Footer */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-background/95 backdrop-blur-sm ml-60">
+      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-background/95 backdrop-blur-sm shadow-lg shadow-black/5 ml-60">
         <div className="max-w-[calc(12*80px+11*16px)] mx-auto px-6 py-3 flex items-center justify-between">
           <div className="text-xs text-muted-foreground">
             <span className="hidden sm:inline"><kbd className="px-1.5 py-0.5 rounded border border-border bg-surface text-[10px] font-mono">⌘S</kbd> to save</span>
