@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { FileSpreadsheet, Layout } from "lucide-react"
+import { MoreHorizontal, RefreshCw, FileText, FileSpreadsheet, Share2, Layout, SlidersHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
  DropdownMenu,
@@ -30,14 +30,15 @@ export function RichMenu() {
  <>
  <DropdownMenu>
  <DropdownMenuTrigger asChild>
- <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs text-slate-600">
- More
- </Button>
+  <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs text-slate-600">
+  <MoreHorizontal className="w-4 h-4" /> More
+  </Button>
  </DropdownMenuTrigger>
  <DropdownMenuContent className="w-56" align="end">
- <DropdownMenuItem onClick={() => setModal("sync")} className="text-xs gap-2.5">
- <span>Sync Tool</span>
- </DropdownMenuItem>
+  <DropdownMenuItem onClick={() => setModal("sync")} className="text-xs gap-2.5">
+  <RefreshCw className="w-4 h-4 text-slate-400" />
+  <span>Sync Tool</span>
+  </DropdownMenuItem>
 
  <DropdownMenuSeparator />
 
@@ -45,16 +46,18 @@ export function RichMenu() {
  Export / Share
  </DropdownMenuLabel>
  <DropdownMenuGroup>
- <DropdownMenuItem onClick={() => setModal("pdf")} className="text-xs gap-2.5">
- <span>Export as PDF</span>
- </DropdownMenuItem>
+  <DropdownMenuItem onClick={() => setModal("pdf")} className="text-xs gap-2.5">
+  <FileText className="w-4 h-4 text-slate-400" />
+  <span>Export as PDF</span>
+  </DropdownMenuItem>
  <DropdownMenuItem onClick={() => setModal("csv-export")} className="text-xs gap-2.5">
  <FileSpreadsheet className="w-4 h-4 text-slate-400" />
  <span>Export as CSV</span>
  </DropdownMenuItem>
- <DropdownMenuItem onClick={() => setModal("share")} className="text-xs gap-2.5">
- <span>Share Dashboard</span>
- </DropdownMenuItem>
+  <DropdownMenuItem onClick={() => setModal("share")} className="text-xs gap-2.5">
+  <Share2 className="w-4 h-4 text-slate-400" />
+  <span>Share Dashboard</span>
+  </DropdownMenuItem>
  </DropdownMenuGroup>
 
  <DropdownMenuSeparator />
@@ -63,12 +66,14 @@ export function RichMenu() {
  Settings
  </DropdownMenuLabel>
  <DropdownMenuGroup>
- <DropdownMenuItem onClick={() => setModal("layout")} className="text-xs gap-2.5">
- <span>Layout Settings</span>
- </DropdownMenuItem>
- <DropdownMenuItem onClick={() => setModal("preferences")} className="text-xs gap-2.5">
- <span>Widget Preferences</span>
- </DropdownMenuItem>
+  <DropdownMenuItem onClick={() => setModal("layout")} className="text-xs gap-2.5">
+  <Layout className="w-4 h-4 text-slate-400" />
+  <span>Layout Settings</span>
+  </DropdownMenuItem>
+  <DropdownMenuItem onClick={() => setModal("preferences")} className="text-xs gap-2.5">
+  <SlidersHorizontal className="w-4 h-4 text-slate-400" />
+  <span>Widget Preferences</span>
+  </DropdownMenuItem>
  </DropdownMenuGroup>
  </DropdownMenuContent>
  </DropdownMenu>
