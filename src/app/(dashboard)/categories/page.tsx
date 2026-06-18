@@ -4,7 +4,10 @@ import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { DataTable, type Column } from "@/components/ui/data-table"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
+import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
+import { SkeletonTable } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 import { FolderOpen, Layers, Search, Tags, XCircle } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
@@ -36,8 +39,9 @@ export default function CategoriesPage() {
  const [loading, setLoading] = useState(true)
  const [search, setSearch] = useState("")
  const [view, setView] = useState<"cards" | "rows">("rows")
- const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
- const [showCreate, setShowCreate] = useState(false)
+  const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
+  const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const [showCreate, setShowCreate] = useState(false)
  const handleNew = useCallback(() => router.push("/categories/new"), [router])
  useHotkey("c", handleNew)
  const [name, setName] = useState("")
@@ -69,12 +73,21 @@ export default function CategoriesPage() {
  }
  }
 
- const filtered = categories.filter((c) =>
- !search || [c.name, c.description]
- .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
- )
+  const filterColumns: FilterColumn[] = [
+   { key: "name", label: "Name", getValue: (c: Category) => c.name },
+  ]
 
- const allColumns: Column<Category>[] = [
+  const filtered = categories.filter((c) => {
+   for (const [key, value] of Object.entries(filters)) {
+    if (!value) continue
+    const col = filterColumns.find((c) => c.key === key)
+    if (col && col.getValue(c) !== value) return false
+   }
+   if (!search) return true
+   return [c.name, c.description].some((v) => v?.toLowerCase().includes(search.toLowerCase()))
+  })
+
+  const allColumns = [
  { key: "name", label: "Name", render: (c) => <span className="font-medium">{c.name}</span> },
  {
  key: "description",
@@ -93,44 +106,73 @@ export default function CategoriesPage() {
 
  return (
  <div className="space-y-6 animate-fade-in">
- <div className="flex items-center justify-between flex-wrap gap-4">
- <div>
- <h1 className="text-2xl font-semibold tracking-tight">Categories</h1>
- <p className="text-sm text-muted-foreground mt-1">Organize your products into categories</p>
- </div>
- <div className="flex items-center gap-3">
- {filtered.length > 0 && (
- <>
- <div className="relative">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-<Input placeholder="Search categories..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
- </div>
- <ViewToggle view={view} onChange={setView} />
- <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
- </>
- )}
- <MoreMenu actions={[
- { label: "Import", icon: ActionIcons.AddNew },
- "separator",
- { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Name", "Description", "Products"], categories.map(c => [c.name, c.description, c._count?.products]), "categories.csv") },
- { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Categories", []) },
- ]} />
- <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>Add Category <ShortcutBadge shortcut="⌘C" />
- </Button>
- </div>
- </div>
+  <div className="flex items-center justify-between">
+  <div>
+  <h1 className="text-2xl font-semibold tracking-tight">Categories</h1>
+  <p className="text-sm text-muted-foreground mt-1">Organize your products into categories</p>
+  </div>
+  <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>Add Category <ShortcutBadge shortcut="⌘C" />
+  </Button>
+  </div>
+  <div className="flex items-center justify-between flex-wrap gap-3">
+   <div className="flex items-center gap-3">
+    {filtered.length > 0 && (
+     <>
+      <FilterButton filters={filters} onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))} columns={filterColumns} data={categories} />
+      <ViewToggle view={view} onChange={setView} />
+      <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
+     </>
+    )}
+   </div>
+   <div className="flex items-center gap-3">
+    {filtered.length > 0 && (
+     <div className="relative">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+      <Input placeholder="Search categories..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
+     </div>
+    )}
+    <MoreMenu actions={[
+     { label: "Import", icon: ActionIcons.AddNew },
+     "separator",
+     { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Name", "Description", "Products"], categories.map(c => [c.name, c.description, c._count?.products]), "categories.csv") },
+     { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Categories", []) },
+    ]} />
+   </div>
+  </div>
 
- <DataTable
- columns={columns}
- data={filtered}
- loading={loading}
- empty={{
- icons: [<Tags className="w-5 h-5" />, <Layers className="w-5 h-5" />, <FolderOpen className="w-5 h-5" />],
- title: "No categories yet",
- description: "Create your first category to organize products.",
- action: { label: "Add Category", onClick: () => setShowCreate(true) },
- }}
- />
+   {loading ? (
+    <SkeletonTable rows={6} columns={columns.length} />
+   ) : filtered.length === 0 ? (
+    <EmptyState
+     icons={[<Tags className="w-5 h-5" />, <Layers className="w-5 h-5" />, <FolderOpen className="w-5 h-5" />]}
+     title="No categories yet"
+     description="Create your first category to organize products."
+     action={{ label: "Add Category", onClick: () => setShowCreate(true) }}
+    />
+   ) : (
+    <div data-slot="frame">
+     <Table>
+      <TableHeader>
+       <TableRow>
+        {columns.map((col) => (
+         <TableHead key={col.key} className={col.className}>{col.label}</TableHead>
+        ))}
+       </TableRow>
+      </TableHeader>
+      <TableBody>
+       {filtered.map((c) => (
+        <TableRow key={c.id}>
+         {columns.map((col) => (
+          <TableCell key={col.key} className={col.cellClassName}>
+           {col.render ? col.render(c) : String((c as any)[col.key] ?? "")}
+          </TableCell>
+         ))}
+        </TableRow>
+       ))}
+      </TableBody>
+     </Table>
+    </div>
+   )}
 
  <Dialog open={showCreate} onOpenChange={setShowCreate}>
  <DialogContent>

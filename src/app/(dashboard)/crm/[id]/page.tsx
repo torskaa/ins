@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { DataTable, type Column } from "@/components/ui/data-table"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { AlertCircle, ArrowLeft, Banknote, Building2, Calendar, ClipboardList, CreditCard, DollarSign, Edit, FileCode, FileSignature, FileText, Hash, Mail, MoreHorizontal, Package, Phone, Receipt, ShoppingCart, Trash2 } from "lucide-react"
 import { toast } from "sonner"
@@ -60,6 +60,10 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
   const [id, setId] = useState("")
   const [activeTab, setActiveTab] = useState("info")
   const [deleting, setDeleting] = useState(false)
+  const [searchOrders, setSearchOrders] = useState("")
+  const [searchQuotations, setSearchQuotations] = useState("")
+  const [searchInvoices, setSearchInvoices] = useState("")
+  const [searchPayments, setSearchPayments] = useState("")
   const router = useRouter()
 
   useEffect(() => { params.then(({ id }) => setId(id)) }, [params])
@@ -84,7 +88,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
 
   const { orders, quotations, invoices, payments, financialSummary: fs } = customer
 
-  const orderColumns: Column<Order>[] = [
+  const orderColumns = [
     { key: "number", label: "Order #", render: (item) => <span className="font-mono text-xs font-medium">{item.number}</span> },
     { key: "type", label: "Type", render: (item) => <Badge variant="outline" className="capitalize text-[10px]">{item.type === "sales" ? "Sales" : "Purchase"}</Badge> },
     { key: "status", label: "Status", render: (item) => <Badge variant={orderStatusColors[item.status] || "default"} className="capitalize text-[10px]">{item.status}</Badge> },
@@ -92,7 +96,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
     { key: "orderDate", label: "Date", render: (item) => <span className="text-xs text-muted-foreground">{formatDate(new Date(item.orderDate))}</span> },
   ]
 
-  const quotationColumns: Column<Quotation>[] = [
+  const quotationColumns = [
     { key: "number", label: "Quotation #", render: (item) => <span className="font-mono text-xs font-medium">{item.number}</span> },
     { key: "status", label: "Status", render: (item) => <Badge variant={quotationStatusColors[item.status] || "default"} className="capitalize text-[10px]">{item.status}</Badge> },
     { key: "total", label: "Total", render: (item) => <span className="font-mono text-xs font-medium">{formatCurrency(item.total)}</span> },
@@ -100,7 +104,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
     { key: "createdAt", label: "Date", render: (item) => <span className="text-xs text-muted-foreground">{formatDate(new Date(item.createdAt))}</span> },
   ]
 
-  const invoiceColumns: Column<Invoice>[] = [
+  const invoiceColumns = [
     { key: "number", label: "Invoice #", render: (item) => <span className="font-mono text-xs font-medium">{item.number}</span> },
     { key: "status", label: "Status", render: (item) => <Badge variant={invoiceStatusColors[item.status] || "default"} className="capitalize text-[10px]">{item.status}</Badge> },
     { key: "total", label: "Total", render: (item) => <span className="font-mono text-xs font-medium">{formatCurrency(item.total)}</span> },
@@ -109,7 +113,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
     { key: "dueDate", label: "Due Date", render: (item) => <span className="text-xs text-muted-foreground">{formatDate(new Date(item.dueDate))}</span> },
   ]
 
-  const paymentColumns: Column<Payment>[] = [
+  const paymentColumns = [
     { key: "date", label: "Date", render: (item) => <span className="text-xs text-muted-foreground">{formatDateTime(new Date(item.date))}</span> },
     { key: "amount", label: "Amount", render: (item) => <span className="font-mono text-xs font-medium">{formatCurrency(item.amount)}</span> },
     { key: "method", label: "Method", render: (item) => {
@@ -279,55 +283,219 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
           </TabsContent>
 
           <TabsContent value="orders" className="p-3">
-            {orders.length > 0 ? (
-              <DataTable columns={orderColumns} data={orders} searchable searchPlaceholder="Search orders..." onRowClick={(item: any) => router.push(`/orders/${item.id}`)} noBorder compact />
-            ) : (
-              <EmptyState
-                icons={[<ShoppingCart key="o1" className="w-6 h-6" />, <ClipboardList key="o2" className="w-6 h-6" />, <Package key="o3" className="w-6 h-6" />]}
-                title="No orders yet"
-                description="Orders placed by this customer will appear here"
-                size="sm"
-              />
-            )}
+            {(() => {
+              if (orders.length === 0) {
+                return (
+                  <EmptyState
+                    icons={[<ShoppingCart key="o1" className="w-6 h-6" />, <ClipboardList key="o2" className="w-6 h-6" />, <Package key="o3" className="w-6 h-6" />]}
+                    title="No orders yet"
+                    description="Orders placed by this customer will appear here"
+                    size="sm"
+                  />
+                )
+              }
+              const filtered = !searchOrders ? orders : orders.filter((item: any) =>
+                JSON.stringify(item).toLowerCase().includes(searchOrders.toLowerCase())
+              )
+              return (
+                <>
+                  <div className="flex items-center mb-3">
+                    <input
+                      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      placeholder="Search orders..."
+                      value={searchOrders}
+                      onChange={(e) => setSearchOrders(e.target.value)}
+                    />
+                  </div>
+                  {filtered.length === 0 ? (
+                    <div className="text-center text-sm text-muted-foreground py-6">No orders match your search</div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          {orderColumns.map((col: any) => (
+                            <TableHead key={col.key}>{col.label}</TableHead>
+                          ))}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filtered.map((item: any) => (
+                          <TableRow key={item.id} className="cursor-pointer" onClick={() => router.push(`/orders/${item.id}`)}>
+                            {orderColumns.map((col: any) => (
+                              <TableCell key={col.key}>
+                                {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </>
+              )
+            })()}
           </TabsContent>
 
           <TabsContent value="quotations" className="p-3">
-            {quotations.length > 0 ? (
-              <DataTable columns={quotationColumns} data={quotations} searchable searchPlaceholder="Search quotations..." onRowClick={(item: any) => router.push(`/quotations/${item.id}`)} noBorder compact />
-            ) : (
-              <EmptyState
-                icons={[<FileSignature key="q1" className="w-6 h-6" />, <FileText key="q2" className="w-6 h-6" />, <FileCode key="q3" className="w-6 h-6" />]}
-                title="No quotations yet"
-                description="Quotations sent to this customer will appear here"
-                size="sm"
-              />
-            )}
+            {(() => {
+              if (quotations.length === 0) {
+                return (
+                  <EmptyState
+                    icons={[<FileSignature key="q1" className="w-6 h-6" />, <FileText key="q2" className="w-6 h-6" />, <FileCode key="q3" className="w-6 h-6" />]}
+                    title="No quotations yet"
+                    description="Quotations sent to this customer will appear here"
+                    size="sm"
+                  />
+                )
+              }
+              const filtered = !searchQuotations ? quotations : quotations.filter((item: any) =>
+                JSON.stringify(item).toLowerCase().includes(searchQuotations.toLowerCase())
+              )
+              return (
+                <>
+                  <div className="flex items-center mb-3">
+                    <input
+                      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      placeholder="Search quotations..."
+                      value={searchQuotations}
+                      onChange={(e) => setSearchQuotations(e.target.value)}
+                    />
+                  </div>
+                  {filtered.length === 0 ? (
+                    <div className="text-center text-sm text-muted-foreground py-6">No quotations match your search</div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          {quotationColumns.map((col: any) => (
+                            <TableHead key={col.key}>{col.label}</TableHead>
+                          ))}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filtered.map((item: any) => (
+                          <TableRow key={item.id} className="cursor-pointer" onClick={() => router.push(`/quotations/${item.id}`)}>
+                            {quotationColumns.map((col: any) => (
+                              <TableCell key={col.key}>
+                                {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </>
+              )
+            })()}
           </TabsContent>
 
           <TabsContent value="invoices" className="p-3">
-            {invoices.length > 0 ? (
-              <DataTable columns={invoiceColumns} data={invoices} searchable searchPlaceholder="Search invoices..." onRowClick={(item: any) => router.push(`/invoices/${item.id}`)} noBorder compact />
-            ) : (
-              <EmptyState
-                icons={[<Receipt key="i1" className="w-6 h-6" />, <FileText key="i2" className="w-6 h-6" />, <Banknote key="i3" className="w-6 h-6" />]}
-                title="No invoices yet"
-                description="Invoices issued to this customer will appear here"
-                size="sm"
-              />
-            )}
+            {(() => {
+              if (invoices.length === 0) {
+                return (
+                  <EmptyState
+                    icons={[<Receipt key="i1" className="w-6 h-6" />, <FileText key="i2" className="w-6 h-6" />, <Banknote key="i3" className="w-6 h-6" />]}
+                    title="No invoices yet"
+                    description="Invoices issued to this customer will appear here"
+                    size="sm"
+                  />
+                )
+              }
+              const filtered = !searchInvoices ? invoices : invoices.filter((item: any) =>
+                JSON.stringify(item).toLowerCase().includes(searchInvoices.toLowerCase())
+              )
+              return (
+                <>
+                  <div className="flex items-center mb-3">
+                    <input
+                      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      placeholder="Search invoices..."
+                      value={searchInvoices}
+                      onChange={(e) => setSearchInvoices(e.target.value)}
+                    />
+                  </div>
+                  {filtered.length === 0 ? (
+                    <div className="text-center text-sm text-muted-foreground py-6">No invoices match your search</div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          {invoiceColumns.map((col: any) => (
+                            <TableHead key={col.key}>{col.label}</TableHead>
+                          ))}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filtered.map((item: any) => (
+                          <TableRow key={item.id} className="cursor-pointer" onClick={() => router.push(`/invoices/${item.id}`)}>
+                            {invoiceColumns.map((col: any) => (
+                              <TableCell key={col.key}>
+                                {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </>
+              )
+            })()}
           </TabsContent>
 
           <TabsContent value="payments" className="p-3">
-            {payments.length > 0 ? (
-              <DataTable columns={paymentColumns} data={payments} searchable searchPlaceholder="Search payments..." noBorder compact />
-            ) : (
-              <EmptyState
-                icons={[<Banknote key="p1" className="w-6 h-6" />, <CreditCard key="p2" className="w-6 h-6" />, <DollarSign key="p3" className="w-6 h-6" />]}
-                title="No payments recorded"
-                description="Payments made by this customer will appear here"
-                size="sm"
-              />
-            )}
+            {(() => {
+              if (payments.length === 0) {
+                return (
+                  <EmptyState
+                    icons={[<Banknote key="p1" className="w-6 h-6" />, <CreditCard key="p2" className="w-6 h-6" />, <DollarSign key="p3" className="w-6 h-6" />]}
+                    title="No payments recorded"
+                    description="Payments made by this customer will appear here"
+                    size="sm"
+                  />
+                )
+              }
+              const filtered = !searchPayments ? payments : payments.filter((item: any) =>
+                JSON.stringify(item).toLowerCase().includes(searchPayments.toLowerCase())
+              )
+              return (
+                <>
+                  <div className="flex items-center mb-3">
+                    <input
+                      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      placeholder="Search payments..."
+                      value={searchPayments}
+                      onChange={(e) => setSearchPayments(e.target.value)}
+                    />
+                  </div>
+                  {filtered.length === 0 ? (
+                    <div className="text-center text-sm text-muted-foreground py-6">No payments match your search</div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          {paymentColumns.map((col: any) => (
+                            <TableHead key={col.key}>{col.label}</TableHead>
+                          ))}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filtered.map((item: any) => (
+                          <TableRow key={item.id}>
+                            {paymentColumns.map((col: any) => (
+                              <TableCell key={col.key}>
+                                {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </>
+              )
+            })()}
           </TabsContent>
         </Tabs>
       </div>

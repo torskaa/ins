@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { DataTable, type Column } from "@/components/ui/data-table"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { ArrowLeft, Building2, Calendar, Edit, Hash, Layers, MapPin, MoreHorizontal, Package, PackagePlus, Trash2, Warehouse, XCircle } from "lucide-react"
 import { toast } from "sonner"
@@ -64,6 +64,8 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  const [editBinLocation, setEditBinLocation] = useState("")
  const [deleteOpen, setDeleteOpen] = useState(false)
  const [deleting, setDeleting] = useState(false)
+ const [searchProducts, setSearchProducts] = useState("")
+ const [searchMovements, setSearchMovements] = useState("")
  const router = useRouter()
 
  useEffect(() => { params.then(({ id }) => setId(id)) }, [params])
@@ -122,13 +124,13 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  { label: "Products", value: warehouse._count.products, icon: Package, color: "text-rose-600 bg-rose-100" },
  ]
 
- const productColumns: Column<WarehouseProduct>[] = [
+  const productColumns = [
  { key: "name", label: "Name", render: (item) => <span className="font-medium">{item.name}</span> },
  { key: "sku", label: "SKU", render: (item) => <span className="font-mono text-xs text-muted-foreground">{item.sku}</span> },
  { key: "stock", label: "Stock", cellClassName: "font-mono text-sm text-muted-foreground", render: (item) => <span>{item.stock}</span> },
  ]
 
- const movementColumns: Column<StockMovement>[] = [
+  const movementColumns = [
  {
  key: "type", label: "Type", render: (item) => (
  <Badge variant={movementTypeColors[item.type] || "default"} className="capitalize">
@@ -318,44 +320,115 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
  </div>
  </TabsContent>
 
-  <TabsContent value="products" className="p-3">
-  {warehouse.products && warehouse.products.length > 0 ? (
-  <DataTable
-  noBorder compact
-  columns={productColumns}
- data={warehouse.products}
- searchable
- searchPlaceholder="Search products..."
- onRowClick={(item: any) => router.push(`/products/${item.id}`)}
- />
- ) : (
-  <EmptyState
-  icons={[<Package key="wp1" className="w-6 h-6" />, <Layers key="wp2" className="w-6 h-6" />, <Warehouse key="wp3" className="w-6 h-6" />]}
-  title="No products"
-  description="Products stored in this warehouse will appear here"
-  size="sm"
-  />
- )}
- </TabsContent>
+   <TabsContent value="products" className="p-3">
+   {(() => {
+     const data = warehouse.products || []
+     if (data.length === 0) {
+       return (
+         <EmptyState
+           icons={[<Package key="wp1" className="w-6 h-6" />, <Layers key="wp2" className="w-6 h-6" />, <Warehouse key="wp3" className="w-6 h-6" />]}
+           title="No products"
+           description="Products stored in this warehouse will appear here"
+           size="sm"
+         />
+       )
+     }
+     const filtered = !searchProducts ? data : data.filter((item: any) =>
+       JSON.stringify(item).toLowerCase().includes(searchProducts.toLowerCase())
+     )
+     return (
+       <>
+         <div className="flex items-center mb-3">
+           <input
+             className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+             placeholder="Search products..."
+             value={searchProducts}
+             onChange={(e) => setSearchProducts(e.target.value)}
+           />
+         </div>
+         {filtered.length === 0 ? (
+           <div className="text-center text-sm text-muted-foreground py-6">No products match your search</div>
+         ) : (
+           <Table>
+             <TableHeader>
+               <TableRow>
+                 {productColumns.map((col: any) => (
+                   <TableHead key={col.key}>{col.label}</TableHead>
+                 ))}
+               </TableRow>
+             </TableHeader>
+             <TableBody>
+               {filtered.map((item: any) => (
+                 <TableRow key={item.id} className="cursor-pointer" onClick={() => router.push(`/products/${item.id}`)}>
+                   {productColumns.map((col: any) => (
+                     <TableCell key={col.key} className={(col as any).cellClassName}>
+                       {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                     </TableCell>
+                   ))}
+                 </TableRow>
+               ))}
+             </TableBody>
+           </Table>
+         )}
+       </>
+     )
+   })()}
+  </TabsContent>
 
-  <TabsContent value="movements" className="p-3">
-  {warehouse.stockMovements && warehouse.stockMovements.length > 0 ? (
-  <DataTable
-  noBorder compact
-  columns={movementColumns}
- data={warehouse.stockMovements}
- searchable
- searchPlaceholder="Search movements..."
- />
- ) : (
-  <EmptyState
-  icons={[<PackagePlus key="wm1" className="w-6 h-6" />, <MapPin key="wm2" className="w-6 h-6" />, <Calendar key="wm3" className="w-6 h-6" />]}
-  title="No stock movements"
-  description="Stock movements in this warehouse will appear here"
-  size="sm"
-  />
- )}
- </TabsContent>
+   <TabsContent value="movements" className="p-3">
+   {(() => {
+     const data = warehouse.stockMovements || []
+     if (data.length === 0) {
+       return (
+         <EmptyState
+           icons={[<PackagePlus key="wm1" className="w-6 h-6" />, <MapPin key="wm2" className="w-6 h-6" />, <Calendar key="wm3" className="w-6 h-6" />]}
+           title="No stock movements"
+           description="Stock movements in this warehouse will appear here"
+           size="sm"
+         />
+       )
+     }
+     const filtered = !searchMovements ? data : data.filter((item: any) =>
+       JSON.stringify(item).toLowerCase().includes(searchMovements.toLowerCase())
+     )
+     return (
+       <>
+         <div className="flex items-center mb-3">
+           <input
+             className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+             placeholder="Search movements..."
+             value={searchMovements}
+             onChange={(e) => setSearchMovements(e.target.value)}
+           />
+         </div>
+         {filtered.length === 0 ? (
+           <div className="text-center text-sm text-muted-foreground py-6">No movements match your search</div>
+         ) : (
+           <Table>
+             <TableHeader>
+               <TableRow>
+                 {movementColumns.map((col: any) => (
+                   <TableHead key={col.key}>{col.label}</TableHead>
+                 ))}
+               </TableRow>
+             </TableHeader>
+             <TableBody>
+               {filtered.map((item: any) => (
+                 <TableRow key={item.id}>
+                   {movementColumns.map((col: any) => (
+                     <TableCell key={col.key} className={(col as any).cellClassName}>
+                       {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                     </TableCell>
+                   ))}
+                 </TableRow>
+               ))}
+             </TableBody>
+           </Table>
+         )}
+       </>
+     )
+   })()}
+  </TabsContent>
   </Tabs>
   </div>
 

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { DataTable, type Column } from "@/components/ui/data-table"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { formatCurrency, formatDateTime } from "@/lib/utils"
@@ -125,6 +125,10 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  const [tab, setTab] = useState("info")
  const router = useRouter()
  const [id, setId] = useState<string>("")
+ const [searchProducts, setSearchProducts] = useState("")
+ const [searchPOs, setSearchPOs] = useState("")
+ const [searchLots, setSearchLots] = useState("")
+ const [searchPrices, setSearchPrices] = useState("")
 
  useEffect(() => {
  params.then(({ id }) => setId(id))
@@ -152,7 +156,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  }
  }
 
- const productColumns: Column<Product>[] = useMemo(
+  const productColumns = useMemo(
  () => [
  { key: "name", label: "Product", render: (item) => <span className="font-medium">{item.name}</span> },
  { key: "sku", label: "SKU" },
@@ -165,7 +169,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  [supplier]
  )
 
- const poColumns: Column<PurchaseOrder>[] = useMemo(
+  const poColumns = useMemo(
  () => [
  { key: "orderNumber", label: "Order #", render: (item) => (
  <span className="font-medium text-info hover:underline cursor-pointer" onClick={() => router.push(`/purchase-orders/${item.id}`)}>{item.orderNumber}</span>
@@ -178,7 +182,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  [router]
  )
 
- const lotColumns: Column<Lot>[] = useMemo(
+  const lotColumns = useMemo(
  () => [
  { key: "lotNumber", label: "Lot Number", render: (item) => <span className="font-mono text-sm">{item.lotNumber}</span> },
  { key: "product", label: "Product", render: (item) => item.product.name },
@@ -189,7 +193,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  []
  )
 
- const pricingColumns: Column<SupplierPrice>[] = useMemo(
+  const pricingColumns = useMemo(
  () => [
  { key: "product", label: "Product", render: (item) => <span className="font-medium">{item.product.name}</span> },
  { key: "sku", label: "SKU", render: (item) => item.product.sku },
@@ -441,47 +445,163 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
  </TabsContent>
 
   <TabsContent value="products" className="p-3">
-  <DataTable
-  columns={productColumns}
-  data={supplier.products}
-  searchable
-  searchPlaceholder="Search products..."
-  noBorder
-  compact
-  />
+  <div className="flex items-center mb-3">
+    <input
+      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      placeholder="Search products..."
+      value={searchProducts}
+      onChange={(e) => setSearchProducts(e.target.value)}
+    />
+  </div>
+  {(() => {
+    const filtered = (supplier.products || []).filter((item: any) =>
+      !searchProducts || JSON.stringify(item).toLowerCase().includes(searchProducts.toLowerCase())
+    )
+    return filtered.length === 0 ? (
+      <div className="text-center text-sm text-muted-foreground py-6">No products</div>
+    ) : (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {productColumns.map((col: any) => (
+              <TableHead key={col.key}>{col.label}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.map((item: any) => (
+            <TableRow key={item.id}>
+              {productColumns.map((col: any) => (
+                <TableCell key={col.key}>
+                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    )
+  })()}
   </TabsContent>
 
   <TabsContent value="purchase-orders" className="p-3">
-  <DataTable
-  columns={poColumns}
-  data={supplier.purchaseOrders}
-  searchable
-  searchPlaceholder="Search orders..."
-  noBorder
-  compact
-  />
+  <div className="flex items-center mb-3">
+    <input
+      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      placeholder="Search orders..."
+      value={searchPOs}
+      onChange={(e) => setSearchPOs(e.target.value)}
+    />
+  </div>
+  {(() => {
+    const filtered = (supplier.purchaseOrders || []).filter((item: any) =>
+      !searchPOs || JSON.stringify(item).toLowerCase().includes(searchPOs.toLowerCase())
+    )
+    return filtered.length === 0 ? (
+      <div className="text-center text-sm text-muted-foreground py-6">No orders</div>
+    ) : (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {poColumns.map((col: any) => (
+              <TableHead key={col.key}>{col.label}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.map((item: any) => (
+            <TableRow key={item.id}>
+              {poColumns.map((col: any) => (
+                <TableCell key={col.key}>
+                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    )
+  })()}
   </TabsContent>
 
   <TabsContent value="lots" className="p-3">
-  <DataTable
-  columns={lotColumns}
-  data={supplier.lots}
-  searchable
-  searchPlaceholder="Search lots..."
-  noBorder
-  compact
-  />
+  <div className="flex items-center mb-3">
+    <input
+      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      placeholder="Search lots..."
+      value={searchLots}
+      onChange={(e) => setSearchLots(e.target.value)}
+    />
+  </div>
+  {(() => {
+    const filtered = (supplier.lots || []).filter((item: any) =>
+      !searchLots || JSON.stringify(item).toLowerCase().includes(searchLots.toLowerCase())
+    )
+    return filtered.length === 0 ? (
+      <div className="text-center text-sm text-muted-foreground py-6">No lots</div>
+    ) : (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {lotColumns.map((col: any) => (
+              <TableHead key={col.key}>{col.label}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.map((item: any) => (
+            <TableRow key={item.id}>
+              {lotColumns.map((col: any) => (
+                <TableCell key={col.key}>
+                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    )
+  })()}
   </TabsContent>
 
   <TabsContent value="pricing" className="p-3">
-  <DataTable
-  columns={pricingColumns}
-  data={supplier.supplierPrices}
-  searchable
-  searchPlaceholder="Search prices..."
-  noBorder
-  compact
-  />
+  <div className="flex items-center mb-3">
+    <input
+      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      placeholder="Search prices..."
+      value={searchPrices}
+      onChange={(e) => setSearchPrices(e.target.value)}
+    />
+  </div>
+  {(() => {
+    const filtered = (supplier.supplierPrices || []).filter((item: any) =>
+      !searchPrices || JSON.stringify(item).toLowerCase().includes(searchPrices.toLowerCase())
+    )
+    return filtered.length === 0 ? (
+      <div className="text-center text-sm text-muted-foreground py-6">No prices</div>
+    ) : (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {pricingColumns.map((col: any) => (
+              <TableHead key={col.key}>{col.label}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.map((item: any) => (
+            <TableRow key={item.id}>
+              {pricingColumns.map((col: any) => (
+                <TableCell key={col.key}>
+                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    )
+  })()}
   </TabsContent>
   </Tabs>
   </div>

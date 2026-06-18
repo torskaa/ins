@@ -9,9 +9,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
-import { DataTable, type Column } from "@/components/ui/data-table"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
+import { Progress } from "@/components/ui/progress"
 import { AlertTriangle, ArrowLeft, Barcode, Boxes, Building2, Clock, DollarSign, FileText, Hash, Layers, MapPin, MoreHorizontal, Package, Pencil, Ruler, ShoppingCart, Tags, Trash2, Warehouse, Weight, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
@@ -223,7 +224,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     })
   }
 
-  const bomColumns: Column<any>[] = [
+  const bomColumns = [
     { key: "name", label: "Name", render: (item) => <span className="font-medium">{item.name}</span> },
     { key: "quantity", label: "Quantity", render: (item) => <span className="font-mono">{formatNumber(item.quantity)}</span> },
     { key: "unit", label: "Unit", render: (item) => <span className="text-muted-foreground">{item.unit || "—"}</span> },
@@ -232,7 +233,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     )},
   ]
 
-  const orderItemColumns: Column<any>[] = [
+  const orderItemColumns = [
     { key: "orderNumber", label: "Order", render: (item) => (
       <button onClick={() => router.push(`/orders/${item.orderId}`)} className="font-mono text-xs font-medium text-primary hover:underline inline-flex items-center gap-1">{item.order?.orderNumber}</button>
     )},
@@ -243,7 +244,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     { key: "total", label: "Total", render: (item) => <span className="font-mono font-medium">{formatCurrency(item.total)}</span> },
   ]
 
-  const invoiceItemColumns: Column<any>[] = [
+  const invoiceItemColumns = [
     { key: "invoiceNumber", label: "Invoice", render: (item) => (
       <button onClick={() => router.push(`/invoices/${item.invoiceId}`)} className="font-mono text-xs font-medium text-primary hover:underline inline-flex items-center gap-1">{item.invoice?.invoiceNumber}</button>
     )},
@@ -253,7 +254,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     { key: "total", label: "Total", render: (item) => <span className="font-mono font-medium">{formatCurrency(item.total)}</span> },
   ]
 
-  const movementColumns: Column<any>[] = [
+  const movementColumns = [
     { key: "type", label: "Type", render: (item) => {
       const variant: Record<string, "success" | "default" | "warning" | "secondary"> = { received: "success", sold: "default", adjusted: "warning", returned: "success", transferred: "secondary" }
       return <Badge variant={variant[item.type] || "secondary"} className="capitalize">{item.type}</Badge>
@@ -267,7 +268,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     { key: "createdAt", label: "Date", render: (item) => <span className="text-muted-foreground text-sm">{formatDateTime(new Date(item.createdAt))}</span> },
   ]
 
-  const lotColumns: Column<any>[] = [
+  const lotColumns = [
     { key: "lotNumber", label: "Lot Number", render: (item) => <span className="font-mono text-xs font-medium">{item.lotNumber}</span> },
     { key: "quantity", label: "Quantity", render: (item) => <span className="font-mono">{formatNumber(item.quantity)}</span> },
     { key: "expiryDate", label: "Expiry", render: (item) => {
@@ -279,7 +280,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     { key: "createdAt", label: "Created", render: (item) => <span className="text-muted-foreground text-sm">{formatDate(new Date(item.createdAt))}</span> },
   ]
 
-  const supplierPriceColumns: Column<any>[] = [
+  const supplierPriceColumns = [
     { key: "supplier", label: "Supplier", render: (item) => <span className="font-medium">{item.supplier?.name}</span> },
     { key: "price", label: "Price", render: (item) => <span className="font-mono font-medium">{formatCurrency(item.price)}</span> },
     { key: "currency", label: "Currency", render: (item) => <span className="font-mono text-xs">{item.currency}</span> },
@@ -472,12 +473,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 <span className={`text-2xl font-semibold font-mono ${isLowStock ? "text-destructive" : ""}`}>{formatNumber(product.stock)}</span>
                 <span className="text-xs text-muted-foreground">units in stock</span>
               </div>
-              <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden mb-2">
-                <div
-                  className={`h-full rounded-full transition-all ${isLowStock ? "bg-destructive" : "bg-success"}`}
-                  style={{ width: `${Math.min((product.stock / (product.maxStock || product.stock * 2)) * 100, 100)}%` }}
-                />
-              </div>
+              <Progress
+                className="h-1.5 mb-2"
+                indicatorClassName={isLowStock ? "bg-destructive" : "bg-success"}
+                value={Math.min((product.stock / (product.maxStock || product.stock * 2)) * 100, 100)}
+              />
               <div className="flex justify-between text-[11px] text-muted-foreground">
                 <span>Min: {formatNumber(product.minStock)}</span>
                 <span>Max: {product.maxStock ? formatNumber(product.maxStock) : "∞"}</span>
@@ -589,7 +589,28 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         size="sm"
                       />
                     ) : (
-                      <DataTable columns={bomColumns} data={product.bomAsFinished || []} noBorder compact />
+                      <div data-slot="frame">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              {bomColumns.map((col) => (
+                                <TableHead key={col.key}>{col.label}</TableHead>
+                              ))}
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {product.bomAsFinished.map((item) => (
+                              <TableRow key={item.id}>
+                                {bomColumns.map((col) => (
+                                  <TableCell key={col.key}>
+                                    {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                                  </TableCell>
+                                ))}
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
                     )}
                   </CardContent>
                 </Card>
@@ -611,7 +632,28 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         size="sm"
                       />
                     ) : (
-                      <DataTable columns={bomColumns} data={product.bomAsMaterial || []} noBorder compact />
+                      <div data-slot="frame">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              {bomColumns.map((col) => (
+                                <TableHead key={col.key}>{col.label}</TableHead>
+                              ))}
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {product.bomAsMaterial.map((item) => (
+                              <TableRow key={item.id}>
+                                {bomColumns.map((col) => (
+                                  <TableCell key={col.key}>
+                                    {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                                  </TableCell>
+                                ))}
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
                     )}
                   </CardContent>
                 </Card>
@@ -624,7 +666,37 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <ShoppingCart className="w-4 h-4 text-primary" />
               Order History ({product.orderItems?.length || 0})
             </div>
-            <DataTable columns={orderItemColumns} data={product.orderItems || []} searchable searchPlaceholder="Search orders..." noBorder compact />
+            {(product.orderItems || []).length === 0 ? (
+              <EmptyState
+                icons={[<ShoppingCart key="oi1" className="w-6 h-6" />, <Package key="oi2" className="w-6 h-6" />]}
+                title="No orders"
+                description="This product has not been ordered yet"
+                size="sm"
+              />
+            ) : (
+              <div data-slot="frame">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {orderItemColumns.map((col) => (
+                        <TableHead key={col.key}>{col.label}</TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {product.orderItems.map((item) => (
+                      <TableRow key={item.id}>
+                        {orderItemColumns.map((col) => (
+                          <TableCell key={col.key}>
+                            {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="invoices" className="p-3">
@@ -632,7 +704,37 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <FileText className="w-4 h-4 text-primary" />
               Invoices ({product.invoiceItems?.length || 0})
             </div>
-            <DataTable columns={invoiceItemColumns} data={product.invoiceItems || []} searchable searchPlaceholder="Search invoices..." noBorder compact />
+            {(product.invoiceItems || []).length === 0 ? (
+              <EmptyState
+                icons={[<FileText key="ii1" className="w-6 h-6" />, <Package key="ii2" className="w-6 h-6" />]}
+                title="No invoices"
+                description="This product has no invoice history"
+                size="sm"
+              />
+            ) : (
+              <div data-slot="frame">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {invoiceItemColumns.map((col) => (
+                        <TableHead key={col.key}>{col.label}</TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {product.invoiceItems.map((item) => (
+                      <TableRow key={item.id}>
+                        {invoiceItemColumns.map((col) => (
+                          <TableCell key={col.key}>
+                            {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="movements" className="p-3">
@@ -640,7 +742,37 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <Boxes className="w-4 h-4 text-primary" />
               Stock Movements
             </div>
-            <DataTable columns={movementColumns} data={product.movements || []} searchable searchPlaceholder="Search movements..." noBorder compact />
+            {(product.movements || []).length === 0 ? (
+              <EmptyState
+                icons={[<Boxes key="sm1" className="w-6 h-6" />, <Package key="sm2" className="w-6 h-6" />]}
+                title="No movements"
+                description="No stock movements recorded yet"
+                size="sm"
+              />
+            ) : (
+              <div data-slot="frame">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {movementColumns.map((col) => (
+                        <TableHead key={col.key}>{col.label}</TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {product.movements.map((item) => (
+                      <TableRow key={item.id}>
+                        {movementColumns.map((col) => (
+                          <TableCell key={col.key}>
+                            {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="lots" className="p-3">
@@ -648,7 +780,37 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <Hash className="w-4 h-4 text-primary" />
               Lot / Serial Number Tracking
             </div>
-            <DataTable columns={lotColumns} data={product.lots || []} searchable searchPlaceholder="Search lots..." noBorder compact />
+            {(product.lots || []).length === 0 ? (
+              <EmptyState
+                icons={[<Hash key="lt1" className="w-6 h-6" />, <Package key="lt2" className="w-6 h-6" />]}
+                title="No lots"
+                description="This product has no lot or serial number tracking data"
+                size="sm"
+              />
+            ) : (
+              <div data-slot="frame">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {lotColumns.map((col) => (
+                        <TableHead key={col.key}>{col.label}</TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {product.lots.map((item) => (
+                      <TableRow key={item.id}>
+                        {lotColumns.map((col) => (
+                          <TableCell key={col.key}>
+                            {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="pricing" className="p-3">
@@ -656,7 +818,37 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <DollarSign className="w-4 h-4 text-primary" />
               Supplier Prices
             </div>
-            <DataTable columns={supplierPriceColumns} data={product.supplierPrices || []} searchable searchPlaceholder="Search supplier prices..." noBorder compact />
+            {(product.supplierPrices || []).length === 0 ? (
+              <EmptyState
+                icons={[<DollarSign key="sp1" className="w-6 h-6" />, <Building2 key="sp2" className="w-6 h-6" />]}
+                title="No supplier prices"
+                description="No supplier price records found"
+                size="sm"
+              />
+            ) : (
+              <div data-slot="frame">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {supplierPriceColumns.map((col) => (
+                        <TableHead key={col.key}>{col.label}</TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {product.supplierPrices.map((item) => (
+                      <TableRow key={item.id}>
+                        {supplierPriceColumns.map((col) => (
+                          <TableCell key={col.key}>
+                            {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>

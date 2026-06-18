@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { DataTable, type Column } from "@/components/ui/data-table"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { MapPin, Package, Search, Truck } from "lucide-react"
@@ -14,6 +13,10 @@ import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { downloadCSV, downloadPDF } from "@/lib/export"
 import { format } from "date-fns"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
+import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
+import { SkeletonTable } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 
 type Delivery = {
  id: string
@@ -37,8 +40,6 @@ const statusColors: Record<string, string> = {
  cancelled: "bg-slate-100 text-slate-600",
 }
 
-const statusFilters = ["all", "draft", "packing", "shipped", "in_transit", "delivered", "failed", "cancelled"]
-
 const PROPERTY_OPTIONS = [
  { key: "distributor", label: "Distributor" },
  { key: "carrier", label: "Carrier" },
@@ -54,7 +55,7 @@ export default function DeliveriesPage() {
  const [search, setSearch] = useState("")
  const [view, setView] = useState<"cards" | "rows">("rows")
  const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
- const [statusFilter, setStatusFilter] = useState("all")
+ const [filters, setFilters] = useState<Record<string, string | null>>({})
  const router = useRouter()
  const handleNew = useCallback(() => router.push("/deliveries/new"), [router])
  useHotkey("c", handleNew)
@@ -66,13 +67,24 @@ export default function DeliveriesPage() {
  .finally(() => setLoading(false))
  }, [])
 
- const statusFiltered = statusFilter === "all" ? deliveries : deliveries.filter(d => d.status === statusFilter)
- const filtered = statusFiltered.filter((d) =>
- !search || [d.number, d.status, d.distributor.name, d.carrier]
- .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
- )
+ const filterColumns: FilterColumn[] = [
+   { key: "status", label: "Status", getValue: (d) => d.status },
+   { key: "carrier", label: "Carrier", getValue: (d) => d.carrier || "" },
+   { key: "distributor", label: "Distributor", getValue: (d) => d.distributor.name },
+ ]
 
- const allColumns: Column<Delivery>[] = [
+ const filtered = deliveries.filter((d) => {
+   for (const [key, value] of Object.entries(filters)) {
+     if (!value) continue
+     const col = filterColumns.find((c) => c.key === key)
+     if (col && col.getValue(d) !== value) return false
+   }
+   if (!search) return true
+   return [d.number, d.status, d.distributor.name, d.carrier]
+   .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
+ })
+
+ const allColumns = [
  {
  key: "number",
  label: "Number",
@@ -123,57 +135,71 @@ export default function DeliveriesPage() {
 
  return (
  <div className="space-y-6 animate-fade-in">
- <div className="flex items-center justify-between flex-wrap gap-4">
+ <div className="flex items-center justify-between">
  <div>
  <h1 className="text-2xl font-semibold tracking-tight">Deliveries</h1>
  <p className="text-sm text-muted-foreground mt-1">Track and manage deliveries to distributors</p>
  </div>
- <div className="flex items-center gap-3">
- {filtered.length > 0 && (
- <>
- <div className="relative">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-<Input placeholder="Search deliveries..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
- </div>
- <ViewToggle view={view} onChange={setView} />
- <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
- </>
- )}
- <MoreMenu actions={[
- { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Number", "Status", "Distributor", "Carrier", "Est.Date", "Items", "Value"], filtered.map(d => [d.number, d.status, d.distributor.name, d.carrier || "", d.estimatedDate, d.totalItems, d.totalValue]), "deliveries.csv") },
- { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Deliveries", []) },
- ]} />
  <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>New Delivery <ShortcutBadge shortcut="⌘C" />
  </Button>
  </div>
+
+ <div className="flex items-center justify-between flex-wrap gap-3">
+ <div className="flex items-center gap-3">
+   {filtered.length > 0 && (
+     <>
+       <FilterButton filters={filters} onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))} columns={filterColumns} data={deliveries} />
+       <ViewToggle view={view} onChange={setView} />
+       <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
+     </>
+   )}
+ </div>
+ <div className="flex items-center gap-3">
+   {filtered.length > 0 && (
+     <div className="relative">
+       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+       <Input placeholder="Search deliveries..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
+     </div>
+   )}
+   <MoreMenu actions={[
+     { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Number", "Status", "Distributor", "Carrier", "Est.Date", "Items", "Value"], filtered.map(d => [d.number, d.status, d.distributor.name, d.carrier || "", d.estimatedDate, d.totalItems, d.totalValue]), "deliveries.csv") },
+     { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Deliveries", []) },
+   ]} />
+ </div>
  </div>
 
- <div className="flex items-center gap-2 flex-wrap">
- {statusFilters.map((s) => (
- <button
- key={s}
- onClick={() => setStatusFilter(s)}
- className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
- statusFilter === s
- ? "bg-primary text-white"
- : "bg-surface text-muted-foreground hover:text-foreground"
- }`}
- >
- {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
- </button>
- ))}
- </div>
-
- <DataTable
- columns={columns}
- data={filtered}
- loading={loading}
- empty={{
- icons: [<Truck className="w-5 h-5" />, <Package className="w-5 h-5" />, <MapPin className="w-5 h-5" />],
- title: "No deliveries found",
- description: statusFilter !== "all" ? "No deliveries with this status." : "Create your first delivery.",
- }}
+ {loading ? (
+ <SkeletonTable rows={6} columns={columns.length} />
+ ) : filtered.length === 0 ? (
+ <EmptyState
+ icons={[<Truck className="w-5 h-5" />, <Package className="w-5 h-5" />, <MapPin className="w-5 h-5" />]}
+ title="No deliveries found"
+ description="Create your first delivery."
  />
+ ) : (
+ <div data-slot="frame">
+ <Table>
+ <TableHeader>
+ <TableRow>
+ {columns.map((col) => (
+ <TableHead key={col.key} className={col.className}>{col.label}</TableHead>
+ ))}
+ </TableRow>
+ </TableHeader>
+ <TableBody>
+ {filtered.map((item) => (
+ <TableRow key={item.id}>
+ {columns.map((col) => (
+ <TableCell key={col.key} className={col.cellClassName}>
+ {col.render ? col.render(item) : String((item as any)[col.key] ?? "")}
+ </TableCell>
+ ))}
+ </TableRow>
+ ))}
+ </TableBody>
+ </Table>
+ </div>
+ )}
  </div>
  )
 }

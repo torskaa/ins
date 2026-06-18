@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { DataTable, type Column } from "@/components/ui/data-table"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
@@ -196,7 +196,7 @@ export default function InvoiceDetailPage() {
  const overdue = status === "overdue" ? daysOverdue(invoice.dueDate) : 0
  const balanceDue = invoice.total - invoice.paidAmount
 
- const itemColumns: Column<InvoiceItem>[] = [
+  const itemColumns = [
  { key: "product", label: "Product", render: (item) => (
  <div>
  <p className="font-medium text-sm">{item.product.name}</p>
@@ -209,7 +209,7 @@ export default function InvoiceDetailPage() {
  { key: "total", label: "Total", render: (item) => <span className="font-mono text-sm font-medium">{formatCurrency(item.total)}</span> },
  ]
 
- const paymentColumns: Column<Payment>[] = [
+  const paymentColumns = [
  { key: "date", label: "Date", render: (item) => <span className="text-sm">{formatDate(new Date(item.date))}</span> },
  { key: "amount", label: "Amount", render: (item) => <span className="font-mono text-sm font-medium">{formatCurrency(item.amount)}</span> },
  { key: "method", label: "Method", render: (item) => <Badge variant="outline" className="capitalize">{item.method}</Badge> },
@@ -306,7 +306,30 @@ export default function InvoiceDetailPage() {
   <TabsContent value="items" className="p-3">
   <h3 className="text-sm font-medium mb-2">Invoice Items</h3>
   <p className="text-xs text-muted-foreground mb-2">Line items included in this invoice</p>
-  <DataTable columns={itemColumns} data={invoice.items} noBorder compact />
+  {(!invoice.items || invoice.items.length === 0) ? (
+    <div className="text-center text-sm text-muted-foreground py-6">No items</div>
+  ) : (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          {itemColumns.map((col) => (
+            <TableHead key={col.key}>{col.label}</TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {invoice.items.map((item) => (
+          <TableRow key={item.id}>
+            {itemColumns.map((col) => (
+              <TableCell key={col.key}>
+                {col.render ? col.render(item) : String(item[col.key] ?? "")}
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  )}
  <div className="border-t border-border px-5 py-4 space-y-1.5">
  <div className="flex justify-between text-sm">
  <span className="text-muted-foreground">Subtotal</span>
@@ -333,16 +356,35 @@ export default function InvoiceDetailPage() {
    <TabsContent value="payments" className="p-3">
    <h3 className="text-sm font-medium mb-2">Payment History</h3>
    <p className="text-xs text-muted-foreground mb-2">Recorded payments for this invoice</p>
-   <DataTable
-   columns={paymentColumns}
-   data={invoice.payments}
-   noBorder compact
-   empty={{
-   icons: [<Banknote key="p1" className="w-6 h-6" />, <DollarSign key="p2" className="w-6 h-6" />, <FileText key="p3" className="w-6 h-6" />],
-   title: "No payments recorded",
-   description: "Payments will appear here once recorded."
-   }}
+   {(!invoice.payments || invoice.payments.length === 0) ? (
+   <EmptyState
+   icons={[<Banknote key="p1" className="w-6 h-6" />, <DollarSign key="p2" className="w-6 h-6" />, <FileText key="p3" className="w-6 h-6" />]}
+   title="No payments recorded"
+   description="Payments will appear here once recorded."
+   size="sm"
    />
+   ) : (
+   <Table>
+     <TableHeader>
+       <TableRow>
+         {paymentColumns.map((col) => (
+           <TableHead key={col.key}>{col.label}</TableHead>
+         ))}
+       </TableRow>
+     </TableHeader>
+     <TableBody>
+       {invoice.payments.map((item) => (
+         <TableRow key={item.id}>
+           {paymentColumns.map((col) => (
+             <TableCell key={col.key}>
+               {col.render ? col.render(item) : String(item[col.key] ?? "")}
+             </TableCell>
+           ))}
+         </TableRow>
+       ))}
+     </TableBody>
+   </Table>
+   )}
   </TabsContent>
 
   {invoice.order && (
@@ -354,22 +396,39 @@ export default function InvoiceDetailPage() {
   </div>
   <Badge variant="outline" className="capitalize">{invoice.order.status}</Badge>
   </div>
-  <DataTable
-  noBorder
-  compact
- columns={[
- { key: "product", label: "Product", render: (item: any) => (
- <div>
- <p className="font-medium text-sm">{item.product.name}</p>
- <p className="text-xs text-muted-foreground">{item.product.sku}</p>
- </div>
- )},
- { key: "quantity", label: "Qty", render: (item: any) => <span className="font-mono text-sm">{item.quantity}</span> },
- { key: "unitPrice", label: "Unit Price", render: (item: any) => <span className="font-mono text-sm">{formatCurrency(item.unitPrice)}</span> },
- { key: "total", label: "Total", render: (item: any) => <span className="font-mono text-sm font-medium">{formatCurrency(item.total)}</span> },
- ]}
- data={invoice.order.items}
-  />
+   {(!invoice.order.items || invoice.order.items.length === 0) ? (
+   <div className="text-center text-sm text-muted-foreground py-6">No items</div>
+   ) : (
+   <Table>
+     <TableHeader>
+       <TableRow>
+         {[
+         { key: "product", label: "Product" },
+         { key: "quantity", label: "Qty" },
+         { key: "unitPrice", label: "Unit Price" },
+         { key: "total", label: "Total" },
+         ].map((col) => (
+           <TableHead key={col.key}>{col.label}</TableHead>
+         ))}
+       </TableRow>
+     </TableHeader>
+     <TableBody>
+       {invoice.order.items.map((item: any) => (
+         <TableRow key={item.id}>
+           <TableCell>
+             <div>
+               <p className="font-medium text-sm">{item.product.name}</p>
+               <p className="text-xs text-muted-foreground">{item.product.sku}</p>
+             </div>
+           </TableCell>
+           <TableCell><span className="font-mono text-sm">{item.quantity}</span></TableCell>
+           <TableCell><span className="font-mono text-sm">{formatCurrency(item.unitPrice)}</span></TableCell>
+           <TableCell><span className="font-mono text-sm font-medium">{formatCurrency(item.total)}</span></TableCell>
+         </TableRow>
+       ))}
+     </TableBody>
+   </Table>
+   )}
   </TabsContent>
   )}
 

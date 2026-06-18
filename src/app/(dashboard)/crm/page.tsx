@@ -1,7 +1,10 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { DataTable, type Column } from "@/components/ui/data-table"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
+import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
+import { SkeletonTable } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Users, Building2, Mail, Phone, Search } from "lucide-react"
@@ -38,8 +41,9 @@ export default function CRMPage() {
  const [loading, setLoading] = useState(true)
  const [search, setSearch] = useState("")
  const [view, setView] = useState<"cards" | "rows">("rows")
- const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
- const router = useRouter()
+const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
+  const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const router = useRouter()
  const handleNew = useCallback(() => router.push("/crm/new"), [router])
  useHotkey("c", handleNew)
 
@@ -50,12 +54,22 @@ export default function CRMPage() {
  .finally(() => setLoading(false))
  }, [])
 
- const filtered = customers.filter((c) =>
- !search || [c.name, c.email, c.phone, c.company]
- .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
- )
+  const filterColumns: FilterColumn[] = [
+  { key: "status", label: "Status", getValue: (c) => "active" },
+  { key: "type", label: "Type", getValue: (c) => c.company ? "business" : "individual" },
+  ]
 
- const allColumns: Column<Customer>[] = [
+  const filtered = customers.filter((item) => {
+  for (const [key, value] of Object.entries(filters)) {
+    if (!value) continue
+    const col = filterColumns.find((c) => c.key === key)
+    if (col && col.getValue(item) !== value) return false
+  }
+  if (!search) return true
+  return [item.name, item.email, item.phone, item.company].some((v) => v?.toLowerCase().includes(search.toLowerCase()))
+  })
+
+  const allColumns = [
  {
  key: "name",
  label: "Name",
@@ -93,47 +107,70 @@ export default function CRMPage() {
 
  return (
  <div className="space-y-6 animate-fade-in">
- <div className="flex items-center justify-between flex-wrap gap-4">
- <div>
- <h1 className="text-2xl font-semibold tracking-tight">CRM</h1>
- <p className="text-sm text-muted-foreground mt-1">Manage your customers and relationships</p>
- </div>
- <div className="flex items-center gap-3">
- {filtered.length > 0 && (
- <>
- <div className="relative">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-<Input placeholder="Search customers..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
- </div>
- <ViewToggle view={view} onChange={setView} />
- <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
- </>
- )}
- <MoreMenu actions={[
- { label: "Import", icon: ActionIcons.AddNew },
- "separator",
- { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Name", "Email", "Phone", "Company", "Total Orders"], customers.map(c => [c.name, c.email || "", c.phone || "", c.company || "", String(c._count?.orders || 0)]), "customers.csv") },
- { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Customers", []) },
- "separator",
- { label: "Refresh", icon: ActionIcons.Refresh },
- ]} />
- <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>Add Customer <ShortcutBadge shortcut="⌘C" />
- </Button>
- </div>
- </div>
+  <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">CRM</h1>
+        <p className="text-sm text-muted-foreground mt-1">Manage your customers and relationships</p>
+      </div>
+      <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>Add Customer <ShortcutBadge shortcut="⌘C" />
+      </Button>
+    </div>
+    <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex items-center gap-3">
+        {filtered.length > 0 && (
+          <>
+            <FilterButton filters={filters} onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))} columns={filterColumns} data={customers} />
+            <ViewToggle view={view} onChange={setView} />
+            <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
+          </>
+        )}
+      </div>
+      <div className="flex items-center gap-3">
+        {filtered.length > 0 && (
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input placeholder="Search..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
+          </div>
+        )}
+        <MoreMenu actions={[
+          { label: "Import", icon: ActionIcons.AddNew },
+          "separator",
+          { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Name", "Email", "Phone", "Company", "Total Orders"], customers.map(c => [c.name, c.email || "", c.phone || "", c.company || "", String(c._count?.orders || 0)]), "customers.csv") },
+          { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Customers", []) },
+          "separator",
+          { label: "Refresh", icon: ActionIcons.Refresh },
+        ]} />
+      </div>
+    </div>
 
- <DataTable
- columns={columns}
- data={filtered}
- onRowClick={(item) => router.push(`/crm/${item.id}`)}
- loading={loading}
- empty={{
- icons: [<Users className="w-5 h-5" />, <Building2 className="w-5 h-5" />, <Mail className="w-5 h-5" />],
- title: "No customers yet",
- description: "Add your first customer to start tracking relationships.",
- action: { label: "Add Customer", onClick: () => router.push("/crm/new") },
- }}
- />
+  {loading ? (
+    <SkeletonTable rows={6} columns={columns.length} />
+  ) : filtered.length === 0 ? (
+    <EmptyState icons={[<Users className="w-5 h-5" />, <Building2 className="w-5 h-5" />, <Mail className="w-5 h-5" />]} title="No customers yet" description="Add your first customer to start tracking relationships." actions={[{ label: "Add Customer", onClick: () => router.push("/crm/new") }]} />
+  ) : (
+    <div data-slot="frame">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {columns.map((col) => (
+              <TableHead key={col.key} className={col.className}>{col.label}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.map((item) => (
+            <TableRow key={item.id} className="cursor-pointer" onClick={() => router.push(`/crm/${item.id}`)}>
+              {columns.map((col) => (
+                <TableCell key={col.key} className={col.cellClassName}>
+                  {col.render ? col.render(item) : String((item as any)[col.key] ?? "")}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  )}
  </div>
  )
 }

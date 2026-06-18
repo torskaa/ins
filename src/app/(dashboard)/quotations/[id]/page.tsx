@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { DataTable, type Column } from "@/components/ui/data-table"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { toast } from "sonner"
@@ -29,6 +29,8 @@ export default function QuotationDetailPage({ params }: { params: Promise<{ id: 
  const [tab, setTab] = useState("items")
  const router = useRouter()
  const [id, setId] = useState("")
+ const [searchItems, setSearchItems] = useState("")
+ const [searchActivity, setSearchActivity] = useState("")
 
  useEffect(() => { params.then(({ id }) => setId(id)) }, [params])
 
@@ -76,7 +78,7 @@ export default function QuotationDetailPage({ params }: { params: Promise<{ id: 
  const { status } = quotation
  const itemCount = quotation.items?.length || 0
 
- const itemsColumns: Column<any>[] = [
+  const itemsColumns = [
  { key: "product", label: "Product", render: (item) => <span className="font-medium">{item.product?.name || "Unknown"}</span> },
  { key: "sku", label: "SKU", render: (item) => <span className="font-mono text-xs text-muted-foreground">{item.product?.sku || "—"}</span> },
  { key: "quantity", label: "Qty", render: (item) => <span className="font-mono text-sm">{item.quantity}</span> },
@@ -84,7 +86,7 @@ export default function QuotationDetailPage({ params }: { params: Promise<{ id: 
  { key: "total", label: "Total", render: (item) => <span className="font-mono text-sm font-medium">{formatCurrency(item.total)}</span> },
  ]
 
- const activityColumns: Column<any>[] = [
+  const activityColumns = [
  { key: "createdAt", label: "Date", render: (item) => <span className="text-sm text-muted-foreground">{formatDateTime(new Date(item.createdAt))}</span> },
  { key: "action", label: "Action", render: (item) => <span className="text-sm capitalize">{item.action}</span> },
  { key: "description", label: "Description", render: (item) => <span className="text-sm text-muted-foreground">{item.description || "—"}</span> },
@@ -245,9 +247,46 @@ export default function QuotationDetailPage({ params }: { params: Promise<{ id: 
   </TabsTrigger>
  <TabsTrigger value="activity" className="gap-1.5"><Activity className="w-4 h-4" /> Activity</TabsTrigger>
  </TabsList>
-  <TabsContent value="items" className="p-3">
-  <DataTable noBorder compact columns={itemsColumns} data={quotation.items || []} searchable searchPlaceholder="Search items..." />
- </TabsContent>
+   <TabsContent value="items" className="p-3">
+   <div className="flex items-center mb-3">
+     <input
+       className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+       placeholder="Search items..."
+       value={searchItems}
+       onChange={(e) => setSearchItems(e.target.value)}
+     />
+   </div>
+   {(() => {
+     const data = quotation.items || []
+     const filtered = !searchItems ? data : data.filter((item: any) =>
+       JSON.stringify(item).toLowerCase().includes(searchItems.toLowerCase())
+     )
+     return filtered.length === 0 ? (
+       <div className="text-center text-sm text-muted-foreground py-6">No items</div>
+     ) : (
+       <Table>
+         <TableHeader>
+           <TableRow>
+             {itemsColumns.map((col: any) => (
+               <TableHead key={col.key}>{col.label}</TableHead>
+             ))}
+           </TableRow>
+         </TableHeader>
+         <TableBody>
+           {filtered.map((item: any) => (
+             <TableRow key={item.id}>
+               {itemsColumns.map((col: any) => (
+                 <TableCell key={col.key}>
+                   {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                 </TableCell>
+               ))}
+             </TableRow>
+           ))}
+         </TableBody>
+       </Table>
+     )
+   })()}
+  </TabsContent>
   <TabsContent value="order" className="p-3">
   <Card>
  <CardHeader><CardTitle>Linked Order</CardTitle></CardHeader>
@@ -270,9 +309,46 @@ export default function QuotationDetailPage({ params }: { params: Promise<{ id: 
  </CardContent>
  </Card>
  </TabsContent>
-  <TabsContent value="activity" className="p-3">
-  <DataTable noBorder compact columns={activityColumns} data={quotation.activities || []} searchable searchPlaceholder="Search activity..." />
- </TabsContent>
+   <TabsContent value="activity" className="p-3">
+   <div className="flex items-center mb-3">
+     <input
+       className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+       placeholder="Search activity..."
+       value={searchActivity}
+       onChange={(e) => setSearchActivity(e.target.value)}
+     />
+   </div>
+   {(() => {
+     const data = quotation.activities || []
+     const filtered = !searchActivity ? data : data.filter((item: any) =>
+       JSON.stringify(item).toLowerCase().includes(searchActivity.toLowerCase())
+     )
+     return filtered.length === 0 ? (
+       <div className="text-center text-sm text-muted-foreground py-6">No activity</div>
+     ) : (
+       <Table>
+         <TableHeader>
+           <TableRow>
+             {activityColumns.map((col: any) => (
+               <TableHead key={col.key}>{col.label}</TableHead>
+             ))}
+           </TableRow>
+         </TableHeader>
+         <TableBody>
+           {filtered.map((item: any) => (
+             <TableRow key={item.id}>
+               {activityColumns.map((col: any) => (
+                 <TableCell key={col.key}>
+                   {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                 </TableCell>
+               ))}
+             </TableRow>
+           ))}
+         </TableBody>
+       </Table>
+     )
+   })()}
+  </TabsContent>
   </Tabs>
   </div>
   </div>

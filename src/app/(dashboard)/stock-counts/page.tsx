@@ -2,8 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { DataTable, type Column } from "@/components/ui/data-table"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
+import { SkeletonTable } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Input } from "@/components/ui/input"
 import { Calculator, ClipboardList, Search, Warehouse } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -48,8 +51,9 @@ export default function StockCountsPage() {
  const [loading, setLoading] = useState(true)
  const [search, setSearch] = useState("")
  const [view, setView] = useState<"cards" | "rows">("rows")
- const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
- const router = useRouter()
+  const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
+  const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const router = useRouter()
  const handleNew = useCallback(() => router.push("/stock-counts/new"), [router])
  useHotkey("c", handleNew)
 
@@ -60,12 +64,22 @@ export default function StockCountsPage() {
  .finally(() => setLoading(false))
  }, [])
 
- const filtered = stockCounts.filter((s) =>
- !search || [s.number, s.status, s.warehouse.name]
- .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
- )
+  const filterColumns: FilterColumn[] = [
+   { key: "status", label: "Status", getValue: (s: StockCount) => s.status },
+   { key: "warehouse", label: "Warehouse", getValue: (s: StockCount) => s.warehouse.name },
+  ]
 
- const allColumns: Column<StockCount>[] = [
+  const filtered = stockCounts.filter((s) => {
+   for (const [key, value] of Object.entries(filters)) {
+    if (!value) continue
+    const col = filterColumns.find((c) => c.key === key)
+    if (col && col.getValue(s) !== value) return false
+   }
+   if (!search) return true
+   return [s.number, s.status, s.warehouse.name].some((v) => v?.toLowerCase().includes(search.toLowerCase()))
+  })
+
+  const allColumns = [
  {
  key: "number",
  label: "Number",
@@ -116,42 +130,71 @@ export default function StockCountsPage() {
 
  return (
  <div className="space-y-6 animate-fade-in">
- <div className="flex items-center justify-between flex-wrap gap-4">
- <div>
- <h1 className="text-2xl font-semibold tracking-tight">Stock Counts</h1>
- <p className="text-sm text-muted-foreground mt-1">Inventory counting sessions and discrepancy reports</p>
- </div>
- <div className="flex items-center gap-3">
- {filtered.length > 0 && (
- <>
- <div className="relative">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-<Input placeholder="Search stock counts..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
- </div>
- <ViewToggle view={view} onChange={setView} />
- <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
- </>
- )}
- <MoreMenu actions={[
- { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Number", "Status", "Warehouse", "Count Date", "Items", "Matched", "Discrepancies"], stockCounts.map(s => [s.number, s.status, s.warehouse.name, s.countDate, s.totalItems, s.matchedItems, s.discrepancyItems]), "stock-counts.csv") },
- { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Stock Counts", []) },
- ]} />
- <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
- New Stock Count <ShortcutBadge shortcut="⌘C" />
- </Button>
- </div>
- </div>
+  <div className="flex items-center justify-between">
+  <div>
+  <h1 className="text-2xl font-semibold tracking-tight">Stock Counts</h1>
+  <p className="text-sm text-muted-foreground mt-1">Inventory counting sessions and discrepancy reports</p>
+  </div>
+  <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
+   New Stock Count <ShortcutBadge shortcut="⌘C" />
+  </Button>
+  </div>
+  <div className="flex items-center justify-between flex-wrap gap-3">
+   <div className="flex items-center gap-3">
+    {filtered.length > 0 && (
+     <>
+      <FilterButton filters={filters} onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))} columns={filterColumns} data={stockCounts} />
+      <ViewToggle view={view} onChange={setView} />
+      <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
+     </>
+    )}
+   </div>
+   <div className="flex items-center gap-3">
+    {filtered.length > 0 && (
+     <div className="relative">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+      <Input placeholder="Search stock counts..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
+     </div>
+    )}
+    <MoreMenu actions={[
+     { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Number", "Status", "Warehouse", "Count Date", "Items", "Matched", "Discrepancies"], stockCounts.map(s => [s.number, s.status, s.warehouse.name, s.countDate, s.totalItems, s.matchedItems, s.discrepancyItems]), "stock-counts.csv") },
+     { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Stock Counts", []) },
+    ]} />
+   </div>
+  </div>
 
- <DataTable
- columns={columns}
- data={filtered}
- loading={loading}
- empty={{
- icons: [<ClipboardList className="w-5 h-5" />, <Warehouse className="w-5 h-5" />, <Calculator className="w-5 h-5" />],
- title: "No stock counts yet",
- description: "Start your first inventory count session.",
- }}
- />
+   {loading ? (
+    <SkeletonTable rows={6} columns={columns.length} />
+   ) : filtered.length === 0 ? (
+    <EmptyState
+     icons={[<ClipboardList className="w-5 h-5" />, <Warehouse className="w-5 h-5" />, <Calculator className="w-5 h-5" />]}
+     title="No stock counts yet"
+     description="Start your first inventory count session."
+    />
+   ) : (
+    <div data-slot="frame">
+     <Table>
+      <TableHeader>
+       <TableRow>
+        {columns.map((col) => (
+         <TableHead key={col.key} className={col.className}>{col.label}</TableHead>
+        ))}
+       </TableRow>
+      </TableHeader>
+      <TableBody>
+       {filtered.map((s) => (
+        <TableRow key={s.id}>
+         {columns.map((col) => (
+          <TableCell key={col.key} className={col.cellClassName}>
+           {col.render ? col.render(s) : String((s as any)[col.key] ?? "")}
+          </TableCell>
+         ))}
+        </TableRow>
+       ))}
+      </TableBody>
+     </Table>
+    </div>
+   )}
  </div>
  )
 }

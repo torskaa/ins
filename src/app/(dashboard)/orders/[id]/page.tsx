@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { DataTable, type Column } from "@/components/ui/data-table"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 
@@ -48,6 +48,11 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
  const [tab, setTab] = useState("items")
  const router = useRouter()
  const [id, setId] = useState("")
+ const [searchItems, setSearchItems] = useState("")
+ const [searchPayments, setSearchPayments] = useState("")
+ const [searchInvoices, setSearchInvoices] = useState("")
+ const [searchStock, setSearchStock] = useState("")
+ const [searchAudit, setSearchAudit] = useState("")
 
  useEffect(() => { params.then(({ id }) => setId(id)) }, [params])
 
@@ -88,7 +93,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
  const allowedTransitions = transitions[order.status] || []
  const isCancellable = order.status !== "cancelled" && order.status !== "delivered"
 
- const itemsColumns: Column<any>[] = [
+  const itemsColumns = [
  { key: "product", label: "Product", render: (item) => <span className="font-medium">{item.product?.name || "Unknown"}</span> },
  { key: "sku", label: "SKU", render: (item) => <span className="font-mono text-xs text-muted-foreground">{item.product?.sku || "—"}</span> },
  { key: "quantity", label: "Qty", render: (item) => <span className="font-mono text-sm">{item.quantity}</span> },
@@ -98,14 +103,14 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
  { key: "invoicedQty", label: "Invoiced", render: (item) => <span className="font-mono text-sm">{item.invoicedQty ?? "—"}</span> },
  ]
 
- const paymentsColumns: Column<any>[] = [
+  const paymentsColumns = [
  { key: "date", label: "Date", render: (item) => <span className="text-sm">{formatDateTime(new Date(item.date))}</span> },
  { key: "amount", label: "Amount", render: (item) => <span className="font-mono text-sm font-medium">{formatCurrency(item.amount)}</span> },
  { key: "method", label: "Method", render: (item) => <span className="text-sm capitalize">{item.method || "—"}</span> },
  { key: "reference", label: "Reference", render: (item) => <span className="font-mono text-xs text-muted-foreground">{item.reference || "—"}</span> },
  ]
 
- const invoicesColumns: Column<any>[] = [
+  const invoicesColumns = [
  { key: "number", label: "Invoice #", render: (item) => <span className="font-mono text-xs font-medium">{item.number}</span> },
  { key: "status", label: "Status", render: (item) => (
  <Badge variant={statusColors[item.status] || "default"} className="capitalize">
@@ -116,7 +121,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
  { key: "paidAmount", label: "Paid", render: (item) => <span className="font-mono text-sm">{formatCurrency(item.paidAmount ?? 0)}</span> },
  ]
 
- const stockColumns: Column<any>[] = [
+  const stockColumns = [
  { key: "type", label: "Type", render: (item) => (
  <Badge variant={
  item.type === "received" ? "success" :
@@ -135,7 +140,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
  { key: "createdAt", label: "Date", render: (item) => <span className="text-sm text-muted-foreground">{formatDateTime(new Date(item.createdAt))}</span> },
  ]
 
- const auditColumns: Column<any>[] = [
+  const auditColumns = [
  { key: "createdAt", label: "Date", render: (item) => <span className="text-sm text-muted-foreground">{formatDateTime(new Date(item.createdAt))}</span> },
  { key: "action", label: "Action", render: (item) => <span className="text-sm capitalize">{item.action}</span> },
  { key: "user", label: "User", render: (item) => <span className="text-sm">{item.user?.name || "—"}</span> },
@@ -292,58 +297,203 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     </TabsList>
 
   <TabsContent value="items" className="p-3">
-  <DataTable
-  columns={itemsColumns}
-  data={order.items || []}
-  searchable
-  searchPlaceholder="Search items..."
-  noBorder
-  compact
-  />
+  <div className="flex items-center mb-3">
+    <input
+      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      placeholder="Search items..."
+      value={searchItems}
+      onChange={(e) => setSearchItems(e.target.value)}
+    />
+  </div>
+  {(() => {
+    const filtered = (order.items || []).filter((item: any) =>
+      !searchItems || JSON.stringify(item).toLowerCase().includes(searchItems.toLowerCase())
+    )
+    return filtered.length === 0 ? (
+      <div className="text-center text-sm text-muted-foreground py-6">No items</div>
+    ) : (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {itemsColumns.map((col: any) => (
+              <TableHead key={col.key}>{col.label}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.map((item: any) => (
+            <TableRow key={item.id}>
+              {itemsColumns.map((col: any) => (
+                <TableCell key={col.key}>
+                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    )
+  })()}
   </TabsContent>
 
   <TabsContent value="payments" className="p-3">
-  <DataTable
-  columns={paymentsColumns}
-  data={order.payments || []}
-  searchable
-  searchPlaceholder="Search payments..."
-  noBorder
-  compact
-  />
+  <div className="flex items-center mb-3">
+    <input
+      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      placeholder="Search payments..."
+      value={searchPayments}
+      onChange={(e) => setSearchPayments(e.target.value)}
+    />
+  </div>
+  {(() => {
+    const filtered = (order.payments || []).filter((item: any) =>
+      !searchPayments || JSON.stringify(item).toLowerCase().includes(searchPayments.toLowerCase())
+    )
+    return filtered.length === 0 ? (
+      <div className="text-center text-sm text-muted-foreground py-6">No payments</div>
+    ) : (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {paymentsColumns.map((col: any) => (
+              <TableHead key={col.key}>{col.label}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.map((item: any) => (
+            <TableRow key={item.id}>
+              {paymentsColumns.map((col: any) => (
+                <TableCell key={col.key}>
+                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    )
+  })()}
   </TabsContent>
 
   <TabsContent value="invoices" className="p-3">
-  <DataTable
-  columns={invoicesColumns}
-  data={order.invoices || []}
-  searchable
-  searchPlaceholder="Search invoices..."
-  noBorder
-  compact
-  />
+  <div className="flex items-center mb-3">
+    <input
+      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      placeholder="Search invoices..."
+      value={searchInvoices}
+      onChange={(e) => setSearchInvoices(e.target.value)}
+    />
+  </div>
+  {(() => {
+    const filtered = (order.invoices || []).filter((item: any) =>
+      !searchInvoices || JSON.stringify(item).toLowerCase().includes(searchInvoices.toLowerCase())
+    )
+    return filtered.length === 0 ? (
+      <div className="text-center text-sm text-muted-foreground py-6">No invoices</div>
+    ) : (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {invoicesColumns.map((col: any) => (
+              <TableHead key={col.key}>{col.label}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.map((item: any) => (
+            <TableRow key={item.id}>
+              {invoicesColumns.map((col: any) => (
+                <TableCell key={col.key}>
+                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    )
+  })()}
   </TabsContent>
 
   <TabsContent value="stock" className="p-3">
-  <DataTable
-  columns={stockColumns}
-  data={order.stockMovements || []}
-  searchable
-  searchPlaceholder="Search movements..."
-  noBorder
-  compact
-  />
+  <div className="flex items-center mb-3">
+    <input
+      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      placeholder="Search movements..."
+      value={searchStock}
+      onChange={(e) => setSearchStock(e.target.value)}
+    />
+  </div>
+  {(() => {
+    const filtered = (order.stockMovements || []).filter((item: any) =>
+      !searchStock || JSON.stringify(item).toLowerCase().includes(searchStock.toLowerCase())
+    )
+    return filtered.length === 0 ? (
+      <div className="text-center text-sm text-muted-foreground py-6">No movements</div>
+    ) : (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {stockColumns.map((col: any) => (
+              <TableHead key={col.key}>{col.label}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.map((item: any) => (
+            <TableRow key={item.id}>
+              {stockColumns.map((col: any) => (
+                <TableCell key={col.key}>
+                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    )
+  })()}
   </TabsContent>
 
   <TabsContent value="audit" className="p-3">
-  <DataTable
-  columns={auditColumns}
-  data={order.auditLogs || []}
-  searchable
-  searchPlaceholder="Search logs..."
-  noBorder
-  compact
-  />
+  <div className="flex items-center mb-3">
+    <input
+      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      placeholder="Search logs..."
+      value={searchAudit}
+      onChange={(e) => setSearchAudit(e.target.value)}
+    />
+  </div>
+  {(() => {
+    const filtered = (order.auditLogs || []).filter((item: any) =>
+      !searchAudit || JSON.stringify(item).toLowerCase().includes(searchAudit.toLowerCase())
+    )
+    return filtered.length === 0 ? (
+      <div className="text-center text-sm text-muted-foreground py-6">No logs</div>
+    ) : (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {auditColumns.map((col: any) => (
+              <TableHead key={col.key}>{col.label}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.map((item: any) => (
+            <TableRow key={item.id}>
+              {auditColumns.map((col: any) => (
+                <TableCell key={col.key}>
+                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    )
+  })()}
   </TabsContent>
   </Tabs>
   </div>

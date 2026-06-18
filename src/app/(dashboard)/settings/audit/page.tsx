@@ -1,11 +1,16 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { DataTable, statusBadge, type Column } from "@/components/ui/data-table"
+import { statusBadge } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
 import { Activity, FileText, Search, Shield } from "lucide-react"
 import { formatDateTime } from "@/lib/utils"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
+import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
+import { SkeletonTable } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Input } from "@/components/ui/input"
 
 type AuditEntry = {
  id: string
@@ -24,13 +29,15 @@ const ACTION_COLORS: Record<string, "success" | "destructive" | "warning" | "def
 }
 
 export default function AuditPage() {
- const [entries, setEntries] = useState<AuditEntry[]>([])
- const [loading, setLoading] = useState(true)
- const [page, setPage] = useState(1)
- const [total, setTotal] = useState(0)
- const [actionFilter, setActionFilter] = useState("")
- const [entityFilter, setEntityFilter] = useState("")
- const [userFilter, setUserFilter] = useState("")
+  const [entries, setEntries] = useState<AuditEntry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const [search, setSearch] = useState("")
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
+  const [actionFilter, setActionFilter] = useState("")
+  const [entityFilter, setEntityFilter] = useState("")
+  const [userFilter, setUserFilter] = useState("")
 
  const limit = 50
 
@@ -51,7 +58,7 @@ export default function AuditPage() {
 
  const totalPages = Math.max(1, Math.ceil(total / limit))
 
- const columns: Column<AuditEntry>[] = [
+  const columns: any[] = [
  {
  key: "action", label: "Action",
  render: (e) => <span className={statusBadge({ variant: ACTION_COLORS[e.action] || "default" })}>{e.action}</span>,
@@ -63,28 +70,75 @@ export default function AuditPage() {
  {
  key: "createdAt", label: "Timestamp",
  render: (e) => <span className="text-sm text-muted-foreground whitespace-nowrap">{formatDateTime(new Date(e.createdAt))}</span>,
- },
- ]
+  },
+  ]
 
- return (
- <div className="animate-fade-in">
- <div className="page-header"><div><h1>Audit Log</h1><p>Track all changes and activities across the system</p></div></div>
+  const filterColumns: FilterColumn[] = [
+    { key: "entity", label: "Entity", getValue: (e: any) => e.entity },
+    { key: "action", label: "Action", getValue: (e: any) => e.action },
+    { key: "user", label: "User", getValue: (e: any) => e.userName },
+  ]
 
- <div className="flex items-center gap-3 mb-4 flex-wrap">
- <div className="w-44">
- <Select options={[{ value: "", label: "All Entities" }, { value: "Role", label: "Role" }, { value: "ApiKey", label: "API Key" }, { value: "OrganizationMember", label: "User" }, { value: "system", label: "System" }]} placeholder="All Entities" value={entityFilter} onChange={(e) => { setEntityFilter(e.target.value); setPage(1) }} />
- </div>
- <div className="w-36">
- <Select options={[{ value: "", label: "All Actions" }, { value: "created", label: "Created" }, { value: "updated", label: "Updated" }, { value: "deleted", label: "Deleted" }]} placeholder="All Actions" value={actionFilter} onChange={(e) => { setActionFilter(e.target.value); setPage(1) }} />
- </div>
- <div className="relative flex-1 max-w-xs">
- <input placeholder="Filter by user ID..." value={userFilter} onChange={(e) => { setUserFilter(e.target.value); setPage(1) }}
- className="flex h-10 w-full rounded-lg border border-border bg-card px-3 py-2 pl-9 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-150" />
- </div>
- </div>
+  const filtered = entries.filter((item) => {
+    for (const [key, value] of Object.entries(filters)) {
+      if (!value) continue
+      const col = filterColumns.find((c) => c.key === key)
+      if (col && col.getValue(item) !== value) return false
+    }
+    if (!search) return true
+    return [item.entity, item.action, item.userName, item.description].some((v) => v?.toLowerCase().includes(search.toLowerCase()))
+  })
 
- <DataTable columns={columns} data={entries} loading={loading}
- empty={{ icons: [<Shield className="w-5 h-5" />, <Activity className="w-5 h-5" />, <FileText className="w-5 h-5" />], title: "No audit entries found", description: "Activity will appear here as users interact with the system." }} />
+  return (
+  <div className="animate-fade-in">
+  <div className="page-header"><div><h1>Audit Log</h1><p>Track all changes and activities across the system</p></div></div>
+
+  <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
+    <div className="flex items-center gap-3">
+      <FilterButton filters={filters} onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))} columns={filterColumns} data={entries} />
+      <div className="w-44">
+        <Select options={[{ value: "", label: "All Entities" }, { value: "Role", label: "Role" }, { value: "ApiKey", label: "API Key" }, { value: "OrganizationMember", label: "User" }, { value: "system", label: "System" }]} placeholder="All Entities" value={entityFilter} onChange={(e) => { setEntityFilter(e.target.value); setPage(1) }} />
+      </div>
+      <div className="w-36">
+        <Select options={[{ value: "", label: "All Actions" }, { value: "created", label: "Created" }, { value: "updated", label: "Updated" }, { value: "deleted", label: "Deleted" }]} placeholder="All Actions" value={actionFilter} onChange={(e) => { setActionFilter(e.target.value); setPage(1) }} />
+      </div>
+    </div>
+    <div className="flex items-center gap-3">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input placeholder="Search..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
+      </div>
+    </div>
+  </div>
+
+  {loading ? (
+    <SkeletonTable rows={6} columns={columns.length} />
+  ) : filtered.length === 0 ? (
+    <EmptyState icons={[<Shield className="w-5 h-5" />, <Activity className="w-5 h-5" />, <FileText className="w-5 h-5" />]} title="No audit entries found" description="Activity will appear here as users interact with the system." />
+  ) : (
+    <div data-slot="frame">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {columns.map((col) => (
+              <TableHead key={col.key}>{col.label}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.map((item) => (
+            <TableRow key={item.id}>
+              {columns.map((col) => (
+                <TableCell key={col.key} className={col.cellClassName}>
+                  {col.render ? col.render(item) : String((item as any)[col.key] ?? "")}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  )}
 
  {total > limit && (
  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { DataTable, type Column } from "@/components/ui/data-table"
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { ArrowLeft, Bookmark, Edit, FileText, FolderOpen, Hash, Layers, MoreHorizontal, Package, Tags, Trash2, XCircle } from "lucide-react"
 import { toast } from "sonner"
@@ -100,12 +100,12 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
  { label: "Products", value: category._count.products, icon: Package, color: "text-amber-600 bg-amber-100" },
  ]
 
- const productColumns: Column<CategoryProduct>[] = [
- { key: "name", label: "Name", render: (item) => <span className="font-medium">{item.name}</span> },
- { key: "sku", label: "SKU", render: (item) => <span className="font-mono text-xs text-muted-foreground">{item.sku}</span> },
- { key: "price", label: "Price", render: (item) => <span className="font-mono text-sm font-medium">{formatCurrency(item.price)}</span> },
- { key: "stock", label: "Stock", cellClassName: "font-mono text-sm text-muted-foreground", render: (item) => <span>{item.stock}</span> },
- ]
+  const productColumns = [
+  { key: "name", label: "Name", render: (item: CategoryProduct) => <span className="font-medium">{item.name}</span> },
+  { key: "sku", label: "SKU", render: (item: CategoryProduct) => <span className="font-mono text-xs text-muted-foreground">{item.sku}</span> },
+  { key: "price", label: "Price", render: (item: CategoryProduct) => <span className="font-mono text-sm font-medium">{formatCurrency(item.price)}</span> },
+  { key: "stock", label: "Stock", render: (item: CategoryProduct) => <span className="font-mono text-sm text-muted-foreground">{item.stock}</span> },
+  ]
 
  return (
  <div className="animate-fade-in space-y-6">
@@ -258,22 +258,34 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
  </TabsContent>
 
   <TabsContent value="products" className="p-3">
-  {category.products && category.products.length > 0 ? (
-  <DataTable
-  noBorder compact
-  columns={productColumns}
- data={category.products}
- searchable
- searchPlaceholder="Search products..."
- onRowClick={(item: any) => router.push(`/products/${item.id}`)}
- />
-  ) : (
+  {!category.products || category.products.length === 0 ? (
   <EmptyState
   icons={[<Package key="p1" className="w-6 h-6" />, <Tags key="p2" className="w-6 h-6" />, <FolderOpen key="p3" className="w-6 h-6" />]}
   title="No products in this category"
   description="Products assigned to this category will appear here"
   size="sm"
   />
+  ) : (
+  <Table>
+  <TableHeader>
+  <TableRow>
+  {productColumns.map((col) => (
+  <TableHead key={col.key as string}>{col.label}</TableHead>
+  ))}
+  </TableRow>
+  </TableHeader>
+  <TableBody>
+  {category.products.map((item) => (
+  <TableRow key={item.id} className="cursor-pointer" onClick={() => router.push(`/products/${item.id}`)}>
+  {productColumns.map((col) => (
+  <TableCell key={col.key as string}>
+  {col.render ? col.render(item) : String((item as any)[col.key] ?? "")}
+  </TableCell>
+  ))}
+  </TableRow>
+  ))}
+  </TableBody>
+  </Table>
   )}
   </TabsContent>
 

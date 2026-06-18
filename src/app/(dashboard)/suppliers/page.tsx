@@ -1,7 +1,9 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { DataTable, statusBadge, type Column } from "@/components/ui/data-table"
+import { statusBadge } from "@/components/ui/data-table"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
+import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Award, Building2, Globe, Search } from "lucide-react"
@@ -12,6 +14,8 @@ import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { useRouter } from "next/navigation"
 import { downloadCSV, downloadPDF } from "@/lib/export"
+import { SkeletonTable } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 
 type Supplier = {
  id: string
@@ -37,8 +41,9 @@ export default function SuppliersPage() {
  const [loading, setLoading] = useState(true)
  const [search, setSearch] = useState("")
  const [view, setView] = useState<"cards" | "rows">("rows")
- const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
- const router = useRouter()
+  const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
+  const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const router = useRouter()
  const handleNew = useCallback(() => router.push("/suppliers/new"), [router])
  useHotkey("c", handleNew)
 
@@ -46,12 +51,23 @@ export default function SuppliersPage() {
  fetch("/api/suppliers").then(r => r.json()).then((data) => { if (Array.isArray(data)) setSuppliers(data) }).finally(() => setLoading(false))
  }, [])
 
- const filtered = suppliers.filter((s) =>
- !search || [s.name, s.email, s.phone, s.contactPerson, s.rating]
- .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
- )
+  const filterColumns: FilterColumn[] = [
+    { key: "rating", label: "Rating", getValue: (s) => s.rating },
+    { key: "name", label: "Name", getValue: (s) => s.name },
+  ]
 
- const allColumns: Column<Supplier>[] = [
+  const filtered = suppliers.filter((s) => {
+    for (const [key, value] of Object.entries(filters)) {
+      if (!value) continue
+      const col = filterColumns.find((c) => c.key === key)
+      if (col && col.getValue(s) !== value) return false
+    }
+    if (!search) return true
+    return [s.name, s.email, s.phone, s.contactPerson, s.rating]
+      .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
+  })
+
+  const allColumns = [
  {
  key: "name",
  label: "Name",
@@ -87,48 +103,80 @@ export default function SuppliersPage() {
 
  const columns = allColumns.filter((c) => props.includes(c.key))
 
- return (
- <div className="space-y-6 animate-fade-in">
- <div className="flex items-center justify-between flex-wrap gap-4">
- <div>
- <h1 className="text-2xl font-semibold tracking-tight">Suppliers</h1>
- <p className="text-sm text-muted-foreground mt-1">Manage your product suppliers and vendors</p>
- </div>
- <div className="flex items-center gap-3">
- {filtered.length > 0 && (
- <>
- <div className="relative">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-<Input placeholder="Search suppliers..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
- </div>
- <ViewToggle view={view} onChange={setView} />
- <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
- </>
- )}
- <MoreMenu actions={[
- { label: "Import", icon: ActionIcons.AddNew },
- "separator",
- { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Name", "Email", "Phone", "Contact Person", "Rating", "Products"], suppliers.map(s => [s.name, s.email, s.phone, s.contactPerson, s.rating, String(s._count?.products)]), "suppliers.csv") },
- { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Suppliers", []) },
- "separator",
- { label: "Refresh", icon: ActionIcons.Refresh },
- ]} />
- <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>Add Supplier <ShortcutBadge shortcut="⌘C" /></Button>
- </div>
- </div>
+  return (
+    <div className="space-y-6 animate-fade-in [&_.text-muted-foreground]:text-foreground">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Suppliers</h1>
+          <p className="text-sm text-foreground mt-1">Manage your product suppliers and vendors</p>
+        </div>
+        <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>Add Supplier <ShortcutBadge shortcut="⌘C" /></Button>
+      </div>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          {filtered.length > 0 && (
+            <>
+              <FilterButton filters={filters} onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))} columns={filterColumns} data={suppliers} />
+              <ViewToggle view={view} onChange={setView} />
+              <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
+            </>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          {filtered.length > 0 && (
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground" />
+              <Input placeholder="Search suppliers..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
+            </div>
+          )}
+          <MoreMenu actions={[
+            { label: "Import", icon: ActionIcons.AddNew },
+            "separator",
+            { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Name", "Email", "Phone", "Contact Person", "Rating", "Products"], suppliers.map(s => [s.name, s.email, s.phone, s.contactPerson, s.rating, String(s._count?.products)]), "suppliers.csv") },
+            { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Suppliers", []) },
+            "separator",
+            { label: "Refresh", icon: ActionIcons.Refresh },
+          ]} />
+        </div>
+      </div>
 
- <DataTable
- columns={columns}
- data={filtered}
- onRowClick={(item) => router.push(`/suppliers/${item.id}`)}
- loading={loading}
- empty={{
- icons: [<Building2 className="w-5 h-5" />, <Globe className="w-5 h-5" />, <Award className="w-5 h-5" />],
- title: "No suppliers yet",
- description: "Add your first supplier to start managing vendor relationships.",
- action: { label: "Add Supplier", onClick: () => router.push("/suppliers/new") },
- }}
- />
- </div>
- )
+      {loading ? (
+        <SkeletonTable rows={6} columns={columns.length} />
+      ) : filtered.length === 0 ? (
+        <EmptyState
+          icons={[<Building2 className="w-5 h-5" />, <Globe className="w-5 h-5" />, <Award className="w-5 h-5" />]}
+          title="No suppliers yet"
+          description="Add your first supplier to start managing vendor relationships."
+          actions={[{ label: "Add Supplier", onClick: () => router.push("/suppliers/new") }]}
+        />
+      ) : (
+        <div data-slot="frame">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {columns.map((col) => (
+                  <TableHead key={col.key} className={col.className}>{col.label}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((item) => (
+                <TableRow
+                  key={item.id}
+                  className="cursor-pointer"
+                  onClick={() => router.push(`/suppliers/${item.id}`)}
+                >
+                  {columns.map((col) => (
+                    <TableCell key={col.key} className={col.cellClassName}>
+                      {col.render ? col.render(item) : String((item as any)[col.key] ?? "")}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </div>
+  )
 }

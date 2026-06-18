@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { DataTable, type Column } from "@/components/ui/data-table"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { ArrowLeft, Calendar, ClipboardList, Edit, Hash, Mail, MapPin, MoreHorizontal, Package, Phone, Trash2, Truck, User, XCircle } from "lucide-react"
 import { toast } from "sonner"
@@ -85,6 +85,7 @@ export default function DistributorDetailPage({ params }: { params: Promise<{ id
  const [editNotes, setEditNotes] = useState("")
  const [deleteOpen, setDeleteOpen] = useState(false)
  const [deleting, setDeleting] = useState(false)
+ const [searchDeliveries, setSearchDeliveries] = useState("")
 
  useEffect(() => {
  if (!id) return
@@ -142,7 +143,7 @@ export default function DistributorDetailPage({ params }: { params: Promise<{ id
  { label: "Route", value: distributor.route || "—", icon: Hash, color: "text-emerald-600 bg-emerald-100" },
  ]
 
- const deliveryColumns: Column<Delivery>[] = [
+  const deliveryColumns = [
  { key: "number", label: "Number", render: (d) => <span className="font-medium">{d.number}</span> },
  { key: "status", label: "Status", render: (d) => <Badge className={`${deliveryStatusColors[d.status] || ""} border-0 font-medium`}>{d.status}</Badge> },
  { key: "totalItems", label: "Items", cellClassName: "font-mono text-sm text-muted-foreground", render: (d) => <span>{d.totalItems}</span> },
@@ -334,25 +335,56 @@ export default function DistributorDetailPage({ params }: { params: Promise<{ id
  </div>
  </TabsContent>
 
-  <TabsContent value="deliveries" className="p-3">
-  {distributor.deliveries && distributor.deliveries.length > 0 ? (
-  <DataTable
-  noBorder compact
-  columns={deliveryColumns}
- data={distributor.deliveries}
- searchable
- searchPlaceholder="Search deliveries..."
- onRowClick={(item: any) => router.push(`/deliveries/${item.id}`)}
- />
- ) : (
-  <EmptyState
-  icons={[<Truck key="d1" className="w-6 h-6" />, <Package key="d2" className="w-6 h-6" />, <ClipboardList key="d3" className="w-6 h-6" />]}
-  title="No deliveries"
-  description="Deliveries assigned to this distributor will appear here"
-  size="sm"
-  />
- )}
- </TabsContent>
+   <TabsContent value="deliveries" className="p-3">
+   <div className="flex items-center mb-3">
+     <input
+       className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+       placeholder="Search deliveries..."
+       value={searchDeliveries}
+       onChange={(e) => setSearchDeliveries(e.target.value)}
+     />
+   </div>
+   {(() => {
+     const data = distributor.deliveries || []
+     if (data.length === 0) {
+       return (
+         <EmptyState
+           icons={[<Truck key="d1" className="w-6 h-6" />, <Package key="d2" className="w-6 h-6" />, <ClipboardList key="d3" className="w-6 h-6" />]}
+           title="No deliveries"
+           description="Deliveries assigned to this distributor will appear here"
+           size="sm"
+         />
+       )
+     }
+     const filtered = !searchDeliveries ? data : data.filter((item: any) =>
+       JSON.stringify(item).toLowerCase().includes(searchDeliveries.toLowerCase())
+     )
+     return filtered.length === 0 ? (
+       <div className="text-center text-sm text-muted-foreground py-6">No deliveries match your search</div>
+     ) : (
+       <Table>
+         <TableHeader>
+           <TableRow>
+             {deliveryColumns.map((col: any) => (
+               <TableHead key={col.key}>{col.label}</TableHead>
+             ))}
+           </TableRow>
+         </TableHeader>
+         <TableBody>
+           {filtered.map((item: any) => (
+             <TableRow key={item.id} className="cursor-pointer" onClick={() => router.push(`/deliveries/${item.id}`)}>
+               {deliveryColumns.map((col: any) => (
+                 <TableCell key={col.key} className={(col as any).cellClassName}>
+                   {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                 </TableCell>
+               ))}
+             </TableRow>
+           ))}
+         </TableBody>
+       </Table>
+     )
+   })()}
+  </TabsContent>
   </Tabs>
   </div>
 

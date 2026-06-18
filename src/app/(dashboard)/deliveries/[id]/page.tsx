@@ -6,7 +6,7 @@ import { use } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { DataTable, type Column } from "@/components/ui/data-table"
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Building2, Calendar, Edit, MapPin, MoreHorizontal, Package, Trash2, Truck, XCircle } from "lucide-react"
 import { toast } from "sonner"
@@ -159,15 +159,15 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
  { label: "Tracking", value: delivery.trackingNumber || "—", color: "text-violet-600 bg-violet-100" },
  ]
 
- const itemColumns: Column<DeliveryItemType>[] = [
- { key: "product", label: "Product", render: (i) => <span className="font-medium">{i.product.name}</span> },
- { key: "sku", label: "SKU", render: (i) => <span className="font-mono text-xs text-muted-foreground">{i.product.sku}</span> },
- { key: "barcode", label: "Barcode", render: (i) => <span className="font-mono text-xs text-muted-foreground">{i.product.barcode || "—"}</span> },
- { key: "quantity", label: "Qty", cellClassName: "font-mono text-sm", render: (i) => <span>{i.quantity}</span> },
- { key: "deliveredQty", label: "Delivered", cellClassName: "font-mono text-sm text-muted-foreground", render: (i) => <span>{i.deliveredQty}</span> },
- { key: "unitPrice", label: "Unit Price", render: (i) => <span className="font-mono text-sm">฿{i.unitPrice.toLocaleString()}</span> },
- { key: "total", label: "Total", render: (i) => <span className="font-mono text-sm font-medium">฿{i.total.toLocaleString()}</span> },
- ]
+  const itemColumns = [
+  { key: "product", label: "Product", render: (i: DeliveryItemType) => <span className="font-medium">{i.product.name}</span> },
+  { key: "sku", label: "SKU", render: (i: DeliveryItemType) => <span className="font-mono text-xs text-muted-foreground">{i.product.sku}</span> },
+  { key: "barcode", label: "Barcode", render: (i: DeliveryItemType) => <span className="font-mono text-xs text-muted-foreground">{i.product.barcode || "—"}</span> },
+  { key: "quantity", label: "Qty", render: (i: DeliveryItemType) => <span className="font-mono text-sm">{i.quantity}</span> },
+  { key: "deliveredQty", label: "Delivered", render: (i: DeliveryItemType) => <span className="font-mono text-sm text-muted-foreground">{i.deliveredQty}</span> },
+  { key: "unitPrice", label: "Unit Price", render: (i: DeliveryItemType) => <span className="font-mono text-sm">฿{i.unitPrice.toLocaleString()}</span> },
+  { key: "total", label: "Total", render: (i: DeliveryItemType) => <span className="font-mono text-sm font-medium">฿{i.total.toLocaleString()}</span> },
+  ]
 
  return (
  <div className="animate-fade-in space-y-6">
@@ -248,21 +248,39 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
  </div>
 
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
- <Card className="lg:col-span-2">
- <CardHeader>
- <CardTitle className="text-base flex items-center gap-2">
- Items
- </CardTitle>
- </CardHeader>
- <CardContent className="p-0">
- <DataTable
- columns={itemColumns}
- data={delivery.items}
- loading={false}
- noBorder
- />
- </CardContent>
- </Card>
+  <Card className="lg:col-span-2">
+  <CardHeader>
+  <CardTitle className="text-base flex items-center gap-2">
+  Items
+  </CardTitle>
+  </CardHeader>
+  <CardContent className="p-0">
+  {!delivery.items || delivery.items.length === 0 ? (
+  <div className="text-center text-sm text-muted-foreground py-6">No items</div>
+  ) : (
+  <Table>
+  <TableHeader>
+  <TableRow>
+  {itemColumns.map((col) => (
+  <TableHead key={col.key as string}>{col.label}</TableHead>
+  ))}
+  </TableRow>
+  </TableHeader>
+  <TableBody>
+  {delivery.items.map((item) => (
+  <TableRow key={item.id}>
+  {itemColumns.map((col) => (
+  <TableCell key={col.key as string}>
+  {col.render ? col.render(item) : String((item as any)[col.key] ?? "")}
+  </TableCell>
+  ))}
+  </TableRow>
+  ))}
+  </TableBody>
+  </Table>
+  )}
+  </CardContent>
+  </Card>
 
  <Card>
  <CardHeader>

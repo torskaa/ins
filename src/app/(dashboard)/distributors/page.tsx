@@ -3,8 +3,12 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { DataTable, type Column } from "@/components/ui/data-table"
-import { Building2, Globe, Phone, Users } from "lucide-react"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
+import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
+import { SkeletonTable } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Input } from "@/components/ui/input"
+import { Search, Building2, Globe, Phone, Users } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { Badge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
@@ -30,8 +34,10 @@ const statusColors: Record<string, string> = {
 
 export default function DistributorsPage() {
  const [distributors, setDistributors] = useState<Distributor[]>([])
- const [loading, setLoading] = useState(true)
- const router = useRouter()
+const [loading, setLoading] = useState(true)
+const [search, setSearch] = useState("")
+const [filters, setFilters] = useState<Record<string, string | null>>({})
+const router = useRouter()
  const handleNew = useCallback(() => router.push("/distributors/new"), [router])
  useHotkey("c", handleNew)
 
@@ -42,7 +48,7 @@ export default function DistributorsPage() {
  .finally(() => setLoading(false))
  }, [])
 
- const columns: Column<Distributor>[] = [
+ const columns = [
  {
  key: "name",
  label: "Name",
@@ -90,38 +96,88 @@ export default function DistributorsPage() {
  label: "Deliveries",
  cellClassName: "font-mono text-sm text-muted-foreground",
  render: (d) => <span>{d._count?.deliveries || 0}</span>,
- },
- ]
+  },
+]
 
- return (
- <div className="animate-fade-in">
- <div className="page-header flex items-center justify-between">
- <div>
- <h1>Distributors</h1>
- <p>Manage your distribution network</p>
- </div>
- <div className="flex items-center gap-2">
- <Button onClick={handleNew} className="gap-1.5">New Distributor <ShortcutBadge shortcut="⌘C" />
- </Button>
- <MoreMenu actions={[
- { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Name", "Contact", "Phone", "Territory", "Status", "Deliveries"], distributors.map(d => [d.name, d.contactPerson || "", d.phone || "", d.territory || "", d.status, d._count?.deliveries]), "distributors.csv") },
- { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Distributors", []) },
- ]} />
- </div>
- </div>
+const filterColumns: FilterColumn[] = [
+  { key: "name", label: "Name", getValue: (p: Distributor) => p.name },
+  { key: "territory", label: "Territory", getValue: (p: Distributor) => p.territory || "" },
+  { key: "status", label: "Status", getValue: (p: Distributor) => p.status },
+]
 
- <DataTable
- columns={columns}
- data={distributors}
- searchable
- searchPlaceholder="Search distributors..."
- loading={loading}
- empty={{
- icons: [<Building2 className="w-5 h-5" />, <Users className="w-5 h-5" />, <Globe className="w-5 h-5" />],
- title: "No distributors yet",
- description: "Add your first distributor to start managing distribution.",
- }}
- />
- </div>
- )
+const filtered = distributors.filter((d) => {
+  for (const [key, value] of Object.entries(filters)) {
+    if (!value) continue
+    const col = filterColumns.find((c) => c.key === key)
+    if (col && col.getValue(d) !== value) return false
+  }
+  if (!search) return true
+  return [d.name, d.contactPerson, d.email, d.phone, d.territory, d.status]
+    .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
+})
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Distributors</h1>
+          <p className="text-sm text-muted-foreground mt-1">Manage your distribution network</p>
+        </div>
+        <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>New Distributor <ShortcutBadge shortcut="⌘C" />
+        </Button>
+      </div>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          {filtered.length > 0 && (
+            <FilterButton filters={filters} onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))} columns={filterColumns} data={distributors} />
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          {filtered.length > 0 && (
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input placeholder="Search distributors..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
+            </div>
+          )}
+          <MoreMenu actions={[
+            { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Name", "Contact", "Phone", "Territory", "Status", "Deliveries"], distributors.map(d => [d.name, d.contactPerson || "", d.phone || "", d.territory || "", d.status, d._count?.deliveries]), "distributors.csv") },
+            { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Distributors", []) },
+          ]} />
+        </div>
+      </div>
+
+      {loading ? (
+        <SkeletonTable rows={6} columns={columns.length} />
+      ) : filtered.length === 0 ? (
+        <EmptyState
+          icons={[<Building2 className="w-5 h-5" />, <Users className="w-5 h-5" />, <Globe className="w-5 h-5" />]}
+          title="No distributors yet"
+          description="Add your first distributor to start managing distribution."
+        />
+      ) : (
+        <div data-slot="frame">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {columns.map((col) => (
+                  <TableHead key={col.key} className={col.className}>{col.label}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((item) => (
+                <TableRow key={item.id}>
+                  {columns.map((col) => (
+                    <TableCell key={col.key} className={col.cellClassName}>
+                      {col.render ? col.render(item) : String((item as any)[col.key] ?? "")}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </div>
+  )
 }
