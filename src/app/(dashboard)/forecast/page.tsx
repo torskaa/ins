@@ -157,7 +157,7 @@ export default function ForecastPage() {
  </div>
 
  <div className="flex flex-wrap items-end gap-4 mb-8">
- <div className="space-y-1.5">
+ <div className="space-y-1">
  <Label htmlFor="product">Product</Label>
  <Select
  id="product"
@@ -170,7 +170,7 @@ export default function ForecastPage() {
  className="w-64"
  />
  </div>
- <div className="space-y-1.5">
+ <div className="space-y-1">
  <Label htmlFor="period">Period</Label>
  <Select
  id="period"
@@ -407,7 +407,7 @@ export default function ForecastPage() {
  <CardDescription>Save the current forecast for reporting</CardDescription>
  </CardHeader>
  <CardContent className="space-y-4">
- <div className="space-y-1.5">
+ <div className="space-y-1">
  <Label htmlFor="notes">Notes</Label>
  <Textarea
  id="notes"

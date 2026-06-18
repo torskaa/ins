@@ -76,7 +76,7 @@ export default function TrainingPage() {
  <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
  null
  </div>
- <Badge variant={program.level === "Beginner" ? "outline" : program.level === "Intermediate" ? "secondary" : "default"} className="text-[10px]">
+ <Badge variant={program.level === "Beginner" ? "outline" : program.level === "Intermediate" ? "secondary" : "primary"} className="text-[10px]">
  {program.level}
  </Badge>
  </div>

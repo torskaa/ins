@@ -13,31 +13,46 @@ import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Input } from "@/components/ui/input"
+import { ViewToggle } from "@/components/ui/view-toggle"
+import { PropertySelector } from "@/components/ui/property-selector"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+} from "@/components/ui/pagination"
 
 type JournalEntry = { id: string; number: string; date: string; description: string; totalDebit: number; totalCredit: number; status: string; referenceType: string; lines: { account: { name: string } }[] }
 
+const PROPERTY_OPTIONS = [
+  { key: "date", label: "Date" },
+  { key: "description", label: "Description" },
+  { key: "referenceType", label: "Reference" },
+  { key: "totalDebit", label: "Debit" },
+  { key: "totalCredit", label: "Credit" },
+  { key: "status", label: "Status" },
+]
+
+const DEFAULT_PROPS = ["date", "description", "referenceType", "totalDebit", "totalCredit", "status"]
+const PAGE_SIZE = 10
+
 export default function JournalEntriesPage() {
- const router = useRouter()
- const [entries, setEntries] = useState<JournalEntry[]>([])
- const [loading, setLoading] = useState(true)
- const handleNew = useCallback(() => router.push("/finance/journal-entries/new"), [router])
-  useHotkey("c", handleNew)
-  const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const router = useRouter()
+  const [entries, setEntries] = useState<JournalEntry[]>([])
+  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
+  const [view, setView] = useState<"cards" | "rows">("rows")
+  const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
+  const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const [page, setPage] = useState(1)
+  const handleNew = useCallback(() => router.push("/finance/journal-entries/new"), [router])
+  useHotkey("c", handleNew)
 
   useEffect(() => {
- fetch("/api/finance/journal-entries").then(r => r.json()).then(d => { if (d.entries) setEntries(d.entries) }).finally(() => setLoading(false))
- }, [])
-
-  const columns: any[] = [
- { key: "number", label: "Number", cellClassName: "font-mono text-xs w-28" },
- { key: "date", label: "Date", render: (e) => <span className="text-sm">{formatDate(new Date(e.date))}</span> },
- { key: "description", label: "Description", render: (e) => <span className="text-sm truncate max-w-[200px] block">{e.description || "—"}</span> },
- { key: "referenceType", label: "Reference", render: (e) => e.referenceType ? <Badge variant="outline" className="text-xs">{e.referenceType}</Badge> : <span className="text-muted-foreground">—</span> },
- { key: "totalDebit", label: "Debit", render: (e) => <span className="font-mono text-sm">{formatCurrency(e.totalDebit)}</span> },
- { key: "totalCredit", label: "Credit", render: (e) => <span className="font-mono text-sm">{formatCurrency(e.totalCredit)}</span> },
-  { key: "status", label: "Status", render: (e) => <Badge variant={e.status === "posted" ? "default" : "secondary"}>{e.status}</Badge> },
-  ]
+    fetch("/api/finance/journal-entries").then(r => r.json()).then(d => { if (d.entries) setEntries(d.entries) }).finally(() => setLoading(false))
+  }, [])
 
   const filterColumns: FilterColumn[] = [
     { key: "status", label: "Status", getValue: (e: any) => e.status },
@@ -54,58 +69,149 @@ export default function JournalEntriesPage() {
     return [item.number, item.description, item.referenceType].some((v) => v?.toLowerCase().includes(search.toLowerCase()))
   })
 
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const safePage = Math.min(page, Math.max(totalPages, 1))
+  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+
+  useEffect(() => {
+    setPage(1)
+  }, [search, filters])
+
+  const allColumns = [
+    {
+      key: "number",
+      label: "Number",
+      className: "w-[140px]",
+      render: (e: JournalEntry) => <span className="font-mono text-xs font-medium">{e.number}</span>,
+    },
+    {
+      key: "date",
+      label: "Date",
+      className: "w-[120px]",
+      render: (e: JournalEntry) => <span className="text-sm">{formatDate(new Date(e.date))}</span>,
+    },
+    {
+      key: "description",
+      label: "Description",
+      render: (e: JournalEntry) => <span className="text-sm truncate max-w-[200px] block">{e.description || "—"}</span>,
+    },
+    {
+      key: "referenceType",
+      label: "Reference",
+      className: "w-[120px]",
+      render: (e: JournalEntry) => e.referenceType ? <Badge variant="outline" className="text-xs">{e.referenceType}</Badge> : <span className="text-muted-foreground">—</span>,
+    },
+    {
+      key: "totalDebit",
+      label: "Debit",
+      className: "text-right",
+      cellClassName: "text-right",
+      render: (e: JournalEntry) => <span className="font-mono text-sm">{formatCurrency(e.totalDebit)}</span>,
+    },
+    {
+      key: "totalCredit",
+      label: "Credit",
+      className: "text-right",
+      cellClassName: "text-right",
+      render: (e: JournalEntry) => <span className="font-mono text-sm">{formatCurrency(e.totalCredit)}</span>,
+    },
+    {
+      key: "status",
+      label: "Status",
+      className: "w-[120px]",
+      render: (e: JournalEntry) => <Badge variant={e.status === "posted" ? "primary" : "secondary"}>{e.status}</Badge>,
+    },
+  ]
+
+  const columns = allColumns.filter((c) => c.key === "number" || props.includes(c.key))
+
   return (
-  <div className="space-y-6 animate-fade-in">
-  <div className="flex items-center justify-between">
-  <div>
-  <h1 className="text-2xl font-semibold tracking-tight">Journal Entries</h1>
-  <p className="text-sm text-muted-foreground mt-1">Record and manage general ledger entries</p>
-  </div>
-  <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>New Entry <ShortcutBadge shortcut="⌘C" /></Button>
-  </div>
-   <div className="flex items-center justify-between flex-wrap gap-3">
-     <div className="flex items-center gap-3">
-       {filtered.length > 0 && (
-         <FilterButton filters={filters} onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))} columns={filterColumns} data={entries} />
-       )}
-     </div>
-     <div className="flex items-center gap-3">
-       {filtered.length > 0 && (
-         <div className="relative">
-           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-           <Input placeholder="Search entries..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
-         </div>
-       )}
-     </div>
-   </div>
-  {loading ? (
-    <SkeletonTable rows={6} columns={columns.length} />
-  ) : filtered.length === 0 ? (
-    <EmptyState icons={[<BookOpen className="w-5 h-5" />, <FileText className="w-5 h-5" />, <Receipt className="w-5 h-5" />]} title="No journal entries yet" description="Create your first journal entry." />
-  ) : (
-    <div data-slot="frame">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {columns.map((col) => (
-              <TableHead key={col.key}>{col.label}</TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filtered.map((item) => (
-            <TableRow key={item.id} onClick={() => router.push(`/finance/journal-entries/${item.id}`)} className="cursor-pointer">
-              {columns.map((col) => (
-                <TableCell key={col.key} className={col.cellClassName}>
-                  {col.render ? col.render(item) : String((item as any)[col.key] ?? "")}
-                </TableCell>
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Journal Entries</h1>
+          <p className="text-sm text-foreground mt-1">Record and manage general ledger entries</p>
+        </div>
+        <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>New Entry <ShortcutBadge shortcut="⌘C" /></Button>
+      </div>
+      <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">
+        <div className="flex items-center gap-3">
+          {filtered.length > 0 && (
+            <FilterButton filters={filters} onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))} columns={filterColumns} data={entries} />
+          )}
+          {filtered.length > 0 && (
+            <>
+              <ViewToggle view={view} onChange={setView} />
+              <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
+            </>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          {filtered.length > 0 && (
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground" />
+              <Input placeholder="Search entries..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {loading ? (
+        <SkeletonTable rows={6} columns={columns.length} />
+      ) : filtered.length === 0 ? (
+        <EmptyState icons={[<BookOpen className="w-5 h-5" />, <FileText className="w-5 h-5" />, <Receipt className="w-5 h-5" />]} title="No journal entries yet" description="Create your first journal entry." />
+      ) : (
+        <div data-slot="frame">
+          <Table className="[&_th]:px-4 [&_td]:px-4 [&_th]:py-3 [&_td]:py-3">
+            <TableHeader>
+              <TableRow>
+                {columns.map((col) => (
+                  <TableHead key={col.key} className={col.className}>{col.label}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginated.map((item) => (
+                <TableRow key={item.id} onClick={() => router.push(`/finance/journal-entries/${item.id}`)} className="cursor-pointer">
+                  {columns.map((col) => (
+                    <TableCell key={col.key} className={col.cellClassName}>
+                      {col.render(item)}
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+            </TableBody>
+          </Table>
+          {totalPages > 1 && (
+            <Pagination className="mt-4">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={(e) => { e.preventDefault(); setPage(safePage - 1) }}
+                    className={safePage <= 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      isActive={p === safePage}
+                      onClick={(e) => { e.preventDefault(); setPage(p) }}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={(e) => { e.preventDefault(); setPage(safePage + 1) }}
+                    className={safePage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+        </div>
+      )}
     </div>
-  )}
-  </div>
- )
+  )
 }

@@ -12,7 +12,7 @@ import { toast } from "sonner"
 
 function Field({ label, required, className, children }: React.HTMLAttributes<HTMLDivElement> & { label: string; required?: boolean }) {
   return (
-    <div className={cn("space-y-1.5", className)}>
+    <div className={cn("space-y-1", className)}>
       <Label className="text-xs font-medium">
         {label}
         {required && <span className="text-destructive ml-0.5">*</span>}

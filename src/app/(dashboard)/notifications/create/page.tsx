@@ -34,9 +34,9 @@ export default function CreateNotificationPage() {
  <form onSubmit={handleSubmit} className="space-y-5">
  <Card><CardHeader className="pb-3"><h3 className="text-sm font-semibold flex items-center gap-2"><Bell className="w-4 h-4" /> Notification Details</h3></CardHeader>
  <CardContent className="space-y-4 pt-0">
- <div className="space-y-2"><Label>Title <span className="text-destructive">*</span></Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Notification title" /></div>
- <div className="space-y-2"><Label>Message</Label><Textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} rows={3} placeholder="Notification message..." /></div>
- <div className="space-y-2"><Label>Type</Label><Select options={[{ value: "info", label: "Info" }, { value: "success", label: "Success" }, { value: "warning", label: "Warning" }, { value: "error", label: "Error" }, { value: "low_stock", label: "Low Stock" }, { value: "order", label: "Order" }]} value={form.type} onChange={(e: any) => setForm({ ...form, type: e.target.value })} /></div>
+ <div className="space-y-1"><Label>Title <span className="text-destructive">*</span></Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Notification title" /></div>
+ <div className="space-y-1"><Label>Message</Label><Textarea value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} rows={3} placeholder="Notification message..." /></div>
+ <div className="space-y-1"><Label>Type</Label><Select options={[{ value: "info", label: "Info" }, { value: "success", label: "Success" }, { value: "warning", label: "Warning" }, { value: "error", label: "Error" }, { value: "low_stock", label: "Low Stock" }, { value: "order", label: "Order" }]} value={form.type} onChange={(e: any) => setForm({ ...form, type: e.target.value })} /></div>
  </CardContent>
  </Card>
  <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">

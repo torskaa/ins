@@ -2,444 +2,463 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Badge, SemanticBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Label } from "@/components/ui/label"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+
+import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import { Boxes, Building2, Calendar, Clock, Hash, Layers, MapPin, Package, Pencil, Trash2, Warehouse, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { ArrowLeft, Building2, Calendar, Edit, Hash, Layers, MapPin, MoreHorizontal, Package, PackagePlus, Trash2, Warehouse, XCircle } from "lucide-react"
+import { formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { formatCurrency, formatDateTime } from "@/lib/utils"
 import { SkeletonDetail } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
+import { MoreMenu } from "@/components/ui/more-menu"
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter,
+} from "@/components/ui/dialog"
+
+function FieldDisplay({ label, value, mono, badge }: { label: string; value: string; mono?: boolean; badge?: boolean }) {
+  return (
+    <div className="min-w-0">
+      <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
+      {badge ? (
+        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+      ) : (
+        <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
+      )}
+    </div>
+  )
+}
+
+function FieldGroup({ label, children, required }: { label: string; children: React.ReactNode; required?: boolean }) {
+  return (
+    <div className="min-w-0 space-y-1">
+      <Label className="text-[11px] text-muted-foreground font-medium">
+        {label}
+        {required && <span className="text-destructive ml-0.5">*</span>}
+      </Label>
+      {children}
+    </div>
+  )
+}
 
 type WarehouseProduct = {
- id: string
- name: string
- sku: string
- stock: number
+  id: string
+  name: string
+  sku: string
+  stock: number
 }
 
 type StockMovement = {
- id: string
- type: string
- quantity: number
- createdAt: string
- product: { name: string; sku: string }
+  id: string
+  type: string
+  quantity: number
+  createdAt: string
+  product: { name: string; sku: string }
 }
 
 type Warehouse = {
- id: string
- name: string
- location: string
- capacity: number | null
- binLocation: string
- _count: { products: number; stockMovements: number }
- products: WarehouseProduct[]
- stockMovements: StockMovement[]
-}
-
-const movementTypeColors: Record<string, "default" | "secondary" | "success" | "destructive" | "warning" | "outline"> = {
- inbound: "success",
- outbound: "destructive",
- transfer_in: "default",
- transfer_out: "warning",
- adjustment: "outline",
+  id: string
+  name: string
+  location: string
+  capacity: number | null
+  binLocation: string
+  createdAt: string
+  _count: { products: number; stockMovements: number }
+  products: WarehouseProduct[]
+  stockMovements: StockMovement[]
 }
 
 export default function WarehouseDetailPage({ params }: { params: Promise<{ id: string }> }) {
- const [warehouse, setWarehouse] = useState<Warehouse | null>(null)
- const [loading, setLoading] = useState(true)
- const [id, setId] = useState("")
- const [activeTab, setActiveTab] = useState("info")
- const [editing, setEditing] = useState(false)
- const [editName, setEditName] = useState("")
- const [editLocation, setEditLocation] = useState("")
- const [editCapacity, setEditCapacity] = useState("")
- const [editBinLocation, setEditBinLocation] = useState("")
- const [deleteOpen, setDeleteOpen] = useState(false)
- const [deleting, setDeleting] = useState(false)
- const [searchProducts, setSearchProducts] = useState("")
- const [searchMovements, setSearchMovements] = useState("")
- const router = useRouter()
+  const [warehouse, setWarehouse] = useState<Warehouse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [id, setId] = useState("")
+  const [activeTab, setActiveTab] = useState("products")
+  const [showEdit, setShowEdit] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [editName, setEditName] = useState("")
+  const [editLocation, setEditLocation] = useState("")
+  const [editCapacity, setEditCapacity] = useState("")
+  const [editBinLocation, setEditBinLocation] = useState("")
+  const [searchProducts, setSearchProducts] = useState("")
+  const [searchMovements, setSearchMovements] = useState("")
+  const router = useRouter()
 
- useEffect(() => { params.then(({ id }) => setId(id)) }, [params])
- useEffect(() => {
- if (!id) return
- fetch(`/api/warehouses/${id}`)
- .then(r => r.json())
- .then(setWarehouse)
- .finally(() => setLoading(false))
- }, [id])
+  useEffect(() => { params.then(({ id }) => setId(id)) }, [params])
+  useEffect(() => {
+    if (!id) return
+    fetch(`/api/warehouses/${id}`)
+      .then(r => r.json())
+      .then(setWarehouse)
+      .finally(() => setLoading(false))
+  }, [id])
 
- async function handleSave() {
- try {
- const res = await fetch(`/api/warehouses/${id}`, {
- method: "PUT",
- headers: { "Content-Type": "application/json" },
- body: JSON.stringify({
- name: editName,
- location: editLocation,
- capacity: editCapacity ? Number(editCapacity) : null,
- binLocation: editBinLocation,
- }),
- })
- if (!res.ok) throw new Error()
- const updated = await res.json()
- setWarehouse(prev => prev ? { ...prev, ...updated } : prev)
- setEditing(false)
- toast.success("Warehouse updated")
- } catch {
- toast.error("Failed to update warehouse")
- }
- }
+  async function handleSave() {
+    try {
+      const res = await fetch(`/api/warehouses/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editName,
+          location: editLocation,
+          capacity: editCapacity ? Number(editCapacity) : null,
+          binLocation: editBinLocation,
+        }),
+      })
+      if (!res.ok) throw new Error()
+      const updated = await res.json()
+      setWarehouse(prev => prev ? { ...prev, ...updated } : prev)
+      setShowEdit(false)
+      toast.success("Warehouse updated")
+    } catch {
+      toast.error("Failed to update warehouse")
+    }
+  }
 
- async function handleDelete() {
- setDeleting(true)
- try {
- const res = await fetch(`/api/warehouses/${id}`, { method: "DELETE" })
- if (!res.ok) throw new Error()
- toast.success("Warehouse deleted")
- router.push("/warehouses")
- } catch {
- toast.error("Failed to delete warehouse")
- setDeleting(false)
- }
- }
+  async function handleDelete() {
+    setDeleting(true)
+    try {
+      const res = await fetch(`/api/warehouses/${id}`, { method: "DELETE" })
+      if (!res.ok) throw new Error()
+      toast.success("Warehouse deleted")
+      router.push("/warehouses")
+    } catch {
+      toast.error("Failed to delete warehouse")
+      setDeleting(false)
+    }
+  }
 
- if (loading) return <SkeletonDetail cards={5} hasChart={true} />
+  if (loading) return <SkeletonDetail cards={3} hasChart={false} />
 
- if (!warehouse) return <p>Warehouse not found</p>
-
- const summaryCards = [
- { label: "Name", value: warehouse.name, icon: Warehouse, color: "text-blue-600 bg-blue-100" },
- { label: "Location", value: warehouse.location || "—", icon: MapPin, color: "text-violet-600 bg-violet-100" },
- { label: "Capacity", value: warehouse.capacity ? `${warehouse.capacity.toLocaleString()} units` : "—", icon: Layers, color: "text-emerald-600 bg-emerald-100" },
- { label: "Bin Location", value: warehouse.binLocation || "—", icon: Hash, color: "text-amber-600 bg-amber-100" },
- { label: "Products", value: warehouse._count.products, icon: Package, color: "text-rose-600 bg-rose-100" },
- ]
+  if (!warehouse) {
+    return (
+      <div className="animate-fade-in flex flex-col items-center justify-center py-24 gap-4">
+        <div className="text-center">
+          <h2 className="text-lg font-semibold">Warehouse not found</h2>
+          <p className="text-sm text-muted-foreground mt-1">The warehouse you are looking for does not exist or has been removed.</p>
+        </div>
+        <Button variant="secondary" onClick={() => router.push("/warehouses")}>Back to Warehouses</Button>
+      </div>
+    )
+  }
 
   const productColumns = [
- { key: "name", label: "Name", render: (item) => <span className="font-medium">{item.name}</span> },
- { key: "sku", label: "SKU", render: (item) => <span className="font-mono text-xs text-muted-foreground">{item.sku}</span> },
- { key: "stock", label: "Stock", cellClassName: "font-mono text-sm text-muted-foreground", render: (item) => <span>{item.stock}</span> },
- ]
+    { key: "name", label: "Name", render: (item: WarehouseProduct) => <span className="font-medium">{item.name}</span> },
+    { key: "sku", label: "SKU", render: (item: WarehouseProduct) => <span className="font-mono text-xs text-muted-foreground">{item.sku}</span> },
+    { key: "stock", label: "Stock", render: (item: WarehouseProduct) => <span className="font-mono">{item.stock}</span> },
+  ]
 
   const movementColumns = [
- {
- key: "type", label: "Type", render: (item) => (
- <Badge variant={movementTypeColors[item.type] || "default"} className="capitalize">
- {item.type.replace(/_/g, " ")}
- </Badge>
- ),
- },
- {
- key: "product", label: "Product", render: (item) => (
- <span className="text-sm">{item.product.name} <span className="font-mono text-xs text-muted-foreground">({item.product.sku})</span></span>
- ),
- },
- { key: "quantity", label: "Quantity", cellClassName: "font-mono text-sm", render: (item) => <span>{item.quantity}</span> },
- {
- key: "createdAt", label: "Date", render: (item) => (
- <span className="text-sm text-muted-foreground">{formatDateTime(new Date(item.createdAt))}</span>
- ),
- },
- ]
+    { key: "type", label: "Type", render: (item: StockMovement) => (
+      <SemanticBadge semantic={item.type} category="type" className="capitalize" />
+    )},
+    { key: "product", label: "Product", render: (item: StockMovement) => (
+      <span className="text-sm">{item.product.name} <span className="font-mono text-xs text-muted-foreground">({item.product.sku})</span></span>
+    )},
+    { key: "quantity", label: "Quantity", render: (item: StockMovement) => <span className="font-mono">{item.quantity}</span> },
+    { key: "createdAt", label: "Date", render: (item: StockMovement) => (
+      <span className="text-sm text-muted-foreground">{formatDateTime(new Date(item.createdAt))}</span>
+    )},
+  ]
 
- return (
- <div className="animate-fade-in space-y-6">
-  <Breadcrumb className="mb-4">
-  <BreadcrumbList>
-  <BreadcrumbItem>
-  <BreadcrumbLink asChild>
-  <button onClick={() => router.push("/warehouses")}>Warehouses</button>
-  </BreadcrumbLink>
-  </BreadcrumbItem>
-  <BreadcrumbSeparator />
-  <BreadcrumbItem>
-  <BreadcrumbPage>{warehouse.name}</BreadcrumbPage>
-  </BreadcrumbItem>
-  </BreadcrumbList>
-  </Breadcrumb>
+  return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <button onClick={() => router.push("/warehouses")}>Warehouses</button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{warehouse.name}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex gap-3 min-w-0 flex-1">
+              <div className="flex flex-col gap-2 min-w-0 flex-1">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h1 className="text-2xl font-bold">{warehouse.name}</h1>
+                  <Badge variant="outline" className="text-[11px]">{warehouse._count.products} product{warehouse._count.products !== 1 ? "s" : ""}</Badge>
+                </div>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <SemanticBadge semantic={warehouse.location || "—"} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><MapPin className="w-3 h-3" />{warehouse.location || "—"}</SemanticBadge>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              <div className="flex items-center gap-2">
+                <MoreMenu actions={[
+                  { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => { setShowEdit(true); setEditName(warehouse.name); setEditLocation(warehouse.location || ""); setEditCapacity(warehouse.capacity?.toString() || ""); setEditBinLocation(warehouse.binLocation || "") } },
+                  "separator",
+                  { label: "Delete", icon: <Trash2 className="w-4 h-4" />, onClick: () => setShowDelete(true) },
+                ]} />
+              </div>
+            </div>
+          </div>
+        </div>
 
-  <div className="flex items-start justify-between">
-  <div className="flex items-start gap-4">
-  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-  <Building2 className="w-7 h-7 text-primary-dark" />
-  </div>
-  <div>
-  <div className="flex items-center gap-3 mb-1">
-  {editing ? (
-  <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="text-2xl font-semibold h-auto py-1 w-64" />
-  ) : (
-  <h1 className="text-2xl font-semibold">{warehouse.name}</h1>
- )}
- <Badge variant="outline" className="text-xs">
- {warehouse._count.products} product{warehouse._count.products !== 1 ? "s" : ""}
- </Badge>
- </div>
- {warehouse.location && (
- <p className="text-sm text-muted-foreground flex items-center gap-1.5">
- {warehouse.location}
- </p>
- )}
- </div>
- </div>
-<div className="flex items-center gap-2">
-  {editing ? (
-  <>
-  <Button variant="outline" size="sm" onClick={() => setEditing(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
-  <Button size="sm" onClick={handleSave}>Save</Button>
-  </>
-  ) : (
-  <>
-  <Button size="sm" className="gap-1.5" onClick={() => { setEditing(true); setEditName(warehouse.name); setEditLocation(warehouse.location || ""); setEditCapacity(warehouse.capacity?.toString() || ""); setEditBinLocation(warehouse.binLocation || "") }}>
-  Edit
-  </Button>
-  <DropdownMenu>
-  <DropdownMenuTrigger asChild>
-  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
-  </DropdownMenuTrigger>
-  <DropdownMenuContent align="end">
-  <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
-  </DropdownMenuContent>
-  </DropdownMenu>
-  </>
-  )}
-</div>
- </div>
+        <div className="col-span-12 lg:col-span-8 flex flex-col gap-4">
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Warehouse className="w-4 h-4 text-primary" />
+                Warehouse Details
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-3">
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+                <FieldDisplay label="Name" value={warehouse.name} />
+                <FieldDisplay label="Location" value={warehouse.location || "—"} />
+                <FieldDisplay label="Capacity" value={warehouse.capacity ? `${warehouse.capacity.toLocaleString()} units` : "—"} mono />
+                <FieldDisplay label="Bin Location" value={warehouse.binLocation || "—"} mono />
+                <FieldDisplay label="Products Stored" value={String(warehouse._count.products)} />
+                <FieldDisplay label="Stock Movements" value={String(warehouse._count.stockMovements)} />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
- <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
- {summaryCards.map((card) => (
- <Card key={card.label} className="border-border/50">
- <CardContent className="p-4">
- <div className="flex items-center gap-3">
- <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${card.color}`}>
- <card.icon className="w-4 h-4" />
- </div>
- <div className="min-w-0">
- <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider truncate">
- {card.label}
- </p>
- <p className="text-sm font-semibold font-mono mt-0.5 truncate">{card.value}</p>
- </div>
- </div>
- </CardContent>
- </Card>
- ))}
- </div>
+        <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Boxes className="w-4 h-4 text-primary" />
+                Overview
+              </div>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="flex items-baseline gap-2 mb-3">
+                <span className="text-2xl font-semibold font-mono">{warehouse._count.products}</span>
+                <span className="text-xs text-muted-foreground">products stored</span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-semibold font-mono">{warehouse._count.stockMovements}</span>
+                <span className="text-xs text-muted-foreground">movements recorded</span>
+              </div>
+            </CardContent>
+          </Card>
 
- {editing && (
- <Card>
- <CardHeader>
- <CardTitle className="text-base">Edit Details</CardTitle>
- </CardHeader>
- <CardContent className="space-y-4">
- <div className="space-y-2">
- <p className="text-xs text-muted-foreground">Name</p>
- <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
- </div>
- <div className="space-y-2">
- <p className="text-xs text-muted-foreground">Location</p>
- <Input value={editLocation} onChange={(e) => setEditLocation(e.target.value)} />
- </div>
- <div className="space-y-2">
- <p className="text-xs text-muted-foreground">Capacity (units)</p>
- <Input type="number" value={editCapacity} onChange={(e) => setEditCapacity(e.target.value)} />
- </div>
- <div className="space-y-2">
- <p className="text-xs text-muted-foreground">Bin Location</p>
- <Input value={editBinLocation} onChange={(e) => setEditBinLocation(e.target.value)} />
- </div>
- </CardContent>
- </Card>
- )}
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Building2 className="w-4 h-4 text-primary" />
+                Organization
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-2.5">
+              <div className="space-y-2.5">
+                <div className="flex items-center gap-2.5"><MapPin className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Location</span><span className="text-sm font-medium ml-auto">{warehouse.location || "—"}</span></div>
+                <div className="flex items-center gap-2.5"><Hash className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Bin Location</span><span className="text-sm font-medium ml-auto">{warehouse.binLocation || "—"}</span></div>
+                <div className="flex items-center gap-2.5"><Layers className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Capacity</span><span className="text-sm font-medium ml-auto">{warehouse.capacity ? `${warehouse.capacity.toLocaleString()} units` : "—"}</span></div>
+              </div>
+            </CardContent>
+          </Card>
 
-  <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
-  <Tabs value={activeTab} onValueChange={setActiveTab}>
-    <TabsList className="w-full overflow-x-auto px-4">
- <TabsTrigger value="info" className="gap-1.5">
- <Warehouse className="w-4 h-4" />
- Info
- </TabsTrigger>
-  <TabsTrigger value="products" className="gap-1.5">
-   <Package className="w-4 h-4" />
-   Products
- {warehouse._count.products > 0 && (
- <span className="ml-1 text-[11px] text-muted-foreground">({warehouse._count.products})</span>
- )}
- </TabsTrigger>
- <TabsTrigger value="movements" className="gap-1.5">
- <PackagePlus className="w-4 h-4" />
- Stock Movements
- {warehouse._count.stockMovements > 0 && (
- <span className="ml-1 text-[11px] text-muted-foreground">({warehouse._count.stockMovements})</span>
- )}
- </TabsTrigger>
- </TabsList>
+          <Card className="flex-1">
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Clock className="w-4 h-4 text-primary" />
+                Metadata
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-2.5">
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+                <FieldDisplay label="Created" value={formatDate(new Date(warehouse.createdAt))} />
+                <FieldDisplay label="Updated" value="—" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
-  <TabsContent value="info" className="p-3">
- <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
- <div className="space-y-4">
- <div>
- <p className="text-xs text-muted-foreground mb-1">Name</p>
- <p className="text-sm font-medium">{warehouse.name}</p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground mb-1">Location</p>
- <p className="text-sm font-medium flex items-center gap-1.5">
- {warehouse.location || "—"}
- </p>
- </div>
- </div>
- <div className="space-y-4">
- <div>
- <p className="text-xs text-muted-foreground mb-1">Capacity</p>
- <p className="text-sm font-medium font-mono">{warehouse.capacity ? `${warehouse.capacity.toLocaleString()} units` : "—"}</p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground mb-1">Bin Location</p>
- <p className="text-sm font-medium font-mono">{warehouse.binLocation || "—"}</p>
- </div>
- </div>
- <div className="space-y-4">
- <div>
- <p className="text-xs text-muted-foreground mb-1">Products Stored</p>
- <p className="text-sm font-medium">{warehouse._count.products}</p>
- </div>
- <div>
- <p className="text-xs text-muted-foreground mb-1">Stock Movements</p>
- <p className="text-sm font-medium">{warehouse._count.stockMovements}</p>
- </div>
- </div>
- </div>
- </TabsContent>
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="w-full overflow-x-auto px-4">
+            <TabsTrigger value="products" className="gap-1.5"><Package className="w-4 h-4" /> Products ({warehouse._count.products})</TabsTrigger>
+            <TabsTrigger value="movements" className="gap-1.5"><Boxes className="w-4 h-4" /> Stock Movements ({warehouse._count.stockMovements})</TabsTrigger>
+          </TabsList>
 
-   <TabsContent value="products" className="p-3">
-   {(() => {
-     const data = warehouse.products || []
-     if (data.length === 0) {
-       return (
-         <EmptyState
-           icons={[<Package key="wp1" className="w-6 h-6" />, <Layers key="wp2" className="w-6 h-6" />, <Warehouse key="wp3" className="w-6 h-6" />]}
-           title="No products"
-           description="Products stored in this warehouse will appear here"
-           size="sm"
-         />
-       )
-     }
-     const filtered = !searchProducts ? data : data.filter((item: any) =>
-       JSON.stringify(item).toLowerCase().includes(searchProducts.toLowerCase())
-     )
-     return (
-       <>
-         <div className="flex items-center mb-3">
-           <input
-             className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-             placeholder="Search products..."
-             value={searchProducts}
-             onChange={(e) => setSearchProducts(e.target.value)}
-           />
-         </div>
-         {filtered.length === 0 ? (
-           <div className="text-center text-sm text-muted-foreground py-6">No products match your search</div>
-         ) : (
-           <Table>
-             <TableHeader>
-               <TableRow>
-                 {productColumns.map((col: any) => (
-                   <TableHead key={col.key}>{col.label}</TableHead>
-                 ))}
-               </TableRow>
-             </TableHeader>
-             <TableBody>
-               {filtered.map((item: any) => (
-                 <TableRow key={item.id} className="cursor-pointer" onClick={() => router.push(`/products/${item.id}`)}>
-                   {productColumns.map((col: any) => (
-                     <TableCell key={col.key} className={(col as any).cellClassName}>
-                       {col.render ? col.render(item) : String(item[col.key] ?? "")}
-                     </TableCell>
-                   ))}
-                 </TableRow>
-               ))}
-             </TableBody>
-           </Table>
-         )}
-       </>
-     )
-   })()}
-  </TabsContent>
+          <TabsContent value="products" className="p-3">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-2">
+              <Package className="w-4 h-4 text-primary" />
+              Products ({warehouse.products?.length || 0})
+            </div>
+            {(() => {
+              const data = warehouse.products || []
+              if (data.length === 0) {
+                return (
+                  <EmptyState
+                    icons={[<Package key="wp1" className="w-6 h-6" />, <Layers key="wp2" className="w-6 h-6" />, <Warehouse key="wp3" className="w-6 h-6" />]}
+                    title="No products"
+                    description="Products stored in this warehouse will appear here"
+                    size="sm"
+                  />
+                )
+              }
+              const filtered = !searchProducts ? data : data.filter((item: any) =>
+                JSON.stringify(item).toLowerCase().includes(searchProducts.toLowerCase())
+              )
+              return (
+                <>
+                  <div className="flex items-center mb-3">
+                    <input
+                      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      placeholder="Search products..."
+                      value={searchProducts}
+                      onChange={(e) => setSearchProducts(e.target.value)}
+                    />
+                  </div>
+                  {filtered.length === 0 ? (
+                    <div className="text-center text-sm text-muted-foreground py-6">No products match your search</div>
+                  ) : (
+                    <div data-slot="frame">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            {productColumns.map((col: any) => (
+                              <TableHead key={col.key}>{col.label}</TableHead>
+                            ))}
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filtered.map((item: any) => (
+                            <TableRow key={item.id} className="cursor-pointer" onClick={() => router.push(`/products/${item.id}`)}>
+                              {productColumns.map((col: any) => (
+                                <TableCell key={col.key}>
+                                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </>
+              )
+            })()}
+          </TabsContent>
 
-   <TabsContent value="movements" className="p-3">
-   {(() => {
-     const data = warehouse.stockMovements || []
-     if (data.length === 0) {
-       return (
-         <EmptyState
-           icons={[<PackagePlus key="wm1" className="w-6 h-6" />, <MapPin key="wm2" className="w-6 h-6" />, <Calendar key="wm3" className="w-6 h-6" />]}
-           title="No stock movements"
-           description="Stock movements in this warehouse will appear here"
-           size="sm"
-         />
-       )
-     }
-     const filtered = !searchMovements ? data : data.filter((item: any) =>
-       JSON.stringify(item).toLowerCase().includes(searchMovements.toLowerCase())
-     )
-     return (
-       <>
-         <div className="flex items-center mb-3">
-           <input
-             className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-             placeholder="Search movements..."
-             value={searchMovements}
-             onChange={(e) => setSearchMovements(e.target.value)}
-           />
-         </div>
-         {filtered.length === 0 ? (
-           <div className="text-center text-sm text-muted-foreground py-6">No movements match your search</div>
-         ) : (
-           <Table>
-             <TableHeader>
-               <TableRow>
-                 {movementColumns.map((col: any) => (
-                   <TableHead key={col.key}>{col.label}</TableHead>
-                 ))}
-               </TableRow>
-             </TableHeader>
-             <TableBody>
-               {filtered.map((item: any) => (
-                 <TableRow key={item.id}>
-                   {movementColumns.map((col: any) => (
-                     <TableCell key={col.key} className={(col as any).cellClassName}>
-                       {col.render ? col.render(item) : String(item[col.key] ?? "")}
-                     </TableCell>
-                   ))}
-                 </TableRow>
-               ))}
-             </TableBody>
-           </Table>
-         )}
-       </>
-     )
-   })()}
-  </TabsContent>
-  </Tabs>
-  </div>
+          <TabsContent value="movements" className="p-3">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-2">
+              <Boxes className="w-4 h-4 text-primary" />
+              Stock Movements ({warehouse.stockMovements?.length || 0})
+            </div>
+            {(() => {
+              const data = warehouse.stockMovements || []
+              if (data.length === 0) {
+                return (
+                  <EmptyState
+                    icons={[<Boxes key="wm1" className="w-6 h-6" />, <MapPin key="wm2" className="w-6 h-6" />, <Calendar key="wm3" className="w-6 h-6" />]}
+                    title="No stock movements"
+                    description="Stock movements in this warehouse will appear here"
+                    size="sm"
+                  />
+                )
+              }
+              const filtered = !searchMovements ? data : data.filter((item: any) =>
+                JSON.stringify(item).toLowerCase().includes(searchMovements.toLowerCase())
+              )
+              return (
+                <>
+                  <div className="flex items-center mb-3">
+                    <input
+                      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      placeholder="Search movements..."
+                      value={searchMovements}
+                      onChange={(e) => setSearchMovements(e.target.value)}
+                    />
+                  </div>
+                  {filtered.length === 0 ? (
+                    <div className="text-center text-sm text-muted-foreground py-6">No movements match your search</div>
+                  ) : (
+                    <div data-slot="frame">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            {movementColumns.map((col: any) => (
+                              <TableHead key={col.key}>{col.label}</TableHead>
+                            ))}
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filtered.map((item: any) => (
+                            <TableRow key={item.id}>
+                              {movementColumns.map((col: any) => (
+                                <TableCell key={col.key}>
+                                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </>
+              )
+            })()}
+          </TabsContent>
+        </Tabs>
+      </div>
 
-  <ConfirmDialog
- open={deleteOpen}
- onOpenChange={setDeleteOpen}
- title="Delete Warehouse"
- description={`Are you sure you want to delete "${warehouse.name}"? This action cannot be undone.`}
- onConfirm={handleDelete}
- loading={deleting}
- />
- </div>
- )
+      <Dialog open={showEdit} onOpenChange={setShowEdit}>
+        <DialogContent className="sm:max-w-2xl flex flex-col p-0 gap-0 max-h-[90vh]">
+          <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
+            <DialogTitle>Edit Warehouse</DialogTitle>
+            <DialogDescription>Update details for <span className="font-medium text-foreground">{warehouse?.name}</span></DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Warehouse className="w-4 h-4 text-primary" />
+                  Warehouse Details
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Name" required><Input value={editName} onChange={(e) => setEditName(e.target.value)} /></FieldGroup>
+                  <FieldGroup label="Location"><Input value={editLocation} onChange={(e) => setEditLocation(e.target.value)} /></FieldGroup>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Capacity (units)"><Input type="number" value={editCapacity} onChange={(e) => setEditCapacity(e.target.value)} /></FieldGroup>
+                  <FieldGroup label="Bin Location"><Input value={editBinLocation} onChange={(e) => setEditBinLocation(e.target.value)} /></FieldGroup>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
+            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDelete} onOpenChange={setShowDelete}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Warehouse</DialogTitle>
+            <DialogDescription>Are you sure you want to delete <strong>{warehouse.name}</strong>? This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
 }

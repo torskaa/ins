@@ -18,6 +18,15 @@ import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { downloadCSV, downloadPDF } from "@/lib/export"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "@/components/ui/pagination"
 
 type Category = {
  id: string
@@ -32,6 +41,7 @@ const PROPERTY_OPTIONS = [
 ]
 
 const DEFAULT_PROPS = ["description", "products"]
+const PAGE_SIZE = 10
 
 export default function CategoriesPage() {
  const router = useRouter()
@@ -40,8 +50,9 @@ export default function CategoriesPage() {
  const [search, setSearch] = useState("")
  const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
-  const [filters, setFilters] = useState<Record<string, string | null>>({})
-  const [showCreate, setShowCreate] = useState(false)
+   const [filters, setFilters] = useState<Record<string, string | null>>({})
+   const [page, setPage] = useState(1)
+   const [showCreate, setShowCreate] = useState(false)
  const handleNew = useCallback(() => router.push("/categories/new"), [router])
  useHotkey("c", handleNew)
  const [name, setName] = useState("")
@@ -87,58 +98,67 @@ export default function CategoriesPage() {
    return [c.name, c.description].some((v) => v?.toLowerCase().includes(search.toLowerCase()))
   })
 
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const safePage = Math.min(page, Math.max(totalPages, 1))
+  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+
+  useEffect(() => {
+    setPage(1)
+  }, [search, filters])
+
   const allColumns = [
- { key: "name", label: "Name", render: (c) => <span className="font-medium">{c.name}</span> },
- {
- key: "description",
- label: "Description",
- render: (c) => <span className="text-sm text-muted-foreground">{c.description || "—"}</span>,
- },
- {
- key: "products",
- label: "Products",
- cellClassName: "font-mono text-sm text-muted-foreground",
- render: (c) => <span>{c._count?.products || 0}</span>,
- },
+  { key: "name", label: "Name",   render: (c: Category) => <span className="font-medium">{c.name}</span> },
+  {
+  key: "description",
+  label: "Description",
+  render: (c: Category) => <span className="text-sm text-foreground">{c.description || "—"}</span>,
+  },
+  {
+  key: "products",
+  label: "Products",
+  className: "text-right",
+  cellClassName: "text-right font-mono text-sm",
+  render: (c: Category) => <span>{c._count?.products || 0}</span>,
+  },
  ]
 
- const columns = allColumns.filter((c) => props.includes(c.key))
+  const columns = allColumns.filter((c) => c.key === "name" || props.includes(c.key))
 
  return (
  <div className="space-y-6 animate-fade-in">
   <div className="flex items-center justify-between">
   <div>
   <h1 className="text-2xl font-semibold tracking-tight">Categories</h1>
-  <p className="text-sm text-muted-foreground mt-1">Organize your products into categories</p>
+  <p className="text-sm text-foreground mt-1">Organize your products into categories</p>
   </div>
   <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>Add Category <ShortcutBadge shortcut="⌘C" />
   </Button>
   </div>
-  <div className="flex items-center justify-between flex-wrap gap-3">
-   <div className="flex items-center gap-3">
-    {filtered.length > 0 && (
-     <>
-      <FilterButton filters={filters} onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))} columns={filterColumns} data={categories} />
-      <ViewToggle view={view} onChange={setView} />
-      <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
-     </>
-    )}
+  <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">
+    <div className="flex items-center gap-3">
+     {filtered.length > 0 && (
+      <>
+       <FilterButton filters={filters} onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))} columns={filterColumns} data={categories} />
+       <ViewToggle view={view} onChange={setView} />
+       <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
+      </>
+     )}
+    </div>
+    <div className="flex items-center gap-3">
+     {filtered.length > 0 && (
+      <div className="relative">
+       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground" />
+       <Input placeholder="Search categories..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
+      </div>
+     )}
+     <MoreMenu actions={[
+      { label: "Import", icon: ActionIcons.AddNew },
+      "separator",
+      { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Name", "Description", "Products"], categories.map(c => [c.name, c.description, c._count?.products]), "categories.csv") },
+      { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Categories", []) },
+     ]} />
+    </div>
    </div>
-   <div className="flex items-center gap-3">
-    {filtered.length > 0 && (
-     <div className="relative">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-      <Input placeholder="Search categories..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
-     </div>
-    )}
-    <MoreMenu actions={[
-     { label: "Import", icon: ActionIcons.AddNew },
-     "separator",
-     { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Name", "Description", "Products"], categories.map(c => [c.name, c.description, c._count?.products]), "categories.csv") },
-     { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Categories", []) },
-    ]} />
-   </div>
-  </div>
 
    {loading ? (
     <SkeletonTable rows={6} columns={columns.length} />
@@ -147,20 +167,20 @@ export default function CategoriesPage() {
      icons={[<Tags className="w-5 h-5" />, <Layers className="w-5 h-5" />, <FolderOpen className="w-5 h-5" />]}
      title="No categories yet"
      description="Create your first category to organize products."
-     action={{ label: "Add Category", onClick: () => setShowCreate(true) }}
+      actions={[{ label: "Add Category", onClick: () => setShowCreate(true) }]}
     />
    ) : (
     <div data-slot="frame">
-     <Table>
-      <TableHeader>
-       <TableRow>
-        {columns.map((col) => (
-         <TableHead key={col.key} className={col.className}>{col.label}</TableHead>
-        ))}
-       </TableRow>
-      </TableHeader>
-      <TableBody>
-       {filtered.map((c) => (
+      <Table className="[&_th]:px-4 [&_td]:px-4 [&_th]:py-3 [&_td]:py-3">
+       <TableHeader>
+        <TableRow>
+         {columns.map((col) => (
+          <TableHead key={col.key} className={col.className}>{col.label}</TableHead>
+         ))}
+        </TableRow>
+       </TableHeader>
+       <TableBody>
+        {paginated.map((c) => (
         <TableRow key={c.id}>
          {columns.map((col) => (
           <TableCell key={col.key} className={col.cellClassName}>
@@ -170,25 +190,53 @@ export default function CategoriesPage() {
         </TableRow>
        ))}
       </TableBody>
-     </Table>
-    </div>
-   )}
+      </Table>
+      {totalPages > 1 && (
+        <Pagination className="mt-4">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={(e) => { e.preventDefault(); setPage(safePage - 1) }}
+                className={safePage <= 1 ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <PaginationItem key={p}>
+                <PaginationLink
+                  isActive={p === safePage}
+                  onClick={(e) => { e.preventDefault(); setPage(p) }}
+                >
+                  {p}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={(e) => { e.preventDefault(); setPage(safePage + 1) }}
+                className={safePage >= totalPages ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
+     </div>
+    )}
 
- <Dialog open={showCreate} onOpenChange={setShowCreate}>
+  <Dialog open={showCreate} onOpenChange={setShowCreate}>
  <DialogContent>
  <DialogHeader>
  <DialogTitle>New Category</DialogTitle>
  <DialogDescription>Add a new product category</DialogDescription>
  </DialogHeader>
  <div className="space-y-4">
- <div className="space-y-2">
- <Label htmlFor="catName">Name</Label>
- <Input id="catName" value={name} onChange={(e) => setName(e.target.value)} placeholder="Electronics" />
- </div>
- <div className="space-y-2">
- <Label htmlFor="catDesc">Description (optional)</Label>
- <Input id="catDesc" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Electronic devices and accessories" />
- </div>
+  <div className="space-y-1">
+  <Label htmlFor="catName">Name</Label>
+  <Input id="catName" value={name} onChange={(e) => setName(e.target.value)} placeholder="Electronics" />
+  </div>
+  <div className="space-y-1">
+  <Label htmlFor="catDesc">Description (optional)</Label>
+  <Input id="catDesc" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Electronic devices and accessories" />
+  </div>
  </div>
  <DialogFooter>
  <Button variant="secondary" onClick={() => setShowCreate(false)}><XCircle className="w-4 h-4" /> Cancel</Button>

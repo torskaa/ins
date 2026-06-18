@@ -348,7 +348,7 @@ export default function MigrationPage() {
  </CardTitle>
  <CardDescription>Map your file columns to system fields</CardDescription>
  </div>
- <Badge variant={allRequiredMapped ? "default" : "secondary"}>
+ <Badge variant={allRequiredMapped ? "primary" : "secondary"}>
  {mappedCount}/{fields.length} mapped
  </Badge>
  </div>
@@ -453,7 +453,7 @@ export default function MigrationPage() {
  )}
  <Progress value={result.errors.length === 0 ? 100 : (result.success / (result.success + result.errors.length)) * 100} className="max-w-xs mx-auto mb-6" />
  <div className="flex items-center justify-center gap-4">
- <Badge variant="default" className="text-sm px-3 py-1.5">
+ <Badge variant="primary" className="text-sm px-3 py-1.5">
  {result.success} success
  </Badge>
  {result.errors.length > 0 && (

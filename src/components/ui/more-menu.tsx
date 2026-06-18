@@ -10,7 +10,7 @@ import {
  DropdownMenuSeparator,
  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal } from "lucide-react"
+import { MoreVertical } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export type MoreAction = {
@@ -32,8 +32,8 @@ export function MoreMenu({
  return (
  <DropdownMenu>
  <DropdownMenuTrigger asChild>
-  <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs">
-  <MoreHorizontal className="w-4 h-4" /> {label}
+   <Button variant="outline" size="icon" className="size-9">
+  <MoreVertical className="w-4 h-4" />
   </Button>
  </DropdownMenuTrigger>
  <DropdownMenuContent align="end" className="w-48">

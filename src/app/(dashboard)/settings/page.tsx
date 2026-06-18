@@ -64,16 +64,16 @@ export default function SettingsPage() {
  <CardDescription>Update your company information</CardDescription>
  </CardHeader>
  <CardContent className="space-y-4">
- <div className="space-y-2">
- <Label htmlFor="company">Company Name</Label>
+ <div className="space-y-1">
+<Label htmlFor="company">Company Name</Label>
  <Input id="company" value={org.name} onChange={(e) => setOrg({ ...org, name: e.target.value })} placeholder="My Company" />
  </div>
- <div className="space-y-2">
- <Label htmlFor="email">Email</Label>
+ <div className="space-y-1">
+<Label htmlFor="email">Email</Label>
  <Input id="email" type="email" value={org.email} onChange={(e) => setOrg({ ...org, email: e.target.value })} placeholder="hello@company.com" />
  </div>
- <div className="space-y-2">
- <Label htmlFor="phone">Phone</Label>
+ <div className="space-y-1">
+<Label htmlFor="phone">Phone</Label>
  <Input id="phone" value={org.phone} onChange={(e) => setOrg({ ...org, phone: e.target.value })} placeholder="+66 2 123 4567" />
  </div>
  <Button className="gap-1.5"><Save className="w-4 h-4" /> Save Changes</Button>
@@ -86,8 +86,8 @@ export default function SettingsPage() {
  <CardDescription>Configure system defaults</CardDescription>
  </CardHeader>
  <CardContent className="space-y-4">
- <div className="space-y-2">
- <Label htmlFor="currency">Currency</Label>
+ <div className="space-y-1">
+<Label htmlFor="currency">Currency</Label>
  <Select
  id="currency"
  options={[
@@ -99,16 +99,16 @@ export default function SettingsPage() {
  onChange={(e: any) => setPrefs({ ...prefs, currency: e.target.value })}
  />
  </div>
- <div className="space-y-2">
- <Label htmlFor="tax">Tax Rate (%)</Label>
+ <div className="space-y-1">
+<Label htmlFor="tax">Tax Rate (%)</Label>
  <Input id="tax" type="number" value={prefs.taxRate} onChange={(e) => setPrefs({ ...prefs, taxRate: e.target.value })} />
  </div>
- <div className="space-y-2">
- <Label htmlFor="lowStock">Low Stock Threshold</Label>
+ <div className="space-y-1">
+<Label htmlFor="lowStock">Low Stock Threshold</Label>
  <Input id="lowStock" type="number" value={prefs.lowStockThreshold} onChange={(e) => setPrefs({ ...prefs, lowStockThreshold: e.target.value })} />
  </div>
- <div className="space-y-2">
- <Label htmlFor="timezone">Timezone</Label>
+ <div className="space-y-1">
+<Label htmlFor="timezone">Timezone</Label>
  <Select
  id="timezone"
  options={[

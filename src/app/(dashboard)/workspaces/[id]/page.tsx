@@ -1,51 +1,86 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter, useParams } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useRouter } from "next/navigation"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Badge, BadgeDot, SemanticBadge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { toast } from "sonner"
-import { ArrowLeft, Building2, Save, Trash2, Hash, Users, Shield } from "lucide-react"
 
-type FieldGroupProps = { label: string; children: React.ReactNode }
-function FieldGroup({ label, children }: FieldGroupProps) {
+import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import { Building2, Clock, Hash, Pencil, Trash2, Users, XCircle } from "lucide-react"
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { cn } from "@/lib/utils"
+import { toast } from "sonner"
+import { SkeletonDetail } from "@/components/ui/skeleton"
+import { MoreMenu } from "@/components/ui/more-menu"
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter,
+} from "@/components/ui/dialog"
+
+function FieldDisplay({ label, value, mono, badge }: { label: string; value: string; mono?: boolean; badge?: boolean }) {
   return (
     <div className="min-w-0">
-      <p className="text-[11px] text-muted-foreground font-medium mb-1">{label}</p>
+      <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
+      {badge ? (
+        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+      ) : (
+        <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
+      )}
+    </div>
+  )
+}
+
+function FieldGroup({ label, children, required }: { label: string; children: React.ReactNode; required?: boolean }) {
+  return (
+    <div className="min-w-0 space-y-1">
+      <Label className="text-[11px] text-muted-foreground font-medium">
+        {label}
+        {required && <span className="text-destructive ml-0.5">*</span>}
+      </Label>
       {children}
     </div>
   )
 }
 
-export default function WorkspaceSettingsPage() {
+export default function WorkspaceSettingsPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
-  const params = useParams()
-  const id = params.id as string
+  const [id, setId] = useState("")
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
+  const [workspace, setWorkspace] = useState<any>(null)
   const [name, setName] = useState("")
   const [slug, setSlug] = useState("")
   const [role, setRole] = useState("")
   const [memberCount, setMemberCount] = useState(0)
 
+  useEffect(() => { params.then(({ id }) => setId(id)) }, [params])
+
   useEffect(() => {
-    Promise.all([
-      fetch(`/api/workspaces/${id}`).then((r) => r.json()),
-    ]).then(([ws]) => {
-      if (ws?.name) {
-        setName(ws.name)
-        setSlug(ws.slug)
-        setRole(ws.role)
-        setMemberCount(ws.memberCount ?? 0)
-      }
-    }).catch(() => toast.error("Failed to load workspace"))
-    .finally(() => setLoading(false))
+    if (!id) return
+    fetch(`/api/workspaces/${id}`)
+      .then((r) => r.json())
+      .then((ws) => {
+        if (ws?.name) {
+          setWorkspace(ws)
+          setName(ws.name)
+          setSlug(ws.slug)
+          setRole(ws.role)
+          setMemberCount(ws.memberCount ?? 0)
+        } else {
+          setWorkspace(null)
+        }
+      })
+      .catch(() => toast.error("Failed to load workspace"))
+      .finally(() => setLoading(false))
   }, [id])
 
-  async function handleSave(e: React.FormEvent) {
-    e.preventDefault()
+  async function handleSave() {
     if (!name.trim()) { toast.error("Name is required"); return }
     setSaving(true)
     try {
@@ -55,6 +90,9 @@ export default function WorkspaceSettingsPage() {
         body: JSON.stringify({ name: name.trim() }),
       })
       if (!res.ok) throw new Error()
+      const updated = await res.json()
+      setWorkspace(updated)
+      setShowEdit(false)
       toast.success("Workspace updated")
       router.refresh()
     } catch { toast.error("Failed to update") }
@@ -62,8 +100,7 @@ export default function WorkspaceSettingsPage() {
   }
 
   async function handleDelete() {
-    if (!confirm("Delete this workspace? All data will be permanently lost.")) return
-    setSaving(true)
+    setDeleting(true)
     try {
       const res = await fetch(`/api/workspaces/${id}`, { method: "DELETE" })
       if (!res.ok) throw new Error()
@@ -71,87 +108,159 @@ export default function WorkspaceSettingsPage() {
       router.push("/workspaces")
       router.refresh()
     } catch { toast.error("Failed to delete") }
-    finally { setSaving(false) }
+    finally { setDeleting(false) }
   }
 
-  if (loading) return <div className="animate-fade-in p-8 text-center text-muted-foreground">Loading...</div>
+  if (loading) return <SkeletonDetail cards={2} hasChart={false} />
+
+  if (!workspace) {
+    return (
+      <div className="animate-fade-in flex flex-col items-center justify-center py-24 gap-4">
+        <div className="text-center">
+          <h2 className="text-lg font-semibold">Workspace not found</h2>
+          <p className="text-sm text-muted-foreground mt-1">The workspace you are looking for does not exist or has been removed.</p>
+        </div>
+        <Button variant="secondary" onClick={() => router.push("/workspaces")}>Back to Workspaces</Button>
+      </div>
+    )
+  }
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-20 -mx-6 -mt-6 px-6 pt-6 pb-3 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-start justify-between">
-          <div className="min-w-0 flex-1">
-            <button onClick={() => router.back()} className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mb-2">
-              <ArrowLeft className="w-3.5 h-3.5" /> Back
-            </button>
-            <h1 className="text-lg font-semibold">{name || "Workspace Settings"}</h1>
-          </div>
-          <div className="flex items-center gap-2 shrink-0 ml-4">
-            {role === "owner" && (
-              <Button variant="secondary" size="sm" className="gap-1.5 h-8 text-xs text-destructive hover:text-destructive" onClick={handleDelete}>
-                <Trash2 className="w-3.5 h-3.5" /> Delete
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Bento Grid */}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <button onClick={() => router.push("/workspaces")}>Workspaces</button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{name}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <div className="grid grid-cols-12 gap-4">
-        {/* Left Column — Form (8 cols) */}
-        <div className="col-span-8 flex flex-col gap-4">
-          <form onSubmit={handleSave}>
-            <Card className="border-border/50">
-              <CardHeader className="px-4 pt-4 pb-0">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-primary" />
-                  Workspace Info
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="name" className="text-xs text-muted-foreground font-medium">Workspace Name</Label>
-                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Workspace name" required className="h-9 text-sm" />
+        <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex gap-3 min-w-0 flex-1">
+              <div className="flex flex-col gap-2 min-w-0 flex-1">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h1 className="text-2xl font-bold">{name}</h1>
+                  <SemanticBadge semantic={slug} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{slug}</SemanticBadge>
+                  <SemanticBadge semantic={role} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{role}</SemanticBadge>
                 </div>
-                <div className="flex gap-3 pt-2">
-                  <Button type="submit" loading={saving} className="gap-1.5 h-9 text-xs"><Save className="w-3.5 h-3.5" /> Save Changes</Button>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5" />
+                    {memberCount} member{memberCount !== 1 ? "s" : ""}
+                  </span>
                 </div>
-              </CardContent>
-            </Card>
-          </form>
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              <div className="flex items-center gap-2">
+                <MoreMenu actions={[
+                  ...(role === "owner" ? [{ label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => setShowEdit(true) }] : []),
+                  ...(role === "owner" ? (["separator" as const, { label: "Delete", icon: <Trash2 className="w-4 h-4" />, onClick: () => setShowDelete(true) }] as const) : []),
+                ]} />
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Right Column — Details (4 cols) */}
-        <div className="col-span-4 flex flex-col gap-4">
-          <Card className="border-border/50">
+        <div className="col-span-12 lg:col-span-8 flex flex-col gap-4">
+          <Card>
             <CardHeader className="px-4 pt-4 pb-0">
-              <CardTitle className="text-sm flex items-center gap-2">
+              <div className="flex items-center gap-2 text-sm font-semibold">
                 <Building2 className="w-4 h-4 text-primary" />
-                Details
-              </CardTitle>
+                Workspace Info
+              </div>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
-              <FieldGroup label="Slug">
-                <p className="text-xs font-mono text-muted-foreground">{slug || "—"}</p>
-              </FieldGroup>
-              <FieldGroup label="Role">
-                <p className="text-xs font-medium capitalize flex items-center gap-1.5">
-                  <Shield className="w-3 h-3 text-muted-foreground" />{role || "—"}
-                </p>
-              </FieldGroup>
-              <FieldGroup label="Members">
-                <p className="text-xs font-medium flex items-center gap-1.5">
-                  <Users className="w-3 h-3 text-muted-foreground" />{memberCount}
-                </p>
-              </FieldGroup>
-              <FieldGroup label="Workspace ID">
-                <p className="text-xs font-mono text-muted-foreground">{id}</p>
-              </FieldGroup>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+                <FieldDisplay label="Name" value={name} />
+                <FieldDisplay label="Slug" value={slug} mono />
+                <FieldDisplay label="Role" value={role} />
+                <FieldDisplay label="Members" value={String(memberCount)} />
+                <FieldDisplay label="Workspace ID" value={id} mono />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Users className="w-4 h-4 text-primary" />
+                Overview
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-2.5">
+              <div className="space-y-2.5">
+                <div className="flex items-center gap-2.5"><Hash className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Slug</span><span className="text-sm font-medium ml-auto font-mono">{slug || "—"}</span></div>
+                <div className="flex items-center gap-2.5"><BadgeDot className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Role</span><span className="text-sm font-medium ml-auto capitalize">{role || "—"}</span></div>
+                <div className="flex items-center gap-2.5"><Users className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Members</span><span className="text-sm font-medium ml-auto">{memberCount}</span></div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="flex-1">
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Clock className="w-4 h-4 text-primary" />
+                Metadata
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-2.5">
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+                <FieldDisplay label="Created" value="—" />
+                <FieldDisplay label="Updated" value="—" />
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      <Dialog open={showEdit} onOpenChange={setShowEdit}>
+        <DialogContent className="sm:max-w-lg flex flex-col p-0 gap-0 max-h-[90vh]">
+          <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
+            <DialogTitle>Edit Workspace</DialogTitle>
+            <DialogDescription>Update details for <span className="font-medium text-foreground">{name}</span></DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Building2 className="w-4 h-4 text-primary" />
+                  Workspace Details
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <FieldGroup label="Name" required><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Workspace name" /></FieldGroup>
+              </CardContent>
+            </Card>
+          </div>
+          <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
+            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button onClick={handleSave} loading={saving}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDelete} onOpenChange={setShowDelete}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Workspace</DialogTitle>
+            <DialogDescription>Are you sure you want to delete <strong>{name}</strong>? All data will be permanently lost.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

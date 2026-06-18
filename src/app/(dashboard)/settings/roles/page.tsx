@@ -1,128 +1,231 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import { Input } from "@/components/ui/input"
 import { Settings2, Shield, Users, Search } from "lucide-react"
+import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
+import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
+import { ViewToggle } from "@/components/ui/view-toggle"
+import { PropertySelector } from "@/components/ui/property-selector"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
-import { Input } from "@/components/ui/input"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+} from "@/components/ui/pagination"
 
 type Role = {
- id: string
- name: string
- description: string | null
- isSystem: boolean
- permissions: string
+  id: string
+  name: string
+  description: string | null
+  isSystem: boolean
+  permissions: string
 }
+
+const PROPERTY_OPTIONS = [
+  { key: "description", label: "Description" },
+  { key: "isSystem", label: "System" },
+  { key: "permissions", label: "Permissions" },
+]
+
+const DEFAULT_PROPS = ["description", "isSystem"]
+const PAGE_SIZE = 10
 
 export default function RolesPage() {
   const [roles, setRoles] = useState<Role[]>([])
   const [loading, setLoading] = useState(true)
-  const [filters, setFilters] = useState<Record<string, string | null>>({})
   const [search, setSearch] = useState("")
+  const [view, setView] = useState<"cards" | "rows">("rows")
+  const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
+  const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const [page, setPage] = useState(1)
   const router = useRouter()
- const handleNew = useCallback(() => { window.location.href = "/settings/roles/new" }, [])
- useHotkey("c", handleNew)
+  const handleNew = useCallback(() => router.push("/settings/roles/new"), [router])
+  useHotkey("c", handleNew)
 
- useEffect(() => {
- fetch("/api/roles")
- .then((res) => res.json())
- .then((data) => { if (Array.isArray(data)) setRoles(data) })
- .finally(() => setLoading(false))
- }, [])
-
-  const columns: any[] = [
- { key: "name", label: "Name", render: (r) => <span className="font-medium">{r.name}</span> },
- {
- key: "description", label: "Description",
- render: (r) => <span className="text-muted-foreground">{r.description || "—"}</span>,
- },
- {
- key: "isSystem", label: "System",
- render: (r) =>
- r.isSystem
- ? <Badge variant="success">System</Badge>
- : <Badge variant="secondary">Custom</Badge>,
- },
-  {
-  key: "actions", label: "",
-  render: (r) => (
-  <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); router.push(`/settings/roles/${r.id}`) }}>
-  Edit
-  </Button>
-  ),
-  },
-  ]
+  useEffect(() => {
+    fetch("/api/roles")
+      .then((res) => res.json())
+      .then((data) => { if (Array.isArray(data)) setRoles(data) })
+      .finally(() => setLoading(false))
+  }, [])
 
   const filterColumns: FilterColumn[] = [
-    { key: "name", label: "Name", getValue: (e: any) => e.name },
+    { key: "name", label: "Name", getValue: (r: Role) => r.name },
+    { key: "isSystem", label: "System", getValue: (r: Role) => r.isSystem ? "System" : "Custom" },
   ]
 
-  const filtered = roles.filter((item) => {
+  const filtered = roles.filter((r) => {
     for (const [key, value] of Object.entries(filters)) {
       if (!value) continue
       const col = filterColumns.find((c) => c.key === key)
-      if (col && col.getValue(item) !== value) return false
+      if (col && col.getValue(r) !== value) return false
     }
     if (!search) return true
-    return [item.name, item.description].some((v) => v?.toLowerCase().includes(search.toLowerCase()))
+    return [r.name, r.description].some((v) => v?.toLowerCase().includes(search.toLowerCase()))
   })
 
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const safePage = Math.min(page, Math.max(totalPages, 1))
+  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+
+  useEffect(() => {
+    setPage(1)
+  }, [search, filters])
+
+  const allColumns = [
+    {
+      key: "name",
+      label: "Role",
+      className: undefined,
+      cellClassName: undefined,
+      render: (r: Role) => (
+        <div>
+          <p className="font-medium">{r.name}</p>
+          {r.description && <p className="text-xs text-foreground">{r.description}</p>}
+        </div>
+      ),
+    },
+    {
+      key: "isSystem",
+      label: "System",
+      className: "w-[120px]",
+      cellClassName: undefined,
+      render: (r: Role) =>
+        r.isSystem
+          ? <Badge variant="success">System</Badge>
+          : <Badge variant="secondary">Custom</Badge>,
+    },
+    {
+      key: "description",
+      label: "Description",
+      className: undefined,
+      cellClassName: undefined,
+      render: (r: Role) => <span className="text-sm text-foreground">{r.description || "—"}</span>,
+    },
+    {
+      key: "permissions",
+      label: "Permissions",
+      className: undefined,
+      cellClassName: undefined,
+      render: (r: Role) => <span className="text-sm text-foreground">{r.permissions}</span>,
+    },
+  ]
+
+  const columns = allColumns.filter((c) => c.key === "name" || props.includes(c.key))
+
   return (
- <div className="animate-fade-in">
- <div className="page-header flex items-center justify-between">
- <div>
- <h1>Roles</h1>
- <p>Manage access control roles and permissions</p>
- </div>
- <Link href="/settings/roles/new"><Button className="gap-1.5">Create Role <ShortcutBadge shortcut="⌘C" /></Button></Link>
- </div>
-  <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
-    <div className="flex items-center gap-3">
-      <FilterButton filters={filters} onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))} columns={filterColumns} data={roles} />
-    </div>
-    <div className="flex items-center gap-3">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input placeholder="Search roles..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Roles</h1>
+          <p className="text-sm text-foreground mt-1">Manage access control roles and permissions</p>
+        </div>
+        <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
+          Create Role <ShortcutBadge shortcut="⌘C" />
+        </Button>
       </div>
-    </div>
-  </div>
-  {loading ? (
-    <SkeletonTable rows={6} columns={columns.length} />
-  ) : filtered.length === 0 ? (
-    <EmptyState icons={[<Shield className="w-5 h-5" />, <Users className="w-5 h-5" />, <Settings2 className="w-5 h-5" />]} title="No roles yet" description="Create your first role to define access permissions." />
-  ) : (
-    <div data-slot="frame">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {columns.map((col) => (
-              <TableHead key={col.key}>{col.label}</TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filtered.map((item) => (
-            <TableRow key={item.id} onClick={() => router.push(`/settings/roles/${item.id}`)} className="cursor-pointer">
-              {columns.map((col) => (
-                <TableCell key={col.key} className={col.cellClassName}>
-                  {col.render ? col.render(item) : String((item as any)[col.key] ?? "")}
-                </TableCell>
+      <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">
+        <div className="flex items-center gap-3">
+          {filtered.length > 0 && (
+            <FilterButton filters={filters} onChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))} columns={filterColumns} data={roles} />
+          )}
+          {filtered.length > 0 && (
+            <>
+              <ViewToggle view={view} onChange={setView} />
+              <PropertySelector options={PROPERTY_OPTIONS} selected={props} onChange={setProps} />
+            </>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          {filtered.length > 0 && (
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground" />
+              <Input placeholder="Search roles..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
+            </div>
+          )}
+          <MoreMenu actions={[
+            { label: "New Role", icon: ActionIcons.AddNew, onClick: handleNew },
+            "separator",
+            { label: "Refresh", icon: ActionIcons.Refresh },
+          ]} />
+        </div>
+      </div>
+
+      {loading ? (
+        <SkeletonTable rows={6} columns={columns.length} />
+      ) : filtered.length === 0 ? (
+        <EmptyState
+          icons={[<Shield className="w-5 h-5" />, <Users className="w-5 h-5" />, <Settings2 className="w-5 h-5" />]}
+          title="No roles yet"
+          description="Create your first role to define access permissions."
+        />
+      ) : (
+        <div data-slot="frame">
+          <Table className="[&_th]:px-4 [&_td]:px-4 [&_th]:py-3 [&_td]:py-3">
+            <TableHeader>
+              <TableRow>
+                {columns.map((col) => (
+                  <TableHead key={col.key} className={col.className}>{col.label}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginated.map((item) => (
+                <TableRow
+                  key={item.id}
+                  className="cursor-pointer"
+                  onClick={() => router.push(`/settings/roles/${item.id}`)}
+                >
+                  {columns.map((col) => (
+                    <TableCell key={col.key} className={col.cellClassName}>
+                      {col.render(item)}
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+            </TableBody>
+          </Table>
+          {totalPages > 1 && (
+            <Pagination className="mt-4">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={(e) => { e.preventDefault(); setPage(safePage - 1) }}
+                    className={safePage <= 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      isActive={p === safePage}
+                      onClick={(e) => { e.preventDefault(); setPage(p) }}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={(e) => { e.preventDefault(); setPage(safePage + 1) }}
+                    className={safePage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+        </div>
+      )}
     </div>
-  )}
-  </div>
- )
+  )
 }

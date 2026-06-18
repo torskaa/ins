@@ -14,7 +14,7 @@ import { Truck, MapPin, Package, FileText, Building2, Calendar, Warehouse, Plus,
 import { EmptyState } from "@/components/ui/empty-state"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
-  <div className={cn("space-y-1.5", className)}>
+  <div className={cn("space-y-1", className)}>
     <Label htmlFor={id} className="text-xs font-medium">{label}{required && <span className="text-destructive ml-0.5">*</span>}</Label>
     {children}
   </div>
@@ -218,7 +218,7 @@ export default function NewDeliveryPage() {
                 )}
                 {items.map((item, idx) => (
                   <div key={idx} className="flex items-end gap-3 p-3 rounded-lg border border-border bg-surface/50">
-                    <div className="flex-1 space-y-1.5">
+                    <div className="flex-1 space-y-1">
                       <Label className="text-[11px]">Product</Label>
                       <Select
                         options={products.map(p => ({ value: p.id, label: `${p.name} (${(p as any).sku || ""})` }))}
@@ -227,15 +227,15 @@ export default function NewDeliveryPage() {
                         onChange={(e: any) => updateItem(idx, "productId", e.target.value)}
                       />
                     </div>
-                    <div className="w-20 space-y-1.5">
+                    <div className="w-20 space-y-1">
                       <Label className="text-[11px]">Qty</Label>
                       <Input type="number" min="1" value={item.quantity} onChange={(e) => updateItem(idx, "quantity", parseInt(e.target.value) || 1)} className="text-center" />
                     </div>
-                    <div className="w-28 space-y-1.5">
+                    <div className="w-28 space-y-1">
                       <Label className="text-[11px]">Unit Price</Label>
                       <Input type="number" min="0" value={item.unitPrice} onChange={(e) => updateItem(idx, "unitPrice", parseFloat(e.target.value) || 0)} className="text-right font-mono" />
                     </div>
-                    <div className="w-24 space-y-1.5">
+                    <div className="w-24 space-y-1">
                       <Label className="text-[11px]">Total</Label>
                       <div className="h-9 flex items-center justify-end text-sm font-mono font-medium px-2 rounded border border-transparent bg-background">
                         ฿{(item.quantity * item.unitPrice).toLocaleString()}

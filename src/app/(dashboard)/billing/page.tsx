@@ -97,7 +97,7 @@ function BillingContent() {
  </div>
  </div>
  <div className="flex items-center gap-2">
- <Badge variant={stripeActive ? "default" : "secondary"}>
+ <Badge variant={stripeActive ? "primary" : "secondary"}>
  {stripeActive ? "Active" : "Free (no card required)"}
  </Badge>
  {currentPlan !== "free" && stripeActive && (
@@ -125,7 +125,7 @@ function BillingContent() {
  )}
  {isCurrent && (
  <div className="absolute -top-3 right-4">
- <Badge variant="default">Active</Badge>
+ <Badge variant="primary">Active</Badge>
  </div>
  )}
  <CardHeader>

@@ -48,7 +48,7 @@ const CHANNELS = [
 ]
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
-  <div className={cn("space-y-1.5", className)}>
+  <div className={cn("space-y-1", className)}>
     <Label htmlFor={id} className="text-xs font-medium">{label}{required && <span className="text-destructive ml-0.5">*</span>}</Label>
     {children}
   </div>
@@ -211,7 +211,7 @@ export default function EditSupplierPage({ params }: { params: Promise<{ id: str
                     <input id="docs-upload" type="file" multiple className="hidden" onChange={handleFileUpload} accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png" />
                   </div>
                   {(form.documents?.length || 0) > 0 && (
-                    <div className="space-y-1.5 mt-2">
+                    <div className="space-y-1 mt-2">
                       {form.documents.map((doc: any, i: number) => (
                         <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-surface/50">
                           <div className="flex items-center gap-2">

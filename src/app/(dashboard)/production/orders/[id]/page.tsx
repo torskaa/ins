@@ -3,231 +3,413 @@
 import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Badge, BadgeDot, SemanticBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select } from "@/components/ui/select"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+
+import { Progress } from "@/components/ui/progress"
+import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import { Beaker, Calendar, CheckCircle, Clock, ClipboardList, Cog, DollarSign, Hash, Package, Play, Pencil, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { Calendar, CheckCircle, Cog, DollarSign, Edit, Beaker, ClipboardList, MoreHorizontal, Package, Play } from "lucide-react"
-import { format } from "date-fns"
-import { Skeleton } from "@/components/ui/skeleton"
+import { SkeletonDetail } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
+import { MoreMenu } from "@/components/ui/more-menu"
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter,
+} from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 
-const statusColors: Record<string, string> = {
- draft: "bg-slate-100 text-slate-600",
- confirmed: "bg-blue-100 text-blue-700",
- in_progress: "bg-amber-100 text-amber-700",
- completed: "bg-emerald-100 text-emerald-700",
- cancelled: "bg-red-100 text-red-700",
-}
-
 type DetailOrder = {
- id: string; number: string; status: string; quantity: number; producedQty: number
- startDate: string | null; dueDate: string | null; completedDate: string | null; notes: string | null
- product: { id: string; name: string; sku: string; unitPrice: number | null }
- bom: { id: string; finishedGoodId: string; version: string; status: string } | null
- warehouse: { id: string; name: string; location: string | null } | null
- materials: Array<{ id: string; product: { id: string; name: string; sku: string; unitPrice: number | null }; quantityNeeded: number; quantityIssued: number }>
- operations: Array<{ id: string; sequence: number; name: string; setupTime: number; runTime: number; workCenter: { id: string; name: string; costPerHour: number } }>
+  id: string; number: string; status: string; quantity: number; producedQty: number
+  startDate: string | null; dueDate: string | null; completedDate: string | null; notes: string | null; createdAt: string; updatedAt: string
+  product: { id: string; name: string; sku: string; unitPrice: number | null }
+  bom: { id: string; finishedGoodId: string; version: string; status: string } | null
+  warehouse: { id: string; name: string; location: string | null } | null
+  materials: Array<{ id: string; product: { id: string; name: string; sku: string; unitPrice: number | null }; quantityNeeded: number; quantityIssued: number }>
+  operations: Array<{ id: string; sequence: number; name: string; setupTime: number; runTime: number; workCenter: { id: string; name: string; costPerHour: number } }>
 }
 
 const transitionLabels: Record<string, string> = {
- draft: "Confirm Order",
- confirmed: "Start Production",
- in_progress: "Complete Order",
+  draft: "Confirm Order",
+  confirmed: "Start Production",
+  in_progress: "Complete Order",
 }
 const transitionActions: Record<string, string> = {
- draft: "confirmed",
- confirmed: "in_progress",
- in_progress: "completed",
+  draft: "confirmed",
+  confirmed: "in_progress",
+  in_progress: "completed",
 }
 const transitionIcons: Record<string, any> = {
- draft: CheckCircle,
- confirmed: Play,
- in_progress: CheckCircle,
+  draft: CheckCircle,
+  confirmed: Play,
+  in_progress: CheckCircle,
+}
+
+function FieldDisplay({ label, value, mono, badge }: { label: string; value: string; mono?: boolean; badge?: boolean }) {
+  return (
+    <div className="min-w-0">
+      <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
+      {badge ? (
+        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+      ) : (
+        <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
+      )}
+    </div>
+  )
+}
+
+function FieldGroup({ label, children, required }: { label: string; children: React.ReactNode; required?: boolean }) {
+  return (
+    <div className="min-w-0 space-y-1">
+      <Label className="text-[11px] text-muted-foreground font-medium">
+        {label}
+        {required && <span className="text-destructive ml-0.5">*</span>}
+      </Label>
+      {children}
+    </div>
+  )
 }
 
 export default function ProductionOrderDetailPage() {
- const router = useRouter()
- const params = useParams()
- const [order, setOrder] = useState<DetailOrder | null>(null)
- const [loading, setLoading] = useState(true)
- const [transitioning, setTransitioning] = useState(false)
- const [producedInput, setProducedInput] = useState("")
+  const router = useRouter()
+  const params = useParams()
+  const [order, setOrder] = useState<DetailOrder | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [transitioning, setTransitioning] = useState(false)
+  const [producedInput, setProducedInput] = useState("")
+  const [tab, setTab] = useState("materials")
 
- useEffect(() => {
- fetch(`/api/production-orders/${params.id}`)
- .then(r => r.json())
- .then(d => {
- if (d.error) { toast.error(d.error); return }
- setOrder(d)
- setProducedInput(String(d.quantity))
- })
- .finally(() => setLoading(false))
- }, [params.id])
+  useEffect(() => {
+    fetch(`/api/production-orders/${params.id}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.error) { toast.error(d.error); return }
+        setOrder(d)
+        setProducedInput(String(d.quantity))
+      })
+      .finally(() => setLoading(false))
+  }, [params.id])
 
- async function handleTransition(action: string) {
- setTransitioning(true)
- try {
- const body: any = { action }
- if (action === "completed" && producedInput) body.producedQty = parseInt(producedInput)
- const res = await fetch(`/api/production-orders/${params.id}/status`, {
- method: "POST",
- headers: { "Content-Type": "application/json" },
- body: JSON.stringify(body),
- })
- if (!res.ok) { const e = await res.json(); throw new Error(e.error) }
- toast.success(`Order ${action.replace(/_/g, " ")}`)
- // Refresh
- const updated = await fetch(`/api/production-orders/${params.id}`).then(r => r.json())
- setOrder(updated)
- setProducedInput(String(updated.quantity))
- } catch (err: any) { toast.error(err.message) }
- finally { setTransitioning(false) }
- }
+  async function handleTransition(action: string) {
+    setTransitioning(true)
+    try {
+      const body: any = { action }
+      if (action === "completed" && producedInput) body.producedQty = parseInt(producedInput)
+      const res = await fetch(`/api/production-orders/${params.id}/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error) }
+      toast.success(`Order ${action.replace(/_/g, " ")}`)
+      const updated = await fetch(`/api/production-orders/${params.id}`).then(r => r.json())
+      setOrder(updated)
+      setProducedInput(String(updated.quantity))
+    } catch (err: any) { toast.error(err.message) }
+    finally { setTransitioning(false) }
+  }
 
- if (loading) return <div className="space-y-4"><Skeleton className="h-8 w-48 rounded-lg" /><Skeleton className="h-64 w-full rounded-xl" /></div>
- if (!order) return <div className="text-center text-muted-foreground py-20">Order not found</div>
+  if (loading) return <SkeletonDetail cards={3} hasChart={false} />
+  if (!order) {
+    return (
+      <div className="animate-fade-in flex flex-col items-center justify-center py-24 gap-4">
+        <div className="text-center">
+          <h2 className="text-lg font-semibold">Order not found</h2>
+          <p className="text-sm text-muted-foreground mt-1">The production order you are looking for does not exist or has been removed.</p>
+        </div>
+        <Button variant="secondary" onClick={() => router.push("/production/orders")}>Back to Orders</Button>
+      </div>
+    )
+  }
 
- const nextAction = transitionActions[order.status]
- const totalSetup = order.operations.reduce((s, o) => s + o.setupTime, 0)
- const totalRun = order.operations.reduce((s, o) => s + o.runTime, 0)
- const totalCost = order.operations.reduce((s, o) => s + (o.setupTime + o.runTime) / 60 * o.workCenter.costPerHour, 0)
+  const nextAction = transitionActions[order.status]
+  const totalSetup = order.operations.reduce((s, o) => s + o.setupTime, 0)
+  const totalRun = order.operations.reduce((s, o) => s + o.runTime, 0)
+  const totalCost = order.operations.reduce((s, o) => s + (o.setupTime + o.runTime) / 60 * o.workCenter.costPerHour, 0)
 
- return (
- <div className="animate-fade-in max-w-4xl">
-  <Breadcrumb className="mb-4">
-  <BreadcrumbList>
-  <BreadcrumbItem>
-  <BreadcrumbLink asChild>
-  <button onClick={() => router.push("/production/orders")}>Orders</button>
-  </BreadcrumbLink>
-  </BreadcrumbItem>
-  <BreadcrumbSeparator />
-  <BreadcrumbItem>
-  <BreadcrumbPage>{order.number}</BreadcrumbPage>
-  </BreadcrumbItem>
-  </BreadcrumbList>
-  </Breadcrumb>
+  const materialColumns = [
+    { key: "product", label: "Product", render: (item: any) => <span className="font-medium">{item.product?.name}</span> },
+    { key: "sku", label: "SKU", render: (item: any) => <span className="font-mono text-xs text-muted-foreground">{item.product?.sku || "—"}</span> },
+    { key: "needed", label: "Needed", render: (item: any) => <span className="font-mono">{formatNumber(item.quantityNeeded)}</span> },
+    { key: "issued", label: "Issued", render: (item: any) => <span className="font-mono">{formatNumber(item.quantityIssued)}</span> },
+  ]
 
-  <div className="flex items-start justify-between mb-6">
-  <div>
-  <div className="flex items-center gap-3 mb-1">
-  <h1 className="font-mono">{order.number}</h1>
- <Badge className={`${statusColors[order.status] || ""} border-0 font-medium`}>{order.status.replace(/_/g, " ")}</Badge>
- </div>
- <div className="flex items-center gap-4 text-sm text-muted-foreground">
- <span className="flex items-center gap-1">{order.product.name} ({order.product.sku})</span>
- {order.warehouse && <span className="flex items-center gap-1">{order.warehouse.name}</span>}
- </div>
- </div>
-  <div className="flex items-center gap-2">
-  {nextAction && (
-  <Button size="sm" onClick={() => handleTransition(nextAction)} loading={transitioning} className="gap-1.5">
-  {(() => { const Icon = transitionIcons[order.status]; return Icon ? <><Icon className="w-4 h-4" /> {transitionLabels[order.status]}</> : transitionLabels[order.status] })()}
-  </Button>
-  )}
-  <DropdownMenu>
-  <DropdownMenuTrigger asChild>
-  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
-  </DropdownMenuTrigger>
-  <DropdownMenuContent align="end">
-  {["draft", "confirmed"].includes(order.status) && (
-  <DropdownMenuItem onClick={() => router.push(`/production/orders/${order.id}/edit`)}><Edit className="w-4 h-4 mr-2" /> Edit</DropdownMenuItem>
-  )}
-  </DropdownMenuContent>
-  </DropdownMenu>
-</div>
- </div>
+  const operationColumns = [
+    { key: "sequence", label: "#", render: (item: any) => <span className="font-mono text-xs">{item.sequence}</span> },
+    { key: "name", label: "Operation", render: (item: any) => <span className="font-medium">{item.name}</span> },
+    { key: "workCenter", label: "Work Center", render: (item: any) => <span className="text-muted-foreground">{item.workCenter?.name}</span> },
+    { key: "time", label: "Time", render: (item: any) => <span className="font-mono">{item.setupTime + item.runTime}m</span> },
+    { key: "cost", label: "Cost", render: (item: any) => <span className="font-mono">{formatCurrency((item.setupTime + item.runTime) / 60 * item.workCenter.costPerHour)}</span> },
+  ]
 
-  <div className="grid grid-cols-4 gap-4 mb-6">
-  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
-  <Package className="w-5 h-5 text-muted-foreground" />
-  <p className="text-[11px] text-muted-foreground font-medium">Quantity</p>
-  <p className="text-2xl font-semibold">{order.quantity}</p>
-  </div>
-  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
-  <CheckCircle className="w-5 h-5 text-muted-foreground" />
-  <p className="text-[11px] text-muted-foreground font-medium">Produced</p>
-  <p className={`text-2xl font-semibold ${order.producedQty > 0 ? "text-emerald-600" : "text-muted-foreground"}`}>{order.producedQty || 0}</p>
-  </div>
-  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
-  <Calendar className="w-5 h-5 text-muted-foreground" />
-  <p className="text-[11px] text-muted-foreground font-medium">Due Date</p>
-  <p className="text-lg font-medium">{order.dueDate ? format(new Date(order.dueDate), "dd/MM/yyyy") : "—"}</p>
-  </div>
-  <div className="flex flex-col items-center gap-2 p-4 rounded-lg border border-border/60">
-  <DollarSign className="w-5 h-5 text-muted-foreground" />
-  <p className="text-[11px] text-muted-foreground font-medium">Est. Cost</p>
-  <p className="text-lg font-medium font-mono">฿{totalCost.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
-  </div>
-  </div>
+  return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      {/* Breadcrumb */}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <button onClick={() => router.push("/production/orders")}>Orders</button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{order.number}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <div className="grid grid-cols-12 gap-4">
+        {/* Page Header — bento card */}
+        <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex flex-col gap-2 min-w-0 flex-1">
+              <div className="flex items-center gap-3 flex-wrap">
+                <h1 className="text-2xl font-bold">{order.number}</h1>
+                <SemanticBadge semantic={order.status} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{order.status.replace(/_/g, " ")}</SemanticBadge>
+                <SemanticBadge semantic={order.number} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{order.number}</SemanticBadge>
+              </div>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <span className="font-medium">{order.product.name}</span>
+                <span className="font-mono text-xs text-muted-foreground">{order.product.sku}</span>
+                {order.warehouse && <><span className="text-muted-foreground/30">·</span><span>{order.warehouse.name}</span></>}
+              </div>
+              {order.updatedAt && (
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>Updated {formatDate(new Date(order.updatedAt))}</span>
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              <div className="flex items-center gap-2">
+                {nextAction && (
+                  <Button size="sm" onClick={() => handleTransition(nextAction)} loading={transitioning} className="h-9 gap-1.5">
+                    {(() => { const Icon = transitionIcons[order.status]; return Icon ? <><Icon className="w-4 h-4" /> {transitionLabels[order.status]}</> : transitionLabels[order.status] })()}
+                  </Button>
+                )}
+                <MoreMenu actions={[
+                  ...(["draft", "confirmed"].includes(order.status) ? [{ label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => router.push(`/production/orders/${order.id}/edit`) }] : []),
+                ]} />
+              </div>
+            </div>
+          </div>
+        </div>
 
- {order.status === "in_progress" && (
- <Card className="mb-6 border-amber-200 bg-amber-50/50">
- <CardContent className="p-4 flex items-center gap-4">
- <div className="flex-1">
- <Label className="text-xs font-medium text-amber-700 mb-1 block">Quantity Produced</Label>
- <Input type="number" min="1" value={producedInput} onChange={(e) => setProducedInput(e.target.value)} className="w-32 bg-white" />
- </div>
- <Button size="sm" onClick={() => handleTransition("completed")} loading={transitioning} className="gap-1.5 mt-5">
- Complete Order
- </Button>
- </CardContent>
- </Card>
- )}
+        {/* Produced quantity input (in_progress) */}
+        {order.status === "in_progress" && (
+          <div className="col-span-12 border border-amber-200 rounded-lg bg-amber-50/50 p-4 flex items-center gap-4">
+            <div className="flex-1">
+              <Label className="text-xs font-medium text-amber-700 mb-1 block">Quantity Produced</Label>
+              <Input type="number" min="1" value={producedInput} onChange={(e) => setProducedInput(e.target.value)} className="w-32 bg-white" />
+            </div>
+            <Button size="sm" onClick={() => handleTransition("completed")} loading={transitioning} className="gap-1.5 mt-5">
+              Complete Order
+            </Button>
+          </div>
+        )}
 
- <div className="grid grid-cols-2 gap-6">
- <Card>
- <CardHeader className="pb-3 flex flex-row items-center justify-between">
- <h3 className="text-sm font-semibold flex items-center gap-2"><Beaker className="w-4 h-4" /> Materials ({order.materials.length})</h3>
- </CardHeader>
- <CardContent className="pt-0 space-y-2">
-  {order.materials.length === 0 && <EmptyState icons={[<Package key="pm1" className="w-6 h-6" />, <Beaker key="pm2" className="w-6 h-6" />, <ClipboardList key="pm3" className="w-6 h-6" />]} title="No materials" description="Materials for this production order will appear here" size="sm" />}
- {order.materials.map((m) => (
- <div key={m.id} className="flex items-center justify-between p-2.5 bg-surface rounded-lg">
- <div className="text-sm"><span className="font-medium">{m.product.name}</span><span className="text-xs text-muted-foreground ml-2">{m.product.sku}</span></div>
- <div className="font-mono text-sm">{m.quantityIssued}/{m.quantityNeeded}</div>
- </div>
- ))}
- </CardContent>
- </Card>
+        {/* Left Column (8 cols) — Primary Information */}
+        <div className="col-span-12 lg:col-span-8 flex flex-col gap-4">
+          {/* Order Details */}
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <ClipboardList className="w-4 h-4 text-primary" />
+                Order Details
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-3">
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+                <FieldDisplay label="Product" value={order.product.name} />
+                <FieldDisplay label="SKU" value={order.product.sku} mono />
+                <FieldDisplay label="Warehouse" value={order.warehouse?.name || "—"} />
+                <FieldDisplay label="BOM Version" value={order.bom?.version || "—"} />
+                <FieldDisplay label="Start Date" value={order.startDate ? formatDate(new Date(order.startDate)) : "—"} />
+                <FieldDisplay label="Due Date" value={order.dueDate ? formatDate(new Date(order.dueDate)) : "—"} />
+                <FieldDisplay label="Completed Date" value={order.completedDate ? formatDate(new Date(order.completedDate)) : "—"} />
+                <FieldDisplay label="BOM Status" value={order.bom?.status || "—"} />
+              </div>
+              {order.notes && (
+                <div className="pt-2 border-t border-border/60">
+                  <p className="text-[11px] text-muted-foreground font-medium mb-0.5">Notes</p>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{order.notes}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
- <Card>
- <CardHeader className="pb-3 flex flex-row items-center justify-between">
- <h3 className="text-sm font-semibold flex items-center gap-2">Operations ({order.operations.length})</h3>
- </CardHeader>
- <CardContent className="pt-0 space-y-2">
-  {order.operations.length === 0 && <EmptyState icons={[<Cog key="po1" className="w-6 h-6" />, <Play key="po2" className="w-6 h-6" />, <CheckCircle key="po3" className="w-6 h-6" />]} title="No operations" description="Operations for this production order will appear here" size="sm" />}
- {order.operations.map((o) => (
- <div key={o.id} className="flex items-center justify-between p-2.5 bg-surface rounded-lg">
- <div>
- <span className="text-sm font-medium">#{o.sequence} {o.name}</span>
- <span className="text-xs text-muted-foreground ml-2">{o.workCenter.name}</span>
- </div>
- <div className="text-xs text-muted-foreground font-mono">{o.setupTime + o.runTime}m</div>
- </div>
- ))}
- {order.operations.length > 0 && (
- <div className="flex items-center justify-between p-2.5 bg-surface rounded-lg border border-border">
- <span className="text-sm font-medium">Total</span>
- <span className="font-mono text-sm">{totalSetup + totalRun}m ({((totalSetup + totalRun) / 60).toFixed(1)}h)</span>
- </div>
- )}
- </CardContent>
- </Card>
- </div>
+        {/* Right Column (4 cols) — Contextual / Meta */}
+        <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+          {/* Quantity */}
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Package className="w-4 h-4 text-primary" />
+                Quantity
+              </div>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-2xl font-semibold">{order.quantity}</span>
+                <span className="text-xs text-muted-foreground">units planned</span>
+              </div>
+              <Progress
+                className="h-1.5 mb-2"
+                indicatorClassName={order.producedQty >= order.quantity ? "bg-success" : "bg-primary"}
+                value={Math.min((order.producedQty / order.quantity) * 100, 100)}
+              />
+              <div className="flex justify-between text-[11px] text-muted-foreground">
+                <span>Produced: {order.producedQty || 0}</span>
+                <span>Remaining: {order.quantity - (order.producedQty || 0)}</span>
+              </div>
+            </CardContent>
+          </Card>
 
- {order.notes && (
- <Card className="mt-6">
- <CardHeader className="pb-2"><h3 className="text-sm font-semibold">Notes</h3></CardHeader>
- <CardContent className="pt-0"><p className="text-sm text-muted-foreground whitespace-pre-wrap">{order.notes}</p></CardContent>
- </Card>
- )}
- </div>
- )
+          {/* Due Date */}
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Calendar className="w-4 h-4 text-primary" />
+                Schedule
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-2">
+              <div className="flex items-center gap-2.5"><Clock className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Start</span><span className="text-sm font-medium ml-auto">{order.startDate ? formatDate(new Date(order.startDate)) : "—"}</span></div>
+              <div className="flex items-center gap-2.5"><Calendar className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Due</span><span className="text-sm font-medium ml-auto">{order.dueDate ? formatDate(new Date(order.dueDate)) : "—"}</span></div>
+              {order.completedDate && <div className="flex items-center gap-2.5"><CheckCircle className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Completed</span><span className="text-sm font-medium ml-auto">{formatDate(new Date(order.completedDate))}</span></div>}
+            </CardContent>
+          </Card>
+
+          {/* Est. Cost */}
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <DollarSign className="w-4 h-4 text-primary" />
+                Estimated Cost
+              </div>
+            </CardHeader>
+            <CardContent className="p-4">
+              <p className="text-2xl font-semibold font-mono">{formatCurrency(totalCost)}</p>
+              <p className="text-xs text-muted-foreground mt-1">Total time: {totalSetup + totalRun}m ({(totalSetup + totalRun) / 60}h)</p>
+            </CardContent>
+          </Card>
+
+          {/* Metadata */}
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Clock className="w-4 h-4 text-primary" />
+                Metadata
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-2.5">
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+                <FieldDisplay label="Created" value={order.createdAt ? formatDate(new Date(order.createdAt)) : "—"} />
+                <FieldDisplay label="Updated" value={order.updatedAt ? formatDate(new Date(order.updatedAt)) : "—"} />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Unified Tab Module */}
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+        <Tabs value={tab} onValueChange={setTab}>
+          <TabsList className="w-full overflow-x-auto px-4">
+            <TabsTrigger value="materials" className="gap-1.5"><Beaker className="w-4 h-4" /> Materials ({order.materials.length})</TabsTrigger>
+            <TabsTrigger value="operations" className="gap-1.5"><Cog className="w-4 h-4" /> Operations ({order.operations.length})</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="materials" className="p-3">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-2">
+              <Beaker className="w-4 h-4 text-primary" />
+              Materials
+            </div>
+            {(order.materials || []).length === 0 ? (
+              <EmptyState
+                icons={[<Beaker key="pm1" className="w-6 h-6" />, <Package key="pm2" className="w-6 h-6" />, <ClipboardList key="pm3" className="w-6 h-6" />]}
+                title="No materials"
+                description="Materials for this production order will appear here"
+                size="sm"
+              />
+            ) : (
+              <div data-slot="frame">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {materialColumns.map((col) => (
+                        <TableHead key={col.key}>{col.label}</TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {order.materials.map((item: any) => (
+                      <TableRow key={item.id}>
+                        {materialColumns.map((col) => (
+                          <TableCell key={col.key}>
+                            {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="operations" className="p-3">
+            <div className="flex items-center gap-2 text-sm font-semibold mb-2">
+              <Cog className="w-4 h-4 text-primary" />
+              Operations
+            </div>
+            {(order.operations || []).length === 0 ? (
+              <EmptyState
+                icons={[<Cog key="po1" className="w-6 h-6" />, <Play key="po2" className="w-6 h-6" />, <CheckCircle key="po3" className="w-6 h-6" />]}
+                title="No operations"
+                description="Operations for this production order will appear here"
+                size="sm"
+              />
+            ) : (
+              <div data-slot="frame">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {operationColumns.map((col) => (
+                        <TableHead key={col.key}>{col.label}</TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {order.operations.map((item: any) => (
+                      <TableRow key={item.id}>
+                        {operationColumns.map((col) => (
+                          <TableCell key={col.key}>
+                            {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <div className="flex items-center justify-between px-4 py-2 border-t border-border/60 bg-muted/30">
+                  <span className="text-sm font-semibold">Total</span>
+                  <span className="font-mono text-sm font-semibold">{totalSetup + totalRun}m ({(totalSetup + totalRun) / 60}h) — {formatCurrency(totalCost)}</span>
+                </div>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  )
 }
-
-

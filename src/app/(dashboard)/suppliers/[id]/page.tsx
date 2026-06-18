@@ -2,625 +2,694 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Badge, BadgeDot, SemanticBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select } from "@/components/ui/select"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+
+import { Progress } from "@/components/ui/progress"
+import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import { Award, BadgePercent, Boxes, Building2, CheckCircle, Clock, DollarSign, FileText, Hash, MapPin, Package, Pencil, Phone, ShoppingCart, Trash2, User, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { formatCurrency, formatDateTime } from "@/lib/utils"
+import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
-import { Award, BadgePercent, Building2, CalendarDays, DollarSign, Globe, Mail, MoreHorizontal, Package, Phone, ShoppingCart, Trash2, User, XCircle } from "lucide-react"
 import { SkeletonDetail } from "@/components/ui/skeleton"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
+import { EmptyState } from "@/components/ui/empty-state"
+import { MoreMenu } from "@/components/ui/more-menu"
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter,
+} from "@/components/ui/dialog"
 
 interface SupplierPrice {
- id: string
- productId: string
- supplierId: string
- price: number
- currency: string
- leadTimeDays: number | null
- isPreferred: boolean
- product: { id: string; name: string; sku: string }
+  id: string
+  productId: string
+  supplierId: string
+  price: number
+  currency: string
+  leadTimeDays: number | null
+  isPreferred: boolean
+  product: { id: string; name: string; sku: string }
 }
 
 interface Lot {
- id: string
- lotNumber: string
- productId: string
- quantity: number
- receivedDate: string
- expiryDate: string | null
- product: { id: string; name: string; sku: string }
+  id: string
+  lotNumber: string
+  productId: string
+  quantity: number
+  receivedDate: string
+  expiryDate: string | null
+  product: { id: string; name: string; sku: string }
 }
 
 interface OrderItem {
- id: string
- productId: string
- quantity: number
- unitPrice: number
- product: { id: string; name: string; sku: string }
+  id: string
+  productId: string
+  quantity: number
+  unitPrice: number
+  product: { id: string; name: string; sku: string }
 }
 
 interface PurchaseOrder {
- id: string
- orderNumber: string
- status: string
- totalAmount: number
- currency: string
- orderDate: string
- items: OrderItem[]
+  id: string
+  orderNumber: string
+  status: string
+  totalAmount: number
+  currency: string
+  orderDate: string
+  items: OrderItem[]
 }
 
 interface Product {
- id: string
- name: string
- sku: string
- price: number
- stock: number
- status: string
+  id: string
+  name: string
+  sku: string
+  price: number
+  stock: number
+  status: string
 }
 
 interface Performance {
- totalOrders: number
- deliveredOrders: number
- onTimeDeliveryRate: number
- totalProducts: number
- totalLots: number
+  totalOrders: number
+  deliveredOrders: number
+  onTimeDeliveryRate: number
+  totalProducts: number
+  totalLots: number
 }
 
 interface Supplier {
- id: string
- name: string
- email: string | null
- phone: string | null
- taxId: string | null
- rating: string
- paymentTerms: string | null
- currency: string
- address: string | null
- contactPerson: string | null
- contactPersonRole: string | null
- website: string | null
- preferredChannel: string | null
- defaultLeadTime: number | null
- notes: string | null
- createdAt: string
- products: Product[]
- purchaseOrders: PurchaseOrder[]
- lots: Lot[]
- supplierPrices: SupplierPrice[]
- performance: Performance
+  id: string
+  name: string
+  email: string | null
+  phone: string | null
+  taxId: string | null
+  rating: string
+  paymentTerms: string | null
+  currency: string
+  address: string | null
+  contactPerson: string | null
+  contactPersonRole: string | null
+  website: string | null
+  preferredChannel: string | null
+  defaultLeadTime: number | null
+  notes: string | null
+  createdAt: string
+  products: Product[]
+  purchaseOrders: PurchaseOrder[]
+  lots: Lot[]
+  supplierPrices: SupplierPrice[]
+  performance: Performance
 }
 
-const statusBadge: Record<string, "success" | "secondary" | "warning" | "destructive" | "default"> = {
- active: "success",
- preferred: "default",
- inactive: "secondary",
- blacklisted: "destructive",
- draft: "secondary",
- pending: "warning",
- confirmed: "default",
- shipped: "default",
- delivered: "success",
- cancelled: "destructive",
+function FieldDisplay({ label, value, mono, badge }: { label: string; value: string; mono?: boolean; badge?: boolean }) {
+  return (
+    <div className="min-w-0">
+      <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
+      {badge ? (
+        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+      ) : (
+        <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
+      )}
+    </div>
+  )
 }
 
-const poStatusBadge: Record<string, "success" | "secondary" | "warning" | "destructive" | "default"> = {
- draft: "secondary",
- pending: "warning",
- confirmed: "default",
- shipped: "default",
- delivered: "success",
- cancelled: "destructive",
+function FieldGroup({ label, children, required }: { label: string; children: React.ReactNode; required?: boolean }) {
+  return (
+    <div className="min-w-0 space-y-1">
+      <Label className="text-[11px] text-muted-foreground font-medium">
+        {label}
+        {required && <span className="text-destructive ml-0.5">*</span>}
+      </Label>
+      {children}
+    </div>
+  )
 }
 
 export default function SupplierDetailPage({ params }: { params: Promise<{ id: string }> }) {
- const [supplier, setSupplier] = useState<Supplier | null>(null)
- const [loading, setLoading] = useState(true)
- const [showDelete, setShowDelete] = useState(false)
- const [deleting, setDeleting] = useState(false)
- const [tab, setTab] = useState("info")
- const router = useRouter()
- const [id, setId] = useState<string>("")
- const [searchProducts, setSearchProducts] = useState("")
- const [searchPOs, setSearchPOs] = useState("")
- const [searchLots, setSearchLots] = useState("")
- const [searchPrices, setSearchPrices] = useState("")
+  const [supplier, setSupplier] = useState<Supplier | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [showEdit, setShowEdit] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [tab, setTab] = useState("products")
+  const [form, setForm] = useState<any>({})
+  const router = useRouter()
+  const [id, setId] = useState<string>("")
+  const [searchProducts, setSearchProducts] = useState("")
+  const [searchPOs, setSearchPOs] = useState("")
+  const [searchLots, setSearchLots] = useState("")
+  const [searchPrices, setSearchPrices] = useState("")
 
- useEffect(() => {
- params.then(({ id }) => setId(id))
- }, [params])
+  useEffect(() => {
+    params.then(({ id }) => setId(id))
+  }, [params])
 
- useEffect(() => {
- if (!id) return
- fetch(`/api/suppliers/${id}`)
- .then((res) => res.json())
- .then(setSupplier)
- .finally(() => setLoading(false))
- }, [id])
+  useEffect(() => {
+    if (!id) return
+    fetch(`/api/suppliers/${id}`)
+      .then((res) => res.json())
+      .then((d) => { setSupplier(d); setForm({ name: d.name, email: d.email || "", phone: d.phone || "", taxId: d.taxId || "", paymentTerms: d.paymentTerms || "", currency: d.currency, address: d.address || "", contactPerson: d.contactPerson || "", contactPersonRole: d.contactPersonRole || "", website: d.website || "", preferredChannel: d.preferredChannel || "", defaultLeadTime: d.defaultLeadTime != null ? String(d.defaultLeadTime) : "", notes: d.notes || "", rating: d.rating }) })
+      .finally(() => setLoading(false))
+  }, [id])
 
- async function handleDelete() {
- setDeleting(true)
- try {
- const res = await fetch(`/api/suppliers/${id}`, { method: "DELETE" })
- if (!res.ok) throw new Error("Failed")
- toast.success("Supplier deleted")
- router.push("/suppliers")
- router.refresh()
- } catch {
- toast.error("Failed to delete supplier")
- setDeleting(false)
- }
- }
+  async function handleSave() {
+    try {
+      const res = await fetch(`/api/suppliers/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, defaultLeadTime: form.defaultLeadTime ? parseInt(form.defaultLeadTime) : null }),
+      })
+      if (!res.ok) throw new Error("Failed")
+      const updated = await res.json()
+      setSupplier(updated)
+      setShowEdit(false)
+      toast.success("Supplier updated")
+    } catch {
+      toast.error("Failed to update supplier")
+    }
+  }
+
+  async function handleDelete() {
+    setDeleting(true)
+    try {
+      const res = await fetch(`/api/suppliers/${id}`, { method: "DELETE" })
+      if (!res.ok) throw new Error("Failed")
+      toast.success("Supplier deleted")
+      router.push("/suppliers")
+      router.refresh()
+    } catch {
+      toast.error("Failed to delete supplier")
+      setDeleting(false)
+    }
+  }
 
   const productColumns = useMemo(
- () => [
- { key: "name", label: "Product", render: (item) => <span className="font-medium">{item.name}</span> },
- { key: "sku", label: "SKU" },
- { key: "price", label: "Price", render: (item) => formatCurrency(item.price, supplier?.currency) },
- { key: "stock", label: "Stock", render: (item) => (
- <span className={item.stock <= 0 ? "text-destructive font-medium" : ""}>{item.stock}</span>
- )},
- { key: "status", label: "Status", render: (item) => <Badge variant={statusBadge[item.status] || "secondary"} className="capitalize">{item.status}</Badge> },
- ],
- [supplier]
- )
+    () => [
+      { key: "name", label: "Product", render: (item: Product) => <span className="font-medium">{item.name}</span> },
+      { key: "sku", label: "SKU" },
+      { key: "price", label: "Price", render: (item: Product) => formatCurrency(item.price, supplier?.currency) },
+      { key: "stock", label: "Stock", render: (item: Product) => (
+        <span className={item.stock <= 0 ? "text-destructive font-medium" : ""}>{item.stock}</span>
+      )},
+      { key: "status", label: "Status", render: (item: Product) => <SemanticBadge semantic={item.status} category="status" className="capitalize" /> },
+    ],
+    [supplier]
+  )
 
   const poColumns = useMemo(
- () => [
- { key: "orderNumber", label: "Order #", render: (item) => (
- <span className="font-medium text-info hover:underline cursor-pointer" onClick={() => router.push(`/purchase-orders/${item.id}`)}>{item.orderNumber}</span>
- )},
- { key: "status", label: "Status", render: (item) => <Badge variant={poStatusBadge[item.status] || "secondary"} className="capitalize">{item.status}</Badge> },
- { key: "itemsCount", label: "Items", render: (item) => item.items.length },
- { key: "totalAmount", label: "Total", render: (item) => formatCurrency(item.totalAmount, item.currency) },
- { key: "orderDate", label: "Date", render: (item) => formatDateTime(new Date(item.orderDate)) },
- ],
- [router]
- )
+    () => [
+      { key: "orderNumber", label: "Order #", render: (item: PurchaseOrder) => (
+        <span className="font-medium text-info hover:underline cursor-pointer" onClick={() => router.push(`/purchase-orders/${item.id}`)}>{item.orderNumber}</span>
+      )},
+      { key: "status", label: "Status", render: (item: PurchaseOrder) => <SemanticBadge semantic={item.status} category="status" className="capitalize" /> },
+      { key: "itemsCount", label: "Items", render: (item: PurchaseOrder) => item.items.length },
+      { key: "totalAmount", label: "Total", render: (item: PurchaseOrder) => formatCurrency(item.totalAmount, item.currency) },
+      { key: "orderDate", label: "Date", render: (item: PurchaseOrder) => formatDateTime(new Date(item.orderDate)) },
+    ],
+    [router]
+  )
 
   const lotColumns = useMemo(
- () => [
- { key: "lotNumber", label: "Lot Number", render: (item) => <span className="font-mono text-sm">{item.lotNumber}</span> },
- { key: "product", label: "Product", render: (item) => item.product.name },
- { key: "quantity", label: "Quantity" },
- { key: "receivedDate", label: "Received", render: (item) => formatDateTime(new Date(item.receivedDate)) },
- { key: "expiryDate", label: "Expiry", render: (item) => item.expiryDate ? formatDateTime(new Date(item.expiryDate)) : <span className="text-muted-foreground">—</span> },
- ],
- []
- )
+    () => [
+      { key: "lotNumber", label: "Lot Number", render: (item: Lot) => <span className="font-mono text-sm">{item.lotNumber}</span> },
+      { key: "product", label: "Product", render: (item: Lot) => item.product.name },
+      { key: "quantity", label: "Quantity" },
+      { key: "receivedDate", label: "Received", render: (item: Lot) => formatDateTime(new Date(item.receivedDate)) },
+      { key: "expiryDate", label: "Expiry", render: (item: Lot) => item.expiryDate ? formatDateTime(new Date(item.expiryDate)) : <span className="text-muted-foreground">—</span> },
+    ],
+    []
+  )
 
   const pricingColumns = useMemo(
- () => [
- { key: "product", label: "Product", render: (item) => <span className="font-medium">{item.product.name}</span> },
- { key: "sku", label: "SKU", render: (item) => item.product.sku },
- { key: "price", label: "Unit Price", render: (item) => formatCurrency(item.price, item.currency) },
- { key: "currency", label: "Currency" },
- { key: "leadTimeDays", label: "Lead Time", render: (item) => item.leadTimeDays ? `${item.leadTimeDays} days` : <span className="text-muted-foreground">—</span> },
- { key: "preferred", label: "", render: (item) => item.isPreferred ? <Badge variant="default">Preferred</Badge> : null },
- ],
- []
- )
+    () => [
+      { key: "product", label: "Product", render: (item: SupplierPrice) => <span className="font-medium">{item.product.name}</span> },
+      { key: "sku", label: "SKU", render: (item: SupplierPrice) => item.product.sku },
+      { key: "price", label: "Unit Price", render: (item: SupplierPrice) => formatCurrency(item.price, item.currency) },
+      { key: "currency", label: "Currency" },
+      { key: "leadTimeDays", label: "Lead Time", render: (item: SupplierPrice) => item.leadTimeDays ? `${item.leadTimeDays} days` : <span className="text-muted-foreground">—</span> },
+      { key: "preferred", label: "", render: (item: SupplierPrice) => item.isPreferred ? <SemanticBadge semantic="preferred" category="status" /> : null },
+    ],
+    []
+  )
 
- if (loading) return <SkeletonDetail cards={5} hasChart={false} />
+  if (loading) return <SkeletonDetail cards={5} hasChart={false} />
 
- if (!supplier) {
- return (
- <div className="animate-fade-in">
- <p className="text-muted-foreground">Supplier not found</p>
- <Button variant="secondary" onClick={() => router.push("/suppliers")}>Back to Suppliers</Button>
- </div>
- )
- }
-
- const perf = supplier.performance
- const onTimePct = perf?.onTimeDeliveryRate ?? 0
-
- return (
- <div className="animate-fade-in space-y-6">
-  <Breadcrumb className="mb-4">
-  <BreadcrumbList>
-  <BreadcrumbItem>
-  <BreadcrumbLink asChild>
-  <button onClick={() => router.push("/suppliers")}>Suppliers</button>
-  </BreadcrumbLink>
-  </BreadcrumbItem>
-  <BreadcrumbSeparator />
-  <BreadcrumbItem>
-  <BreadcrumbPage>{supplier.name}</BreadcrumbPage>
-  </BreadcrumbItem>
-  </BreadcrumbList>
-  </Breadcrumb>
-
-  {/* Header */}
-  <Card>
-  <CardContent className="p-6">
-  <div className="flex items-start justify-between flex-wrap gap-4">
-  <div className="flex items-center gap-4">
-  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-  <Building2 className="w-7 h-7 text-primary" />
-  </div>
-  <div>
-  <div className="flex items-center gap-2 mb-1">
-  <h1 className="text-2xl font-semibold">{supplier.name}</h1>
- <Badge variant={(statusBadge[supplier.rating] || "secondary") as any} className="capitalize text-xs">{supplier.rating}</Badge>
- </div>
- <div className="flex items-center gap-3 text-sm text-muted-foreground">
- <span className="flex items-center gap-1">
- {perf?.totalProducts ?? supplier.products.length} products
- </span>
- <span className="flex items-center gap-1">
- {onTimePct}% on-time delivery
- </span>
- </div>
- </div>
- </div>
-<div className="flex items-center gap-2">
-  <Button size="sm" onClick={() => router.push(`/suppliers/${id}/edit`)} className="gap-1.5">
-  Edit
-  </Button>
-  <DropdownMenu>
-  <DropdownMenuTrigger asChild>
-  <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
-  </DropdownMenuTrigger>
-  <DropdownMenuContent align="end">
-  <DropdownMenuItem onClick={() => setShowDelete(true)} className="text-destructive"><Trash2 className="w-4 h-4 mr-2" /> Delete</DropdownMenuItem>
-  </DropdownMenuContent>
-  </DropdownMenu>
-</div>
- </div>
- </CardContent>
- </Card>
-
- {/* Summary Cards */}
- <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
- <Card>
- <CardContent className="p-4 flex items-center gap-3">
- <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
- </div>
- <div>
- <p className="text-xs text-muted-foreground">Total Products</p>
- <p className="text-lg font-semibold">{perf?.totalProducts ?? supplier.products.length}</p>
- </div>
- </CardContent>
- </Card>
- <Card>
- <CardContent className="p-4 flex items-center gap-3">
- <div className="w-10 h-10 rounded-lg bg-warning/15 flex items-center justify-center shrink-0">
- </div>
- <div>
- <p className="text-xs text-muted-foreground">Total POs</p>
- <p className="text-lg font-semibold">{perf?.totalOrders ?? supplier.purchaseOrders.length}</p>
- </div>
- </CardContent>
- </Card>
- <Card>
- <CardContent className="p-4 flex items-center gap-3">
- <div className="w-10 h-10 rounded-lg bg-success/15 flex items-center justify-center shrink-0">
- </div>
- <div>
- <p className="text-xs text-muted-foreground">Delivered</p>
- <p className="text-lg font-semibold">{perf?.deliveredOrders ?? 0}</p>
- </div>
- </CardContent>
- </Card>
- <Card>
- <CardContent className="p-4 flex items-center gap-3">
- <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
- <Award className="w-5 h-5 text-primary-dark" />
- </div>
- <div>
- <p className="text-xs text-muted-foreground">On-Time Rate</p>
- <p className="text-lg font-semibold">{onTimePct}%</p>
- </div>
- </CardContent>
- </Card>
- <Card>
- <CardContent className="p-4 flex items-center gap-3">
- <div className="w-10 h-10 rounded-lg bg-secondary/15 flex items-center justify-center shrink-0">
- </div>
- <div>
- <p className="text-xs text-muted-foreground">Total Lots</p>
- <p className="text-lg font-semibold">{perf?.totalLots ?? supplier.lots.length}</p>
- </div>
- </CardContent>
- </Card>
- </div>
-
-  {/* Tabs */}
-  <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
-  <Tabs value={tab} onValueChange={setTab}>
-    <TabsList className="w-full overflow-x-auto px-4">
-      <TabsTrigger value="info" className="gap-1.5"><Building2 className="w-4 h-4" />Info</TabsTrigger>
-      <TabsTrigger value="products" className="gap-1.5"><Package className="w-4 h-4" />Products</TabsTrigger>
-      <TabsTrigger value="purchase-orders" className="gap-1.5"><ShoppingCart className="w-4 h-4" />Purchase Orders</TabsTrigger>
-      <TabsTrigger value="lots" className="gap-1.5"><Package className="w-4 h-4" />Lots</TabsTrigger>
-      <TabsTrigger value="pricing" className="gap-1.5"><DollarSign className="w-4 h-4" />Pricing</TabsTrigger>
-    </TabsList>
-
-    <TabsContent value="info" className="p-3">
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
- {/* Contact */}
- <div className="space-y-4">
- <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Contact</h3>
- <div className="space-y-3">
- {supplier.contactPerson && (
- <div className="flex items-center gap-3 p-3 rounded-lg bg-surface/50">
- <User className="w-4 h-4 text-muted-foreground shrink-0" />
- <div>
- <p className="text-xs text-muted-foreground">Contact Person</p>
- <p className="text-sm font-medium">{supplier.contactPerson}</p>
- {supplier.contactPersonRole && <p className="text-xs text-muted-foreground">{supplier.contactPersonRole}</p>}
- </div>
- </div>
- )}
- {supplier.email && (
- <div className="flex items-center gap-3 p-3 rounded-lg bg-surface/50">
- <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
- <div>
- <p className="text-xs text-muted-foreground">Email</p>
- <p className="text-sm font-medium">{supplier.email}</p>
- </div>
- </div>
- )}
- {supplier.phone && (
- <div className="flex items-center gap-3 p-3 rounded-lg bg-surface/50">
- <div>
- <p className="text-xs text-muted-foreground">Phone</p>
- <p className="text-sm font-medium">{supplier.phone}</p>
- </div>
- </div>
- )}
- {supplier.preferredChannel && (
- <div className="flex items-center gap-3 p-3 rounded-lg bg-surface/50">
- <Award className="w-4 h-4 text-muted-foreground shrink-0" />
- <div>
- <p className="text-xs text-muted-foreground">Preferred Channel</p>
- <p className="text-sm font-medium capitalize">{supplier.preferredChannel}</p>
- </div>
- </div>
- )}
- {supplier.website && (
- <div className="flex items-center gap-3 p-3 rounded-lg bg-surface/50">
- <Globe className="w-4 h-4 text-muted-foreground shrink-0" />
- <div>
- <p className="text-xs text-muted-foreground">Website</p>
- <a href={supplier.website} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-info hover:underline">{supplier.website}</a>
- </div>
- </div>
- )}
- </div>
- </div>
-
- {/* Financial & Address */}
- <div className="space-y-4">
- <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Financial & Tax</h3>
- <div className="space-y-3">
- <div className="flex items-center gap-3 p-3 rounded-lg bg-surface/50">
- <BadgePercent className="w-4 h-4 text-muted-foreground shrink-0" />
- <div>
- <p className="text-xs text-muted-foreground">Tax ID</p>
- <p className="text-sm font-medium">{supplier.taxId || <span className="text-muted-foreground">—</span>}</p>
- </div>
- </div>
- <div className="flex items-center gap-3 p-3 rounded-lg bg-surface/50">
- <div>
- <p className="text-xs text-muted-foreground">Payment Terms</p>
- <p className="text-sm font-medium">{supplier.paymentTerms || <span className="text-muted-foreground">—</span>}</p>
- </div>
- </div>
- <div className="flex items-center gap-3 p-3 rounded-lg bg-surface/50">
- <div>
- <p className="text-xs text-muted-foreground">Currency</p>
- <p className="text-sm font-medium">{supplier.currency}</p>
- </div>
- </div>
- <div className="flex items-center gap-3 p-3 rounded-lg bg-surface/50">
- <CalendarDays className="w-4 h-4 text-muted-foreground shrink-0" />
- <div>
- <p className="text-xs text-muted-foreground">Default Lead Time</p>
- <p className="text-sm font-medium">{supplier.defaultLeadTime ? `${supplier.defaultLeadTime} days` : <span className="text-muted-foreground">—</span>}</p>
- </div>
- </div>
- {supplier.address && (
- <div className="flex items-start gap-3 p-3 rounded-lg bg-surface/50">
- <div>
- <p className="text-xs text-muted-foreground">Address</p>
- <p className="text-sm font-medium whitespace-pre-wrap">{supplier.address}</p>
- </div>
- </div>
- )}
- </div>
- {supplier.notes && (
- <div className="p-3 rounded-lg bg-surface/50">
- <p className="text-xs text-muted-foreground mb-1">Notes</p>
- <p className="text-sm whitespace-pre-wrap">{supplier.notes}</p>
- </div>
- )}
- </div>
- </div>
- </TabsContent>
-
-  <TabsContent value="products" className="p-3">
-  <div className="flex items-center mb-3">
-    <input
-      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-      placeholder="Search products..."
-      value={searchProducts}
-      onChange={(e) => setSearchProducts(e.target.value)}
-    />
-  </div>
-  {(() => {
-    const filtered = (supplier.products || []).filter((item: any) =>
-      !searchProducts || JSON.stringify(item).toLowerCase().includes(searchProducts.toLowerCase())
+  if (!supplier) {
+    return (
+      <div className="animate-fade-in flex flex-col items-center justify-center py-24 gap-4">
+        <div className="text-center">
+          <h2 className="text-lg font-semibold">Supplier not found</h2>
+          <p className="text-sm text-muted-foreground mt-1">The supplier you are looking for does not exist or has been removed.</p>
+        </div>
+        <Button variant="secondary" onClick={() => router.push("/suppliers")}>Back to Suppliers</Button>
+      </div>
     )
-    return filtered.length === 0 ? (
-      <div className="text-center text-sm text-muted-foreground py-6">No products</div>
-    ) : (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {productColumns.map((col: any) => (
-              <TableHead key={col.key}>{col.label}</TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filtered.map((item: any) => (
-            <TableRow key={item.id}>
-              {productColumns.map((col: any) => (
-                <TableCell key={col.key}>
-                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    )
-  })()}
-  </TabsContent>
+  }
 
-  <TabsContent value="purchase-orders" className="p-3">
-  <div className="flex items-center mb-3">
-    <input
-      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-      placeholder="Search orders..."
-      value={searchPOs}
-      onChange={(e) => setSearchPOs(e.target.value)}
-    />
-  </div>
-  {(() => {
-    const filtered = (supplier.purchaseOrders || []).filter((item: any) =>
-      !searchPOs || JSON.stringify(item).toLowerCase().includes(searchPOs.toLowerCase())
-    )
-    return filtered.length === 0 ? (
-      <div className="text-center text-sm text-muted-foreground py-6">No orders</div>
-    ) : (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {poColumns.map((col: any) => (
-              <TableHead key={col.key}>{col.label}</TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filtered.map((item: any) => (
-            <TableRow key={item.id}>
-              {poColumns.map((col: any) => (
-                <TableCell key={col.key}>
-                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    )
-  })()}
-  </TabsContent>
+  const perf = supplier.performance
+  const onTimePct = perf?.onTimeDeliveryRate ?? 0
 
-  <TabsContent value="lots" className="p-3">
-  <div className="flex items-center mb-3">
-    <input
-      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-      placeholder="Search lots..."
-      value={searchLots}
-      onChange={(e) => setSearchLots(e.target.value)}
-    />
-  </div>
-  {(() => {
-    const filtered = (supplier.lots || []).filter((item: any) =>
-      !searchLots || JSON.stringify(item).toLowerCase().includes(searchLots.toLowerCase())
-    )
-    return filtered.length === 0 ? (
-      <div className="text-center text-sm text-muted-foreground py-6">No lots</div>
-    ) : (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {lotColumns.map((col: any) => (
-              <TableHead key={col.key}>{col.label}</TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filtered.map((item: any) => (
-            <TableRow key={item.id}>
-              {lotColumns.map((col: any) => (
-                <TableCell key={col.key}>
-                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    )
-  })()}
-  </TabsContent>
+  return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      {/* Breadcrumb */}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <button onClick={() => router.push("/suppliers")}>Suppliers</button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{supplier.name}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <div className="grid grid-cols-12 gap-4">
+        {/* Page Header */}
+        <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex gap-3 min-w-0 flex-1">
+              <div className="flex flex-col gap-2 min-w-0 flex-1">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h1 className="text-2xl font-bold">{supplier.name}</h1>
+                </div>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <SemanticBadge semantic={supplier.rating} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{supplier.rating}</SemanticBadge>
+                </div>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <span>{perf?.totalProducts ?? supplier.products.length} products</span>
+                  <span className="text-muted-foreground/30">·</span>
+                  <span>{onTimePct}% on-time delivery</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              <div className="flex items-center gap-2">
+                <MoreMenu actions={[
+                  { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => setShowEdit(true) },
+                  "separator",
+                  { label: "Delete", icon: <Trash2 className="w-4 h-4" />, onClick: () => setShowDelete(true) },
+                ]} />
+              </div>
+            </div>
+          </div>
+        </div>
 
-  <TabsContent value="pricing" className="p-3">
-  <div className="flex items-center mb-3">
-    <input
-      className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-      placeholder="Search prices..."
-      value={searchPrices}
-      onChange={(e) => setSearchPrices(e.target.value)}
-    />
-  </div>
-  {(() => {
-    const filtered = (supplier.supplierPrices || []).filter((item: any) =>
-      !searchPrices || JSON.stringify(item).toLowerCase().includes(searchPrices.toLowerCase())
-    )
-    return filtered.length === 0 ? (
-      <div className="text-center text-sm text-muted-foreground py-6">No prices</div>
-    ) : (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {pricingColumns.map((col: any) => (
-              <TableHead key={col.key}>{col.label}</TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filtered.map((item: any) => (
-            <TableRow key={item.id}>
-              {pricingColumns.map((col: any) => (
-                <TableCell key={col.key}>
-                  {col.render ? col.render(item) : String(item[col.key] ?? "")}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    )
-  })()}
-  </TabsContent>
-  </Tabs>
-  </div>
+        {/* Left Column (8 cols) */}
+        <div className="col-span-12 lg:col-span-8 flex flex-col gap-4">
+          {/* Contact Information */}
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <User className="w-4 h-4 text-primary" />
+                Contact Information
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-3">
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+                <FieldDisplay label="Contact Person" value={supplier.contactPerson || "—"} />
+                {supplier.contactPersonRole && <FieldDisplay label="Role" value={supplier.contactPersonRole} />}
+                <FieldDisplay label="Email" value={supplier.email || "—"} />
+                <FieldDisplay label="Phone" value={supplier.phone || "—"} />
+                <FieldDisplay label="Preferred Channel" value={supplier.preferredChannel ? supplier.preferredChannel.charAt(0).toUpperCase() + supplier.preferredChannel.slice(1) : "—"} />
+                <div className="min-w-0">
+                  <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">Website</p>
+                  {supplier.website ? (
+                    <a href={supplier.website} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-info hover:underline truncate block">{supplier.website}</a>
+                  ) : (
+                    <p className="text-sm font-medium">—</p>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
- {/* Delete Dialog */}
- <Dialog open={showDelete} onOpenChange={setShowDelete}>
- <DialogContent>
- <DialogHeader>
- <DialogTitle>Delete Supplier</DialogTitle>
- <DialogDescription>
- Are you sure you want to delete <strong>{supplier.name}</strong>? This action cannot be undone.
- </DialogDescription>
- </DialogHeader>
- <DialogFooter>
- <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
- <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
- </DialogFooter>
- </DialogContent>
- </Dialog>
- </div>
- )
+          {/* Financial & Tax */}
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <BadgePercent className="w-4 h-4 text-primary" />
+                Financial & Tax
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-3">
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+                <FieldDisplay label="Tax ID" value={supplier.taxId || "—"} mono />
+                <FieldDisplay label="Payment Terms" value={supplier.paymentTerms || "—"} />
+                <FieldDisplay label="Currency" value={supplier.currency} />
+                <FieldDisplay label="Default Lead Time" value={supplier.defaultLeadTime ? `${supplier.defaultLeadTime} days` : "—"} />
+              </div>
+              {supplier.address && (
+                <div>
+                  <p className="text-[11px] text-muted-foreground font-medium mb-1">Address</p>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{supplier.address}</p>
+                </div>
+              )}
+              {supplier.notes && (
+                <div>
+                  <p className="text-[11px] text-muted-foreground font-medium mb-1">Notes</p>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{supplier.notes}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column (4 cols) */}
+        <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+          {/* Performance Overview */}
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Award className="w-4 h-4 text-primary" />
+                Performance
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-2.5">
+              <div className="flex items-center gap-2.5"><Package className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Products</span><span className="text-sm font-medium ml-auto">{perf?.totalProducts ?? supplier.products.length}</span></div>
+              <div className="flex items-center gap-2.5"><ShoppingCart className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">POs</span><span className="text-sm font-medium ml-auto">{perf?.totalOrders ?? supplier.purchaseOrders.length}</span></div>
+              <div className="flex items-center gap-2.5"><CheckCircle className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Delivered</span><span className="text-sm font-medium ml-auto">{perf?.deliveredOrders ?? 0}</span></div>
+              <div className="flex items-center gap-2.5"><Clock className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">On-Time</span><span className="text-sm font-medium ml-auto">{onTimePct}%</span></div>
+              <div className="flex items-center gap-2.5"><Boxes className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Lots</span><span className="text-sm font-medium ml-auto">{perf?.totalLots ?? supplier.lots.length}</span></div>
+            </CardContent>
+          </Card>
+
+          {/* Metadata */}
+          <Card className="flex-1">
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Clock className="w-4 h-4 text-primary" />
+                Metadata
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-2.5">
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+                <FieldDisplay label="Created" value={formatDate(new Date(supplier.createdAt))} />
+                <FieldDisplay label="Updated" value="—" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Tab Module */}
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+        <Tabs value={tab} onValueChange={setTab}>
+          <TabsList className="w-full overflow-x-auto px-4">
+            <TabsTrigger value="products" className="gap-1.5"><Package className="w-4 h-4" /> Products ({supplier.products?.length || 0})</TabsTrigger>
+            <TabsTrigger value="purchase-orders" className="gap-1.5"><ShoppingCart className="w-4 h-4" /> Purchase Orders ({supplier.purchaseOrders?.length || 0})</TabsTrigger>
+            <TabsTrigger value="lots" className="gap-1.5"><Boxes className="w-4 h-4" /> Lots ({supplier.lots?.length || 0})</TabsTrigger>
+            <TabsTrigger value="pricing" className="gap-1.5"><DollarSign className="w-4 h-4" /> Pricing ({supplier.supplierPrices?.length || 0})</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="products" className="p-3">
+            <div className="flex items-center mb-3">
+              <Input
+                placeholder="Search products..."
+                value={searchProducts}
+                onChange={(e) => setSearchProducts(e.target.value)}
+                className="h-8 max-w-xs text-xs"
+              />
+            </div>
+            {(() => {
+              const filtered = (supplier.products || []).filter((item: any) =>
+                !searchProducts || JSON.stringify(item).toLowerCase().includes(searchProducts.toLowerCase())
+              )
+              return filtered.length === 0 ? (
+                <EmptyState
+                  icons={[<Package key="sp1" className="w-6 h-6" />, <Building2 key="sp2" className="w-6 h-6" />]}
+                  title="No products"
+                  description="No products associated with this supplier"
+                  size="sm"
+                />
+              ) : (
+                <div data-slot="frame">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        {productColumns.map((col: any) => (
+                          <TableHead key={col.key}>{col.label}</TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filtered.map((item: any) => (
+                        <TableRow key={item.id}>
+                          {productColumns.map((col: any) => (
+                            <TableCell key={col.key}>
+                              {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )
+            })()}
+          </TabsContent>
+
+          <TabsContent value="purchase-orders" className="p-3">
+            <div className="flex items-center mb-3">
+              <Input
+                placeholder="Search orders..."
+                value={searchPOs}
+                onChange={(e) => setSearchPOs(e.target.value)}
+                className="h-8 max-w-xs text-xs"
+              />
+            </div>
+            {(() => {
+              const filtered = (supplier.purchaseOrders || []).filter((item: any) =>
+                !searchPOs || JSON.stringify(item).toLowerCase().includes(searchPOs.toLowerCase())
+              )
+              return filtered.length === 0 ? (
+                <EmptyState
+                  icons={[<ShoppingCart key="spo1" className="w-6 h-6" />, <FileText key="spo2" className="w-6 h-6" />]}
+                  title="No orders"
+                  description="No purchase orders placed with this supplier"
+                  size="sm"
+                />
+              ) : (
+                <div data-slot="frame">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        {poColumns.map((col: any) => (
+                          <TableHead key={col.key}>{col.label}</TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filtered.map((item: any) => (
+                        <TableRow key={item.id}>
+                          {poColumns.map((col: any) => (
+                            <TableCell key={col.key}>
+                              {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )
+            })()}
+          </TabsContent>
+
+          <TabsContent value="lots" className="p-3">
+            <div className="flex items-center mb-3">
+              <Input
+                placeholder="Search lots..."
+                value={searchLots}
+                onChange={(e) => setSearchLots(e.target.value)}
+                className="h-8 max-w-xs text-xs"
+              />
+            </div>
+            {(() => {
+              const filtered = (supplier.lots || []).filter((item: any) =>
+                !searchLots || JSON.stringify(item).toLowerCase().includes(searchLots.toLowerCase())
+              )
+              return filtered.length === 0 ? (
+                <EmptyState
+                  icons={[<Boxes key="slt1" className="w-6 h-6" />, <Package key="slt2" className="w-6 h-6" />]}
+                  title="No lots"
+                  description="No lots recorded for this supplier"
+                  size="sm"
+                />
+              ) : (
+                <div data-slot="frame">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        {lotColumns.map((col: any) => (
+                          <TableHead key={col.key}>{col.label}</TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filtered.map((item: any) => (
+                        <TableRow key={item.id}>
+                          {lotColumns.map((col: any) => (
+                            <TableCell key={col.key}>
+                              {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )
+            })()}
+          </TabsContent>
+
+          <TabsContent value="pricing" className="p-3">
+            <div className="flex items-center mb-3">
+              <Input
+                placeholder="Search prices..."
+                value={searchPrices}
+                onChange={(e) => setSearchPrices(e.target.value)}
+                className="h-8 max-w-xs text-xs"
+              />
+            </div>
+            {(() => {
+              const filtered = (supplier.supplierPrices || []).filter((item: any) =>
+                !searchPrices || JSON.stringify(item).toLowerCase().includes(searchPrices.toLowerCase())
+              )
+              return filtered.length === 0 ? (
+                <EmptyState
+                  icons={[<DollarSign key="spr1" className="w-6 h-6" />, <BadgePercent key="spr2" className="w-6 h-6" />]}
+                  title="No pricing"
+                  description="No supplier pricing records found"
+                  size="sm"
+                />
+              ) : (
+                <div data-slot="frame">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        {pricingColumns.map((col: any) => (
+                          <TableHead key={col.key}>{col.label}</TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filtered.map((item: any) => (
+                        <TableRow key={item.id}>
+                          {pricingColumns.map((col: any) => (
+                            <TableCell key={col.key}>
+                              {col.render ? col.render(item) : String(item[col.key] ?? "")}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )
+            })()}
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={showEdit} onOpenChange={setShowEdit}>
+        <DialogContent className="sm:max-w-2xl flex flex-col p-0 gap-0 max-h-[90vh]">
+          <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
+            <DialogTitle>Edit Supplier</DialogTitle>
+            <DialogDescription>Update details for <span className="font-medium text-foreground">{supplier?.name}</span></DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Building2 className="w-4 h-4 text-primary" />
+                  Basic Information
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <FieldGroup label="Name" required><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></FieldGroup>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Rating">
+                    <Select options={[{ value: "preferred", label: "Preferred" }, { value: "approved", label: "Approved" }, { value: "standard", label: "Standard" }, { value: "blacklisted", label: "Blacklisted" }]} value={form.rating} onChange={(e: any) => setForm({ ...form, rating: e.target.value })} />
+                  </FieldGroup>
+                  <FieldGroup label="Currency"><Input value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} /></FieldGroup>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <User className="w-4 h-4 text-primary" />
+                  Contact Details
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Contact Person"><Input value={form.contactPerson} onChange={(e) => setForm({ ...form, contactPerson: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Contact Role"><Input value={form.contactPersonRole} onChange={(e) => setForm({ ...form, contactPersonRole: e.target.value })} /></FieldGroup>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Email"><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Phone"><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></FieldGroup>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Website"><Input value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://" /></FieldGroup>
+                  <FieldGroup label="Preferred Channel">
+                    <Select options={[{ value: "email", label: "Email" }, { value: "phone", label: "Phone" }, { value: "portal", label: "Portal" }]} value={form.preferredChannel} onChange={(e: any) => setForm({ ...form, preferredChannel: e.target.value })} />
+                  </FieldGroup>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <BadgePercent className="w-4 h-4 text-primary" />
+                  Financial & Terms
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Tax ID"><Input value={form.taxId} onChange={(e) => setForm({ ...form, taxId: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Payment Terms"><Input value={form.paymentTerms} onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })} placeholder="Net 30" /></FieldGroup>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Default Lead Time (days)"><Input type="number" value={form.defaultLeadTime} onChange={(e) => setForm({ ...form, defaultLeadTime: e.target.value })} /></FieldGroup>
+                </div>
+                <FieldGroup label="Address"><Textarea value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} rows={2} /></FieldGroup>
+                <FieldGroup label="Notes"><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} /></FieldGroup>
+              </CardContent>
+            </Card>
+          </div>
+          <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
+            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Dialog */}
+      <Dialog open={showDelete} onOpenChange={setShowDelete}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Supplier</DialogTitle>
+            <DialogDescription>Are you sure you want to delete <strong>{supplier.name}</strong>? This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
 }

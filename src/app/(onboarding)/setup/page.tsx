@@ -146,8 +146,8 @@ export default function SetupPage() {
                   <Building2 className="w-4 h-4 text-primary" />
                   <h3 className="text-sm font-semibold">Company Information</h3>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="orgName">Organization Name</Label>
+                <div className="space-y-1">
+<Label htmlFor="orgName">Organization Name</Label>
                   <Input id="orgName" value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="e.g. ACME Corp" />
                   <p className="text-xs text-muted-foreground">This will appear on invoices, reports, and emails</p>
                 </div>
@@ -161,8 +161,8 @@ export default function SetupPage() {
                   <h3 className="text-sm font-semibold">Default Preferences</h3>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="currency">Currency</Label>
+                  <div className="space-y-1">
+<Label htmlFor="currency">Currency</Label>
                     <SelectNative id="currency" value={currency} onChange={(e) => setCurrency(e.target.value)}>
                       <option value="THB">THB (฿)</option>
                       <option value="USD">USD ($)</option>
@@ -171,12 +171,12 @@ export default function SetupPage() {
                       <option value="JPY">JPY (¥)</option>
                     </SelectNative>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="taxRate">Tax Rate (%)</Label>
+                  <div className="space-y-1">
+<Label htmlFor="taxRate">Tax Rate (%)</Label>
                     <Input id="taxRate" type="number" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="timezone">Timezone</Label>
+                  <div className="space-y-1">
+<Label htmlFor="timezone">Timezone</Label>
                     <SelectNative id="timezone" value={timezone} onChange={(e) => setTimezone(e.target.value)}>
                       <option value="Asia/Bangkok">Bangkok (ICT)</option>
                       <option value="Asia/Singapore">Singapore (SGT)</option>
@@ -185,8 +185,8 @@ export default function SetupPage() {
                       <option value="Europe/London">London (GMT)</option>
                     </SelectNative>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lowStock">Low Stock Alert</Label>
+                  <div className="space-y-1">
+<Label htmlFor="lowStock">Low Stock Alert</Label>
                     <Input id="lowStock" type="number" value={lowStockThreshold} onChange={(e) => setLowStockThreshold(e.target.value)} />
                   </div>
                 </div>

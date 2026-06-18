@@ -56,7 +56,7 @@ const CHANNEL_OPTIONS = [
 type UploadedDoc = { id: string; name: string; size: string; dataUrl: string }
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
-  <div className={cn("space-y-1.5", className)}>
+  <div className={cn("space-y-1", className)}>
     <Label htmlFor={id} className="text-xs font-medium">{label}{required && <span className="text-destructive ml-0.5">*</span>}</Label>
     {children}
   </div>
@@ -273,7 +273,7 @@ export default function NewSupplierPage() {
                 <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.png,.doc,.docx,.xls,.xlsx" onChange={handleFileUpload} className="hidden" />
                 <Button type="button" variant="outline" size="sm" onClick={handleUpload} className="gap-1.5 h-8 text-xs w-full"><Upload className="w-3.5 h-3.5" /> Upload Document <ShortcutBadge shortcut="⌘U" /></Button>
                 {documents.length > 0 && (
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     {documents.map((doc) => (
                       <div key={doc.id} className="flex items-center gap-3 p-2.5 rounded-lg border border-border bg-surface/50">
                         <div className="flex-1 min-w-0">

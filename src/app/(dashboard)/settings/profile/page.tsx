@@ -67,8 +67,8 @@ export default function ProfilePage() {
  <CardHeader><div className="flex items-center gap-2"><CardTitle>Change Password</CardTitle></div></CardHeader>
  <CardContent>
  <form onSubmit={handleChangePassword} className="space-y-4">
- <div className="space-y-2">
- <Label htmlFor="currentPassword">Current Password</Label>
+ <div className="space-y-1">
+<Label htmlFor="currentPassword">Current Password</Label>
  <div className="relative">
  <Input id="currentPassword" type={showCurrent ? "text" : "password"} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
  <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
@@ -76,8 +76,8 @@ export default function ProfilePage() {
  </button>
  </div>
  </div>
- <div className="space-y-2">
- <Label htmlFor="newPassword">New Password</Label>
+ <div className="space-y-1">
+<Label htmlFor="newPassword">New Password</Label>
  <div className="relative">
  <Input id="newPassword" type={showNew ? "text" : "password"} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={6} placeholder="Min 6 characters" />
  <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">

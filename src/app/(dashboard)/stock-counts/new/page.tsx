@@ -14,7 +14,7 @@ import { ClipboardList, Package, FileText, Calendar, Warehouse, Plus, Trash2, XC
 import { EmptyState } from "@/components/ui/empty-state"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
-  <div className={cn("space-y-1.5", className)}>
+  <div className={cn("space-y-1", className)}>
     <Label htmlFor={id} className="text-xs font-medium">{label}{required && <span className="text-destructive ml-0.5">*</span>}</Label>
     {children}
   </div>
@@ -169,7 +169,7 @@ export default function NewStockCountPage() {
                 )}
                 {items.map((item, idx) => (
                   <div key={idx} className="flex items-end gap-3 p-3 rounded-lg border border-border bg-surface/50">
-                    <div className="flex-1 space-y-1.5">
+                    <div className="flex-1 space-y-1">
                       <Label className="text-[11px]">Product</Label>
                       <Select
                         options={products.map(p => ({ value: p.id, label: `${p.name} (${(p as any).sku || ""})` }))}
@@ -178,7 +178,7 @@ export default function NewStockCountPage() {
                         onChange={(e: any) => updateItem(idx, "productId", e.target.value)}
                       />
                     </div>
-                    <div className="w-24 space-y-1.5">
+                    <div className="w-24 space-y-1">
                       <Label className="text-[11px]">Expected Qty</Label>
                       <Input type="number" min="1" value={item.expectedQty} onChange={(e) => updateItem(idx, "expectedQty", parseInt(e.target.value) || 1)} className="text-center font-mono" />
                     </div>

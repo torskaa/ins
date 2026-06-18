@@ -36,6 +36,7 @@ type Product = {
  stock: number
  minStock: number
  status: string
+ image?: string
  category: { name: string } | null
  supplier: { name: string } | null
 }
@@ -103,16 +104,21 @@ export default function InventoryPage() {
  className: "w-[120px]",
  render: (p: Product) => <span className="font-mono text-xs font-medium">{p.sku}</span>,
  },
- {
- key: "name",
- label: "Product",
- render: (p: Product) => (
- <div>
- <p className="font-medium">{p.name}</p>
- {p.category && <p className="text-xs text-foreground">{p.category.name}</p>}
- </div>
- ),
- },
+  {
+  key: "name",
+  label: "Product",
+  render: (p: Product) => (
+    <div className="flex items-center gap-3">
+      {p.image && (
+        <img src={p.image} alt={p.name} className="w-10 h-10 rounded-md object-cover border border-border/60 shrink-0" />
+      )}
+      <div className="min-w-0">
+        <p className="font-medium truncate">{p.name}</p>
+        {p.category && <p className="text-xs text-foreground truncate">{p.category.name}</p>}
+      </div>
+    </div>
+  ),
+  },
  {
  key: "unitPrice",
  label: "Price",
@@ -189,7 +195,7 @@ export default function InventoryPage() {
       {filtered.length > 0 && (
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground" />
-          <Input placeholder="Search products..." className="pl-9 h-9 w-48" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Input placeholder="Search products..." className="pl-10 h-10 w-56 rounded-md" value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
       )}
       <MoreMenu actions={[

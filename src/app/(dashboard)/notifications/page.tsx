@@ -68,7 +68,7 @@ export default function NotificationsPage() {
  </div>
  <div className="flex items-center gap-2">
  {unreadCount > 0 && (
- <Badge variant="default" className="bg-primary text-white">{unreadCount} unread</Badge>
+ <Badge variant="primary" className="bg-primary text-white">{unreadCount} unread</Badge>
  )}
  <MoreMenu actions={[
  { label: "Mark All Read", icon: ActionIcons.Refresh, onClick: handleMarkAllRead },
@@ -112,7 +112,7 @@ export default function NotificationsPage() {
  <div className="flex items-center gap-2 mb-0.5">
  <p className={`text-sm ${!notif.read ? "font-semibold" : "font-medium"}`}>{notif.title}</p>
  {!notif.read && <span className="w-2 h-2 rounded-full bg-primary shrink-0" />}
- <Badge variant={notif.type === "warning" || notif.type === "low_stock" ? "destructive" : notif.type === "success" ? "success" : "default"} className="capitalize">{notif.type.replace(/_/g, " ")}</Badge>
+ <Badge variant={notif.type === "warning" || notif.type === "low_stock" ? "destructive" : notif.type === "success" ? "success" : "primary"} className="capitalize">{notif.type.replace(/_/g, " ")}</Badge>
  </div>
  <p className="text-sm text-muted-foreground">{notif.message}</p>
  <p className="text-xs text-muted-foreground/60 mt-1">{timeAgo(new Date(notif.createdAt))}</p>

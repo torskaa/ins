@@ -15,7 +15,7 @@ import { EmptyState } from "@/components/ui/empty-state"
 
 function Field({ label, required, className, children }: { label: string; required?: boolean; className?: string; children: React.ReactNode }) {
   return (
-    <div className={cn("space-y-1.5", className)}>
+    <div className={cn("space-y-1", className)}>
       <Label className="text-xs font-medium">
         {label}{required && <span className="text-destructive ml-0.5">*</span>}
       </Label>

@@ -8,12 +8,12 @@ import { formatCurrency, timeAgo } from "@/lib/utils"
 import Link from "next/link"
 import { Skeleton } from "@/components/ui/skeleton"
 
-const statusVariant: Record<string, "default" | "success" | "warning" | "destructive" | "outline"> = {
+const statusVariant: Record<string, "primary" | "success" | "warning" | "destructive" | "outline"> = {
  completed: "success",
  pending: "warning",
- processing: "default",
+ processing: "primary",
  cancelled: "destructive",
- shipped: "default",
+ shipped: "primary",
 }
 
 export function RecentOrdersWidget({ compact }: { compact?: boolean }) {

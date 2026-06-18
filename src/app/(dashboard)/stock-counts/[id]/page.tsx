@@ -1,19 +1,30 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, use } from "react"
 import { useRouter } from "next/navigation"
-import { use } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Badge, BadgeDot, SemanticBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select } from "@/components/ui/select"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+
+import { Progress } from "@/components/ui/progress"
+import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import { AlertTriangle, ArrowLeft, Barcode, Boxes, Building2, Calendar, Calculator, CheckCircle, ClipboardList, Clock, DollarSign, FileText, Hash, Layers, Package, Pencil, Sparkles, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { ArrowLeft, ClipboardList, Calculator, Trash2, AlertTriangle, FileText, Barcode, Sparkles, CheckCircle, Edit, Building2, Hash, CalendarDays, MoreHorizontal } from "lucide-react"
+import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { format } from "date-fns"
 import { SkeletonDetail } from "@/components/ui/skeleton"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
+import { EmptyState } from "@/components/ui/empty-state"
+import { MoreMenu } from "@/components/ui/more-menu"
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter,
+} from "@/components/ui/dialog"
 
 type StockCountItem = {
   id: string
@@ -37,11 +48,30 @@ type StockCountDetail = {
   items: StockCountItem[]
 }
 
-const statusColors: Record<string, string> = {
-  draft: "bg-slate-100 text-slate-600",
-  in_progress: "bg-blue-100 text-blue-700",
-  completed: "bg-emerald-100 text-emerald-700",
-  cancelled: "bg-red-100 text-red-700"}
+function FieldDisplay({ label, value, mono, badge }: { label: string; value: string; mono?: boolean; badge?: boolean }) {
+  return (
+    <div className="min-w-0">
+      <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
+      {badge ? (
+        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+      ) : (
+        <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
+      )}
+    </div>
+  )
+}
+
+function FieldGroup({ label, children, required }: { label: string; children: React.ReactNode; required?: boolean }) {
+  return (
+    <div className="min-w-0 space-y-1">
+      <Label className="text-[11px] text-muted-foreground font-medium">
+        {label}
+        {required && <span className="text-destructive ml-0.5">*</span>}
+      </Label>
+      {children}
+    </div>
+  )
+}
 
 export default function StockCountDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -49,8 +79,10 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
   const [stockCount, setStockCount] = useState<StockCountDetail | null>(null)
   const [items, setItems] = useState<StockCountItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [form, setForm] = useState<any>({})
   const [barcodeInput, setBarcodeInput] = useState("")
   const [highlightedId, setHighlightedId] = useState<string | null>(null)
   const [aiCounting, setAiCounting] = useState(false)
@@ -61,12 +93,13 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
   useEffect(() => {
     if (!id) return
     fetch(`/api/stock-counts/${id}`)
-    .then(r => r.json())
-    .then((data) => {
-      setStockCount(data)
-      setItems(data.items.map((i: StockCountItem) => ({ ...i })))
-    })
-    .finally(() => setLoading(false))
+      .then(r => r.json())
+      .then((data) => {
+        setStockCount(data)
+        setItems(data.items.map((i: StockCountItem) => ({ ...i })))
+        setForm({ countDate: data.countDate || "", notes: data.notes || "" })
+      })
+      .finally(() => setLoading(false))
   }, [id])
 
   useEffect(() => {
@@ -127,6 +160,21 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
     toast.success("AI counting complete")
   }
 
+  async function handleSave() {
+    try {
+      const res = await fetch(`/api/stock-counts/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) throw new Error("Failed")
+      toast.success("Stock count updated")
+      setShowEdit(false)
+    } catch {
+      toast.error("Failed to update stock count")
+    }
+  }
+
   async function handleDelete() {
     setDeleting(true)
     try {
@@ -142,14 +190,17 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
 
   if (loading) return <SkeletonDetail cards={4} hasChart={true} />
 
-  if (!stockCount) return (
-    <div className="flex flex-col items-center justify-center py-24 animate-fade-in">
-      <p className="text-lg font-medium text-muted-foreground mb-2">Stock count not found</p>
-      <Button variant="link" className="text-sm" onClick={() => router.push("/stock-counts")}>
-        Back to Stock Counts
-      </Button>
-    </div>
-  )
+  if (!stockCount) {
+    return (
+      <div className="animate-fade-in flex flex-col items-center justify-center py-24 gap-4">
+        <div className="text-center">
+          <h2 className="text-lg font-semibold">Stock count not found</h2>
+          <p className="text-sm text-muted-foreground mt-1">The stock count you are looking for does not exist or has been removed.</p>
+        </div>
+        <Button variant="secondary" onClick={() => router.push("/stock-counts")}>Back to Stock Counts</Button>
+      </div>
+    )
+  }
 
   const matchedItems = items.filter(i => i.difference === 0).length
   const discrepancyItems = items.filter(i => i.difference !== 0).length
@@ -157,67 +208,67 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-20 -mx-6 -mt-6 px-6 pt-6 pb-3 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-start justify-between">
-          <div className="min-w-0 flex-1">
-            <Breadcrumb className="mb-2">
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <button onClick={() => router.push("/stock-counts")}>Stock Counts</button>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{stockCount.number}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-lg font-semibold font-mono">{stockCount.number}</h1>
-              <Badge className={`${statusColors[stockCount.status] || ""} border-0 font-medium text-[10px]`}>
-                {stockCount.status.replace(/_/g, " ")}
-              </Badge>
+      {/* Breadcrumb */}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <button onClick={() => router.push("/stock-counts")}>Stock Counts</button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{stockCount.number}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <div className="grid grid-cols-12 gap-4">
+        {/* Page Header */}
+        <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex gap-3 min-w-0 flex-1">
+              <div className="flex flex-col gap-2 min-w-0 flex-1">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h1 className="text-2xl font-bold font-mono">{stockCount.number}</h1>
+                  {stockCount.warehouse && (
+                    <SemanticBadge semantic={stockCount.warehouse.name} category="category" appearance="outline" className="gap-1 text-[11px]"><Building2 className="w-3 h-3" />{stockCount.warehouse.name}</SemanticBadge>
+                  )}
+                </div>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <SemanticBadge semantic={stockCount.status} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{stockCount.status}</SemanticBadge>
+                  <SemanticBadge semantic={stockCount.number} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{stockCount.number}</SemanticBadge>
+                </div>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>{formatDate(new Date(stockCount.countDate))}</span>
+                  {stockCount.warehouse.location && <><span className="text-muted-foreground/30">·</span><span>{stockCount.warehouse.location}</span></>}
+                </div>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-2">
-              <Building2 className="w-3 h-3" />{stockCount.warehouse.name}
-              {stockCount.warehouse.location && <><span className="text-muted-foreground/50">·</span>{stockCount.warehouse.location}</>}
-              <span className="text-muted-foreground/50">·</span>
-              <CalendarDays className="w-3 h-3" />{format(new Date(stockCount.countDate), "dd/MM/yyyy")}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 shrink-0 ml-4">
-            {stockCount.status !== "completed" && (
-              <Button size="sm" className="gap-1.5 h-8 text-xs" onClick={() => router.push(`/stock-counts/${stockCount.id}/edit`)}>
-                <Edit className="w-3.5 h-3.5" /> Edit
-              </Button>
-            )}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0"><MoreHorizontal className="w-3.5 h-3.5" /></Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive"><Trash2 className="w-3.5 h-3.5 mr-2" /> Delete</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              <div className="flex items-center gap-2">
+                {stockCount.status !== "completed" && (
+                  <Button size="sm" onClick={() => setShowEdit(true)} className="gap-1.5 h-9">Edit <ShortcutBadge shortcut="⌘E" /></Button>
+                )}
+                <MoreMenu actions={[
+                  { label: "Delete", icon: <Trash2 className="w-4 h-4" />, onClick: () => setShowDelete(true) },
+                ]} />
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Bento Grid */}
-      <div className="grid grid-cols-12 gap-4">
-        {/* Left Column — Count Sheet (8 cols) */}
-        <div className="col-span-8 flex flex-col gap-4">
-          <Card className="border-border/50">
-            <CardHeader className="px-4 pt-4 pb-2">
-              <CardTitle className="text-sm flex items-center gap-2">
+        {/* Left Column (8 cols) — Count Sheet */}
+        <div className="col-span-12 lg:col-span-8 flex flex-col gap-4">
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
                 <ClipboardList className="w-4 h-4 text-primary" />
                 Count Sheet
                 <span className="text-xs text-muted-foreground font-normal ml-auto">
                   {matchedItems} matched · {discrepancyItems} discrepancy{discrepancyItems !== 1 ? "ies" : "y"}
                 </span>
-              </CardTitle>
+              </div>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               <div className="flex items-center gap-3 flex-wrap">
@@ -311,25 +362,24 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
           </Card>
         </div>
 
-        {/* Right Column — Summary + Notes + Discrepancies (4 cols) */}
-        <div className="col-span-4 flex flex-col gap-4">
-          <Card className="border-border/50">
+        {/* Right Column (4 cols) */}
+        <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+          {/* Summary */}
+          <Card>
             <CardHeader className="px-4 pt-4 pb-0">
-              <CardTitle className="text-sm flex items-center gap-2">
+              <div className="flex items-center gap-2 text-sm font-semibold">
                 <Calculator className="w-4 h-4 text-primary" />
                 Summary
-              </CardTitle>
+              </div>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">Status</span>
-                <Badge className={`${statusColors[stockCount.status] || ""} border-0 font-medium text-[10px]`}>
-                  {stockCount.status.replace(/_/g, " ")}
-                </Badge>
+                <SemanticBadge semantic={stockCount.status} category="status" className="text-[10px]" />
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">Count Date</span>
-                <span className="text-xs font-medium">{format(new Date(stockCount.countDate), "dd/MM/yyyy")}</span>
+                <span className="text-xs font-medium">{formatDate(new Date(stockCount.countDate))}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">Total Items</span>
@@ -348,21 +398,29 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
             </CardContent>
           </Card>
 
-          {stockCount.notes && (
-            <Card className="border-border/50">
-              <CardContent className="p-3.5">
-                <p className="text-[11px] text-muted-foreground font-medium mb-1">Notes</p>
-                <p className="text-xs">{stockCount.notes}</p>
-              </CardContent>
-            </Card>
-          )}
-
-          <Card className={`border-border/50 flex-1 ${discrepancies.length > 0 ? "border-red-200/50" : ""}`}>
+          {/* Organization */}
+          <Card>
             <CardHeader className="px-4 pt-4 pb-0">
-              <CardTitle className={`text-xs flex items-center gap-2 ${discrepancies.length > 0 ? "text-red-700" : "text-emerald-700"}`}>
-                {discrepancies.length > 0 ? <AlertTriangle className="w-3.5 h-3.5" /> : <CheckCircle className="w-3.5 h-3.5" />}
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Building2 className="w-4 h-4 text-primary" />
+                Organization
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-2.5">
+              <div className="space-y-2.5">
+                <div className="flex items-center gap-2.5"><Building2 className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Warehouse</span><span className="text-sm font-medium ml-auto">{stockCount.warehouse.name}</span></div>
+                {stockCount.warehouse.location && <div className="flex items-center gap-2.5"><MapPin className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Location</span><span className="text-sm font-medium ml-auto">{stockCount.warehouse.location}</span></div>}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Discrepancies */}
+          <Card className={`flex-1 ${discrepancies.length > 0 ? "border-red-200/50" : ""}`}>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className={`flex items-center gap-2 text-sm font-semibold ${discrepancies.length > 0 ? "text-red-700" : "text-emerald-700"}`}>
+                {discrepancies.length > 0 ? <AlertTriangle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
                 Discrepancies ({discrepancies.length})
-              </CardTitle>
+              </div>
             </CardHeader>
             <CardContent className={discrepancies.length > 0 ? "p-0" : "p-4"}>
               {discrepancies.length > 0 ? (
@@ -390,10 +448,67 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
               )}
             </CardContent>
           </Card>
+
+          {/* Metadata */}
+          <Card>
+            <CardHeader className="px-4 pt-4 pb-0">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Clock className="w-4 h-4 text-primary" />
+                Metadata
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 space-y-2.5">
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+                <FieldDisplay label="Created" value={formatDate(new Date(stockCount.countDate))} />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
-      <ConfirmDialog open={deleteOpen} onOpenChange={setDeleteOpen} title="Delete Stock Count" description={`Are you sure you want to delete stock count "${stockCount.number}"? This action cannot be undone.`} onConfirm={handleDelete} loading={deleting} />
+      {/* Edit Dialog */}
+      <Dialog open={showEdit} onOpenChange={setShowEdit}>
+        <DialogContent className="sm:max-w-2xl flex flex-col p-0 gap-0 max-h-[90vh]">
+          <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
+            <DialogTitle>Edit Stock Count</DialogTitle>
+            <DialogDescription>Update details for <span className="font-medium text-foreground">{stockCount?.number}</span></DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <ClipboardList className="w-4 h-4 text-primary" />
+                  Basic Information
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Count Date"><Input type="date" value={form.countDate} onChange={(e) => setForm({ ...form, countDate: e.target.value })} /></FieldGroup>
+                </div>
+                <FieldGroup label="Notes"><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} /></FieldGroup>
+              </CardContent>
+            </Card>
+          </div>
+          <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
+            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Dialog */}
+      <Dialog open={showDelete} onOpenChange={setShowDelete}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Stock Count</DialogTitle>
+            <DialogDescription>Are you sure you want to delete <strong>{stockCount.number}</strong>? This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -16,44 +16,54 @@ import { useRouter } from "next/navigation"
 import { downloadCSV, downloadPDF } from "@/lib/export"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+} from "@/components/ui/pagination"
 
 type Supplier = {
- id: string
- name: string
- email: string
- phone: string
- contactPerson: string
- rating: string
- _count: { products: number }
+  id: string
+  name: string
+  email: string
+  phone: string
+  contactPerson: string
+  rating: string
+  _count: { products: number }
 }
 
 const PROPERTY_OPTIONS = [
- { key: "email", label: "Email" },
- { key: "phone", label: "Phone" },
- { key: "rating", label: "Rating" },
- { key: "products", label: "Products" },
+  { key: "email", label: "Email" },
+  { key: "phone", label: "Phone" },
+  { key: "rating", label: "Rating" },
+  { key: "products", label: "Products" },
 ]
 
 const DEFAULT_PROPS = ["email", "phone", "rating", "products"]
+const PAGE_SIZE = 10
 
 export default function SuppliersPage() {
- const [suppliers, setSuppliers] = useState<Supplier[]>([])
- const [loading, setLoading] = useState(true)
- const [search, setSearch] = useState("")
- const [view, setView] = useState<"cards" | "rows">("rows")
+  const [suppliers, setSuppliers] = useState<Supplier[]>([])
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState("")
+  const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
   const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const [page, setPage] = useState(1)
   const router = useRouter()
- const handleNew = useCallback(() => router.push("/suppliers/new"), [router])
- useHotkey("c", handleNew)
+  const handleNew = useCallback(() => router.push("/suppliers/new"), [router])
+  useHotkey("c", handleNew)
 
- useEffect(() => {
- fetch("/api/suppliers").then(r => r.json()).then((data) => { if (Array.isArray(data)) setSuppliers(data) }).finally(() => setLoading(false))
- }, [])
+  useEffect(() => {
+    fetch("/api/suppliers").then(r => r.json()).then((data) => { if (Array.isArray(data)) setSuppliers(data) }).finally(() => setLoading(false))
+  }, [])
 
   const filterColumns: FilterColumn[] = [
-    { key: "rating", label: "Rating", getValue: (s) => s.rating },
-    { key: "name", label: "Name", getValue: (s) => s.name },
+    { key: "rating", label: "Rating", getValue: (s: Supplier) => s.rating },
+    { key: "name", label: "Name", getValue: (s: Supplier) => s.name },
   ]
 
   const filtered = suppliers.filter((s) => {
@@ -67,44 +77,61 @@ export default function SuppliersPage() {
       .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
   })
 
-  const allColumns = [
- {
- key: "name",
- label: "Name",
- render: (s) => (
- <div>
- <p className="font-medium">{s.name}</p>
- {s.contactPerson && <p className="text-xs text-muted-foreground">Contact: {s.contactPerson}</p>}
- </div>
- ),
- },
- {
- key: "email",
- label: "Email",
- render: (s) => <span className="text-sm text-muted-foreground">{s.email || "—"}</span>,
- },
- {
- key: "phone",
- label: "Phone",
- render: (s) => <span className="text-sm text-muted-foreground">{s.phone || "—"}</span>,
- },
- {
- key: "rating",
- label: "Rating",
- render: (s) => s.rating ? <span className={statusBadge({ variant: s.rating === "premium" ? "success" : s.rating === "standard" ? "default" : "secondary" })}>{s.rating}</span> : <span className="text-sm text-muted-foreground">—</span>,
- },
- {
- key: "products",
- label: "Products",
- cellClassName: "font-mono text-sm text-muted-foreground",
- render: (s) => <span>{s._count?.products || 0}</span>,
- },
- ]
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const safePage = Math.min(page, Math.max(totalPages, 1))
+  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
- const columns = allColumns.filter((c) => props.includes(c.key))
+  useEffect(() => {
+    setPage(1)
+  }, [search, filters])
+
+  const allColumns = [
+    {
+      key: "name",
+      label: "Name",
+      className: undefined,
+      cellClassName: undefined,
+      render: (s: Supplier) => (
+        <div>
+          <p className="font-medium">{s.name}</p>
+          {s.contactPerson && <p className="text-xs text-foreground">Contact: {s.contactPerson}</p>}
+        </div>
+      ),
+    },
+    {
+      key: "email",
+      label: "Email",
+      className: undefined,
+      cellClassName: undefined,
+      render: (s: Supplier) => <span className="text-sm text-foreground">{s.email || "—"}</span>,
+    },
+    {
+      key: "phone",
+      label: "Phone",
+      className: undefined,
+      cellClassName: undefined,
+      render: (s: Supplier) => <span className="text-sm text-foreground">{s.phone || "—"}</span>,
+    },
+    {
+      key: "rating",
+      label: "Rating",
+      className: undefined,
+      cellClassName: undefined,
+      render: (s: Supplier) => s.rating ? <span className={statusBadge({ variant: s.rating === "premium" ? "success" : s.rating === "standard" ? "default" : "secondary" })}>{s.rating}</span> : <span className="text-sm text-foreground">—</span>,
+    },
+    {
+      key: "products",
+      label: "Products",
+      className: undefined,
+      cellClassName: "text-right font-mono text-sm text-foreground",
+      render: (s: Supplier) => <span>{s._count?.products || 0}</span>,
+    },
+  ]
+
+  const columns = allColumns.filter((c) => c.key === "name" || props.includes(c.key))
 
   return (
-    <div className="space-y-6 animate-fade-in [&_.text-muted-foreground]:text-foreground">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Suppliers</h1>
@@ -112,7 +139,7 @@ export default function SuppliersPage() {
         </div>
         <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>Add Supplier <ShortcutBadge shortcut="⌘C" /></Button>
       </div>
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">
         <div className="flex items-center gap-3">
           {filtered.length > 0 && (
             <>
@@ -151,7 +178,7 @@ export default function SuppliersPage() {
         />
       ) : (
         <div data-slot="frame">
-          <Table>
+          <Table className="[&_th]:px-4 [&_td]:px-4 [&_th]:py-3 [&_td]:py-3">
             <TableHeader>
               <TableRow>
                 {columns.map((col) => (
@@ -160,7 +187,7 @@ export default function SuppliersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((item) => (
+              {paginated.map((item) => (
                 <TableRow
                   key={item.id}
                   className="cursor-pointer"
@@ -168,13 +195,41 @@ export default function SuppliersPage() {
                 >
                   {columns.map((col) => (
                     <TableCell key={col.key} className={col.cellClassName}>
-                      {col.render ? col.render(item) : String((item as any)[col.key] ?? "")}
+                      {col.render(item)}
                     </TableCell>
                   ))}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+          {totalPages > 1 && (
+            <Pagination className="mt-4">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={(e) => { e.preventDefault(); setPage(safePage - 1) }}
+                    className={safePage <= 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      isActive={p === safePage}
+                      onClick={(e) => { e.preventDefault(); setPage(p) }}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={(e) => { e.preventDefault(); setPage(safePage + 1) }}
+                    className={safePage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
       )}
     </div>

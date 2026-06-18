@@ -19,6 +19,15 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { downloadCSV, downloadPDF } from "@/lib/export"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "@/components/ui/pagination"
 
 type Order = {
  id: string
@@ -49,6 +58,7 @@ const PROPERTY_OPTIONS = [
 ]
 
 const DEFAULT_PROPS = ["items", "total", "status", "orderDate"]
+const PAGE_SIZE = 10
 
 function OrdersContent() {
  const [orders, setOrders] = useState<Order[]>([])
@@ -57,6 +67,7 @@ function OrdersContent() {
  const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
   const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const [page, setPage] = useState(1)
   const router = useRouter()
  const searchParams = useSearchParams()
  const type = searchParams.get("type") || "sales"
@@ -71,10 +82,10 @@ function OrdersContent() {
  }, [type])
 
   const filterColumns: FilterColumn[] = [
-    { key: "status", label: "Status", getValue: (o) => o.status },
-    { key: "type", label: "Type", getValue: (o) => o.type },
-    { key: "customer", label: "Customer", getValue: (o) => o.customer?.name || "" },
-    { key: "supplier", label: "Supplier", getValue: (o) => o.supplier?.name || "" },
+    { key: "status", label: "Status", getValue: (o: Order) => o.status },
+    { key: "type", label: "Type", getValue: (o: Order) => o.type },
+    { key: "customer", label: "Customer", getValue: (o: Order) => o.customer?.name || "" },
+    { key: "supplier", label: "Supplier", getValue: (o: Order) => o.supplier?.name || "" },
   ]
 
   const filtered = orders.filter((o) => {
@@ -88,44 +99,54 @@ function OrdersContent() {
       .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
   })
 
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const safePage = Math.min(page, Math.max(totalPages, 1))
+  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+
+  useEffect(() => {
+    setPage(1)
+  }, [search, filters])
+
   const allColumns = [
  {
  key: "number",
  label: "Order #",
- render: (o) => <span className="font-mono text-xs font-medium">{o.number}</span>,
- },
- {
- key: "party",
- label: type === "sales" ? "Customer" : "Supplier",
- render: (o) => <span className="font-medium">{type === "sales" ? o.customer?.name || "—" : o.supplier?.name || "—"}</span>,
- },
- {
- key: "items",
- label: "Items",
- render: (o) => <span className="text-sm text-muted-foreground">{o.items?.length || 0} items</span>,
- },
- {
- key: "total",
- label: "Total",
- render: (o) => <span className="font-mono text-sm font-medium">{formatCurrency(o.total)}</span>,
- },
- {
- key: "status",
- label: "Status",
- render: (o) => (
- <span className={statusBadge({ variant: statusColors[o.status] || "default" })}>
- {o.status}
- </span>
- ),
- },
- {
- key: "orderDate",
- label: "Date",
- render: (o) => <span className="text-sm text-muted-foreground">{formatDate(new Date(o.orderDate))}</span>,
- },
+  render: (o: Order) => <span className="font-mono text-xs font-medium">{o.number}</span>,
+  },
+  {
+  key: "party",
+  label: type === "sales" ? "Customer" : "Supplier",
+  render: (o: Order) => <span className="font-medium">{type === "sales" ? o.customer?.name || "—" : o.supplier?.name || "—"}</span>,
+  },
+   {
+   key: "items",
+   label: "Items",
+   render: (o: Order) => <span className="text-sm text-foreground">{o.items?.length || 0} items</span>,
+   },
+   {
+   key: "total",
+   label: "Total",
+   className: "text-right",
+   cellClassName: "text-right",
+   render: (o: Order) => <span className="font-mono text-sm font-medium">{formatCurrency(o.total)}</span>,
+   },
+   {
+   key: "status",
+   label: "Status",
+   render: (o: Order) => (
+   <span className={statusBadge({ variant: statusColors[o.status] || "default" })}>
+   {o.status}
+   </span>
+   ),
+   },
+   {
+   key: "orderDate",
+   label: "Date",
+   render: (o: Order) => <span className="text-sm text-foreground">{formatDate(new Date(o.orderDate))}</span>,
+   },
  ]
 
- const columns = allColumns.filter((c) => props.includes(c.key))
+ const columns = allColumns.filter((c) => c.key === "number" || props.includes(c.key))
 
   return (
     <>
@@ -151,7 +172,7 @@ function OrdersContent() {
         </Tabs>
       </div>
 
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">
         <div className="flex items-center gap-3">
           {filtered.length > 0 && (
             <>
@@ -190,7 +211,7 @@ function OrdersContent() {
         />
       ) : (
         <div data-slot="frame">
-          <Table>
+          <Table className="[&_th]:px-4 [&_td]:px-4 [&_th]:py-3 [&_td]:py-3">
             <TableHeader>
               <TableRow>
                 {columns.map((col) => (
@@ -199,7 +220,7 @@ function OrdersContent() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((item) => (
+              {paginated.map((item) => (
                 <TableRow
                   key={item.id}
                   className="cursor-pointer"
@@ -214,6 +235,34 @@ function OrdersContent() {
               ))}
             </TableBody>
           </Table>
+          {totalPages > 1 && (
+            <Pagination className="mt-4">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={(e) => { e.preventDefault(); setPage(safePage - 1) }}
+                    className={safePage <= 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      isActive={p === safePage}
+                      onClick={(e) => { e.preventDefault(); setPage(p) }}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={(e) => { e.preventDefault(); setPage(safePage + 1) }}
+                    className={safePage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
       )}
     </>

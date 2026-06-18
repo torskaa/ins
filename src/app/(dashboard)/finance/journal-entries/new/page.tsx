@@ -55,10 +55,10 @@ export default function NewJournalEntryPage() {
  <Card><CardHeader><CardTitle className="flex items-center gap-2">Entry Info</CardTitle></CardHeader>
  <CardContent className="space-y-4">
  <div className="grid grid-cols-2 gap-4">
- <div className="space-y-2"><Label>Date</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></div>
- <div className="space-y-2"><Label>Reference Type</Label><Select options={[{ value: "", label: "None" }, { value: "invoice", label: "Invoice" }, { value: "payment", label: "Payment" }, { value: "order", label: "Order" }, { value: "adjustment", label: "Adjustment" }]} value={form.referenceType} onChange={(e: any) => setForm({ ...form, referenceType: e.target.value })} /></div>
+ <div className="space-y-1"><Label>Date</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></div>
+ <div className="space-y-1"><Label>Reference Type</Label><Select options={[{ value: "", label: "None" }, { value: "invoice", label: "Invoice" }, { value: "payment", label: "Payment" }, { value: "order", label: "Order" }, { value: "adjustment", label: "Adjustment" }]} value={form.referenceType} onChange={(e: any) => setForm({ ...form, referenceType: e.target.value })} /></div>
  </div>
- <div className="space-y-2"><Label>Description</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></div>
+ <div className="space-y-1"><Label>Description</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></div>
  </CardContent>
  </Card>
 

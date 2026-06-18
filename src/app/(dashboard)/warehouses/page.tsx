@@ -18,66 +18,77 @@ import { toast } from "sonner"
 import { downloadCSV, downloadPDF } from "@/lib/export"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "@/components/ui/pagination"
 
 type WarehouseType = {
- id: string
- name: string
- location: string
- binLocation: string
- _count: { products: number }
+  id: string
+  name: string
+  location: string
+  binLocation: string
+  _count: { products: number }
 }
 
 const PROPERTY_OPTIONS = [
- { key: "location", label: "Location" },
- { key: "binLocation", label: "Bin" },
- { key: "products", label: "Products" },
+  { key: "location", label: "Location" },
+  { key: "binLocation", label: "Bin" },
+  { key: "products", label: "Products" },
 ]
 
 const DEFAULT_PROPS = ["location", "binLocation", "products"]
+const PAGE_SIZE = 10
 
 export default function WarehousesPage() {
- const router = useRouter()
- const [warehouses, setWarehouses] = useState<WarehouseType[]>([])
- const [loading, setLoading] = useState(true)
- const [search, setSearch] = useState("")
- const [view, setView] = useState<"cards" | "rows">("rows")
+  const router = useRouter()
+  const [warehouses, setWarehouses] = useState<WarehouseType[]>([])
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState("")
+  const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
   const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const [page, setPage] = useState(1)
   const [showCreate, setShowCreate] = useState(false)
- const handleNew = useCallback(() => router.push("/warehouses/new"), [router])
- useHotkey("c", handleNew)
- const [name, setName] = useState("")
- const [location, setLocation] = useState("")
+  const handleNew = useCallback(() => router.push("/warehouses/new"), [router])
+  useHotkey("c", handleNew)
+  const [name, setName] = useState("")
+  const [location, setLocation] = useState("")
 
- useEffect(() => {
- fetch("/api/warehouses")
- .then(r => r.json())
- .then((data) => { if (Array.isArray(data)) setWarehouses(data) })
- .finally(() => setLoading(false))
- }, [])
+  useEffect(() => {
+    fetch("/api/warehouses")
+      .then(r => r.json())
+      .then((data) => { if (Array.isArray(data)) setWarehouses(data) })
+      .finally(() => setLoading(false))
+  }, [])
 
- async function handleCreate() {
- try {
- const res = await fetch("/api/warehouses", {
- method: "POST",
- headers: { "Content-Type": "application/json" },
- body: JSON.stringify({ name, location }),
- })
- if (!res.ok) throw new Error()
- const wh = await res.json()
- setWarehouses([...warehouses, wh])
- setShowCreate(false)
- setName("")
- setLocation("")
- toast.success("Warehouse created")
- } catch {
- toast.error("Failed to create warehouse")
- }
- }
+  async function handleCreate() {
+    try {
+      const res = await fetch("/api/warehouses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, location }),
+      })
+      if (!res.ok) throw new Error()
+      const wh = await res.json()
+      setWarehouses([...warehouses, wh])
+      setShowCreate(false)
+      setName("")
+      setLocation("")
+      toast.success("Warehouse created")
+    } catch {
+      toast.error("Failed to create warehouse")
+    }
+  }
 
   const filterColumns: FilterColumn[] = [
-    { key: "location", label: "Location", getValue: (w) => w.location || "" },
-    { key: "name", label: "Name", getValue: (w) => w.name },
+    { key: "location", label: "Location", getValue: (w: WarehouseType) => w.location || "" },
+    { key: "name", label: "Name", getValue: (w: WarehouseType) => w.name },
   ]
 
   const filtered = warehouses.filter((w) => {
@@ -91,30 +102,48 @@ export default function WarehousesPage() {
       .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
   })
 
-  const allColumns = [
- { key: "name", label: "Name", render: (w) => <span className="font-medium">{w.name}</span> },
- {
- key: "location",
- label: "Location",
- render: (w) => <span className="text-sm text-muted-foreground">{w.location || "—"}</span>,
- },
- {
- key: "binLocation",
- label: "Bin",
- render: (w) => <span className="font-mono text-xs text-muted-foreground">{w.binLocation || "—"}</span>,
- },
- {
- key: "products",
- label: "Products",
- cellClassName: "font-mono text-sm text-muted-foreground",
- render: (w) => <span>{w._count?.products || 0}</span>,
- },
- ]
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const safePage = Math.min(page, Math.max(totalPages, 1))
+  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
- const columns = allColumns.filter((c) => props.includes(c.key))
+  useEffect(() => {
+    setPage(1)
+  }, [search, filters])
+
+  const allColumns = [
+    {
+      key: "name",
+      label: "Name",
+      render: (w: WarehouseType) => (
+        <div>
+          <p className="font-medium">{w.name}</p>
+          {w.location && <p className="text-xs text-foreground">{w.location}</p>}
+        </div>
+      ),
+    },
+    {
+      key: "location",
+      label: "Location",
+      render: (w: WarehouseType) => <span className="text-sm text-foreground">{w.location || "—"}</span>,
+    },
+    {
+      key: "binLocation",
+      label: "Bin",
+      render: (w: WarehouseType) => <span className="font-mono text-xs text-foreground">{w.binLocation || "—"}</span>,
+    },
+    {
+      key: "products",
+      label: "Products",
+      className: "text-right",
+      cellClassName: "text-right",
+      render: (w: WarehouseType) => <span className="font-mono text-sm">{w._count?.products || 0}</span>,
+    },
+  ]
+
+  const columns = allColumns.filter((c) => c.key === "name" || props.includes(c.key))
 
   return (
-    <div className="space-y-6 animate-fade-in [&_.text-muted-foreground]:text-foreground">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Warehouses</h1>
@@ -124,7 +153,7 @@ export default function WarehousesPage() {
           Add Warehouse <ShortcutBadge shortcut="⌘C" />
         </Button>
       </div>
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">
         <div className="flex items-center gap-3">
           {filtered.length > 0 && (
             <>
@@ -161,7 +190,7 @@ export default function WarehousesPage() {
         />
       ) : (
         <div data-slot="frame">
-          <Table>
+          <Table className="[&_th]:px-4 [&_td]:px-4 [&_th]:py-3 [&_td]:py-3">
             <TableHeader>
               <TableRow>
                 {columns.map((col) => (
@@ -170,7 +199,7 @@ export default function WarehousesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((item) => (
+              {paginated.map((item) => (
                 <TableRow
                   key={item.id}
                   className="cursor-pointer"
@@ -185,6 +214,34 @@ export default function WarehousesPage() {
               ))}
             </TableBody>
           </Table>
+          {totalPages > 1 && (
+            <Pagination className="mt-4">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={(e) => { e.preventDefault(); setPage(safePage - 1) }}
+                    className={safePage <= 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      isActive={p === safePage}
+                      onClick={(e) => { e.preventDefault(); setPage(p) }}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={(e) => { e.preventDefault(); setPage(safePage + 1) }}
+                    className={safePage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
       )}
 
@@ -195,11 +252,11 @@ export default function WarehousesPage() {
             <DialogDescription>Add a new storage location</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="whName">Name</Label>
               <Input id="whName" value={name} onChange={(e) => setName(e.target.value)} placeholder="Main Warehouse" />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="whLocation">Location (optional)</Label>
               <Input id="whLocation" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Bangkok, Thailand" />
             </div>

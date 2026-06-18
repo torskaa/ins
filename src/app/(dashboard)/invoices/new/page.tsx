@@ -14,7 +14,7 @@ import { XCircle, FileText, Package, DollarSign, ClipboardList } from "lucide-re
 import { EmptyState } from "@/components/ui/empty-state"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
-  <div className={cn("space-y-1.5", className)}>
+  <div className={cn("space-y-1", className)}>
     <Label htmlFor={id} className="text-xs font-medium">{label}{required && <span className="text-destructive ml-0.5">*</span>}</Label>
     {children}
   </div>
@@ -149,15 +149,15 @@ export default function NewInvoicePage() {
               ) : null}
               {items.map((item, i) => (
                 <div key={i} className="flex items-end gap-3 p-3 rounded-lg bg-surface/50">
-                  <div className="flex-[2] space-y-1.5">
+                  <div className="flex-[2] space-y-1">
                     <Label className="text-[10px] text-muted-foreground">Product</Label>
                     <Select options={products.map(p => ({ value: p.id, label: `${p.name} (${p.sku})` }))} placeholder="Select product" value={item.productId} onChange={(e: any) => updateItem(i, "productId", e.target.value)} />
                   </div>
-                  <div className="w-20 space-y-1.5">
+                  <div className="w-20 space-y-1">
                     <Label className="text-[10px] text-muted-foreground">Qty</Label>
                     <Input type="number" min="1" value={item.quantity} onChange={(e) => updateItem(i, "quantity", parseInt(e.target.value) || 0)} />
                   </div>
-                  <div className="w-28 space-y-1.5">
+                  <div className="w-28 space-y-1">
                     <Label className="text-[10px] text-muted-foreground">Price</Label>
                     <Input type="number" step="0.01" value={item.unitPrice} onChange={(e) => updateItem(i, "unitPrice", parseFloat(e.target.value) || 0)} />
                   </div>

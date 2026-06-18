@@ -17,48 +17,61 @@ import { useRouter } from "next/navigation"
 import { downloadCSV, downloadPDF } from "@/lib/export"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "@/components/ui/pagination"
 
 type Material = {
- id: string
- name: string
- sku: string
- unitPrice: number
- costPrice: number
- stock: number
- minStock: number
- status: string
- category: { name: string } | null
+  id: string
+  name: string
+  sku: string
+  unitPrice: number
+  costPrice: number
+  stock: number
+  minStock: number
+  status: string
+  category: { name: string } | null
 }
 
 const PROPERTY_OPTIONS = [
- { key: "unitPrice", label: "Price" },
- { key: "stock", label: "Stock" },
- { key: "status", label: "Status" },
+  { key: "sku", label: "SKU" },
+  { key: "unitPrice", label: "Price" },
+  { key: "costPrice", label: "Cost Price" },
+  { key: "stock", label: "Stock" },
+  { key: "status", label: "Status" },
 ]
 
-const DEFAULT_PROPS = ["unitPrice", "stock", "status"]
+const DEFAULT_PROPS = ["sku", "unitPrice", "costPrice", "stock", "status"]
+const PAGE_SIZE = 10
 
 export default function MaterialsPage() {
- const [materials, setMaterials] = useState<Material[]>([])
- const [loading, setLoading] = useState(true)
- const [search, setSearch] = useState("")
- const [view, setView] = useState<"cards" | "rows">("rows")
+  const [materials, setMaterials] = useState<Material[]>([])
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState("")
+  const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
   const [filters, setFilters] = useState<Record<string, string | null>>({})
+  const [page, setPage] = useState(1)
   const router = useRouter()
- const handleNew = useCallback(() => router.push("/materials/new"), [router])
- useHotkey("c", handleNew)
+  const handleNew = useCallback(() => router.push("/materials/new"), [router])
+  useHotkey("c", handleNew)
 
- useEffect(() => {
- fetch("/api/materials")
- .then((res) => res.json())
- .then((data) => { if (Array.isArray(data)) setMaterials(data) })
- .finally(() => setLoading(false))
- }, [])
+  useEffect(() => {
+    fetch("/api/materials")
+      .then((res) => res.json())
+      .then((data) => { if (Array.isArray(data)) setMaterials(data) })
+      .finally(() => setLoading(false))
+  }, [])
 
   const filterColumns: FilterColumn[] = [
-    { key: "status", label: "Status", getValue: (m) => m.status },
-    { key: "category", label: "Category", getValue: (m) => m.category?.name || "" },
+    { key: "status", label: "Status", getValue: (m: Material) => m.status },
+    { key: "category", label: "Category", getValue: (m: Material) => m.category?.name || "" },
   ]
 
   const filtered = materials.filter((m) => {
@@ -72,56 +85,76 @@ export default function MaterialsPage() {
       .some((v) => v?.toLowerCase().includes(search.toLowerCase()))
   })
 
-  const allColumns = [
- {
- key: "sku",
- label: "SKU",
- render: (m) => <span className="font-mono text-xs font-medium">{m.sku}</span>,
- },
- {
- key: "name",
- label: "Name",
- render: (m) => (
- <div>
- <p className="font-medium">{m.name}</p>
- {m.category && <p className="text-xs text-muted-foreground">{m.category.name}</p>}
- </div>
- ),
- },
- {
- key: "unitPrice",
- label: "Price",
- render: (m) => <span className="font-mono text-sm">{formatCurrency(m.unitPrice)}</span>,
- },
- {
- key: "stock",
- label: "Stock",
- cellClassName: "font-mono text-sm font-medium",
- render: (m) => {
- const isLow = m.stock <= m.minStock
- return (
- <span className={isLow ? "text-destructive" : ""}>
- {m.stock}
- {isLow && <AlertTriangle className="w-3 h-3 inline ml-1 text-destructive" />}
- </span>
- )
- },
- },
- {
- key: "status",
- label: "Status",
- render: (m) => (
- <span className={statusBadge({ variant: m.status === "active" ? "success" : "secondary" })}>
- {m.status}
- </span>
- ),
- },
- ]
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const safePage = Math.min(page, Math.max(totalPages, 1))
+  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
- const columns = allColumns.filter((c) => props.includes(c.key))
+  useEffect(() => {
+    setPage(1)
+  }, [search, filters])
+
+  const allColumns = [
+    {
+      key: "sku",
+      label: "SKU",
+      className: "w-[120px]",
+      render: (m: Material) => <span className="font-mono text-xs font-medium">{m.sku}</span>,
+    },
+    {
+      key: "name",
+      label: "Material",
+      render: (m: Material) => (
+        <div>
+          <p className="font-medium">{m.name}</p>
+          {m.category && <p className="text-xs text-foreground">{m.category.name}</p>}
+        </div>
+      ),
+    },
+    {
+      key: "unitPrice",
+      label: "Price",
+      className: "text-right",
+      cellClassName: "text-right",
+      render: (m: Material) => <span className="font-mono text-sm">{formatCurrency(m.unitPrice)}</span>,
+    },
+    {
+      key: "costPrice",
+      label: "Cost Price",
+      className: "text-right",
+      cellClassName: "text-right text-foreground",
+      render: (m: Material) => <span className="font-mono text-sm">{formatCurrency(m.costPrice)}</span>,
+    },
+    {
+      key: "stock",
+      label: "Stock",
+      className: "text-right",
+      cellClassName: "text-right",
+      render: (m: Material) => {
+        const isLow = m.stock <= m.minStock
+        return (
+          <span className={"font-mono text-sm font-medium" + (isLow ? " text-destructive" : " text-foreground")}>
+            {m.stock}
+            {isLow && <AlertTriangle className="w-3 h-3 inline ml-1 text-destructive" />}
+          </span>
+        )
+      },
+    },
+    {
+      key: "status",
+      label: "Status",
+      className: "w-[120px]",
+      render: (m: Material) => (
+        <span className={statusBadge({ variant: m.status === "active" ? "success" : "secondary" })}>
+          {m.status}
+        </span>
+      ),
+    },
+  ]
+
+  const columns = allColumns.filter((c) => c.key === "name" || props.includes(c.key))
 
   return (
-    <div className="space-y-6 animate-fade-in [&_.text-muted-foreground]:text-foreground">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Materials</h1>
@@ -131,7 +164,7 @@ export default function MaterialsPage() {
           Add Material <ShortcutBadge shortcut="⌘C" />
         </Button>
       </div>
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">
         <div className="flex items-center gap-3">
           {filtered.length > 0 && (
             <>
@@ -170,7 +203,7 @@ export default function MaterialsPage() {
         />
       ) : (
         <div data-slot="frame">
-          <Table>
+          <Table className="[&_th]:px-4 [&_td]:px-4 [&_th]:py-3 [&_td]:py-3">
             <TableHeader>
               <TableRow>
                 {columns.map((col) => (
@@ -179,7 +212,7 @@ export default function MaterialsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((item) => (
+              {paginated.map((item) => (
                 <TableRow
                   key={item.id}
                   className="cursor-pointer"
@@ -194,6 +227,34 @@ export default function MaterialsPage() {
               ))}
             </TableBody>
           </Table>
+          {totalPages > 1 && (
+            <Pagination className="mt-4">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={(e) => { e.preventDefault(); setPage(safePage - 1) }}
+                    className={safePage <= 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      isActive={p === safePage}
+                      onClick={(e) => { e.preventDefault(); setPage(p) }}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={(e) => { e.preventDefault(); setPage(safePage + 1) }}
+                    className={safePage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
       )}
     </div>

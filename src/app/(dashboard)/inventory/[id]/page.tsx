@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Badge, BadgeDot, SemanticBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,16 +13,14 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { Progress } from "@/components/ui/progress"
-import { AlertTriangle, ArrowLeft, Barcode, Boxes, Building2, Clock, DollarSign, FileText, Hash, Layers, MapPin, MoreHorizontal, Package, Pencil, Ruler, ShoppingCart, Tags, Trash2, Warehouse, Weight, XCircle } from "lucide-react"
+import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import { AlertTriangle, ArrowLeft, Barcode, Boxes, Building2, Calendar, Clock, DollarSign, FileText, Hash, Layers, MapPin, Package, Pencil, Ruler, ShoppingCart, Tags, Trash2, Warehouse, Weight, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
-import {
-  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
-  DropdownMenuItem, DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
+import { MoreMenu } from "@/components/ui/more-menu"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogFooter,
@@ -56,7 +54,7 @@ function FieldGroup({ label, children, required }: { label: string; children: Re
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [product, setProduct] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [editing, setEditing] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showAdjust, setShowAdjust] = useState(false)
@@ -155,7 +153,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       if (!res.ok) throw new Error("Failed")
       const updated = await res.json()
       setProduct(updated)
-      setEditing(false)
+      setShowEdit(false)
       toast.success("Product updated")
     } catch {
       toast.error("Failed to update product")
@@ -193,99 +191,67 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     }
   }
 
-  const statusVariant: Record<string, "success" | "secondary" | "warning" | "destructive" | "default"> = {
-    active: "success",
-    inactive: "secondary",
-    draft: "warning",
-    discontinued: "destructive",
-  }
-
-  const cancelEdit = () => {
-    setEditing(false)
-    setForm({
-      name: product.name,
-      sku: product.sku,
-      description: product.description || "",
-      type: product.type || "",
-      barcode: product.barcode || "",
-      unitPrice: String(product.unitPrice),
-      costPrice: String(product.costPrice),
-      stock: String(product.stock),
-      minStock: String(product.minStock),
-      maxStock: String(product.maxStock || ""),
-      location: product.location || "",
-      length: product.length != null ? String(product.length) : "",
-      width: product.width != null ? String(product.width) : "",
-      height: product.height != null ? String(product.height) : "",
-      weight: product.weight != null ? String(product.weight) : "",
-      categoryId: product.categoryId || "",
-      supplierId: product.supplierId || "",
-      warehouseId: product.warehouseId || "",
-    })
-  }
 
   const bomColumns = [
-    { key: "name", label: "Name", render: (item) => <span className="font-medium">{item.name}</span> },
-    { key: "quantity", label: "Quantity", render: (item) => <span className="font-mono">{formatNumber(item.quantity)}</span> },
-    { key: "unit", label: "Unit", render: (item) => <span className="text-muted-foreground">{item.unit || "—"}</span> },
-    { key: "status", label: "Status", render: (item) => (
-      <Badge variant={item.status === "active" ? "success" : "secondary"}>{item.status}</Badge>
+    { key: "name", label: "Name", render: (item: any) => <span className="font-medium">{item.name}</span> },
+    { key: "quantity", label: "Quantity", render: (item: any) => <span className="font-mono">{formatNumber(item.quantity)}</span> },
+    { key: "unit", label: "Unit", render: (item: any) => <span className="text-muted-foreground">{item.unit || "—"}</span> },
+    { key: "status", label: "Status", render: (item: any) => (
+      <SemanticBadge semantic={item.status || ""} category="status">{item.status}</SemanticBadge>
     )},
   ]
 
   const orderItemColumns = [
-    { key: "orderNumber", label: "Order", render: (item) => (
+    { key: "orderNumber", label: "Order", render: (item: any) => (
       <button onClick={() => router.push(`/orders/${item.orderId}`)} className="font-mono text-xs font-medium text-primary hover:underline inline-flex items-center gap-1">{item.order?.orderNumber}</button>
     )},
-    { key: "type", label: "Type", render: (item) => <span className="capitalize text-muted-foreground">{item.order?.type}</span> },
-    { key: "status", label: "Status", render: (item) => <Badge variant={statusVariant[item.order?.status] || "secondary"}>{item.order?.status}</Badge> },
-    { key: "quantity", label: "Qty", render: (item) => <span className="font-mono">{formatNumber(item.quantity)}</span> },
-    { key: "unitPrice", label: "Unit Price", render: (item) => <span className="font-mono">{formatCurrency(item.unitPrice)}</span> },
-    { key: "total", label: "Total", render: (item) => <span className="font-mono font-medium">{formatCurrency(item.total)}</span> },
+    { key: "type", label: "Type", render: (item: any) => <span className="capitalize text-muted-foreground">{item.order?.type}</span> },
+    { key: "status", label: "Status", render: (item: any) => <SemanticBadge semantic={item.order?.status || ""} category="status">{item.order?.status}</SemanticBadge> },
+    { key: "quantity", label: "Qty", render: (item: any) => <span className="font-mono">{formatNumber(item.quantity)}</span> },
+    { key: "unitPrice", label: "Unit Price", render: (item: any) => <span className="font-mono">{formatCurrency(item.unitPrice)}</span> },
+    { key: "total", label: "Total", render: (item: any) => <span className="font-mono font-medium">{formatCurrency(item.total)}</span> },
   ]
 
   const invoiceItemColumns = [
-    { key: "invoiceNumber", label: "Invoice", render: (item) => (
+    { key: "invoiceNumber", label: "Invoice", render: (item: any) => (
       <button onClick={() => router.push(`/invoices/${item.invoiceId}`)} className="font-mono text-xs font-medium text-primary hover:underline inline-flex items-center gap-1">{item.invoice?.invoiceNumber}</button>
     )},
-    { key: "status", label: "Status", render: (item) => <Badge variant={statusVariant[item.invoice?.status] || "secondary"}>{item.invoice?.status}</Badge> },
-    { key: "quantity", label: "Qty", render: (item) => <span className="font-mono">{formatNumber(item.quantity)}</span> },
-    { key: "unitPrice", label: "Unit Price", render: (item) => <span className="font-mono">{formatCurrency(item.unitPrice)}</span> },
-    { key: "total", label: "Total", render: (item) => <span className="font-mono font-medium">{formatCurrency(item.total)}</span> },
+    { key: "status", label: "Status", render: (item: any) => <SemanticBadge semantic={item.invoice?.status || ""} category="status">{item.invoice?.status}</SemanticBadge> },
+    { key: "quantity", label: "Qty", render: (item: any) => <span className="font-mono">{formatNumber(item.quantity)}</span> },
+    { key: "unitPrice", label: "Unit Price", render: (item: any) => <span className="font-mono">{formatCurrency(item.unitPrice)}</span> },
+    { key: "total", label: "Total", render: (item: any) => <span className="font-mono font-medium">{formatCurrency(item.total)}</span> },
   ]
 
   const movementColumns = [
-    { key: "type", label: "Type", render: (item) => {
-      const variant: Record<string, "success" | "default" | "warning" | "secondary"> = { received: "success", sold: "default", adjusted: "warning", returned: "success", transferred: "secondary" }
-      return <Badge variant={variant[item.type] || "secondary"} className="capitalize">{item.type}</Badge>
-    }},
-    { key: "quantity", label: "Quantity", render: (item) => {
+    { key: "type", label: "Type", render: (item: any) => <SemanticBadge semantic={item.type || ""} category="type" className="capitalize">{item.type}</SemanticBadge>
+    },
+    { key: "quantity", label: "Quantity", render: (item: any) => {
       const isPositive = ["received", "returned"].includes(item.type)
       return <span className={`font-mono font-medium ${isPositive ? "text-success" : "text-destructive"}`}>{isPositive ? "+" : "-"}{formatNumber(Math.abs(item.quantity))}</span>
     }},
-    { key: "description", label: "Description", render: (item) => <span className="text-muted-foreground">{item.description || "—"}</span> },
-    { key: "reference", label: "Reference", render: (item) => <span className="font-mono text-xs text-muted-foreground">{item.reference || "—"}</span> },
-    { key: "createdAt", label: "Date", render: (item) => <span className="text-muted-foreground text-sm">{formatDateTime(new Date(item.createdAt))}</span> },
+    { key: "description", label: "Description", render: (item: any) => <span className="text-muted-foreground">{item.description || "—"}</span> },
+    { key: "reference", label: "Reference", render: (item: any) => <span className="font-mono text-xs text-muted-foreground">{item.reference || "—"}</span> },
+    { key: "createdAt", label: "Date", render: (item: any) => <span className="text-muted-foreground text-sm">{formatDateTime(new Date(item.createdAt))}</span> },
   ]
 
   const lotColumns = [
-    { key: "lotNumber", label: "Lot Number", render: (item) => <span className="font-mono text-xs font-medium">{item.lotNumber}</span> },
-    { key: "quantity", label: "Quantity", render: (item) => <span className="font-mono">{formatNumber(item.quantity)}</span> },
-    { key: "expiryDate", label: "Expiry", render: (item) => {
+    { key: "lotNumber", label: "Lot Number", render: (item: any) => <span className="font-mono text-xs font-medium">{item.lotNumber}</span> },
+    { key: "quantity", label: "Quantity", render: (item: any) => <span className="font-mono">{formatNumber(item.quantity)}</span> },
+    { key: "expiryDate", label: "Expiry", render: (item: any) => {
       const date = item.expiryDate
       if (!date) return <span className="text-muted-foreground">—</span>
       const expired = new Date(date) < new Date()
       return <span className={expired ? "text-destructive" : "text-muted-foreground"}>{formatDate(new Date(date))}{expired && <AlertTriangle className="w-3 h-3 inline ml-1" />}</span>
     }},
-    { key: "createdAt", label: "Created", render: (item) => <span className="text-muted-foreground text-sm">{formatDate(new Date(item.createdAt))}</span> },
+    { key: "createdAt", label: "Created", render: (item: any) => <span className="text-muted-foreground text-sm">{formatDate(new Date(item.createdAt))}</span> },
   ]
 
   const supplierPriceColumns = [
-    { key: "supplier", label: "Supplier", render: (item) => <span className="font-medium">{item.supplier?.name}</span> },
-    { key: "price", label: "Price", render: (item) => <span className="font-mono font-medium">{formatCurrency(item.price)}</span> },
-    { key: "currency", label: "Currency", render: (item) => <span className="font-mono text-xs">{item.currency}</span> },
-    { key: "validFrom", label: "Valid From", render: (item) => item.validFrom ? <span className="text-muted-foreground text-sm">{formatDate(new Date(item.validFrom))}</span> : <span className="text-muted-foreground">—</span> },
-    { key: "validTo", label: "Valid To", render: (item) => {
+    { key: "supplier", label: "Supplier", render: (item: any) => <span className="font-medium">{item.supplier?.name}</span> },
+    { key: "price", label: "Price", render: (item: any) => <span className="font-mono font-medium">{formatCurrency(item.price)}</span> },
+    { key: "currency", label: "Currency", render: (item: any) => <span className="font-mono text-xs">{item.currency}</span> },
+    { key: "validFrom", label: "Valid From", render: (item: any) => item.validFrom ? <span className="text-muted-foreground text-sm">{formatDate(new Date(item.validFrom))}</span> : <span className="text-muted-foreground">—</span> },
+    { key: "validTo", label: "Valid To", render: (item: any) => {
       const date = item.validTo
       if (!date) return <span className="text-muted-foreground">—</span>
       return <span className={`text-sm ${new Date(date) < new Date() ? "text-destructive" : "text-muted-foreground"}`}>{formatDate(new Date(date))}</span>
@@ -294,73 +260,66 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-20 -mx-6 -mt-6 px-8 py-6 bg-background/95 backdrop-blur-sm border-b border-border/60">
-        <div className="flex items-center justify-between gap-6 max-w-7xl mx-auto w-full">
-          {/* Left: Breadcrumb + Title + Metadata */}
-          <div className="flex flex-col gap-2 min-w-0 flex-1">
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <button onClick={() => router.push("/inventory")}>Inventory</button>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{product.name}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-            <div className="flex items-center gap-3 flex-wrap">
-              {editing ? (
-                <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="text-lg font-semibold h-8 w-64" />
-              ) : (
-                <h1 className="text-2xl font-bold">{product.name}</h1>
+      {/* Breadcrumb */}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <button onClick={() => router.push("/inventory")}>Inventory</button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{product.name}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <div className="grid grid-cols-12 gap-4">
+        {/* Page Header — bento card */}
+        <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex gap-3 min-w-0 flex-1">
+              {product.image && (
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-14 self-stretch rounded-lg object-cover border border-border/60 shrink-0"
+                />
               )}
-              <Badge variant="outline" className="font-mono text-[11px]">{product.sku}</Badge>
-              <Badge variant={statusVariant[product.status] || "secondary"} className="capitalize text-[11px]">{product.status}</Badge>
-              {isLowStock && (
-                <Badge variant="destructive" className="gap-1 text-[11px]"><AlertTriangle className="w-3 h-3" /> Low Stock</Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span>Created {formatDate(new Date(product.createdAt))}</span>
-              {product.updatedAt && <><span className="text-muted-foreground/30">·</span><span>Updated {formatDate(new Date(product.updatedAt))}</span></>}
+              <div className="flex flex-col gap-2 min-w-0 flex-1">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h1 className="text-2xl font-bold">{product.name}</h1>
+                {product.category && (
+                  <SemanticBadge semantic={product.category.name} category="category" appearance="outline" className="gap-1 text-[11px]"><Tags className="w-3 h-3" />{product.category.name}</SemanticBadge>
+                )}
+              </div>
+              <div className="flex items-center gap-3 flex-wrap">
+                <SemanticBadge semantic={product.status} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{product.status}</SemanticBadge>
+                <SemanticBadge semantic={product.sku} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{product.sku}</SemanticBadge>
+                {isLowStock && (
+                  <Badge variant="destructive" className="gap-1 text-[11px]"><AlertTriangle className="w-3 h-3" /> Low Stock</Badge>
+                )}
+              </div>
             </div>
           </div>
-          {/* Right: Action Bar */}
-          <div className="flex items-center gap-2 shrink-0">
-            {editing ? (
-              <>
-                <Button variant="outline" size="sm" onClick={cancelEdit} className="gap-1.5 h-9">Cancel</Button>
-                <Button size="sm" onClick={handleSave} className="gap-1.5 h-9">Save Changes</Button>
-              </>
-            ) : (
-              <>
-                <Button size="sm" onClick={() => setShowAdjust(true)} className="gap-1.5 h-9"><Boxes className="w-4 h-4" /> Adjust Stock</Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-9 w-9 p-0"><MoreHorizontal className="w-4 h-4" /></Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => setEditing(true)}>
-                      <Pencil className="w-4 h-4 mr-2" /> Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => setShowDelete(true)} className="text-destructive">
-                      <Trash2 className="w-4 h-4 mr-2" /> Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
+          <div className="flex flex-col items-end gap-2 shrink-0">
+            <div className="flex items-center gap-2">
+              <Button size="sm" onClick={() => setShowAdjust(true)} className="h-9 gap-1.5">Adjust Stock <ShortcutBadge shortcut="⌘C" /></Button>
+              <MoreMenu actions={[
+                { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => setShowEdit(true) },
+                "separator",
+                { label: "Delete", icon: <Trash2 className="w-4 h-4" />, onClick: () => setShowDelete(true) },
+              ]} />
+            </div>
+            {product.updatedAt && (
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <Clock className="w-3.5 h-3.5" />
+                <span>Updated {formatDate(new Date(product.updatedAt))}</span>
+              </div>
             )}
           </div>
         </div>
       </div>
-
-      {/* Bento Grid — Main Content + Sidebar */}
-      <div className="grid grid-cols-12 gap-4">
         {/* Left Column (8 cols) — Primary Information */}
         <div className="col-span-12 lg:col-span-8 flex flex-col gap-4">
           {/* Specifications */}
@@ -372,17 +331,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
-              {editing ? (
-                <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                  <FieldGroup label="Product Name" required><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="h-8 text-sm" /></FieldGroup>
-                  <FieldGroup label="SKU" required><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} className="h-8 text-sm font-mono" /></FieldGroup>
-                  <FieldGroup label="Type"><Input value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} placeholder="e.g. Finished Good" className="h-8 text-sm" /></FieldGroup>
-                  <FieldGroup label="Barcode"><Input value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} placeholder="UPC / EAN" className="h-8 text-sm font-mono" /></FieldGroup>
-                  <div className="col-span-2">
-                    <FieldGroup label="Description"><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="text-sm" /></FieldGroup>
-                  </div>
-                </div>
-              ) : (
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
                   <FieldDisplay label="Name" value={product.name} />
                   <FieldDisplay label="SKU" value={product.sku} mono />
@@ -395,7 +343,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </div>
                   )}
                 </div>
-              )}
             </CardContent>
           </Card>
 
@@ -408,21 +355,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
-              {editing ? (
-                <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                  <FieldGroup label="Current Stock"><Input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="h-8 text-sm" /></FieldGroup>
-                  <FieldGroup label="Min Stock Level"><Input type="number" value={form.minStock} onChange={(e) => setForm({ ...form, minStock: e.target.value })} className="h-8 text-sm" /></FieldGroup>
-                  <FieldGroup label="Max Stock Level"><Input type="number" value={form.maxStock} onChange={(e) => setForm({ ...form, maxStock: e.target.value })} className="h-8 text-sm" /></FieldGroup>
-                  <FieldGroup label="Location"><Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Aisle-Bin" className="h-8 text-sm" /></FieldGroup>
-                </div>
-              ) : (
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
                   <FieldDisplay label="Current Stock" value={`${formatNumber(product.stock)} units`} mono />
                   <FieldDisplay label="Min Stock Level" value={formatNumber(product.minStock)} mono />
                   <FieldDisplay label="Max Stock Level" value={product.maxStock ? formatNumber(product.maxStock) : "Not set"} mono />
                   <FieldDisplay label="Location" value={product.location || "—"} />
                 </div>
-              )}
               {isLowStock && (
                 <div className="flex items-center gap-2 text-xs text-destructive bg-destructive/5 rounded-lg px-3 py-2 border border-destructive/10">
                   <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
@@ -441,19 +379,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
-              {editing ? (
-                <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                  <FieldGroup label="Unit Price (Sell)"><Input type="number" step="0.01" value={form.unitPrice} onChange={(e) => setForm({ ...form, unitPrice: e.target.value })} className="h-8 text-sm" /></FieldGroup>
-                  <FieldGroup label="Cost Price"><Input type="number" step="0.01" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: e.target.value })} className="h-8 text-sm" /></FieldGroup>
-                </div>
-              ) : (
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
                   <FieldDisplay label="Unit Price" value={formatCurrency(product.unitPrice)} mono />
                   <FieldDisplay label="Cost Price" value={formatCurrency(product.costPrice)} mono />
                   <FieldDisplay label="Gross Margin" value={`${profitMargin >= 0 ? "+" : ""}${profitMargin.toFixed(1)}%`} mono />
                   <FieldDisplay label="Profit per Unit" value={formatCurrency(profit)} mono />
                 </div>
-              )}
             </CardContent>
           </Card>
         </div>
@@ -494,21 +425,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </CardHeader>
             <CardContent className="p-4 space-y-2.5">
-              {editing ? (
-                <div className="space-y-2">
-                  <FieldGroup label="Category"><Select options={categories.map(c => ({ value: c.id, label: c.name }))} placeholder="Select category" value={form.categoryId} onChange={(e: any) => setForm({ ...form, categoryId: e.target.value })} /></FieldGroup>
-                  <FieldGroup label="Supplier"><Select options={suppliers.map(s => ({ value: s.id, label: s.name }))} placeholder="Select supplier" value={form.supplierId} onChange={(e: any) => setForm({ ...form, supplierId: e.target.value })} /></FieldGroup>
-                  <FieldGroup label="Warehouse"><Select options={warehouses.map(w => ({ value: w.id, label: w.name }))} placeholder="Select warehouse" value={form.warehouseId} onChange={(e: any) => setForm({ ...form, warehouseId: e.target.value })} /></FieldGroup>
-                  <FieldGroup label="Location"><Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Aisle-Bin" className="h-8 text-sm" /></FieldGroup>
-                </div>
-              ) : (
                 <div className="space-y-2.5">
                   <div className="flex items-center gap-2.5"><Tags className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Category</span><span className="text-sm font-medium ml-auto">{product.category?.name || "—"}</span></div>
                   <div className="flex items-center gap-2.5"><Building2 className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Supplier</span><span className="text-sm font-medium ml-auto">{product.supplier?.name || "—"}</span></div>
                   <div className="flex items-center gap-2.5"><Warehouse className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Warehouse</span><span className="text-sm font-medium ml-auto">{product.warehouse?.name || "—"}</span></div>
                   <div className="flex items-center gap-2.5"><MapPin className="w-3.5 h-3.5 text-muted-foreground shrink-0" /><span className="text-xs text-muted-foreground">Location</span><span className="text-sm font-medium ml-auto">{product.location || "—"}</span></div>
                 </div>
-              )}
             </CardContent>
           </Card>
 
@@ -521,21 +443,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </CardHeader>
             <CardContent className="p-4">
-              {editing ? (
-                <div className="grid grid-cols-2 gap-3">
-                  <FieldGroup label="Length (cm)"><Input type="number" step="0.1" value={form.length} onChange={(e) => setForm({ ...form, length: e.target.value })} className="h-8 text-sm" /></FieldGroup>
-                  <FieldGroup label="Width (cm)"><Input type="number" step="0.1" value={form.width} onChange={(e) => setForm({ ...form, width: e.target.value })} className="h-8 text-sm" /></FieldGroup>
-                  <FieldGroup label="Height (cm)"><Input type="number" step="0.1" value={form.height} onChange={(e) => setForm({ ...form, height: e.target.value })} className="h-8 text-sm" /></FieldGroup>
-                  <FieldGroup label="Weight (kg)"><Input type="number" step="0.01" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} className="h-8 text-sm" /></FieldGroup>
-                </div>
-              ) : (
                 <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
                   <FieldDisplay label="Length" value={product.length ? `${product.length} cm` : "—"} />
                   <FieldDisplay label="Width" value={product.width ? `${product.width} cm` : "—"} />
                   <FieldDisplay label="Height" value={product.height ? `${product.height} cm` : "—"} />
                   <FieldDisplay label="Weight" value={product.weight ? `${product.weight} kg` : "—"} />
                 </div>
-              )}
             </CardContent>
           </Card>
 
@@ -599,7 +512,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {product.bomAsFinished.map((item) => (
+                            {product.bomAsFinished.map((item: any) => (
                               <TableRow key={item.id}>
                                 {bomColumns.map((col) => (
                                   <TableCell key={col.key}>
@@ -642,7 +555,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {product.bomAsMaterial.map((item) => (
+                            {product.bomAsMaterial.map((item: any) => (
                               <TableRow key={item.id}>
                                 {bomColumns.map((col) => (
                                   <TableCell key={col.key}>
@@ -684,7 +597,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {product.orderItems.map((item) => (
+                    {product.orderItems.map((item: any) => (
                       <TableRow key={item.id}>
                         {orderItemColumns.map((col) => (
                           <TableCell key={col.key}>
@@ -722,7 +635,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {product.invoiceItems.map((item) => (
+                    {product.invoiceItems.map((item: any) => (
                       <TableRow key={item.id}>
                         {invoiceItemColumns.map((col) => (
                           <TableCell key={col.key}>
@@ -760,7 +673,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {product.movements.map((item) => (
+                    {product.movements.map((item: any) => (
                       <TableRow key={item.id}>
                         {movementColumns.map((col) => (
                           <TableCell key={col.key}>
@@ -798,7 +711,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {product.lots.map((item) => (
+                    {product.lots.map((item: any) => (
                       <TableRow key={item.id}>
                         {lotColumns.map((col) => (
                           <TableCell key={col.key}>
@@ -836,7 +749,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {product.supplierPrices.map((item) => (
+                    {product.supplierPrices.map((item: any) => (
                       <TableRow key={item.id}>
                         {supplierPriceColumns.map((col) => (
                           <TableCell key={col.key}>
@@ -853,6 +766,103 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         </Tabs>
       </div>
 
+      {/* Edit Dialog */}
+      <Dialog open={showEdit} onOpenChange={setShowEdit}>
+        <DialogContent className="sm:max-w-2xl flex flex-col p-0 gap-0 max-h-[90vh]">
+          <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
+            <DialogTitle>Edit Product</DialogTitle>
+            <DialogDescription>Update details for <span className="font-medium text-foreground">{product?.name}</span></DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+            {/* Basic Information */}
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Package className="w-4 h-4 text-primary" />
+                  Basic Information
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Name" required><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="SKU"><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} /></FieldGroup>
+                </div>
+                <FieldGroup label="Description"><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></FieldGroup>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Type"><Input value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} placeholder="e.g. Finished Good" /></FieldGroup>
+                  <FieldGroup label="Barcode"><Input value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} placeholder="UPC / EAN" /></FieldGroup>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Pricing & Stock */}
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <DollarSign className="w-4 h-4 text-primary" />
+                  Pricing & Stock
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Unit Price"><Input type="number" step="0.01" value={form.unitPrice} onChange={(e) => setForm({ ...form, unitPrice: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Cost Price"><Input type="number" step="0.01" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: e.target.value })} /></FieldGroup>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <FieldGroup label="Current Stock"><Input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Min Stock Level"><Input type="number" value={form.minStock} onChange={(e) => setForm({ ...form, minStock: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Max Stock Level"><Input type="number" value={form.maxStock} onChange={(e) => setForm({ ...form, maxStock: e.target.value })} /></FieldGroup>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Classification */}
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Layers className="w-4 h-4 text-primary" />
+                  Classification
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Category"><Select options={categories.map(c => ({ value: c.id, label: c.name }))} placeholder="Select category" value={form.categoryId} onChange={(e: any) => setForm({ ...form, categoryId: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Supplier"><Select options={suppliers.map(s => ({ value: s.id, label: s.name }))} placeholder="Select supplier" value={form.supplierId} onChange={(e: any) => setForm({ ...form, supplierId: e.target.value })} /></FieldGroup>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Warehouse"><Select options={warehouses.map(w => ({ value: w.id, label: w.name }))} placeholder="Select warehouse" value={form.warehouseId} onChange={(e: any) => setForm({ ...form, warehouseId: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Location"><Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Aisle-Bin" /></FieldGroup>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Dimensions & Weight */}
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Ruler className="w-4 h-4 text-primary" />
+                  Dimensions & Weight
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Length (cm)"><Input type="number" step="0.1" value={form.length} onChange={(e) => setForm({ ...form, length: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Width (cm)"><Input type="number" step="0.1" value={form.width} onChange={(e) => setForm({ ...form, width: e.target.value })} /></FieldGroup>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Height (cm)"><Input type="number" step="0.1" value={form.height} onChange={(e) => setForm({ ...form, height: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Weight (kg)"><Input type="number" step="0.01" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} /></FieldGroup>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
+            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Dialogs */}
       <Dialog open={showAdjust} onOpenChange={setShowAdjust}>
         <DialogContent>
@@ -861,12 +871,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             <DialogDescription>Update the stock quantity for <span className="font-medium text-foreground">{product.name}</span></DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <div className="space-y-2">
-              <Label htmlFor="adjustQty">New Stock Quantity</Label>
+            <div className="space-y-1">
+<Label htmlFor="adjustQty">New Stock Quantity</Label>
               <Input id="adjustQty" type="number" value={adjustQty} onChange={(e) => setAdjustQty(e.target.value)} />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="adjustReason">Reason</Label>
+            <div className="space-y-1">
+<Label htmlFor="adjustReason">Reason</Label>
               <Input id="adjustReason" placeholder="e.g. Inventory count adjustment" value={adjustReason} onChange={(e) => setAdjustReason(e.target.value)} />
             </div>
           </div>

@@ -49,7 +49,7 @@ export default function EditOrderPage() {
   if (fetching) return <SkeletonForm fields={5} />
 
   const Field = ({ id, label, required, children, className }: { id?: string; label: ReactNode; required?: boolean; children: ReactNode; className?: string }) => (
-    <div className={cn("space-y-1.5", className)}>
+    <div className={cn("space-y-1", className)}>
       <Label htmlFor={id} className="text-xs font-medium">{label}{required && <span className="text-destructive ml-0.5">*</span>}</Label>
       {children}
     </div>
