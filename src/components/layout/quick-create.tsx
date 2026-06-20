@@ -81,7 +81,6 @@ export function QuickCreate() {
   return (
     <>
       <Button size="sm" onClick={() => setOpen(true)} className="h-8 gap-1.5 text-xs shadow-sm">
-        <Plus className="w-3.5 h-3.5" />
         <span className="hidden sm:inline">Quick Create</span>
         <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘↵</kbd>
       </Button>
