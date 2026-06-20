@@ -48,7 +48,7 @@ export function MetricCardsRow({ compact }: { compact?: boolean }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
       {metrics.map((m) => (
-        <MetricCard key={m.label} label={m.label} value={m.value} change={m.change} icon={null} compact={compact} />
+        <MetricCard key={m.label} label={m.label} value={m.value} change={m.change ?? undefined} icon={null} compact={compact} />
       ))}
     </div>
   )

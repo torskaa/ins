@@ -163,42 +163,9 @@ export default function ProductionOrderDetailPage() {
           <p className="text-sm text-muted-foreground mt-1">The production order you are looking for does not exist or has been removed.</p>
         </div>
         <Button variant="secondary" onClick={() => router.push("/production/orders")}>Back to Orders</Button>
-      {/* Edit Dialog */}
-      <Dialog open={showEdit} onOpenChange={setShowEdit}>
-        <DialogContent className="sm:max-w-lg flex flex-col p-0 gap-0 max-h-[90vh]">
-          <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
-            <DialogTitle>Edit Production Order</DialogTitle>
-            <DialogDescription>Update details for <span className="font-medium text-foreground">{order?.number}</span></DialogDescription>
-          </DialogHeader>
-          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-            <Card>
-              <CardHeader className="px-4 pt-4 pb-0">
-                <div className="flex items-center gap-2 text-sm font-semibold">
-                  <ClipboardList className="w-4 h-4 text-primary" />
-                  Order Information
-                </div>
-              </CardHeader>
-              <CardContent className="p-4 space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <FieldGroup label="Quantity"><Input type="number" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} /></FieldGroup>
-                  <FieldGroup label="Start Date"><Input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} /></FieldGroup>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <FieldGroup label="Due Date"><Input type="date" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} /></FieldGroup>
-                </div>
-                <FieldGroup label="Notes"><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Internal notes..." /></FieldGroup>
-              </CardContent>
-            </Card>
-          </div>
-          <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
-            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
-            <Button onClick={handleSave} loading={saving}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  )
-}
+      </div>
+    )
+  }
 
   const nextAction = transitionActions[order.status]
   const totalSetup = order.operations.reduce((s, o) => s + o.setupTime, 0)
@@ -480,6 +447,40 @@ export default function ProductionOrderDetailPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={showEdit} onOpenChange={setShowEdit}>
+        <DialogContent className="sm:max-w-lg flex flex-col p-0 gap-0 max-h-[90vh]">
+          <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
+            <DialogTitle>Edit Production Order</DialogTitle>
+            <DialogDescription>Update details for <span className="font-medium text-foreground">{order.number}</span></DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <ClipboardList className="w-4 h-4 text-primary" />
+                  Order Information
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Quantity"><Input type="number" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Start Date"><Input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} /></FieldGroup>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Due Date"><Input type="date" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} /></FieldGroup>
+                </div>
+                <FieldGroup label="Notes"><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Internal notes..." /></FieldGroup>
+              </CardContent>
+            </Card>
+          </div>
+          <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
+            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button onClick={handleSave} loading={saving}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

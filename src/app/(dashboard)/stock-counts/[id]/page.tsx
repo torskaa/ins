@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { AlertTriangle, ArrowLeft, Barcode, Boxes, Building2, Calendar, Calculator, CheckCircle, ClipboardList, Clock, DollarSign, FileText, Hash, Layers, Package, Pencil, Sparkles, Trash2, XCircle } from "lucide-react"
+import { AlertTriangle, ArrowLeft, Barcode, Boxes, Building2, Calendar, Calculator, CheckCircle, ClipboardList, Clock, DollarSign, FileText, Hash, Layers, MapPin, Package, Pencil, Sparkles, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"

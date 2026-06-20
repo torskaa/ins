@@ -47,6 +47,7 @@ export const POST = apiHandler(async (request: Request, { params }: { params: Pr
           productId: item.productId,
           orderId: id,
           description: `Stock returned from cancelled order ${order.number}`,
+          organizationId: order.organizationId,
         },
       })
     }
@@ -70,6 +71,7 @@ export const POST = apiHandler(async (request: Request, { params }: { params: Pr
           productId: item.productId,
           orderId: id,
           description: `Goods received for PO ${order.number}`,
+          organizationId: order.organizationId,
         },
       })
     }

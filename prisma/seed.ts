@@ -313,6 +313,7 @@ async function main() {
     data: smData.map((m) => ({
       type: m.type, quantity: Math.abs(m.qty), description: `Stock ${m.type}: ${m.ref}`,
       reference: m.ref, productId: products[m.prodIdx].id, warehouseId: warehouses[m.whIdx].id,
+      organizationId: org.id,
     })),
   })
   console.log(`  Stock Movements: ${smData.length}`)

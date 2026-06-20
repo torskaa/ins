@@ -94,10 +94,7 @@ export function QuickCreate() {
               return (
                 <CommandItem key={action.id} onSelect={() => handleSelect(action.id)}>
                   <Icon className="w-4 h-4" />
-                  <div className="flex flex-col">
-                    <span>{action.label}</span>
-                    <span className="text-xs text-muted-foreground">{action.description}</span>
-                  </div>
+                  <span>{action.label}</span>
                   <kbd className="ml-auto text-xs text-muted-foreground">{action.shortcut}</kbd>
                 </CommandItem>
               )

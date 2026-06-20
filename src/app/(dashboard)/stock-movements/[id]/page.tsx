@@ -67,7 +67,12 @@ export default function StockMovementDetailPage({ params }: { params: Promise<{ 
       </Breadcrumb>
 
       <Frame>
-        <FramePanel title="Movement Details" icon={<Activity className="w-4 h-4" />}>
+        <FramePanel>
+          <div className="flex items-center gap-2 px-6 pt-4 pb-2 border-b border-border/60">
+            <Activity className="w-4 h-4 text-primary" />
+            <h2 className="text-sm font-semibold">Movement Details</h2>
+          </div>
+          <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Field label="Type" value={data.type} />
             <Field label="Quantity" value={`${data.quantity > 0 ? "+" : ""}${data.quantity}`} mono />
@@ -76,8 +81,9 @@ export default function StockMovementDetailPage({ params }: { params: Promise<{ 
             <Field label="SKU" value={data.product?.sku || "—"} mono />
             <Field label="Warehouse" value={data.warehouse?.name || "—"} />
             <Field label="Lot" value={data.lot?.number || "—"} mono />
-            <Field label="Delivery" value={data.delivery?.reference || "—"} mono />
+            <Field label="Delivery" value={data.delivery?.number || "—"} mono />
             <Field label="Date" value={formatDateTime(new Date(data.createdAt))} />
+          </div>
           </div>
 
           {data.description && (

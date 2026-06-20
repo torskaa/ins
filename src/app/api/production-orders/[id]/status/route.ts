@@ -46,6 +46,7 @@ export const POST = apiHandler(async (request: Request, { params }: any) => {
             description: `Issued to production order ${order.number}`,
             reference: order.number,
             productId: mat.productId,
+            organizationId: org.id,
           },
         })
         await prisma.product.update({
@@ -72,6 +73,7 @@ export const POST = apiHandler(async (request: Request, { params }: any) => {
         description: `Produced from production order ${order.number}`,
         reference: order.number,
         productId: order.productId,
+        organizationId: org.id,
       },
     })
     await prisma.product.update({

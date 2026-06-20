@@ -13,11 +13,15 @@ function Select({
   onValueChange,
   onChange,
   children,
+  className,
+  id,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root> & {
   options?: { value: string; label: string }[]
   placeholder?: string
-  onChange?: (e: React.ChangeEvent<HTMLSelectElement> | { target: { value: string } }) => void
+  className?: string
+  id?: string
+  onChange?: (e: any) => void
 }) {
   const handleValueChange = React.useCallback((v: string) => {
     onValueChange?.(v)
@@ -25,6 +29,7 @@ function Select({
   }, [onValueChange, onChange])
 
   return (
+    <div className={className}>
     <SelectPrimitive.Root data-slot="select" value={value} onValueChange={handleValueChange} {...props}>
       {children || (
         <>
@@ -39,6 +44,7 @@ function Select({
         </>
       )}
     </SelectPrimitive.Root>
+    </div>
   )
 }
 

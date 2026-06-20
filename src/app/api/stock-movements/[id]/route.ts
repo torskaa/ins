@@ -10,7 +10,7 @@ export const GET = apiHandler(async (_request: Request, { params }: { params: Pr
       product: { select: { id: true, name: true, sku: true } },
       warehouse: { select: { id: true, name: true } },
       lot: { select: { id: true, number: true } },
-      delivery: { select: { id: true, reference: true } },
+      delivery: { select: { id: true, number: true } },
     },
   })
   if (!movement) {

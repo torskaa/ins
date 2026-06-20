@@ -76,6 +76,7 @@ export const POST = apiHandler(async (request: Request) => {
           productId: item.productId,
           orderId: orderId,
           description: `Sales order ${orderNumber}`,
+          organizationId: org.id,
         },
       })
     }

@@ -440,10 +440,10 @@ export default function ReportsPage() {
  <CardDescription>Daily revenue over the selected period</CardDescription>
  </div>
  <Button
- variant="ghost"
- size="iconSm"
- onClick={exportRevenueTrend}
- title="Export CSV"
+  variant="ghost"
+  size="icon-sm"
+  onClick={exportRevenueTrend}
+  title="Export CSV"
  >
  </Button>
  </CardHeader>
@@ -505,7 +505,7 @@ export default function ReportsPage() {
  </div>
  <Button
  variant="ghost"
- size="iconSm"
+ size="icon-sm"
  onClick={exportOrdersReport}
  title="Export CSV"
  >

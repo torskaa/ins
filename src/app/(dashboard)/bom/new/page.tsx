@@ -164,14 +164,12 @@ export default function NewBOMPage() {
                 </div>
               </CardHeader>
               <CardContent className="p-4 space-y-3">
-                <Field id="finishedGoodId" label="Finished Good" required>
+                  <Field id="finishedGoodId" label="Finished Good" required>
                   <Select
-                    id="finishedGoodId"
                     options={finishedGoods.map((g) => ({ value: g.id, label: g.name + " (" + g.sku + ")" }))}
                     placeholder="Select the product to produce..."
                     value={finishedGoodId}
-                    onChange={(e: any) => setFinishedGoodId(e.target.value)}
-                    required
+                    onValueChange={setFinishedGoodId}
                   />
                 </Field>
               </CardContent>
@@ -215,7 +213,7 @@ export default function NewBOMPage() {
                               placeholder="Select material..."
                               value={row.materialId}
                               className={isSubAssembly ? "pl-8" : ""}
-                              onChange={(e: any) => updateRow(row.key, "materialId", e.target.value)}
+                              onValueChange={(v) => updateRow(row.key, "materialId", v)}
                             />
                           </div>
                         </div>
@@ -244,7 +242,7 @@ export default function NewBOMPage() {
                           <Select
                             options={UNITS}
                             value={row.unit}
-                            onChange={(e: any) => updateRow(row.key, "unit", e.target.value)}
+                            onValueChange={(v) => updateRow(row.key, "unit", v)}
                           />
                         </div>
                         <div className="space-y-1">

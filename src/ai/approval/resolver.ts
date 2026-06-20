@@ -1,5 +1,5 @@
-import type { ApprovalRequest, ApprovalDecision } from "../approval/approval"
-import type { AgentRun } from "../agents/types"
+import type { ApprovalDecision } from "../approval/approval"
+import type { AgentRun, ApprovalRequest } from "../agents/types"
 
 export function resolveApproval(
   run: AgentRun,
