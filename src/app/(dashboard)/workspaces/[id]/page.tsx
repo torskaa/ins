@@ -9,11 +9,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { Building2, Clock, Hash, Pencil, Trash2, Users, XCircle } from "lucide-react"
+import { AlertTriangle, Building2, Clock, Hash, Pencil, Trash2, Users, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 import { MoreMenu } from "@/components/ui/more-menu"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
@@ -25,7 +26,7 @@ function FieldDisplay({ label, value, mono, badge }: { label: string; value: str
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -49,6 +50,7 @@ export default function WorkspaceSettingsPage({ params }: { params: Promise<{ id
   const router = useRouter()
   const [id, setId] = useState("")
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
@@ -76,7 +78,7 @@ export default function WorkspaceSettingsPage({ params }: { params: Promise<{ id
           setWorkspace(null)
         }
       })
-      .catch(() => toast.error("Failed to load workspace"))
+      .catch((err) => { setError(err.message); setLoading(false) })
       .finally(() => setLoading(false))
   }, [id])
 
@@ -111,6 +113,12 @@ export default function WorkspaceSettingsPage({ params }: { params: Promise<{ id
     finally { setDeleting(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
+
   if (loading) return <SkeletonDetail cards={2} hasChart={false} />
 
   if (!workspace) {
@@ -120,7 +128,7 @@ export default function WorkspaceSettingsPage({ params }: { params: Promise<{ id
           <h2 className="text-lg font-semibold">Workspace not found</h2>
           <p className="text-sm text-muted-foreground mt-1">The workspace you are looking for does not exist or has been removed.</p>
         </div>
-        <Button variant="secondary" onClick={() => router.push("/workspaces")}>Back to Workspaces</Button>
+        <Button variant="outline" onClick={() => router.push("/workspaces")}>Back to Workspaces</Button>
       </div>
     )
   }
@@ -147,8 +155,8 @@ export default function WorkspaceSettingsPage({ params }: { params: Promise<{ id
               <div className="flex flex-col gap-2 min-w-0 flex-1">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-bold">{name}</h1>
-                  <SemanticBadge semantic={slug} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{slug}</SemanticBadge>
-                  <SemanticBadge semantic={role} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{role}</SemanticBadge>
+                  <SemanticBadge semantic={slug} category="id" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{slug}</SemanticBadge>
+                  <SemanticBadge semantic={role} category="status" className="gap-1 text-[11px]"><BadgeDot />{role}</SemanticBadge>
                 </div>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1.5">
@@ -243,7 +251,7 @@ export default function WorkspaceSettingsPage({ params }: { params: Promise<{ id
             </Card>
           </div>
           <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
-            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowEdit(false)}>Cancel</Button>
             <Button onClick={handleSave} loading={saving}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
           </DialogFooter>
         </DialogContent>
@@ -256,7 +264,7 @@ export default function WorkspaceSettingsPage({ params }: { params: Promise<{ id
             <DialogDescription>Are you sure you want to delete <strong>{name}</strong>? All data will be permanently lost.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="outline" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
             <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
           </DialogFooter>
         </DialogContent>

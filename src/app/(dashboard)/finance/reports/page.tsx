@@ -7,20 +7,28 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Select } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { BarChart3, FileText, TrendingUp } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
+import { AlertTriangle, BarChart3, FileText, TrendingUp } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 
 export default function FinanceReportsPage() {
  const [reportType, setReportType] = useState("summary")
- const [data, setData] = useState<any>(null)
- const [loading, setLoading] = useState(true)
+  const [data, setData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
  useEffect(() => {
  setLoading(true)
- fetch(`/api/finance/reports?type=${reportType}`).then(r => r.json()).then(setData).finally(() => setLoading(false))
+   fetch(`/api/finance/reports?type=${reportType}`).then(r => r.json()).then((json) => { if (json?.success) setData(json.data); else throw new Error(json?.error || "Failed to load") }).catch((err) => { setError(err.message); setLoading(false) }).finally(() => setLoading(false))
  }, [reportType])
 
- if (loading) return <Skeleton className="h-96 w-full rounded-xl" />
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
+
+  if (loading) return <Skeleton className="h-96 w-full rounded-xl" />
 
  return (
  <div className="animate-fade-in">
@@ -45,10 +53,10 @@ export default function FinanceReportsPage() {
 
  <TabsContent value="summary" className="mt-6 space-y-6">
  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
- <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-emerald-600">{formatCurrency(data?.totalRevenue || 0)}</p><p className="text-xs text-muted-foreground">Total Revenue</p></CardContent></Card>
- <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-red-600">{formatCurrency(data?.totalExpenses || 0)}</p><p className="text-xs text-muted-foreground">Total Expenses</p></CardContent></Card>
- <Card><CardContent className="p-4"><p className={`text-2xl font-semibold ${(data?.netIncome || 0) >= 0 ? "text-emerald-600" : "text-red-600"}`}>{formatCurrency(data?.netIncome || 0)}</p><p className="text-xs text-muted-foreground">Net Income</p></CardContent></Card>
- <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-blue-600">{formatCurrency(data?.totalAssets || 0)}</p><p className="text-xs text-muted-foreground">Total Assets</p></CardContent></Card>
+ <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-success">{formatCurrency(data?.totalRevenue || 0)}</p><p className="text-xs text-muted-foreground">Total Revenue</p></CardContent></Card>
+ <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-destructive">{formatCurrency(data?.totalExpenses || 0)}</p><p className="text-xs text-muted-foreground">Total Expenses</p></CardContent></Card>
+ <Card><CardContent className="p-4"><p className={`text-2xl font-semibold ${(data?.netIncome || 0) >= 0 ? "text-success" : "text-destructive"}`}>{formatCurrency(data?.netIncome || 0)}</p><p className="text-xs text-muted-foreground">Net Income</p></CardContent></Card>
+ <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-info">{formatCurrency(data?.totalAssets || 0)}</p><p className="text-xs text-muted-foreground">Total Assets</p></CardContent></Card>
  </div>
  {(data?.revenueByMonth?.length > 0) && (
  <Card><CardHeader><CardTitle>Revenue vs Expenses</CardTitle></CardHeader>
@@ -56,7 +64,7 @@ export default function FinanceReportsPage() {
  <table className="w-full text-sm"><thead><tr className="text-left text-muted-foreground border-b border-border"><th className="pb-2 font-medium">Month</th><th className="pb-2 font-medium text-right">Revenue</th><th className="pb-2 font-medium text-right">Expenses</th></tr></thead>
  <tbody>{data.revenueByMonth.map((r: any, i: number) => {
  const exp = data.expenseByMonth?.find((e: any) => e.month === r.month)
- return <tr key={r.month} className="border-b border-border/50"><td className="py-2">{r.month}</td><td className="py-2 text-right font-mono text-emerald-600">{formatCurrency(r.amount)}</td><td className="py-2 text-right font-mono text-red-600">{formatCurrency(exp?.amount || 0)}</td></tr>
+ return <tr key={r.month} className="border-b border-border/50"><td className="py-2">{r.month}</td><td className="py-2 text-right font-mono text-success">{formatCurrency(r.amount)}</td><td className="py-2 text-right font-mono text-destructive">{formatCurrency(exp?.amount || 0)}</td></tr>
  })}</tbody></table>
  </CardContent>
  </Card>
@@ -65,9 +73,9 @@ export default function FinanceReportsPage() {
 
  <TabsContent value="balance-sheet" className="mt-6 space-y-6">
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
- <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-blue-600">{formatCurrency(data?.totalAssets || 0)}</p><p className="text-xs text-muted-foreground">Total Assets</p></CardContent></Card>
- <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-orange-600">{formatCurrency(data?.totalLiabilities || 0)}</p><p className="text-xs text-muted-foreground">Total Liabilities</p></CardContent></Card>
- <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-purple-600">{formatCurrency(data?.totalEquity || 0)}</p><p className="text-xs text-muted-foreground">Total Equity</p></CardContent></Card>
+ <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-info">{formatCurrency(data?.totalAssets || 0)}</p><p className="text-xs text-muted-foreground">Total Assets</p></CardContent></Card>
+ <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-warning">{formatCurrency(data?.totalLiabilities || 0)}</p><p className="text-xs text-muted-foreground">Total Liabilities</p></CardContent></Card>
+ <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-primary">{formatCurrency(data?.totalEquity || 0)}</p><p className="text-xs text-muted-foreground">Total Equity</p></CardContent></Card>
  </div>
  {data?.assets?.length > 0 && (
  <Card><CardHeader><CardTitle>Assets</CardTitle></CardHeader>
@@ -83,9 +91,9 @@ export default function FinanceReportsPage() {
 
  <TabsContent value="profit-loss" className="mt-6 space-y-6">
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
- <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-emerald-600">{formatCurrency(data?.totalRevenue || 0)}</p><p className="text-xs text-muted-foreground">Total Revenue</p></CardContent></Card>
- <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-red-600">{formatCurrency(data?.totalExpenses || 0)}</p><p className="text-xs text-muted-foreground">Total Expenses</p></CardContent></Card>
- <Card><CardContent className="p-4"><p className={`text-2xl font-semibold ${(data?.netIncome || 0) >= 0 ? "text-emerald-600" : "text-red-600"}`}>{formatCurrency(data?.netIncome || 0)}</p><p className="text-xs text-muted-foreground">Net Income</p></CardContent></Card>
+ <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-success">{formatCurrency(data?.totalRevenue || 0)}</p><p className="text-xs text-muted-foreground">Total Revenue</p></CardContent></Card>
+ <Card><CardContent className="p-4"><p className="text-2xl font-semibold text-destructive">{formatCurrency(data?.totalExpenses || 0)}</p><p className="text-xs text-muted-foreground">Total Expenses</p></CardContent></Card>
+ <Card><CardContent className="p-4"><p className={`text-2xl font-semibold ${(data?.netIncome || 0) >= 0 ? "text-success" : "text-destructive"}`}>{formatCurrency(data?.netIncome || 0)}</p><p className="text-xs text-muted-foreground">Net Income</p></CardContent></Card>
  </div>
  {data?.revenue?.length > 0 && (
  <Card><CardHeader><CardTitle>Revenue</CardTitle></CardHeader>

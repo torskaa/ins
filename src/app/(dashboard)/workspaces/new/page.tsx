@@ -34,10 +34,10 @@ export default function NewWorkspacePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim() }),
       })
-      if (!res.ok) throw new Error()
-      const data = await res.json()
-      await update({ activeOrganizationId: data.id })
-      toast.success(`Workspace "${data.name}" created`)
+      const json = await res.json()
+      if (!json.success) throw new Error(json.error || "Failed to create")
+      await update({ activeOrganizationId: json.data.id })
+      toast.success(`Workspace "${json.data.name}" created`)
       router.push("/dashboard")
       router.refresh()
     } catch { toast.error("Failed to create workspace") }

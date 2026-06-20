@@ -53,7 +53,7 @@ function FieldDisplay({ label, value, mono, badge }: { label: string; value: str
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -79,6 +79,7 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
   const [stockCount, setStockCount] = useState<StockCountDetail | null>(null)
   const [items, setItems] = useState<StockCountItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -94,11 +95,14 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
     if (!id) return
     fetch(`/api/stock-counts/${id}`)
       .then(r => r.json())
-      .then((data) => {
+      .then((json) => {
+        if (!json?.success) throw new Error(json?.error || "Failed to load")
+        const data = json.data
         setStockCount(data)
         setItems(data.items.map((i: StockCountItem) => ({ ...i })))
         setForm({ countDate: data.countDate || "", notes: data.notes || "" })
       })
+      .catch((err) => { setError(err.message) })
       .finally(() => setLoading(false))
   }, [id])
 
@@ -188,6 +192,17 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
     }
   }
 
+  if (error) {
+    return (
+      <EmptyState
+        variant="error"
+        title="Failed to load data"
+        description={error}
+        actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+      />
+    )
+  }
+
   if (loading) return <SkeletonDetail cards={4} hasChart={true} />
 
   if (!stockCount) {
@@ -197,7 +212,7 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
           <h2 className="text-lg font-semibold">Stock count not found</h2>
           <p className="text-sm text-muted-foreground mt-1">The stock count you are looking for does not exist or has been removed.</p>
         </div>
-        <Button variant="secondary" onClick={() => router.push("/stock-counts")}>Back to Stock Counts</Button>
+        <Button variant="outline" onClick={() => router.push("/stock-counts")}>Back to Stock Counts</Button>
       </div>
     )
   }
@@ -231,12 +246,12 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-bold font-mono">{stockCount.number}</h1>
                   {stockCount.warehouse && (
-                    <SemanticBadge semantic={stockCount.warehouse.name} category="category" appearance="outline" className="gap-1 text-[11px]"><Building2 className="w-3 h-3" />{stockCount.warehouse.name}</SemanticBadge>
+                    <SemanticBadge semantic={stockCount.warehouse.name} category="category" className="gap-1 text-[11px]"><Building2 className="w-3 h-3" />{stockCount.warehouse.name}</SemanticBadge>
                   )}
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <SemanticBadge semantic={stockCount.status} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{stockCount.status}</SemanticBadge>
-                  <SemanticBadge semantic={stockCount.number} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{stockCount.number}</SemanticBadge>
+                  <SemanticBadge semantic={stockCount.status} category="status" className="gap-1 text-[11px]"><BadgeDot />{stockCount.status}</SemanticBadge>
+                  <SemanticBadge semantic={stockCount.number} category="id" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{stockCount.number}</SemanticBadge>
                 </div>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <Calendar className="w-3.5 h-3.5" />
@@ -286,7 +301,7 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
                   </div>
                   <Button type="submit" size="sm" className="gap-1.5 h-9 text-xs">Find</Button>
                 </form>
-                <Button variant="secondary" size="sm" className="gap-1.5 h-9 text-xs" onClick={handleAiCount} disabled={aiCounting}>
+                <Button variant="outline" size="sm" className="gap-1.5 h-9 text-xs" onClick={handleAiCount} disabled={aiCounting}>
                   <Sparkles className={`w-3.5 h-3.5 ${aiCounting ? "animate-pulse" : ""}`} />
                   {aiCounting ? "AI Counting..." : "AI Count"}
                 </Button>
@@ -315,9 +330,9 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
                           ref={isHighlighted ? highlightRef : undefined}
                           className={`transition-colors ${
                             isHighlighted
-                              ? "bg-yellow-50 border-yellow-300 ring-1 ring-yellow-300"
+                              ? "bg-warning/5 border-warning/30 ring-1 ring-warning/30"
                               : item.difference !== 0
-                                ? "bg-red-50/50"
+                                ? "bg-destructive/10"
                                 : "hover:bg-muted/30"
                           }`}
                           onClick={() => { setHighlightedId(null); focusEditingQty(item.id) }}
@@ -337,17 +352,17 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
                                   if (e.key === "Enter") handleActualQtyBlur(item.id)
                                   if (e.key === "Escape") { setEditingQty(null); setHighlightedId(null) }
                                 }}
-                                className="w-16 text-right font-mono text-xs px-1.5 py-0.5 rounded border border-blue-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                className="w-16 text-right font-mono text-xs px-1.5 py-0.5 rounded border border-info bg-card focus:outline-none focus:ring-2 focus:ring-info/50"
                                 autoFocus
                               />
                             ) : (
-                              <span className="font-mono text-xs cursor-pointer hover:bg-blue-50 px-1.5 py-0.5 rounded" onClick={e => { e.stopPropagation(); focusEditingQty(item.id) }}>
+                              <span className="font-mono text-xs cursor-pointer hover:bg-info/5 px-1.5 py-0.5 rounded" onClick={e => { e.stopPropagation(); focusEditingQty(item.id) }}>
                                 {item.actualQty}
                               </span>
                             )}
                           </td>
                           <td className="px-3 py-2 text-right font-mono text-xs">
-                            <span className={item.difference !== 0 ? "text-red-600 font-semibold" : "text-muted-foreground"}>
+                            <span className={item.difference !== 0 ? "text-destructive font-semibold" : "text-muted-foreground"}>
                               {item.difference > 0 ? `+${item.difference}` : item.difference}
                             </span>
                           </td>
@@ -387,11 +402,11 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">Matched</span>
-                <span className="text-xs font-mono font-medium text-emerald-600">{matchedItems}</span>
+                <span className="text-xs font-mono font-medium text-success">{matchedItems}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">Discrepancies</span>
-                <span className={`text-xs font-mono font-medium ${discrepancyItems > 0 ? "text-red-600" : "text-muted-foreground"}`}>
+                <span className={`text-xs font-mono font-medium ${discrepancyItems > 0 ? "text-destructive" : "text-muted-foreground"}`}>
                   {discrepancyItems}
                 </span>
               </div>
@@ -415,9 +430,9 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
           </Card>
 
           {/* Discrepancies */}
-          <Card className={`flex-1 ${discrepancies.length > 0 ? "border-red-200/50" : ""}`}>
+          <Card className={`flex-1 ${discrepancies.length > 0 ? "border-destructive/20" : ""}`}>
             <CardHeader className="px-4 pt-4 pb-0">
-              <div className={`flex items-center gap-2 text-sm font-semibold ${discrepancies.length > 0 ? "text-red-700" : "text-emerald-700"}`}>
+              <div className={`flex items-center gap-2 text-sm font-semibold ${discrepancies.length > 0 ? "text-destructive" : "text-success"}`}>
                 {discrepancies.length > 0 ? <AlertTriangle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
                 Discrepancies ({discrepancies.length})
               </div>
@@ -434,7 +449,7 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
                       <div className="text-right shrink-0">
                         <p className="text-[11px] text-muted-foreground">Exp <span className="font-mono">{item.expectedQty}</span></p>
                         <p className="text-[11px] text-muted-foreground">Act <span className="font-mono">{item.actualQty}</span></p>
-                        <p className={`text-[11px] font-semibold font-mono ${item.difference < 0 ? "text-red-600" : "text-amber-600"}`}>
+                        <p className={`text-[11px] font-semibold font-mono ${item.difference < 0 ? "text-destructive" : "text-warning"}`}>
                           {item.difference > 0 ? `+${item.difference}` : item.difference}
                         </p>
                       </div>
@@ -490,7 +505,7 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
             </Card>
           </div>
           <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
-            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowEdit(false)}>Cancel</Button>
             <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
           </DialogFooter>
         </DialogContent>
@@ -504,7 +519,7 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
             <DialogDescription>Are you sure you want to delete <strong>{stockCount.number}</strong>? This action cannot be undone.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="outline" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
             <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
           </DialogFooter>
         </DialogContent>

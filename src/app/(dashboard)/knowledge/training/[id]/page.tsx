@@ -83,7 +83,7 @@ function FieldDisplay({ label, value, mono, badge }: { label: string; value: str
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -107,6 +107,7 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
   const router = useRouter()
   const [program, setProgram] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -123,7 +124,9 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
     setLoading(true)
     fetch(`/api/knowledge/training/${id}`)
       .then((r) => r.json())
-      .then((data) => {
+      .then((json) => {
+        if (!json?.success) throw new Error(json?.error || "Failed to load")
+        const data = json.data
         setProgram(data)
         setForm({
           title: data.title,
@@ -134,9 +137,15 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
           modules: String(data.modules),
         })
       })
-      .catch(() => {})
+      .catch((err) => { setError(err.message); setLoading(false) })
       .finally(() => setLoading(false))
   }, [id])
+
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
 
   if (loading) return <SkeletonDetail cards={4} hasChart={true} />
 
@@ -203,7 +212,7 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
     { key: "index", label: "#", render: (_: any, i: number) => <span className="text-muted-foreground text-xs">{i + 1}</span> },
     { key: "title", label: "Module", render: (item: any) => <span className="font-medium">{item.title}</span> },
     { key: "duration", label: "Duration", render: (item: any) => <span className="text-muted-foreground">{item.duration}</span> },
-    { key: "status", label: "Status", render: (item: any) => item.completed ? <SemanticBadge semantic="completed" category="status" className="capitalize">Completed</SemanticBadge> : <SemanticBadge semantic="pending" category="status" className="capitalize">Pending</SemanticBadge> },
+    { key: "status", label: "Status", render: (item: any) => item.completed ? <SemanticBadge semantic="completed" category="status" className="">Completed</SemanticBadge> : <SemanticBadge semantic="pending" category="status" className="">Pending</SemanticBadge> },
   ]
 
   return (
@@ -233,8 +242,8 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
                   <h1 className="text-2xl font-bold">{program.title}</h1>
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <SemanticBadge semantic={program.level} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{program.level}</SemanticBadge>
-                  <SemanticBadge semantic={program.type} category="type" appearance="outline" className="gap-1 text-[11px]" />
+                  <SemanticBadge semantic={program.level} category="status" className="gap-1 text-[11px]"><BadgeDot />{program.level}</SemanticBadge>
+                  <SemanticBadge semantic={program.type} category="type" className="gap-1 text-[11px]" />
                 </div>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span>{program.duration} · {program.modules} modules · {program.students} enrolled</span>
@@ -393,7 +402,7 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
                       <div key={i} className={`p-3 rounded-xl border transition-colors ${m.completed ? "border-success/20 bg-success/5" : "border-border/50"}`}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium ${m.completed ? "bg-success text-white" : "bg-surface text-muted-foreground"}`}>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium ${m.completed ? "bg-success text-primary-foreground" : "bg-surface text-muted-foreground"}`}>
                               {m.completed ? null : i + 1}
                             </div>
                             <div>

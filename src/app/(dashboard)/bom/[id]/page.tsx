@@ -8,14 +8,22 @@ import { Button } from "@/components/ui/button"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
-import { Clock, DollarSign, Hash, History, Layers, Package, Pencil, ShoppingCart } from "lucide-react"
+import { Clock, DollarSign, Hash, History, HouseIcon, Layers, Package, Pencil, ShoppingCart } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Frame, FramePanel } from "@/components/reui/frame"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
 import { MoreMenu } from "@/components/ui/more-menu"
 import { Separator } from "@/components/ui/separator"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter,
+} from "@/components/ui/dialog"
 
 function FieldDisplay({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
@@ -85,12 +93,17 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
   const [id, setId] = useState("")
   const [lines, setLines] = useState<BOMLine[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [selectedVersion, setSelectedVersion] = useState<number | null>(null)
   const [impact, setImpact] = useState<ImpactData | null>(null)
   const [loadingImpact, setLoadingImpact] = useState(false)
   const [productName, setProductName] = useState("")
   const [productSku, setProductSku] = useState("")
   const [productType, setProductType] = useState("")
+  const [showEdit, setShowEdit] = useState(false)
+  const [form, setForm] = useState<any>({})
+  const [editingItem, setEditingItem] = useState<any>(null)
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     params.then(({ id }) => setId(id))
@@ -110,6 +123,7 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
           setProductType(data[0].finishedGood.type)
         }
       })
+      .catch((err) => { setError(err.message || "Failed to load data") })
       .finally(() => setLoading(false))
   }, [id])
 
@@ -161,6 +175,44 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
   const totalQty = activeVersion?.items.reduce((s, i) => s + i.quantity, 0) || 0
   const totalCost = activeVersion?.items.reduce((s, i) => s + i.quantity * i.material.unitPrice, 0) || 0
 
+  async function handleSave() {
+    if (!editingItem || !id) return
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/bom/${editingItem.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quantity: parseFloat(form.quantity) || 0,
+          scrapAllowance: parseFloat(form.scrapAllowance) || 0,
+          unit: form.unit,
+          wastePercent: parseFloat(form.wastePercent) || 0,
+          notes: form.notes,
+        }),
+      })
+      if (!res.ok) throw new Error("Failed")
+      toast.success("BOM entry updated")
+      setShowEdit(false)
+      const refreshed = await fetch(`/api/bom?finishedGoodId=${id}`).then((r) => r.json())
+      setLines(refreshed)
+    } catch {
+      toast.error("Failed to update BOM entry")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (error) {
+    return (
+      <EmptyState
+        variant="error"
+        title="Failed to load data"
+        description={error}
+        actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+      />
+    )
+  }
+
   if (loading) return <SkeletonDetail cards={3} hasChart={false} />
 
   if (lines.length === 0) {
@@ -170,7 +222,7 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
           <h2 className="text-lg font-semibold">BOM not found</h2>
           <p className="text-sm text-muted-foreground mt-1">The bill of materials you are looking for does not exist or has been removed.</p>
         </div>
-        <Button variant="secondary" onClick={() => router.push("/bom")}>Back to BOM</Button>
+        <Button variant="outline" onClick={() => router.push("/bom")}>Back to BOM</Button>
       </div>
     )
   }
@@ -190,20 +242,24 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/bom")}>BOM</button>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{productName}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Frame variant="ghost" className="w-fit">
+        <FramePanel className="gap-2 px-3! py-2! border-0!">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/bom" className="flex items-center gap-1.5">
+                  <HouseIcon className="size-4" aria-hidden="true" />
+                  BOM
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-semibold">{productName}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </FramePanel>
+      </Frame>
 
       <div className="grid grid-cols-12 gap-4">
         {/* Page Header */}
@@ -214,14 +270,14 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-bold">{productName}</h1>
                   {productType && (
-                    <SemanticBadge semantic={productType} category="type" appearance="outline" className="gap-1 text-[11px]"><Package className="w-3 h-3" />{productType}</SemanticBadge>
+                    <SemanticBadge semantic={productType} category="type" className="gap-1 text-[11px]"><Package className="w-3 h-3" />{productType}</SemanticBadge>
                   )}
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
                   {activeVersion && (
-                    <SemanticBadge semantic={activeVersion.status} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />v{activeVersion.version} · {activeVersion.status}</SemanticBadge>
+                    <SemanticBadge semantic={activeVersion.status} category="status" className="gap-1 text-[11px]"><BadgeDot />v{activeVersion.version} · {activeVersion.status}</SemanticBadge>
                   )}
-                  <SemanticBadge semantic={productSku} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{productSku}</SemanticBadge>
+                  <SemanticBadge semantic={productSku} category="id" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{productSku}</SemanticBadge>
                 </div>
               </div>
             </div>
@@ -231,7 +287,7 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
                   Impact
                 </Button>
                 <MoreMenu actions={[
-                  { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => router.push(`/bom/${id}/edit`) },
+                  { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => { setEditingItem(activeVersion?.items[0] || null); if (activeVersion?.items[0]) { setForm({ quantity: String(activeVersion.items[0].quantity), scrapAllowance: String(activeVersion.items[0].scrapAllowance), unit: activeVersion.items[0].unit, wastePercent: String(activeVersion.items[0].wastePercent), notes: activeVersion.items[0].notes || "" }); setShowEdit(true) } } },
                 ]} />
                 {versions.length > 1 && (
                   <select
@@ -294,7 +350,7 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
                       <span className="text-xs text-muted-foreground">—</span>
                     )}
                   </div>
-                  <div><Badge variant="secondary" className="text-xs">{item.unit}</Badge></div>
+                  <div><Badge variant="outline" className="text-xs">{item.unit}</Badge></div>
                 </div>
               ))}
             </CardContent>
@@ -367,7 +423,7 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
                 </Button>
               )}
               {isLatest && activeVersion?.status === "approved" && (
-                <Button variant="secondary" onClick={() => handleAction("archive")} className="w-full gap-1.5">
+                <Button variant="outline" onClick={() => handleAction("archive")} className="w-full gap-1.5">
                   Archive
                 </Button>
               )}
@@ -402,7 +458,7 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
 
               <Separator />
 
-              <Button variant="secondary" size="sm" onClick={() => router.push("/bom/new")} className="w-full gap-1.5">
+              <Button variant="outline" size="sm" onClick={() => router.push("/bom/new")} className="w-full gap-1.5">
                 New Version
               </Button>
             </CardContent>
@@ -429,13 +485,13 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
 
       {/* Version History Tab Module */}
       {versions.length > 1 && (
-        <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+        <div className="rounded-xl border border-border/60 bg-card overflow-hidden pt-8">
           <Tabs defaultValue="versions">
             <TabsList className="w-full overflow-x-auto px-4">
               <TabsTrigger value="versions" className="gap-1.5"><History className="w-4 h-4" /> Version History ({versions.length})</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="versions" className="p-3">
+            <TabsContent value="versions" className="pt-8 px-3 pb-3">
               <div data-slot="frame">
                 <Table>
                   <TableHeader>
@@ -462,6 +518,41 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
           </Tabs>
         </div>
       )}
+
+      {/* Edit Dialog */}
+      <Dialog open={showEdit} onOpenChange={setShowEdit}>
+        <DialogContent className="sm:max-w-lg flex flex-col p-0 gap-0 max-h-[90vh]">
+          <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
+            <DialogTitle>Edit BOM Entry</DialogTitle>
+            <DialogDescription>Update component details for <span className="font-medium text-foreground">{editingItem?.material?.name || productName}</span></DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Layers className="w-4 h-4 text-primary" />
+                  Component Details
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Quantity"><Input type="number" step="0.01" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Unit"><Input value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} /></FieldGroup>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Scrap Allowance"><Input type="number" step="0.01" value={form.scrapAllowance} onChange={(e) => setForm({ ...form, scrapAllowance: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Waste %"><Input type="number" step="0.1" value={form.wastePercent} onChange={(e) => setForm({ ...form, wastePercent: e.target.value })} /></FieldGroup>
+                </div>
+                <FieldGroup label="Notes"><Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Internal notes..." /></FieldGroup>
+              </CardContent>
+            </Card>
+          </div>
+          <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
+            <Button variant="outline" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button onClick={handleSave} loading={saving}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

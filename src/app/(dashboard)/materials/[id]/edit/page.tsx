@@ -9,7 +9,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { Box, Package, Truck, XCircle } from "lucide-react"
+import { AlertTriangle, Box, Package, Truck, XCircle } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
 
@@ -27,6 +28,7 @@ export default function EditMaterialPage({ params }: { params: Promise<{ id: str
   const [id, setId] = useState("")
   const [saving, setSaving] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [suppliers, setSuppliers] = useState<{ id: string; name: string }[]>([])
   const [form, setForm] = useState({ name: "", sku: "", description: "", price: "0", costPrice: "0", stock: "0", minStock: "0", unit: "pcs", supplierId: "", leadTime: "0" })
 
@@ -40,7 +42,7 @@ export default function EditMaterialPage({ params }: { params: Promise<{ id: str
       if (mat.error) { toast.error("Material not found"); router.push("/materials"); return }
       setForm({ name: mat.name || "", sku: mat.sku || "", description: mat.description || "", price: String(mat.price || 0), costPrice: String(mat.costPrice || 0), stock: String(mat.stock || 0), minStock: String(mat.minStock || 0), unit: mat.unit || "pcs", supplierId: mat.supplierId || "", leadTime: String(mat.leadTime || 0) })
       if (Array.isArray(sups)) setSuppliers(sups)
-    }).finally(() => setFetching(false))
+    }).catch((err) => { setError(err.message); setFetching(false) }).finally(() => setFetching(false))
   }, [id, router])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -54,6 +56,11 @@ export default function EditMaterialPage({ params }: { params: Promise<{ id: str
     } catch { toast.error("Failed to update") } finally { setSaving(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (fetching) return <SkeletonForm fields={5} />
 
   return (

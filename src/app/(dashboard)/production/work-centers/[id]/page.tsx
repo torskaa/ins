@@ -44,7 +44,7 @@ function FieldDisplay({ label, value, mono, badge }: { label: string; value: str
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -77,7 +77,7 @@ export default function WorkCenterDetailPage({ params }: { params: Promise<{ id:
   useEffect(() => {
     fetch(`/api/work-centers/${id}`)
       .then(r => r.json())
-      .then(d => { if (d && !d.error) { setWc(d); setForm({ name: d.name, code: d.code, description: d.description || "", costPerHour: String(d.costPerHour), capacity: String(d.capacity), location: d.location || "", isActive: d.isActive ? "active" : "inactive" }) } else toast.error("Work center not found") })
+      .then(json => { if (json?.success && json.data) { const d = json.data; setWc(d); setForm({ name: d.name, code: d.code, description: d.description || "", costPerHour: String(d.costPerHour), capacity: String(d.capacity), location: d.location || "", isActive: d.isActive ? "active" : "inactive" }) } else toast.error(json?.error || "Work center not found") })
       .finally(() => setLoading(false))
   }, [id])
 
@@ -157,8 +157,8 @@ export default function WorkCenterDetailPage({ params }: { params: Promise<{ id:
                   <h1 className="text-2xl font-bold">{wc.name}</h1>
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <SemanticBadge semantic={wc.isActive ? "active" : "inactive"} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{wc.isActive ? "Active" : "Inactive"}</SemanticBadge>
-                  <SemanticBadge semantic={wc.code} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{wc.code}</SemanticBadge>
+                  <SemanticBadge semantic={wc.isActive ? "active" : "inactive"} category="status" className="gap-1 text-[11px]"><BadgeDot />{wc.isActive ? "Active" : "Inactive"}</SemanticBadge>
+                  <SemanticBadge semantic={wc.code} category="id" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{wc.code}</SemanticBadge>
                 </div>
               </div>
             </div>

@@ -15,7 +15,7 @@ export function LowStockWidget({ compact }: { compact?: boolean }) {
  useEffect(() => {
  fetch("/api/dashboard")
  .then((r) => r.json())
- .then((d) => setAlerts(d.stockAlerts || []))
+ .then((d) => setAlerts(d.data?.stockAlerts || d.stockAlerts || []))
  .finally(() => setLoading(false))
  }, [])
 

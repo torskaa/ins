@@ -8,12 +8,12 @@ import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import { SemanticBadge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
-import { BookOpen, Building2, DollarSign, Search } from "lucide-react"
+import { AlertTriangle, BookOpen, Building2, DollarSign, Search } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import {
   Pagination,
@@ -25,8 +25,6 @@ import {
 } from "@/components/ui/pagination"
 
 type Account = { id: string; code: string; name: string; type: string; currentBalance: number; isActive: boolean; group: { name: string } }
-
-const TYPE_COLORS: Record<string, string> = { asset: "bg-blue-100 text-blue-700", liability: "bg-orange-100 text-orange-700", equity: "bg-purple-100 text-purple-700", revenue: "bg-emerald-100 text-emerald-700", expense: "bg-red-100 text-red-700" }
 
 const PROPERTY_OPTIONS = [
   { key: "code", label: "Code" },
@@ -43,6 +41,7 @@ export default function ChartOfAccountsPage() {
   const router = useRouter()
   const [accounts, setAccounts] = useState<Account[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -52,7 +51,7 @@ export default function ChartOfAccountsPage() {
   useHotkey("c", handleNew)
 
   useEffect(() => {
-    fetch("/api/finance/accounts").then(r => r.json()).then(d => { if (d.accounts) setAccounts(d.accounts) }).finally(() => setLoading(false))
+    fetch("/api/finance/accounts").then(r => r.json()).then(json => { if (json?.success && json.data?.accounts) setAccounts(json.data.accounts); else if (!json?.success) throw new Error(json?.error || "Failed to load") }).catch((err) => { setError(err.message); setLoading(false) }).finally(() => setLoading(false))
   }, [])
 
   const filterColumns: FilterColumn[] = [
@@ -100,7 +99,7 @@ export default function ChartOfAccountsPage() {
       key: "type",
       label: "Type",
       className: "w-[120px]",
-      render: (a: Account) => <Badge className={TYPE_COLORS[a.type] || ""}>{a.type.replace("_", " ")}</Badge>,
+      render: (a: Account) => <SemanticBadge semantic={a.type} category="type" className="">{a.type.replace("_", " ")}</SemanticBadge>,
     },
     {
       key: "group",
@@ -114,7 +113,7 @@ export default function ChartOfAccountsPage() {
       className: "text-right",
       cellClassName: "text-right",
       render: (a: Account) => (
-        <span className={`font-mono text-sm ${a.currentBalance >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+        <span className={`font-mono text-sm ${a.currentBalance >= 0 ? "text-success" : "text-destructive"}`}>
           {formatCurrency(a.currentBalance)}
         </span>
       ),
@@ -123,7 +122,7 @@ export default function ChartOfAccountsPage() {
       key: "isActive",
       label: "Status",
       className: "w-[120px]",
-      render: (a: Account) => <Badge variant={a.isActive ? "primary" : "secondary"}>{a.isActive ? "Active" : "Inactive"}</Badge>,
+      render: (a: Account) => <SemanticBadge semantic={a.isActive ? "active" : "inactive"} category="status" className="">{a.isActive ? "Active" : "Inactive"}</SemanticBadge>,
     },
   ]
 
@@ -160,7 +159,11 @@ export default function ChartOfAccountsPage() {
         </div>
       </div>
 
-      {loading ? (
+      {error ? (
+        <div className="animate-fade-in pb-8 space-y-4">
+          <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+        </div>
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState

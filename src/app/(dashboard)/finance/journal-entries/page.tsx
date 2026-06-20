@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { SemanticBadge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { BookOpen, FileText, Receipt, Search } from "lucide-react"
+import { AlertTriangle, BookOpen, FileText, Receipt, Search } from "lucide-react"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { formatDate, formatCurrency } from "@/lib/utils"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
@@ -42,6 +42,7 @@ export default function JournalEntriesPage() {
   const router = useRouter()
   const [entries, setEntries] = useState<JournalEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -51,7 +52,7 @@ export default function JournalEntriesPage() {
   useHotkey("c", handleNew)
 
   useEffect(() => {
-    fetch("/api/finance/journal-entries").then(r => r.json()).then(d => { if (d.entries) setEntries(d.entries) }).finally(() => setLoading(false))
+    fetch("/api/finance/journal-entries").then(r => r.json()).then(json => { if (json?.success && json.data?.entries) setEntries(json.data.entries); else if (!json?.success) throw new Error(json?.error || "Failed to load") }).catch((err) => { setError(err.message); setLoading(false) }).finally(() => setLoading(false))
   }, [])
 
   const filterColumns: FilterColumn[] = [
@@ -99,7 +100,7 @@ export default function JournalEntriesPage() {
       key: "referenceType",
       label: "Reference",
       className: "w-[120px]",
-      render: (e: JournalEntry) => e.referenceType ? <Badge variant="outline" className="text-xs">{e.referenceType}</Badge> : <span className="text-muted-foreground">—</span>,
+      render: (e: JournalEntry) => e.referenceType ? <SemanticBadge semantic={e.referenceType || "reference"} category="type" className="text-xs">{e.referenceType}</SemanticBadge> : <span className="text-muted-foreground">—</span>,
     },
     {
       key: "totalDebit",
@@ -119,7 +120,7 @@ export default function JournalEntriesPage() {
       key: "status",
       label: "Status",
       className: "w-[120px]",
-      render: (e: JournalEntry) => <Badge variant={e.status === "posted" ? "primary" : "secondary"}>{e.status}</Badge>,
+      render: (e: JournalEntry) => <SemanticBadge semantic={e.status} category="status" className="">{e.status}</SemanticBadge>,
     },
   ]
 
@@ -156,7 +157,11 @@ export default function JournalEntriesPage() {
         </div>
       </div>
 
-      {loading ? (
+      {error ? (
+        <div className="animate-fade-in pb-8 space-y-4">
+          <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+        </div>
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState icons={[<BookOpen className="w-5 h-5" />, <FileText className="w-5 h-5" />, <Receipt className="w-5 h-5" />]} title="No journal entries yet" description="Create your first journal entry." />

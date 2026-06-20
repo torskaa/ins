@@ -10,22 +10,26 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
-import { XCircle, Settings, SlidersHorizontal } from "lucide-react"
+import { AlertTriangle, XCircle, Settings, SlidersHorizontal } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export default function EditWorkCenterPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const { id } = use(params)
   const [saving, setSaving] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({ code: "", name: "", description: "", costPerHour: "0", capacity: "1", location: "", isActive: true })
 
   useEffect(() => {
     fetch(`/api/work-centers/${id}`)
       .then(r => r.json())
-      .then((d) => {
-        if (!d || d.error) { toast.error("Work center not found"); router.push("/production/work-centers"); return }
+      .then((json) => {
+        if (!json?.success) { toast.error(json?.error || "Work center not found"); router.push("/production/work-centers"); return }
+        const d = json.data
         setForm({ code: d.code || "", name: d.name || "", description: d.description || "", costPerHour: String(d.costPerHour || 0), capacity: String(d.capacity || 1), location: d.location || "", isActive: d.isActive ?? true })
       })
+      .catch((err) => { setError(err.message); setFetching(false) })
       .finally(() => setFetching(false))
   }, [id, router])
 
@@ -47,6 +51,11 @@ export default function EditWorkCenterPage({ params }: { params: Promise<{ id: s
     finally { setSaving(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (fetching) return <SkeletonForm fields={5} />
 
   const Field = ({ id, label, required, children, className }: { id?: string; label: ReactNode; required?: boolean; children: ReactNode; className?: string }) => (

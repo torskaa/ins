@@ -12,10 +12,12 @@ import { Select } from "@/components/ui/select"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
+import { ImageGallery } from "@/components/ui/image-gallery"
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { AlertTriangle, ArrowLeft, Barcode, Boxes, Building2, Calendar, Clock, DollarSign, FileText, Hash, Layers, MapPin, Package, Pencil, Ruler, ShoppingCart, Tags, Trash2, Warehouse, Weight, XCircle } from "lucide-react"
+import { AlertTriangle, Barcode, Boxes, Building2, Calendar, Clock, DollarSign, FileText, Hash, HouseIcon, ImageIcon, Layers, MapPin, Package, Pencil, Ruler, ShoppingCart, TagIcon, Tags, Trash2, Warehouse, Weight, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Frame, FramePanel } from "@/components/reui/frame"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -31,7 +33,7 @@ function FieldDisplay({ label, value, mono, badge }: { label: string; value: str
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -54,6 +56,7 @@ function FieldGroup({ label, children, required }: { label: string; children: Re
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [product, setProduct] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -68,6 +71,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const router = useRouter()
   const [id, setId] = useState<string>("")
 
+  const [searchOrders, setSearchOrders] = useState("")
+  const [searchInvoices, setSearchInvoices] = useState("")
+  const [searchMovements, setSearchMovements] = useState("")
+  const [searchLots, setSearchLots] = useState("")
+  const [searchPricing, setSearchPricing] = useState("")
+
   useEffect(() => {
     params.then(({ id }) => setId(id))
   }, [params])
@@ -76,7 +85,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     if (!id) return
     fetch(`/api/products/${id}`)
       .then((res) => res.json())
-      .then((data) => {
+      .then((json) => {
+        if (!json?.success) throw new Error(json?.error || "Failed to load")
+        const data = json.data
         setProduct(data)
         setForm({
           name: data.name,
@@ -99,20 +110,27 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           warehouseId: data.warehouseId || "",
         })
       })
+      .catch((err) => { setError(err.message) })
       .finally(() => setLoading(false))
   }, [id])
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/categories").then(r => r.json()).catch(() => []),
-      fetch("/api/suppliers").then(r => r.json()).catch(() => []),
-      fetch("/api/warehouses").then(r => r.json()).catch(() => []),
+      fetch("/api/categories").then(r => r.json()).then(d => d.data || d).catch(() => []),
+      fetch("/api/suppliers").then(r => r.json()).then(d => d.data || d).catch(() => []),
+      fetch("/api/warehouses").then(r => r.json()).then(d => d.data || d).catch(() => []),
     ]).then(([cats, sups, whs]) => {
       setCategories(Array.isArray(cats) ? cats : [])
       setSuppliers(Array.isArray(sups) ? sups : [])
       setWarehouses(Array.isArray(whs) ? whs : [])
     })
   }, [])
+
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
 
   if (loading) return <SkeletonDetail cards={3} hasChart={true} />
 
@@ -193,7 +211,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
 
   const bomColumns = [
-    { key: "name", label: "Name", render: (item: any) => <span className="font-medium">{item.name}</span> },
+    { key: "name", label: "Name", render: (item: any) => <span className="font-medium">{item.material?.name || item.finishedGood?.name || "—"}</span> },
     { key: "quantity", label: "Quantity", render: (item: any) => <span className="font-mono">{formatNumber(item.quantity)}</span> },
     { key: "unit", label: "Unit", render: (item: any) => <span className="text-muted-foreground">{item.unit || "—"}</span> },
     { key: "status", label: "Status", render: (item: any) => (
@@ -223,7 +241,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   ]
 
   const movementColumns = [
-    { key: "type", label: "Type", render: (item: any) => <SemanticBadge semantic={item.type || ""} category="type" className="capitalize">{item.type}</SemanticBadge>
+    { key: "type", label: "Type", render: (item: any) => <SemanticBadge semantic={item.type || ""} category="type" className="">{item.type}</SemanticBadge>
     },
     { key: "quantity", label: "Quantity", render: (item: any) => {
       const isPositive = ["received", "returned"].includes(item.type)
@@ -260,20 +278,24 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/inventory")}>Inventory</button>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{product.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Frame variant="ghost" className="w-fit">
+        <FramePanel className="gap-2 px-3! py-2! border-0!">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/inventory" className="flex items-center gap-1.5">
+                  <HouseIcon className="size-4" aria-hidden="true" />
+                  Inventory
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-semibold">{product.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </FramePanel>
+      </Frame>
       <div className="grid grid-cols-12 gap-4">
         {/* Page Header — bento card */}
         <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
@@ -286,20 +308,18 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   className="w-14 self-stretch rounded-lg object-cover border border-border/60 shrink-0"
                 />
               )}
-              <div className="flex flex-col gap-2 min-w-0 flex-1">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <h1 className="text-2xl font-bold">{product.name}</h1>
-                {product.category && (
-                  <SemanticBadge semantic={product.category.name} category="category" appearance="outline" className="gap-1 text-[11px]"><Tags className="w-3 h-3" />{product.category.name}</SemanticBadge>
-                )}
-              </div>
-              <div className="flex items-center gap-3 flex-wrap">
-                <SemanticBadge semantic={product.status} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{product.status}</SemanticBadge>
-                <SemanticBadge semantic={product.sku} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{product.sku}</SemanticBadge>
-                {isLowStock && (
-                  <Badge variant="destructive" className="gap-1 text-[11px]"><AlertTriangle className="w-3 h-3" /> Low Stock</Badge>
-                )}
-              </div>
+              <div className="flex flex-col gap-2 w-auto">
+                <h1 className="text-2xl font-bold">{product.name}</h1>
+                <div className="inline-flex flex-wrap items-center gap-2">
+                  <SemanticBadge semantic={product.status} category="status" className="gap-1 text-[11px]"><BadgeDot />{product.status}</SemanticBadge>
+                  <SemanticBadge semantic={product.sku} category="id" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{product.sku}</SemanticBadge>
+                  {product.category && (
+                    <SemanticBadge semantic={product.category.name} category="category" className="gap-1 text-[11px]"><Tags className="w-3 h-3" />{product.category.name}</SemanticBadge>
+                  )}
+                  {isLowStock && (
+                    <Badge variant="destructive" className="gap-1 text-[11px]"><AlertTriangle className="w-3 h-3" /> Low Stock</Badge>
+                  )}
+                </div>
             </div>
           </div>
           <div className="flex flex-col items-end gap-2 shrink-0">
@@ -471,7 +491,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       {/* Unified Tab Module */}
-      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden pt-8">
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="w-full overflow-x-auto px-4">
             <TabsTrigger value="bom" className="gap-1.5"><Layers className="w-4 h-4" /> BOM</TabsTrigger>
@@ -480,9 +500,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             <TabsTrigger value="movements" className="gap-1.5"><Boxes className="w-4 h-4" /> Movements</TabsTrigger>
             <TabsTrigger value="lots" className="gap-1.5"><Hash className="w-4 h-4" /> Lots</TabsTrigger>
             <TabsTrigger value="pricing" className="gap-1.5"><DollarSign className="w-4 h-4" /> Supplier Pricing</TabsTrigger>
+            <TabsTrigger value="gallery" className="gap-1.5"><ImageIcon className="w-4 h-4" /> Gallery</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="bom" className="p-3">
+          <TabsContent value="bom" className="pt-8 px-3 pb-3">
             <div className="grid grid-cols-12 gap-3">
               <div className="col-span-6 flex flex-col">
                 <Card className="flex-1">
@@ -498,7 +519,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         icons={[<Layers key="f1" className="w-6 h-6" />, <Package key="f2" className="w-6 h-6" />, <Boxes key="f3" className="w-6 h-6" />]}
                         title="No BOM linked"
                         description="This product is not yet linked to a bill of materials as a finished good"
-                        actions={[{ label: "Link BOM", onClick: () => {} }]}
+                        actions={[{ label: "Link BOM", onClick: () => router.push(`/bom/new?finishedGoodId=${id}`) }]}
                         size="sm"
                       />
                     ) : (
@@ -574,16 +595,21 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             </div>
           </TabsContent>
 
-          <TabsContent value="orders" className="p-3">
+          <TabsContent value="orders" className="pt-8 px-3 pb-3">
             <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <ShoppingCart className="w-4 h-4 text-primary" />
               Order History ({product.orderItems?.length || 0})
             </div>
-            {(product.orderItems || []).length === 0 ? (
+            <div className="flex items-center mb-3">
+              <input className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" placeholder="Search orders..." value={searchOrders} onChange={(e) => setSearchOrders(e.target.value)} />
+            </div>
+            {(() => {
+              const filtered = (product.orderItems || []).filter((item: any) => !searchOrders || JSON.stringify(item).toLowerCase().includes(searchOrders.toLowerCase()))
+              return filtered.length === 0 ? (
               <EmptyState
                 icons={[<ShoppingCart key="oi1" className="w-6 h-6" />, <Package key="oi2" className="w-6 h-6" />]}
                 title="No orders"
-                description="This product has not been ordered yet"
+                description={searchOrders ? "No orders match your search" : "This product has not been ordered yet"}
                 size="sm"
               />
             ) : (
@@ -597,7 +623,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {product.orderItems.map((item: any) => (
+                    {filtered.map((item: any) => (
                       <TableRow key={item.id}>
                         {orderItemColumns.map((col) => (
                           <TableCell key={col.key}>
@@ -609,19 +635,25 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   </TableBody>
                 </Table>
               </div>
-            )}
+            )
+            })()}
           </TabsContent>
 
-          <TabsContent value="invoices" className="p-3">
+          <TabsContent value="invoices" className="pt-8 px-3 pb-3">
             <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <FileText className="w-4 h-4 text-primary" />
               Invoices ({product.invoiceItems?.length || 0})
             </div>
-            {(product.invoiceItems || []).length === 0 ? (
+            <div className="flex items-center mb-3">
+              <input className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" placeholder="Search invoices..." value={searchInvoices} onChange={(e) => setSearchInvoices(e.target.value)} />
+            </div>
+            {(() => {
+              const filtered = (product.invoiceItems || []).filter((item: any) => !searchInvoices || JSON.stringify(item).toLowerCase().includes(searchInvoices.toLowerCase()))
+              return filtered.length === 0 ? (
               <EmptyState
                 icons={[<FileText key="ii1" className="w-6 h-6" />, <Package key="ii2" className="w-6 h-6" />]}
                 title="No invoices"
-                description="This product has no invoice history"
+                description={searchInvoices ? "No invoices match your search" : "This product has no invoice history"}
                 size="sm"
               />
             ) : (
@@ -635,7 +667,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {product.invoiceItems.map((item: any) => (
+                    {filtered.map((item: any) => (
                       <TableRow key={item.id}>
                         {invoiceItemColumns.map((col) => (
                           <TableCell key={col.key}>
@@ -647,19 +679,25 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   </TableBody>
                 </Table>
               </div>
-            )}
+            )
+            })()}
           </TabsContent>
 
-          <TabsContent value="movements" className="p-3">
+          <TabsContent value="movements" className="pt-8 px-3 pb-3">
             <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <Boxes className="w-4 h-4 text-primary" />
               Stock Movements
             </div>
-            {(product.movements || []).length === 0 ? (
+            <div className="flex items-center mb-3">
+              <input className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" placeholder="Search movements..." value={searchMovements} onChange={(e) => setSearchMovements(e.target.value)} />
+            </div>
+            {(() => {
+              const filtered = (product.movements || []).filter((item: any) => !searchMovements || JSON.stringify(item).toLowerCase().includes(searchMovements.toLowerCase()))
+              return filtered.length === 0 ? (
               <EmptyState
                 icons={[<Boxes key="sm1" className="w-6 h-6" />, <Package key="sm2" className="w-6 h-6" />]}
                 title="No movements"
-                description="No stock movements recorded yet"
+                description={searchMovements ? "No movements match your search" : "No stock movements recorded yet"}
                 size="sm"
               />
             ) : (
@@ -673,7 +711,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {product.movements.map((item: any) => (
+                    {filtered.map((item: any) => (
                       <TableRow key={item.id}>
                         {movementColumns.map((col) => (
                           <TableCell key={col.key}>
@@ -685,19 +723,25 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   </TableBody>
                 </Table>
               </div>
-            )}
+            )
+            })()}
           </TabsContent>
 
-          <TabsContent value="lots" className="p-3">
+          <TabsContent value="lots" className="pt-8 px-3 pb-3">
             <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <Hash className="w-4 h-4 text-primary" />
               Lot / Serial Number Tracking
             </div>
-            {(product.lots || []).length === 0 ? (
+            <div className="flex items-center mb-3">
+              <input className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" placeholder="Search lots..." value={searchLots} onChange={(e) => setSearchLots(e.target.value)} />
+            </div>
+            {(() => {
+              const filtered = (product.lots || []).filter((item: any) => !searchLots || JSON.stringify(item).toLowerCase().includes(searchLots.toLowerCase()))
+              return filtered.length === 0 ? (
               <EmptyState
                 icons={[<Hash key="lt1" className="w-6 h-6" />, <Package key="lt2" className="w-6 h-6" />]}
                 title="No lots"
-                description="This product has no lot or serial number tracking data"
+                description={searchLots ? "No lots match your search" : "This product has no lot or serial number tracking data"}
                 size="sm"
               />
             ) : (
@@ -711,7 +755,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {product.lots.map((item: any) => (
+                    {filtered.map((item: any) => (
                       <TableRow key={item.id}>
                         {lotColumns.map((col) => (
                           <TableCell key={col.key}>
@@ -723,19 +767,25 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   </TableBody>
                 </Table>
               </div>
-            )}
+            )
+            })()}
           </TabsContent>
 
-          <TabsContent value="pricing" className="p-3">
+          <TabsContent value="pricing" className="pt-8 px-3 pb-3">
             <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <DollarSign className="w-4 h-4 text-primary" />
               Supplier Prices
             </div>
-            {(product.supplierPrices || []).length === 0 ? (
+            <div className="flex items-center mb-3">
+              <input className="h-8 w-full max-w-xs rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" placeholder="Search prices..." value={searchPricing} onChange={(e) => setSearchPricing(e.target.value)} />
+            </div>
+            {(() => {
+              const filtered = (product.supplierPrices || []).filter((item: any) => !searchPricing || JSON.stringify(item).toLowerCase().includes(searchPricing.toLowerCase()))
+              return filtered.length === 0 ? (
               <EmptyState
                 icons={[<DollarSign key="sp1" className="w-6 h-6" />, <Building2 key="sp2" className="w-6 h-6" />]}
                 title="No supplier prices"
-                description="No supplier price records found"
+                description={searchPricing ? "No supplier prices match your search" : "No supplier price records found"}
                 size="sm"
               />
             ) : (
@@ -749,7 +799,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {product.supplierPrices.map((item: any) => (
+                    {filtered.map((item: any) => (
                       <TableRow key={item.id}>
                         {supplierPriceColumns.map((col) => (
                           <TableCell key={col.key}>
@@ -761,7 +811,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   </TableBody>
                 </Table>
               </div>
-            )}
+            )
+            })()}
+          </TabsContent>
+          <TabsContent value="gallery" className="pt-8 px-3 pb-3">
+            <ImageGallery maxFiles={5} selectable />
           </TabsContent>
         </Tabs>
       </div>
@@ -857,7 +911,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             </Card>
           </div>
           <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
-            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowEdit(false)}>Cancel</Button>
             <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
           </DialogFooter>
         </DialogContent>
@@ -881,7 +935,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             </div>
           </div>
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setShowAdjust(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="outline" onClick={() => setShowAdjust(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
             <Button onClick={handleAdjust}>Save</Button>
           </DialogFooter>
         </DialogContent>
@@ -894,7 +948,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             <DialogDescription>Are you sure you want to delete <strong>{product.name}</strong>? This action cannot be undone.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="outline" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
             <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
           </DialogFooter>
         </DialogContent>

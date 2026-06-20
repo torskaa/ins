@@ -9,7 +9,8 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { BookOpen, XCircle } from "lucide-react"
+import { AlertTriangle, BookOpen, XCircle } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
   <div className={cn("space-y-1", className)}>
@@ -28,11 +29,12 @@ const ACCOUNT_TYPES = [
 export default function NewAccountPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [groups, setGroups] = useState<{ id: string; name: string; type: string }[]>([])
   const [form, setForm] = useState({ code: "", name: "", type: "asset", groupId: "", openingBalance: "0" })
 
   useEffect(() => {
-    fetch("/api/finance/accounts").then(r => r.json()).then(d => { if (d.groups) setGroups(d.groups) })
+    fetch("/api/finance/accounts").then(r => r.json()).then(json => { if (json?.success && json.data?.groups) setGroups(json.data.groups) }).catch((err) => setError(err.message))
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -49,6 +51,11 @@ export default function NewAccountPage() {
     } catch { toast.error("Failed to create") } finally { setLoading(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   return (
     <div className="animate-fade-in pb-28">
       <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">Back</button>

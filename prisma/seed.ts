@@ -899,6 +899,87 @@ async function main() {
   })
   console.log("  Audit Entries: 1")
 
+  // ── PROJECTS (3) ──
+  const projData = [
+    { id: "proj-1", name: "Q1 2025 Inventory Optimization", description: "Optimize inventory levels across all warehouses using demand forecasting", status: "active" as const, priority: "high", startDate: new Date("2025-01-15"), dueDate: new Date("2025-03-31"), budget: 250000, actualCost: 180000 },
+    { id: "proj-2", name: "Supplier Onboarding Portal", description: "Build self-service portal for supplier registration and document management", status: "active" as const, priority: "medium", startDate: new Date("2025-02-01"), dueDate: new Date("2025-04-30"), budget: 500000, actualCost: 120000 },
+    { id: "proj-3", name: "Warehouse Automation", description: "Implement automated picking system in Main Warehouse", status: "draft" as const, priority: "low", startDate: null, dueDate: new Date("2025-06-30"), budget: 2000000, actualCost: 0 },
+  ]
+  for (const p of projData) {
+    await prisma.project.upsert({ where: { id: p.id }, update: {}, create: { ...p, organizationId: org.id } })
+  }
+  console.log("  Projects: 3")
+
+  // ── TASKS (8) ──
+  const taskData = [
+    { title: "Audit current stock levels", status: "done" as const, priority: "high", projectId: "proj-1", dueDate: new Date("2025-01-31"), estimatedHours: 16, actualHours: 14 },
+    { title: "Implement min/max reorder points", status: "in_progress" as const, priority: "high", projectId: "proj-1", dueDate: new Date("2025-02-28"), estimatedHours: 24, actualHours: 10 },
+    { title: "Train staff on new inventory system", status: "todo" as const, priority: "medium", projectId: "proj-1", dueDate: new Date("2025-03-15"), estimatedHours: 8, actualHours: 0 },
+    { title: "Design supplier registration form", status: "done" as const, priority: "medium", projectId: "proj-2", dueDate: new Date("2025-02-15"), estimatedHours: 12, actualHours: 12 },
+    { title: "Develop document upload API", status: "in_progress" as const, priority: "high", projectId: "proj-2", dueDate: new Date("2025-03-15"), estimatedHours: 32, actualHours: 20 },
+    { title: "Test portal with pilot suppliers", status: "todo" as const, priority: "medium", projectId: "proj-2", dueDate: new Date("2025-04-15"), estimatedHours: 16, actualHours: 0 },
+    { title: "Research robotic picking systems", status: "todo" as const, priority: "low", projectId: "proj-3", dueDate: new Date("2025-04-30"), estimatedHours: 8, actualHours: 0 },
+    { title: "Prepare warehouse layout redesign", status: "todo" as const, priority: "low", projectId: "proj-3", dueDate: new Date("2025-05-30"), estimatedHours: 24, actualHours: 0 },
+  ]
+  await Promise.all(taskData.map((t) =>
+    prisma.task.create({ data: { ...t, organizationId: org.id } })
+  ))
+  console.log("  Tasks: 8")
+
+  // ── JOURNAL ENTRIES (5) ──
+  const acct = await prisma.chartOfAccount.findMany({ where: { organizationId: org.id } })
+  const acctMap = Object.fromEntries(acct.map((a) => [a.code, a.id]))
+  const jeData = [
+    {
+      number: "JE-2025-001", date: new Date("2025-01-31"), description: "Monthly sales revenue recognition", referenceType: "order",
+      lines: [
+        { accountCode: "1100", debit: 0, credit: 83500 },
+        { accountCode: "4100", debit: 83500, credit: 0 },
+      ],
+    },
+    {
+      number: "JE-2025-002", date: new Date("2025-02-15"), description: "Supplier payment for PO-2025-001", referenceType: "payment",
+      lines: [
+        { accountCode: "2100", debit: 380000, credit: 0 },
+        { accountCode: "1100", debit: 0, credit: 380000 },
+      ],
+    },
+    {
+      number: "JE-2025-003", date: new Date("2025-02-28"), description: "Monthly depreciation", referenceType: null,
+      lines: [
+        { accountCode: "5600", debit: 25000, credit: 0 },
+        { accountCode: "1600", debit: 0, credit: 25000 },
+      ],
+    },
+    {
+      number: "JE-2025-004", date: new Date("2025-03-15"), description: "Inventory adjustment - stock count variance", referenceType: "adjustment",
+      lines: [
+        { accountCode: "5100", debit: 15000, credit: 0 },
+        { accountCode: "1400", debit: 0, credit: 15000 },
+      ],
+    },
+    {
+      number: "JE-2025-005", date: new Date("2025-03-31"), description: "Quarterly tax accrual", referenceType: "tax",
+      lines: [
+        { accountCode: "5600", debit: 45000, credit: 0 },
+        { accountCode: "2200", debit: 0, credit: 45000 },
+      ],
+    },
+  ]
+  for (const je of jeData) {
+    const totalDebit = je.lines.reduce((s, l) => s + l.debit, 0)
+    const totalCredit = je.lines.reduce((s, l) => s + l.credit, 0)
+    await prisma.journalEntry.create({
+      data: {
+        number: je.number, date: je.date, description: je.description,
+        referenceType: je.referenceType, totalDebit, totalCredit, status: "posted",
+        organizationId: org.id,
+        lines: { create: je.lines.map((l) => ({ accountId: acctMap[l.accountCode], debit: l.debit, credit: l.credit, description: je.description })) },
+      },
+    })
+  }
+  console.log("  Journal Entries: 5")
+
   console.log("\n✓ Seed complete!")
   console.log("  Login: admin@ins.com / password123")
   console.log("  Entities: 8 categories · 5 warehouses · 5 suppliers · 5 customers · 10 products · 5 lots · 5 BOMs · 5 orders · 5 quotations · 5 invoices · 5 payments · 5 forecast entries · 8 distributors · 15 deliveries · 5 stock counts · 3 work centers · 4 production orders · 8 account groups · 15 COA accounts · 4 tax rates · 5 wiki articles · 10 knowledge docs · 10 training programs · 4 system roles · 1 API key · 1 audit entry")

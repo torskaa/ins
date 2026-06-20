@@ -11,8 +11,9 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { Boxes, Building2, Calendar, Clock, Hash, Layers, MapPin, Package, Pencil, Trash2, Warehouse, XCircle } from "lucide-react"
+import { Boxes, Building2, Calendar, Clock, Hash, HouseIcon, Layers, MapPin, Package, Pencil, Trash2, Warehouse, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Frame, FramePanel } from "@/components/reui/frame"
 import { formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -28,7 +29,7 @@ function FieldDisplay({ label, value, mono, badge }: { label: string; value: str
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -78,6 +79,7 @@ type Warehouse = {
 export default function WarehouseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [warehouse, setWarehouse] = useState<Warehouse | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [id, setId] = useState("")
   const [activeTab, setActiveTab] = useState("products")
   const [showEdit, setShowEdit] = useState(false)
@@ -96,7 +98,8 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
     if (!id) return
     fetch(`/api/warehouses/${id}`)
       .then(r => r.json())
-      .then(setWarehouse)
+      .then(r => { if (r?.success) setWarehouse(r.data); else setError(r?.error || "Failed to load") })
+      .catch((err) => { setError(err.message || "Failed to load data") })
       .finally(() => setLoading(false))
   }, [id])
 
@@ -135,6 +138,17 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
     }
   }
 
+  if (error) {
+    return (
+      <EmptyState
+        variant="error"
+        title="Failed to load data"
+        description={error}
+        actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+      />
+    )
+  }
+
   if (loading) return <SkeletonDetail cards={3} hasChart={false} />
 
   if (!warehouse) {
@@ -144,7 +158,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
           <h2 className="text-lg font-semibold">Warehouse not found</h2>
           <p className="text-sm text-muted-foreground mt-1">The warehouse you are looking for does not exist or has been removed.</p>
         </div>
-        <Button variant="secondary" onClick={() => router.push("/warehouses")}>Back to Warehouses</Button>
+        <Button variant="outline" onClick={() => router.push("/warehouses")}>Back to Warehouses</Button>
       </div>
     )
   }
@@ -157,7 +171,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
 
   const movementColumns = [
     { key: "type", label: "Type", render: (item: StockMovement) => (
-      <SemanticBadge semantic={item.type} category="type" className="capitalize" />
+      <SemanticBadge semantic={item.type} category="type" className="" />
     )},
     { key: "product", label: "Product", render: (item: StockMovement) => (
       <span className="text-sm">{item.product.name} <span className="font-mono text-xs text-muted-foreground">({item.product.sku})</span></span>
@@ -170,19 +184,24 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/warehouses")}>Warehouses</button>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{warehouse.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Frame variant="ghost" className="w-fit">
+        <FramePanel className="gap-2 px-3! py-2! border-0!">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/warehouses" className="flex items-center gap-1.5">
+                  <HouseIcon className="size-4" aria-hidden="true" />
+                  Warehouses
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-semibold">{warehouse.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </FramePanel>
+      </Frame>
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
           <div className="flex items-start justify-between gap-6">
@@ -190,10 +209,10 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
               <div className="flex flex-col gap-2 min-w-0 flex-1">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-bold">{warehouse.name}</h1>
-                  <Badge variant="outline" className="text-[11px]">{warehouse._count.products} product{warehouse._count.products !== 1 ? "s" : ""}</Badge>
+                  <Badge variant="outline" className="text-[11px]">{warehouse._count?.products ?? 0} product{warehouse._count?.products !== 1 ? "s" : ""}</Badge>
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <SemanticBadge semantic={warehouse.location || "—"} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><MapPin className="w-3 h-3" />{warehouse.location || "—"}</SemanticBadge>
+                  <SemanticBadge semantic={warehouse.location || "—"} category="id" className="gap-1 font-mono text-[11px]"><MapPin className="w-3 h-3" />{warehouse.location || "—"}</SemanticBadge>
                 </div>
               </div>
             </div>
@@ -283,14 +302,14 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
         </div>
       </div>
 
-      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden pt-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="w-full overflow-x-auto px-4">
             <TabsTrigger value="products" className="gap-1.5"><Package className="w-4 h-4" /> Products ({warehouse._count.products})</TabsTrigger>
             <TabsTrigger value="movements" className="gap-1.5"><Boxes className="w-4 h-4" /> Stock Movements ({warehouse._count.stockMovements})</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="products" className="p-3">
+          <TabsContent value="products" className="pt-8 px-3 pb-3">
             <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <Package className="w-4 h-4 text-primary" />
               Products ({warehouse.products?.length || 0})
@@ -351,7 +370,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
             })()}
           </TabsContent>
 
-          <TabsContent value="movements" className="p-3">
+          <TabsContent value="movements" className="pt-8 px-3 pb-3">
             <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <Boxes className="w-4 h-4 text-primary" />
               Stock Movements ({warehouse.stockMovements?.length || 0})
@@ -441,7 +460,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
             </Card>
           </div>
           <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
-            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowEdit(false)}>Cancel</Button>
             <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
           </DialogFooter>
         </DialogContent>
@@ -454,7 +473,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
             <DialogDescription>Are you sure you want to delete <strong>{warehouse.name}</strong>? This action cannot be undone.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="outline" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
             <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
           </DialogFooter>
         </DialogContent>

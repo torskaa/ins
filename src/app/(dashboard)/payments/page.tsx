@@ -39,10 +39,10 @@ type Payment = {
 }
 
 const methodColors: Record<string, string> = {
-  bank_transfer: "bg-blue-100 text-blue-800",
-  cash: "bg-green-100 text-green-800",
-  credit_card: "bg-purple-100 text-purple-800",
-  cheque: "bg-orange-100 text-orange-800",
+  bank_transfer: "bg-info/15 text-info",
+  cash: "bg-success/15 text-success",
+  credit_card: "bg-primary/15 text-primary",
+  cheque: "bg-warning/15 text-warning",
 }
 
 const PROPERTY_OPTIONS = [
@@ -58,6 +58,7 @@ const PAGE_SIZE = 10
 export default function PaymentsPage() {
   const [payments, setPayments] = useState<Payment[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -68,7 +69,7 @@ export default function PaymentsPage() {
   useHotkey("c", handleCreate)
 
   useEffect(() => {
-    fetch("/api/payments").then(r => r.json()).then((data) => { if (Array.isArray(data)) setPayments(data) }).finally(() => setLoading(false))
+    fetch("/api/payments").then(r => r.json()).then((json) => { if (json?.success && Array.isArray(json.data)) setPayments(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") }).catch((err) => { setError(err.message); setLoading(false) }).finally(() => setLoading(false))
   }, [])
 
   const filterColumns: FilterColumn[] = [
@@ -167,7 +168,14 @@ export default function PaymentsPage() {
         </div>
       </div>
 
-      {loading ? (
+      {error ? (
+        <EmptyState
+          variant="error"
+          title="Failed to load data"
+          description={error}
+          actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+        />
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState icons={[<DollarSign className="w-5 h-5" />, <Banknote className="w-5 h-5" />, <Receipt className="w-5 h-5" />]} title="No payments recorded" description="Record your first payment to start tracking transactions." actions={[{ label: "Record Payment", onClick: () => setShowCreate(true) }]} />

@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { useFormValidation } from "@/hooks/use-form-validation"
+import { supplierSchema, z } from "@/lib/validation"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -71,14 +73,15 @@ export default function NewSupplierPage() {
   useHotkey("u", handleUpload)
   const [documents, setDocuments] = useState<UploadedDoc[]>([])
 
-  const [form, setForm] = useState({
-    name: "", email: "", phone: "",
-    contactPerson: "", contactPersonRole: "",
-    preferredChannel: "", website: "",
-    taxId: "", paymentTerms: "", currency: "THB",
-    rating: "active", defaultLeadTime: "0",
-    address: "", notes: "",
-  })
+  const { register, handleSubmit, formState: { errors }, watch, setValue } = useFormValidation(supplierSchema, {
+    defaultValues: {
+      name: "", email: "", phone: "",
+      contactPerson: "", contactPersonRole: "",
+      preferredChannel: "", website: "",
+      taxId: "", paymentTerms: "", currency: "THB",
+      rating: "active", defaultLeadTime: 0,
+      address: "", notes: "",
+    } })
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -105,23 +108,21 @@ export default function NewSupplierPage() {
 
   const removeDoc = (id: string) => setDocuments(documents.filter((d) => d.id !== id))
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!form.name) { toast.error("Supplier name is required"); return }
+  async function onSubmit(data: z.infer<typeof supplierSchema>) {
     setLoading(true)
     try {
       const res = await fetch("/api/suppliers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...form,
-          defaultLeadTime: form.defaultLeadTime || "0",
+          ...data,
+          defaultLeadTime: data.defaultLeadTime || 0,
           documents: documents.length > 0 ? JSON.stringify(documents.map((d) => ({ name: d.name, size: d.size, dataUrl: d.dataUrl }))) : undefined,
         }),
       })
       if (!res.ok) throw new Error("Failed to create")
       const created = await res.json()
-      toast.success("Supplier created successfully", { description: form.name, duration: 5000 })
+      toast.success("Supplier created successfully", { description: data.name, duration: 5000 })
       router.push("/suppliers")
       router.refresh()
     } catch {
@@ -139,7 +140,7 @@ export default function NewSupplierPage() {
         <p>Register a new supplier or vendor in your network</p>
       </div>
 
-      <form ref={formRef} onSubmit={handleSubmit}>
+      <form ref={formRef} onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-8 flex flex-col gap-4">
             <Card>
@@ -152,24 +153,28 @@ export default function NewSupplierPage() {
               <CardContent className="p-4 space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="Supplier Name" required>
-                    <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. ABC Supplies Co., Ltd." required className="text-base" />
+                    <Input {...register("name")} placeholder="e.g. ABC Supplies Co., Ltd." className="text-base" />
+                    {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
                   </Field>
                   <Field label="Tax ID">
-                    <Input value={form.taxId} onChange={(e) => setForm({ ...form, taxId: e.target.value })} placeholder="e.g. 1234567890" />
+                    <Input {...register("taxId")} placeholder="e.g. 1234567890" />
+                    {errors.taxId && <p className="text-xs text-destructive">{errors.taxId.message}</p>}
                   </Field>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="Website">
                     <div className="relative">
                       <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input type="url" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://www.supplier.com" className="pl-9" />
+                      <Input type="url" {...register("website")} placeholder="https://www.supplier.com" className="pl-9" />
                     </div>
+                    {errors.website && <p className="text-xs text-destructive">{errors.website.message}</p>}
                   </Field>
                   <Field label="Business Address">
                     <div className="relative">
                       <MapPin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                      <Textarea value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Street, district, city, postal code" rows={3} className="pl-9" />
+                      <Textarea {...register("address")} placeholder="Street, district, city, postal code" rows={3} className="pl-9" />
                     </div>
+                    {errors.address && <p className="text-xs text-destructive">{errors.address.message}</p>}
                   </Field>
                 </div>
               </CardContent>
@@ -187,35 +192,40 @@ export default function NewSupplierPage() {
                   <Field label="Contact Person">
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input value={form.contactPerson} onChange={(e) => setForm({ ...form, contactPerson: e.target.value })} placeholder="Full name" className="pl-9" />
+                      <Input {...register("contactPerson")} placeholder="Full name" className="pl-9" />
                     </div>
+                    {errors.contactPerson && <p className="text-xs text-destructive">{errors.contactPerson.message}</p>}
                   </Field>
                   <Field label="Role / Department">
                     <div className="relative">
                       <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input value={form.contactPersonRole} onChange={(e) => setForm({ ...form, contactPersonRole: e.target.value })} placeholder="e.g. Sales Manager" className="pl-9" />
+                      <Input {...register("contactPersonRole")} placeholder="e.g. Sales Manager" className="pl-9" />
                     </div>
+                    {errors.contactPersonRole && <p className="text-xs text-destructive">{errors.contactPersonRole.message}</p>}
                   </Field>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="Email">
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="contact@supplier.com" className="pl-9" />
+                      <Input type="email" {...register("email")} placeholder="contact@supplier.com" className="pl-9" />
                     </div>
+                    {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
                   </Field>
                   <Field label="Phone">
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+66 81 234 5678" className="pl-9" />
+                      <Input type="tel" {...register("phone")} placeholder="+66 81 234 5678" className="pl-9" />
                     </div>
+                    {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
                   </Field>
                 </div>
                 <Field label="Preferred Communication Channel">
                   <div className="relative">
                     <MessageSquare className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none z-10" />
-                    <Select options={CHANNEL_OPTIONS} placeholder="Select channel" value={form.preferredChannel} onChange={(e: any) => setForm({ ...form, preferredChannel: e.target.value })} />
+                    <Select options={CHANNEL_OPTIONS} placeholder="Select channel" value={watch("preferredChannel")} onChange={(e: any) => setValue("preferredChannel", e.target.value)} />
                   </div>
+                  {errors.preferredChannel && <p className="text-xs text-destructive">{errors.preferredChannel.message}</p>}
                 </Field>
               </CardContent>
             </Card>
@@ -230,17 +240,21 @@ export default function NewSupplierPage() {
               <CardContent className="p-4 space-y-3">
                 <div className="grid grid-cols-3 gap-3">
                   <Field label="Payment Terms">
-                    <Select options={PAYMENT_TERMS_OPTIONS} placeholder="Select terms" value={form.paymentTerms} onChange={(e: any) => setForm({ ...form, paymentTerms: e.target.value })} />
+                    <Select options={PAYMENT_TERMS_OPTIONS} placeholder="Select terms" value={watch("paymentTerms")} onChange={(e: any) => setValue("paymentTerms", e.target.value)} />
+                    {errors.paymentTerms && <p className="text-xs text-destructive">{errors.paymentTerms.message}</p>}
                   </Field>
                   <Field label="Currency">
-                    <Select options={CURRENCY_OPTIONS} value={form.currency} onChange={(e: any) => setForm({ ...form, currency: e.target.value })} />
+                    <Select options={CURRENCY_OPTIONS} value={watch("currency")} onChange={(e: any) => setValue("currency", e.target.value)} />
+                    {errors.currency && <p className="text-xs text-destructive">{errors.currency.message}</p>}
                   </Field>
                   <Field label={<span className="flex items-center gap-1">Default Lead Time (Days) <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-muted text-[9px] font-semibold text-muted-foreground cursor-help" title="Average time from order to delivery">?</span></span>}>
-                    <Input type="number" min="0" value={form.defaultLeadTime} onChange={(e) => setForm({ ...form, defaultLeadTime: e.target.value })} />
+                    <Input type="number" min="0" {...register("defaultLeadTime")} />
+                    {errors.defaultLeadTime && <p className="text-xs text-destructive">{errors.defaultLeadTime.message}</p>}
                   </Field>
                 </div>
                 <Field label="Notes">
-                  <Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Payment notes, preferred shipping method, internal remarks..." rows={4} />
+                  <Textarea {...register("notes")} placeholder="Payment notes, preferred shipping method, internal remarks..." rows={4} />
+                  {errors.notes && <p className="text-xs text-destructive">{errors.notes.message}</p>}
                 </Field>
               </CardContent>
             </Card>
@@ -256,7 +270,8 @@ export default function NewSupplierPage() {
               </CardHeader>
               <CardContent className="p-4 space-y-3">
                 <Field label="Status / Rating">
-                  <Select options={STATUS_OPTIONS} value={form.rating} onChange={(e: any) => setForm({ ...form, rating: e.target.value })} />
+                  <Select options={STATUS_OPTIONS} value={watch("rating")} onChange={(e: any) => setValue("rating", e.target.value)} />
+                  {errors.rating && <p className="text-xs text-destructive">{errors.rating.message}</p>}
                 </Field>
               </CardContent>
             </Card>

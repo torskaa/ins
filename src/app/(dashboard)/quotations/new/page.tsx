@@ -10,7 +10,7 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { cn, formatCurrency } from "@/lib/utils"
-import { FileText, Package, Receipt, XCircle, ShoppingCart } from "lucide-react"
+import { AlertTriangle, FileText, Package, Receipt, XCircle, ShoppingCart } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 
 function Field({ label, required, className, children }: { label: string; required?: boolean; className?: string; children: React.ReactNode }) {
@@ -26,6 +26,7 @@ function Field({ label, required, className, children }: { label: string; requir
 
 export default function NewQuotationPage() {
   const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
   const [customers, setCustomers] = useState<any[]>([])
   const [products, setProducts] = useState<any[]>([])
   const [customerId, setCustomerId] = useState("")
@@ -35,12 +36,12 @@ export default function NewQuotationPage() {
   const [items, setItems] = useState<{ productId: string; productName: string; quantity: number; unitPrice: number }[]>([])
 
   useEffect(() => {
-    fetch("/api/customers").then(r => r.json()).then((data) => {
-      if (Array.isArray(data)) setCustomers(data)
-    })
-    fetch("/api/products").then(r => r.json()).then((data) => {
-      if (Array.isArray(data)) setProducts(data)
-    })
+    fetch("/api/customers").then(r => r.json()).then((json) => {
+      if (json?.success && Array.isArray(json.data)) setCustomers(json.data)
+    }).catch((err) => setError(err.message))
+    fetch("/api/products").then(r => r.json()).then((json) => {
+      if (json?.success && Array.isArray(json.data)) setProducts(json.data)
+    }).catch((err) => setError(err.message))
   }, [])
 
   function addItem() {
@@ -88,6 +89,11 @@ export default function NewQuotationPage() {
 
   const total = items.reduce((sum, i) => sum + i.quantity * i.unitPrice, 0)
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   return (
     <div className="animate-fade-in pb-28">
       <div className="page-header"><h1>New Quotation</h1><p>Create a quotation from product catalog</p></div>

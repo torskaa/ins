@@ -9,7 +9,8 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { Tag, XCircle } from "lucide-react"
+import { AlertTriangle, Tag, XCircle } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
   <div className={cn("space-y-1", className)}>
@@ -21,11 +22,12 @@ const Field = ({ id, label, required, children, className }: { id?: string; labe
 export default function NewCategoryPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({ name: "", description: "", parentId: "" })
   const [categories, setCategories] = useState<any[]>([])
 
   useEffect(() => {
-    fetch("/api/categories").then(r => r.json()).then(d => { if (Array.isArray(d)) setCategories(d) })
+    fetch("/api/categories").then(r => r.json()).then(json => { if (json?.success && Array.isArray(json.data)) setCategories(json.data) }).catch((err) => setError(err.message))
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -46,6 +48,11 @@ export default function NewCategoryPage() {
     finally { setLoading(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   return (
     <div className="animate-fade-in pb-28">
       <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">

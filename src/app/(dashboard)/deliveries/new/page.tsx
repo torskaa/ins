@@ -10,7 +10,7 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { Truck, MapPin, Package, FileText, Building2, Calendar, Warehouse, Plus, Trash2, XCircle, ClipboardList } from "lucide-react"
+import { AlertTriangle, Truck, MapPin, Package, FileText, Building2, Calendar, Warehouse, Plus, Trash2, XCircle, ClipboardList } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
@@ -33,6 +33,7 @@ type LineItem = { productId: string; productName: string; sku: string; quantity:
 export default function NewDeliveryPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [distributors, setDistributors] = useState<SelectOption[]>([])
   const [warehouses, setWarehouses] = useState<SelectOption[]>([])
   const [products, setProducts] = useState<SelectOption[]>([])
@@ -53,7 +54,7 @@ export default function NewDeliveryPage() {
       setDistributors(Array.isArray(dists) ? dists : [])
       setWarehouses(Array.isArray(whs) ? whs : [])
       setProducts(Array.isArray(prods) ? prods : [])
-    })
+    }).catch((err) => setError(err.message))
   }, [])
 
   function addItem() {
@@ -114,6 +115,11 @@ export default function NewDeliveryPage() {
     }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   return (
     <div className="animate-fade-in pb-28">
       <button

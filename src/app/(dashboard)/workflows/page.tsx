@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
+import { Badge, SemanticBadge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
@@ -23,8 +23,9 @@ const ENTITY_TYPES = [{ value: "order", label: "Order" }, { value: "invoice", la
 
 export default function WorkflowsPage() {
  const router = useRouter()
- const [workflows, setWorkflows] = useState<Workflow[]>([])
- const [loading, setLoading] = useState(true)
+  const [workflows, setWorkflows] = useState<Workflow[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
  const [showNew, setShowNew] = useState(false)
  const [newForm, setNewForm] = useState({ name: "", entityType: "order" })
  const [selectedWf, setSelectedWf] = useState<Workflow | null>(null)
@@ -35,9 +36,9 @@ export default function WorkflowsPage() {
  const [newTransFrom, setNewTransFrom] = useState("")
  const [newTransTo, setNewTransTo] = useState("")
 
- function load() {
- fetch("/api/workflows").then(r => r.json()).then(d => { if (Array.isArray(d)) setWorkflows(d); if (selectedWf) setSelectedWf(d.find((w: any) => w.id === selectedWf.id) || null) }).finally(() => setLoading(false))
- }
+  function load() {
+    fetch("/api/workflows").then(r => r.json()).then(json => { if (json?.success && Array.isArray(json.data)) { setWorkflows(json.data); if (selectedWf) setSelectedWf(json.data.find((w: any) => w.id === selectedWf.id) || null) } else if (!json?.success) throw new Error(json?.error || "Failed to load") }).catch((err) => { setError(err.message); setLoading(false) }).finally(() => setLoading(false))
+  }
 
  useEffect(() => { load() }, [])
 
@@ -81,13 +82,21 @@ export default function WorkflowsPage() {
  </Card>
  )}
 
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  {error ? (
+    <EmptyState
+      variant="error"
+      title="Failed to load data"
+      description={error}
+      actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+    />
+  ) : (
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
  <div className="space-y-3">
  <h3 className="text-sm font-medium text-muted-foreground">Workflows ({workflows.length})</h3>
  {workflows.map(wf => (
  <Card key={wf.id} className={`cursor-pointer transition-colors hover:bg-surface/50 ${selectedWf?.id === wf.id ? "ring-2 ring-primary" : ""}`} onClick={() => setSelectedWf(wf)}>
  <CardContent className="p-4">
- <div className="flex items-center justify-between"><span className="font-medium">{wf.name}</span><Badge variant="outline">{wf.entityType}</Badge></div>
+ <div className="flex items-center justify-between"><span className="font-medium">{wf.name}</span><SemanticBadge semantic={wf.entityType} category="type">{wf.entityType}</SemanticBadge></div>
  <p className="text-xs text-muted-foreground mt-1">{wf.states?.length || 0} states · {wf.transitions?.length || 0} transitions</p>
  </CardContent>
  </Card>
@@ -98,7 +107,7 @@ export default function WorkflowsPage() {
  <div className="lg:col-span-2">
  {selectedWf ? (
  <div className="space-y-6">
- <Card><CardHeader className="pb-2"><CardTitle className="flex items-center gap-2">{selectedWf.name} <Badge variant="outline">{selectedWf.entityType}</Badge></CardTitle></CardHeader>
+ <Card><CardHeader className="pb-2"><CardTitle className="flex items-center gap-2">{selectedWf.name} <SemanticBadge semantic={selectedWf.entityType} category="type">{selectedWf.entityType}</SemanticBadge></CardTitle></CardHeader>
  <CardContent>
  <div className="flex flex-wrap gap-2 mb-4">
  {selectedWf.states?.map(s => (
@@ -136,8 +145,9 @@ export default function WorkflowsPage() {
  ) : (
  <Card><CardContent className="p-12 text-center"><Settings2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" /><h3 className="text-lg font-medium">Select a Workflow</h3><p className="text-sm text-muted-foreground">Choose a workflow from the left to view or edit its states and transitions.</p></CardContent></Card>
  )}
- </div>
- </div>
- </div>
- )
+   </div>
+   </div>
+    )}
+    </div>
+    )
 }

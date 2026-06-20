@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { Beaker, Calendar, CheckCircle, Clock, ClipboardList, Cog, DollarSign, Hash, Package, Play, Pencil, Trash2, XCircle } from "lucide-react"
+import { AlertTriangle, Beaker, Calendar, CheckCircle, Clock, ClipboardList, Cog, DollarSign, Hash, Package, Play, Pencil, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -58,7 +58,7 @@ function FieldDisplay({ label, value, mono, badge }: { label: string; value: str
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -83,18 +83,24 @@ export default function ProductionOrderDetailPage() {
   const params = useParams()
   const [order, setOrder] = useState<DetailOrder | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [transitioning, setTransitioning] = useState(false)
   const [producedInput, setProducedInput] = useState("")
   const [tab, setTab] = useState("materials")
+  const [showEdit, setShowEdit] = useState(false)
+  const [form, setForm] = useState<any>({})
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     fetch(`/api/production-orders/${params.id}`)
       .then(r => r.json())
-      .then(d => {
-        if (d.error) { toast.error(d.error); return }
+      .then(json => {
+        if (!json?.success) throw new Error(json?.error || "Failed to load")
+        const d = json.data
         setOrder(d)
         setProducedInput(String(d.quantity))
       })
+      .catch((err) => { setError(err.message); setLoading(false) })
       .finally(() => setLoading(false))
   }, [params.id])
 
@@ -117,6 +123,37 @@ export default function ProductionOrderDetailPage() {
     finally { setTransitioning(false) }
   }
 
+  async function handleSave() {
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/production-orders/${params.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quantity: parseInt(form.quantity) || 0,
+          startDate: form.startDate || null,
+          dueDate: form.dueDate || null,
+          notes: form.notes,
+        }),
+      })
+      if (!res.ok) throw new Error("Failed")
+      toast.success("Production order updated")
+      setShowEdit(false)
+      const updated = await fetch(`/api/production-orders/${params.id}`).then(r => r.json())
+      setOrder(updated)
+    } catch {
+      toast.error("Failed to update production order")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
+
   if (loading) return <SkeletonDetail cards={3} hasChart={false} />
   if (!order) {
     return (
@@ -126,9 +163,42 @@ export default function ProductionOrderDetailPage() {
           <p className="text-sm text-muted-foreground mt-1">The production order you are looking for does not exist or has been removed.</p>
         </div>
         <Button variant="secondary" onClick={() => router.push("/production/orders")}>Back to Orders</Button>
-      </div>
-    )
-  }
+      {/* Edit Dialog */}
+      <Dialog open={showEdit} onOpenChange={setShowEdit}>
+        <DialogContent className="sm:max-w-lg flex flex-col p-0 gap-0 max-h-[90vh]">
+          <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
+            <DialogTitle>Edit Production Order</DialogTitle>
+            <DialogDescription>Update details for <span className="font-medium text-foreground">{order?.number}</span></DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <ClipboardList className="w-4 h-4 text-primary" />
+                  Order Information
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Quantity"><Input type="number" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Start Date"><Input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} /></FieldGroup>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Due Date"><Input type="date" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} /></FieldGroup>
+                </div>
+                <FieldGroup label="Notes"><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Internal notes..." /></FieldGroup>
+              </CardContent>
+            </Card>
+          </div>
+          <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
+            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button onClick={handleSave} loading={saving}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
 
   const nextAction = transitionActions[order.status]
   const totalSetup = order.operations.reduce((s, o) => s + o.setupTime, 0)
@@ -173,8 +243,8 @@ export default function ProductionOrderDetailPage() {
             <div className="flex flex-col gap-2 min-w-0 flex-1">
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-2xl font-bold">{order.number}</h1>
-                <SemanticBadge semantic={order.status} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{order.status.replace(/_/g, " ")}</SemanticBadge>
-                <SemanticBadge semantic={order.number} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{order.number}</SemanticBadge>
+                <SemanticBadge semantic={order.status} category="status" className="gap-1 text-[11px]"><BadgeDot />{order.status.replace(/_/g, " ")}</SemanticBadge>
+                <SemanticBadge semantic={order.number} category="id" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{order.number}</SemanticBadge>
               </div>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <span className="font-medium">{order.product.name}</span>
@@ -196,7 +266,7 @@ export default function ProductionOrderDetailPage() {
                   </Button>
                 )}
                 <MoreMenu actions={[
-                  ...(["draft", "confirmed"].includes(order.status) ? [{ label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => router.push(`/production/orders/${order.id}/edit`) }] : []),
+                  ...(["draft", "confirmed"].includes(order.status) ? [{ label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => { setForm({ quantity: String(order.quantity), startDate: order.startDate ? order.startDate.split("T")[0] : "", dueDate: order.dueDate ? order.dueDate.split("T")[0] : "", notes: order.notes || "" }); setShowEdit(true) } }] : []),
                 ]} />
               </div>
             </div>
@@ -205,9 +275,9 @@ export default function ProductionOrderDetailPage() {
 
         {/* Produced quantity input (in_progress) */}
         {order.status === "in_progress" && (
-          <div className="col-span-12 border border-amber-200 rounded-lg bg-amber-50/50 p-4 flex items-center gap-4">
+          <div className="col-span-12 border border-warning/20 rounded-lg bg-warning/5 p-4 flex items-center gap-4">
             <div className="flex-1">
-              <Label className="text-xs font-medium text-amber-700 mb-1 block">Quantity Produced</Label>
+              <Label className="text-xs font-medium text-warning mb-1 block">Quantity Produced</Label>
               <Input type="number" min="1" value={producedInput} onChange={(e) => setProducedInput(e.target.value)} className="w-32 bg-white" />
             </div>
             <Button size="sm" onClick={() => handleTransition("completed")} loading={transitioning} className="gap-1.5 mt-5">

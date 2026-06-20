@@ -27,7 +27,7 @@ export interface WidgetConfig {
 
 const placeholderBox = (label: string, color: string) => (
  <div
- className="w-full h-full rounded-lg flex items-center justify-center text-xs font-medium text-white"
+ className="w-full h-full rounded-lg flex items-center justify-center text-xs font-medium text-primary-foreground"
  style={{ background: `linear-gradient(135deg, ${color}88, ${color}44)` }}
  >
  {label}

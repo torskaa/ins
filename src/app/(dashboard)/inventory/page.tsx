@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { statusBadge } from "@/components/ui/data-table"
+import { SemanticBadge } from "@/components/ui/badge"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { Button } from "@/components/ui/button"
@@ -55,7 +55,8 @@ const PAGE_SIZE = 10
 
 export default function InventoryPage() {
  const [products, setProducts] = useState<Product[]>([])
- const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
  const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -68,8 +69,9 @@ export default function InventoryPage() {
  useEffect(() => {
  fetch("/api/products")
  .then((res) => res.json())
- .then((data) => { if (Array.isArray(data)) setProducts(data) })
- .finally(() => setLoading(false))
+  .then((json) => { if (json?.success && Array.isArray(json.data)) setProducts(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+  .catch((err) => { setError(err.message); setLoading(false) })
+  .finally(() => setLoading(false))
  }, [])
 
   const filterColumns: FilterColumn[] = [
@@ -152,11 +154,9 @@ export default function InventoryPage() {
  key: "status",
  label: "Status",
  className: "w-[120px]",
- render: (p: Product) => (
- <span className={statusBadge({ variant: p.status === "active" ? "success" : "secondary" })}>
- {p.status}
- </span>
- ),
+  render: (p: Product) => (
+   <SemanticBadge semantic={p.status} category="status" className="">{p.status}</SemanticBadge>
+  ),
  },
  {
  key: "supplier",
@@ -210,7 +210,14 @@ export default function InventoryPage() {
     </div>
   </div>
 
-  {loading ? (
+  {error ? (
+    <EmptyState
+      variant="error"
+      title="Failed to load data"
+      description={error}
+      actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+    />
+  ) : loading ? (
     <SkeletonTable rows={6} columns={columns.length} />
   ) : filtered.length === 0 ? (
     <EmptyState

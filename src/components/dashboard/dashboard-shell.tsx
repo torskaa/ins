@@ -73,26 +73,26 @@ export function DashboardShell() {
  <div className="max-w-7xl mx-auto w-full overflow-x-hidden animate-fade-in pb-16">
  <div className="flex items-center justify-between mb-8">
  <div>
- <h1 className="text-xl font-semibold tracking-tight text-slate-900">Dashboard</h1>
- <p className="text-sm text-slate-500 mt-0.5">Bento grid layout · add/remove widgets from the library</p>
+  <h1 className="text-xl font-semibold tracking-tight text-foreground">Dashboard</h1>
+ <p className="text-sm text-muted-foreground mt-0.5">Bento grid layout · add/remove widgets from the library</p>
  </div>
  <div className="flex items-center gap-3">
- <Button size="sm" variant="ghost" onClick={resetLayout} className="h-8 text-xs gap-1.5 text-slate-400">
+ <Button size="sm" variant="ghost" onClick={resetLayout} className="h-8 text-xs gap-1.5 text-muted-foreground">
  Reset
  </Button>
  <RichMenu />
  <Button size="sm" onClick={() => setSidebarOpen(true)} className="h-8 gap-1.5 text-xs shadow-sm">
  Widgets
- <kbd className="text-[9px] px-1 py-0.5 rounded bg-white/20 text-white/70 font-mono ml-0.5">⌘J</kbd>
+ <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘J</kbd>
  </Button>
  </div>
  </div>
 
  {visibleLayouts.length === 0 ? (
  <div className="flex flex-col items-center justify-center py-24 text-center">
- <LayoutDashboard className="w-10 h-10 text-slate-200 mb-3" />
- <p className="text-sm font-medium text-slate-500">No widgets yet</p>
- <p className="text-xs text-slate-400 mt-1 mb-4">Add widgets to start building your dashboard</p>
+  <LayoutDashboard className="w-10 h-10 text-muted-foreground/20 mb-3" />
+ <p className="text-sm font-medium text-muted-foreground">No widgets yet</p>
+ <p className="text-xs text-muted-foreground mt-1 mb-4">Add widgets to start building your dashboard</p>
  <Button size="sm" onClick={() => { hiddenWidgets.forEach((w) => addWidget(w.id)); resetLayout() }}>
  Restore Defaults
  </Button>
@@ -102,13 +102,13 @@ export function DashboardShell() {
  {visibleLayouts.map((item) => (
  <div
  key={item.i}
- className={`relative bg-white rounded-2xl shadow-sm ring-1 ring-slate-100 overflow-hidden group ${colSpan(item.w)}`}
+  className={`relative bg-card rounded-2xl shadow-sm ring-1 ring-border overflow-hidden group ${colSpan(item.w)}`}
  style={{ minHeight: rh * item.h }}
  >
  <div className="absolute top-0 right-0 z-10 flex items-center gap-1 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
  <button
  onClick={() => removeWidget(item.i)}
- className="p-1 rounded-lg hover:bg-slate-100 transition-colors"
+  className="p-1 rounded-lg hover:bg-muted transition-colors"
  title="Remove widget"
  >
  </button>

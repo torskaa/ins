@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
-import { apiHandler, requireOrg } from "@/lib/middleware"
+import { apiHandler, requireOrg, respond } from "@/lib/middleware"
 
 export const GET = apiHandler(async () => {
   const { org } = await requireOrg()
@@ -37,7 +36,7 @@ export const GET = apiHandler(async () => {
     .sort((a, b) => a.stock - b.stock)
     .slice(0, 5)
 
-  return NextResponse.json({
+  return respond({
     totalProducts: totalProducts || 0,
     lowStockProducts,
     totalOrders: totalOrders || 0,

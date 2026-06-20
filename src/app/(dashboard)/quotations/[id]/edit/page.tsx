@@ -22,8 +22,9 @@ export default function EditQuotationPage() {
   useEffect(() => {
     fetch(`/api/quotations/${params.id}`)
       .then(r => r.json())
-      .then(d => {
-        if (d.error) { toast.error("Quotation not found"); router.push("/quotations"); return }
+      .then(json => {
+        if (!json?.success) { toast.error(json?.error || "Quotation not found"); router.push("/quotations"); return }
+        const d = json.data
         setForm({
           status: d.status || "draft",
           validUntil: d.validUntil ? d.validUntil.split("T")[0] : "",

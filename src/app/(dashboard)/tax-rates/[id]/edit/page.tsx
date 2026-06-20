@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
-import { Percent, XCircle } from "lucide-react"
+import { AlertTriangle, Percent, XCircle } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
   <div className={cn("space-y-1", className)}>
@@ -24,13 +25,15 @@ export default function EditTaxRatePage({ params }: { params: Promise<{ id: stri
   const { id } = use(params)
   const [saving, setSaving] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({ name: "", rate: "0", type: "vat", isDefault: false })
 
   useEffect(() => {
-    fetch(`/api/tax-rates/${id}`).then(r => r.json()).then(d => {
-      if (d.error) { toast.error("Not found"); router.push("/tax-rates"); return }
+    fetch(`/api/tax-rates/${id}`).then(r => r.json()).then(json => {
+      if (!json?.success) { toast.error(json?.error || "Not found"); router.push("/tax-rates"); return }
+      const d = json.data
       setForm({ name: d.name || "", rate: String(d.rate || 0), type: d.type || "vat", isDefault: d.isDefault || false })
-    }).finally(() => setFetching(false))
+    }).catch((err) => { setError(err.message); setFetching(false) }).finally(() => setFetching(false))
   }, [id, router])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -44,6 +47,11 @@ export default function EditTaxRatePage({ params }: { params: Promise<{ id: stri
     } catch { toast.error("Failed to update") } finally { setSaving(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (fetching) return <SkeletonForm fields={4} />
 
   return (

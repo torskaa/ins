@@ -10,7 +10,7 @@ const badgeSemanticCategoryConfig: Record<BadgeSemanticCategory, BadgeSemanticSt
   priority: { variant: "warning", appearance: "light" },
   category: { variant: "info", appearance: "light" },
   type: { variant: "primary", appearance: "light" },
-  id: { variant: "secondary", appearance: "light" },
+  id: { variant: "primary", appearance: "light" },
   role: { variant: "primary", appearance: "light" },
   method: { variant: "info", appearance: "light" },
   default: { variant: "secondary", appearance: "light" },
@@ -69,6 +69,7 @@ export function getBadgeSemantic(
   value: string,
   category?: BadgeSemanticCategory,
 ): BadgeSemanticStyle {
+  if (!value) return badgeSemanticCategoryConfig[category ?? "default"] ?? badgeSemanticCategoryConfig.default
   const normalized = value.toLowerCase().replace(/\s+/g, "_")
   return (
     badgeSemanticValueOverrides[normalized] ??

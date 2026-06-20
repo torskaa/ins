@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { Badge } from "@/components/ui/badge"
+import { SemanticBadge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { MapPin, Package, Search, Truck } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -39,16 +39,6 @@ type Delivery = {
  _count: { items: number; tracking: number }
 }
 
-const statusColors: Record<string, string> = {
- draft: "bg-slate-100 text-slate-600",
- packing: "bg-amber-100 text-amber-700",
- shipped: "bg-blue-100 text-blue-700",
- in_transit: "bg-purple-100 text-purple-700",
- delivered: "bg-emerald-100 text-emerald-700",
- failed: "bg-red-100 text-red-700",
- cancelled: "bg-slate-100 text-slate-600",
-}
-
 const PROPERTY_OPTIONS = [
  { key: "distributor", label: "Distributor" },
  { key: "carrier", label: "Carrier" },
@@ -61,7 +51,8 @@ const PAGE_SIZE = 10
 
 export default function DeliveriesPage() {
  const [deliveries, setDeliveries] = useState<Delivery[]>([])
- const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
  const [search, setSearch] = useState("")
  const [view, setView] = useState<"cards" | "rows">("rows")
  const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -74,8 +65,9 @@ export default function DeliveriesPage() {
  useEffect(() => {
  fetch("/api/deliveries")
  .then(r => r.json())
- .then((data) => { if (Array.isArray(data)) setDeliveries(data) })
- .finally(() => setLoading(false))
+  .then((json) => { if (json?.success && Array.isArray(json.data)) setDeliveries(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+  .catch((err) => { setError(err.message); setLoading(false) })
+  .finally(() => setLoading(false))
  }, [])
 
  const filterColumns: FilterColumn[] = [
@@ -114,7 +106,7 @@ export default function DeliveriesPage() {
  {
  key: "status",
  label: "Status",
- render: (d: Delivery) => <Badge className={`${statusColors[d.status] || ""} border-0 font-medium`}>{d.status}</Badge>,
+ render: (d: Delivery) => <SemanticBadge semantic={d.status} category="status" className="">{d.status}</SemanticBadge>,
  },
  {
  key: "distributor",
@@ -186,15 +178,22 @@ export default function DeliveriesPage() {
   </div>
   </div>
 
- {loading ? (
- <SkeletonTable rows={6} columns={columns.length} />
- ) : filtered.length === 0 ? (
- <EmptyState
- icons={[<Truck className="w-5 h-5" />, <Package className="w-5 h-5" />, <MapPin className="w-5 h-5" />]}
- title="No deliveries found"
- description="Create your first delivery."
- />
- ) : (
+ {error ? (
+  <EmptyState
+    variant="error"
+    title="Failed to load data"
+    description={error}
+    actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+  />
+  ) : loading ? (
+  <SkeletonTable rows={6} columns={columns.length} />
+  ) : filtered.length === 0 ? (
+  <EmptyState
+  icons={[<Truck className="w-5 h-5" />, <Package className="w-5 h-5" />, <MapPin className="w-5 h-5" />]}
+  title="No deliveries found"
+  description="Create your first delivery."
+  />
+  ) : (
  <div data-slot="frame">
   <Table className="[&_th]:px-4 [&_td]:px-4 [&_th]:py-3 [&_td]:py-3">
   <TableHeader>

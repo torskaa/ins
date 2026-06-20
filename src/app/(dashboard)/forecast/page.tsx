@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Badge, SemanticBadge } from "@/components/ui/badge"
 import { Select } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -50,26 +50,27 @@ export default function ForecastPage() {
  const [period, setPeriod] = useState("30")
  const [data, setData] = useState<ForecastData | null>(null)
  const [loading, setLoading] = useState(false)
- const [error, setError] = useState("")
+  const [error, setError] = useState<string | null>(null)
  const [saving, setSaving] = useState(false)
  const [notes, setNotes] = useState("")
 
  useEffect(() => {
  fetch("/api/products")
  .then((r) => r.json())
- .then((data) => { if (Array.isArray(data)) setProducts(data) })
- .catch(() => {})
+ .then((json) => { if (json?.success && Array.isArray(json.data)) setProducts(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+   .catch((err) => { setError(err.message); setLoading(false) })
  }, [])
 
  const loadForecast = useCallback(async () => {
  if (!productId) return
  setLoading(true)
- setError("")
+  setError(null)
  try {
- const res = await fetch(`/api/forecast?productId=${productId}&period=${period}`)
- if (!res.ok) throw new Error("Failed to load forecast")
- const json = await res.json()
- setData(json)
+  const res = await fetch(`/api/forecast?productId=${productId}&period=${period}`)
+  if (!res.ok) throw new Error("Failed to load forecast")
+  const json = await res.json()
+  if (!json.success) throw new Error(json.error || "Failed to load forecast")
+  setData(json.data)
  } catch (e) {
  setError((e as Error).message)
  setData(null)
@@ -119,10 +120,10 @@ export default function ForecastPage() {
  const trendBadge = () => {
  if (!data) return null
  if (data.trend > 0)
- return <Badge variant="success">Growing</Badge>
+  return <SemanticBadge semantic="growing" category="status">Growing</SemanticBadge>
  if (data.trend < 0)
- return <Badge variant="destructive"><TrendingDown className="w-3 h-3 mr-1" />Declining</Badge>
- return <Badge variant="warning"><Minus className="w-3 h-3 mr-1" />Stable</Badge>
+  return <SemanticBadge semantic="declining" category="status"><TrendingDown className="w-3 h-3 mr-1" />Declining</SemanticBadge>
+  return <SemanticBadge semantic="stable" category="status"><Minus className="w-3 h-3 mr-1" />Stable</SemanticBadge>
  }
 
  const CustomTooltip = ({ active, payload, label }: any) => {
@@ -194,17 +195,14 @@ export default function ForecastPage() {
  />
  )}
 
- {error && (
- <Card className="mb-8 border-destructive/30">
- <CardContent className="p-5 flex items-center gap-3">
- <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
- <p className="text-sm text-destructive">{error}</p>
- <Button variant="outline" size="sm" onClick={loadForecast} className="ml-auto">
- Retry
- </Button>
- </CardContent>
- </Card>
- )}
+  {error ? (
+   <EmptyState
+     variant="error"
+     title="Failed to load data"
+     description={error}
+     actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+   />
+  ) : null}
 
  {loading && productId && (
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

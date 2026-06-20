@@ -10,7 +10,8 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
-import { FileText, XCircle } from "lucide-react"
+import { AlertTriangle, FileText, XCircle } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 import { cn } from "@/lib/utils"
 
 const TYPE_OPTIONS = [
@@ -41,15 +42,18 @@ export default function EditDocumentPage({ params }: { params: Promise<{ id: str
   const { id } = use(params)
   const [saving, setSaving] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({ name: "", type: "Other", fileType: "pdf", size: "", notes: "" })
 
   useEffect(() => {
     fetch(`/api/knowledge/documents/${id}`)
       .then(r => r.json())
-      .then((d) => {
-        if (!d || d.error) { toast.error("Document not found"); router.push("/knowledge/documents"); return }
+      .then((json) => {
+        if (!json?.success) { toast.error(json?.error || "Document not found"); router.push("/knowledge/documents"); return }
+        const d = json.data
         setForm({ name: d.name || "", type: d.type || "Other", fileType: d.fileType || "pdf", size: d.size || "", notes: d.notes || "" })
       })
+      .catch((err) => { setError(err.message); setFetching(false) })
       .finally(() => setFetching(false))
   }, [id, router])
 
@@ -71,6 +75,11 @@ export default function EditDocumentPage({ params }: { params: Promise<{ id: str
     finally { setSaving(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (fetching) return <div className="animate-fade-in pb-28"><SkeletonForm fields={4} /></div>
 
   return (

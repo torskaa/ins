@@ -14,8 +14,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { Calendar, Clock, CreditCard, DollarSign, FileText, Hash, Landmark, Pencil, Receipt, ShoppingCart, Trash2, XCircle } from "lucide-react"
+import { Calendar, Clock, CreditCard, DollarSign, FileText, Hash, HouseIcon, Landmark, Pencil, Receipt, ShoppingCart, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Frame, FramePanel } from "@/components/reui/frame"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -56,7 +57,7 @@ function FieldDisplay({ label, value, mono, badge }: { label: string; value: str
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -79,6 +80,7 @@ function FieldGroup({ label, children, required }: { label: string; children: Re
 export default function PaymentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [payment, setPayment] = useState<Payment | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [id, setId] = useState("")
   const [activeTab, setActiveTab] = useState("info")
   const [showEdit, setShowEdit] = useState(false)
@@ -96,7 +98,8 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
     if (!id) return
     fetch(`/api/payments/${id}`)
       .then(r => r.json())
-      .then(setPayment)
+      .then(r => { if (r?.success) setPayment(r.data); else setError(r?.error || "Failed to load") })
+      .catch((err) => { setError(err.message || "Failed to load data") })
       .finally(() => setLoading(false))
   }, [id])
 
@@ -147,6 +150,17 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
     }
   }
 
+  if (error) {
+    return (
+      <EmptyState
+        variant="error"
+        title="Failed to load data"
+        description={error}
+        actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+      />
+    )
+  }
+
   if (loading) return <SkeletonDetail cards={5} hasChart={true} />
 
   if (!payment) {
@@ -156,35 +170,39 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
           <h2 className="text-lg font-semibold">Payment not found</h2>
           <p className="text-sm text-muted-foreground mt-1">The payment you are looking for does not exist or has been removed.</p>
         </div>
-        <Button variant="secondary" onClick={() => router.push("/payments")}>Back to Payments</Button>
+        <Button variant="outline" onClick={() => router.push("/payments")}>Back to Payments</Button>
       </div>
     )
   }
 
   const summaryCards = [
-    { label: "Amount", value: formatCurrency(payment.amount), icon: DollarSign, color: "text-emerald-600 bg-emerald-100" },
-    { label: "Method", value: formatMethod(payment.method), icon: CreditCard, color: "text-blue-600 bg-blue-100" },
-    { label: "Date", value: formatDate(new Date(payment.date)), icon: Calendar, color: "text-violet-600 bg-violet-100" },
-    { label: "Reference", value: payment.reference || "—", icon: Hash, color: "text-amber-600 bg-amber-100" },
-    { label: "Notes", value: payment.notes || "—", icon: FileText, color: "text-rose-600 bg-rose-100" },
+    { label: "Amount", value: formatCurrency(payment.amount), icon: DollarSign, color: "text-primary bg-primary/10" },
+    { label: "Method", value: formatMethod(payment.method), icon: CreditCard, color: "text-primary bg-primary/10" },
+    { label: "Date", value: formatDate(new Date(payment.date)), icon: Calendar, color: "text-primary bg-primary/10" },
+    { label: "Reference", value: payment.reference || "—", icon: Hash, color: "text-primary bg-primary/10" },
+    { label: "Notes", value: payment.notes || "—", icon: FileText, color: "text-primary bg-primary/10" },
   ]
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/payments")}>Payments</button>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{payment.reference || "Payment"}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Frame variant="ghost" className="w-fit">
+        <FramePanel className="gap-2 px-3! py-2! border-0!">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/payments" className="flex items-center gap-1.5">
+                  <HouseIcon className="size-4" aria-hidden="true" />
+                  Payments
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-semibold">{payment.reference || "Payment"}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </FramePanel>
+      </Frame>
       <div className="grid grid-cols-12 gap-4">
         {/* Page Header — bento card */}
         <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
@@ -192,8 +210,8 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
             <div className="flex flex-col gap-2 min-w-0 flex-1">
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-2xl font-bold">{payment.reference || "Payment"}</h1>
-                <SemanticBadge semantic={payment.method} category="method" appearance="outline" className="gap-1 capitalize text-[11px]"><CreditCard className="w-3 h-3" />{payment.method.replace(/_/g, " ")}</SemanticBadge>
-                <SemanticBadge semantic={payment.reference || payment.id} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{payment.reference || payment.id}</SemanticBadge>
+                <SemanticBadge semantic={payment.method} category="method" className="gap-1 text-[11px]"><CreditCard className="w-3 h-3" />{payment.method.replace(/_/g, " ")}</SemanticBadge>
+                <SemanticBadge semantic={payment.reference || payment.id} category="id" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{payment.reference || payment.id}</SemanticBadge>
               </div>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <span className="font-mono font-medium">{formatCurrency(payment.amount)}</span>
@@ -272,7 +290,7 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       {/* Unified Tab Module */}
-      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden pt-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="w-full overflow-x-auto px-4">
             <TabsTrigger value="info" className="gap-1.5"><CreditCard className="w-4 h-4" /> Info</TabsTrigger>
@@ -280,7 +298,7 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
             <TabsTrigger value="order" className="gap-1.5"><ShoppingCart className="w-4 h-4" /> Linked Order</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="info" className="p-3">
+          <TabsContent value="info" className="pt-8 px-3 pb-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
@@ -309,7 +327,7 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
             </div>
           </TabsContent>
 
-          <TabsContent value="invoice" className="p-3">
+          <TabsContent value="invoice" className="pt-8 px-3 pb-3">
             {payment.invoice ? (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -319,14 +337,14 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Status</p>
-                    <SemanticBadge semantic={payment.invoice.status} category="status" className="capitalize">{payment.invoice.status}</SemanticBadge>
+                    <SemanticBadge semantic={payment.invoice.status} category="status" className="">{payment.invoice.status}</SemanticBadge>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Total</p>
                     <p className="text-sm font-medium font-mono">{formatCurrency(payment.invoice.total)}</p>
                   </div>
                 </div>
-                <Button size="sm" variant="secondary" onClick={() => router.push(`/invoices/${payment.invoice!.id}`)}>
+                <Button size="sm" variant="outline" onClick={() => router.push(`/invoices/${payment.invoice!.id}`)}>
                   View Invoice
                 </Button>
               </div>
@@ -340,7 +358,7 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
             )}
           </TabsContent>
 
-          <TabsContent value="order" className="p-3">
+          <TabsContent value="order" className="pt-8 px-3 pb-3">
             {payment.order ? (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -350,14 +368,14 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Status</p>
-                    <SemanticBadge semantic={payment.order.status} category="status" className="capitalize">{payment.order.status}</SemanticBadge>
+                    <SemanticBadge semantic={payment.order.status} category="status" className="">{payment.order.status}</SemanticBadge>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Total</p>
                     <p className="text-sm font-medium font-mono">{formatCurrency(payment.order.total)}</p>
                   </div>
                 </div>
-                <Button size="sm" variant="secondary" onClick={() => router.push(`/orders/${payment.order!.id}`)}>
+                <Button size="sm" variant="outline" onClick={() => router.push(`/orders/${payment.order!.id}`)}>
                   View Order
                 </Button>
               </div>
@@ -414,7 +432,7 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
             </Card>
           </div>
           <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
-            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowEdit(false)}>Cancel</Button>
             <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
           </DialogFooter>
         </DialogContent>
@@ -428,7 +446,7 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
             <DialogDescription>Are you sure you want to delete this payment? This action cannot be undone.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="outline" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
             <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
           </DialogFooter>
         </DialogContent>

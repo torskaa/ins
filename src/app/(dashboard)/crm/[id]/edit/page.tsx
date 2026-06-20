@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 import { cn } from "@/lib/utils"
-import { User, XCircle } from "lucide-react"
+import { AlertTriangle, User, XCircle } from "lucide-react"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
   <div className={cn("space-y-1", className)}>
@@ -24,11 +25,13 @@ export default function EditCustomerPage() {
   const params = useParams()
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({ name: "", company: "", email: "", phone: "", address: "", taxId: "", creditLimit: "", notes: "" })
 
   useEffect(() => {
-    fetch(`/api/customers/${params.id}`).then(r => r.json()).then(d => {
-      if (d.error) { toast.error("Customer not found"); router.push("/crm"); return }
+    fetch(`/api/customers/${params.id}`).then(r => r.json()).then(json => {
+      if (!json?.success) { toast.error(json?.error || "Customer not found"); router.push("/crm"); return }
+      const d = json.data
       setForm({
         name: d.name || "",
         company: d.company || "",
@@ -39,7 +42,7 @@ export default function EditCustomerPage() {
         creditLimit: d.creditLimit ? String(d.creditLimit) : "",
         notes: d.notes || "",
       })
-    }).finally(() => setFetching(false))
+    }).catch((err) => { setError(err.message); setFetching(false) }).finally(() => setFetching(false))
   }, [params.id, router])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -63,6 +66,11 @@ export default function EditCustomerPage() {
     finally { setLoading(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (fetching) return <SkeletonForm fields={5} />
 
   return (

@@ -24,12 +24,12 @@ type RichNotification = {
 }
 
 const typeMeta: Record<string, { icon: React.ElementType; color: string; dot: string }> = {
- comment: { icon: MessageSquare, color: "text-blue-600", dot: "bg-blue-500" },
- follow: { icon: UserPlus, color: "text-emerald-600", dot: "bg-emerald-500" },
- invitation: { icon: Mail, color: "text-violet-600", dot: "bg-violet-500" },
- file_share: { icon: FileText, color: "text-amber-600", dot: "bg-amber-500" },
- mention: { icon: AtSign, color: "text-rose-600", dot: "bg-rose-500" },
- like: { icon: Heart, color: "text-pink-600", dot: "bg-pink-500" },
+ comment: { icon: MessageSquare, color: "text-primary", dot: "bg-primary" },
+ follow: { icon: UserPlus, color: "text-primary", dot: "bg-primary" },
+ invitation: { icon: Mail, color: "text-primary", dot: "bg-primary" },
+ file_share: { icon: FileText, color: "text-primary", dot: "bg-primary" },
+ mention: { icon: AtSign, color: "text-primary", dot: "bg-primary" },
+ like: { icon: Heart, color: "text-primary", dot: "bg-primary" },
 }
 
 function formatTimeAgo(date: Date) {

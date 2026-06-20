@@ -9,7 +9,8 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { XCircle, Package, List } from "lucide-react"
+import { AlertTriangle, XCircle, Package, List } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 type Option = { id: string; name: string; sku: string; type: string }
 type MaterialRow = {
@@ -38,6 +39,7 @@ const UNITS = [
 export default function NewBOMPage() {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [finishedGoods, setFinishedGoods] = useState<Option[]>([])
   const [materials, setMaterials] = useState<Option[]>([])
   const [finishedGoodId, setFinishedGoodId] = useState("")
@@ -46,17 +48,19 @@ export default function NewBOMPage() {
 
   useEffect(() => {
     async function load() {
-      const [goodsRes, matsRes, allRes] = await Promise.all([
-        fetch("/api/products?type=finished_good"),
-        fetch("/api/materials"),
-        fetch("/api/products?type=finished_good&all=true"),
-      ])
-      const goods = goodsRes.ok ? await goodsRes.json() : []
-      const mats = matsRes.ok ? await matsRes.json() : []
-      const all = allRes.ok ? await allRes.json() : []
-      setFinishedGoods(Array.isArray(goods) ? goods : [])
-      const subAssemblies = (Array.isArray(all) ? all : []).filter((p: Option) => p.type === "finished_good")
-      setMaterials([...(Array.isArray(mats) ? mats : []), ...subAssemblies])
+      try {
+        const [goodsRes, matsRes, allRes] = await Promise.all([
+          fetch("/api/products?type=finished_good"),
+          fetch("/api/materials"),
+          fetch("/api/products?type=finished_good&all=true"),
+        ])
+        const goods = goodsRes.ok ? await goodsRes.json() : []
+        const mats = matsRes.ok ? await matsRes.json() : []
+        const all = allRes.ok ? await allRes.json() : []
+        setFinishedGoods(Array.isArray(goods) ? goods : [])
+        const subAssemblies = (Array.isArray(all) ? all : []).filter((p: Option) => p.type === "finished_good")
+        setMaterials([...(Array.isArray(mats) ? mats : []), ...subAssemblies])
+      } catch (err) { setError((err as Error).message) }
     }
     load()
   }, [])
@@ -136,6 +140,11 @@ export default function NewBOMPage() {
     </div>
   )
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   return (
     <div className="animate-fade-in pb-28">
       <div className="mb-5">

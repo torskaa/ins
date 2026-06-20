@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+import { SemanticBadge } from "@/components/ui/badge"
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -26,14 +26,6 @@ import {
   PaginationNext,
   PaginationEllipsis,
 } from "@/components/ui/pagination"
-
-const invoiceStatusColors: Record<string, "primary" | "secondary" | "success" | "destructive" | "warning"> = {
-  draft: "secondary",
-  sent: "primary",
-  paid: "success",
-  overdue: "destructive",
-  cancelled: "warning",
-}
 
 type Invoice = {
   id: string
@@ -60,6 +52,7 @@ const PAGE_SIZE = 10
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -70,7 +63,7 @@ export default function InvoicesPage() {
   useHotkey("c", handleCreate)
 
   useEffect(() => {
-    fetch("/api/invoices").then(r => r.json()).then((data) => { if (Array.isArray(data)) setInvoices(data) }).finally(() => setLoading(false))
+    fetch("/api/invoices").then(r => r.json()).then((json) => { if (json?.success && Array.isArray(json.data)) setInvoices(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") }).catch((err) => { setError(err.message); setLoading(false) }).finally(() => setLoading(false))
   }, [])
 
   const filterColumns: FilterColumn[] = [
@@ -127,11 +120,7 @@ export default function InvoicesPage() {
       key: "status",
       label: "Status",
       className: "w-[120px]",
-      render: (inv: Invoice) => (
-        <Badge variant={invoiceStatusColors[inv.status] || "secondary"}>
-          {inv.status}
-        </Badge>
-      ),
+      render: (inv: Invoice) => <SemanticBadge semantic={inv.status} category="status" className="">{inv.status}</SemanticBadge>,
     },
     {
       key: "dueDate",
@@ -181,7 +170,14 @@ export default function InvoicesPage() {
         </div>
       </div>
 
-      {loading ? (
+      {error ? (
+        <EmptyState
+          variant="error"
+          title="Failed to load data"
+          description={error}
+          actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+        />
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState

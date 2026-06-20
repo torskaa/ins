@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { generatePaymentStatus } from "@/components/dashboard/mock-data"
 
 const STATUS_CONFIG = {
- paid: { label: "Paid", color: "bg-emerald-500", textColor: "text-emerald-600", bg: "bg-emerald-50" },
- pending: { label: "Pending", color: "bg-amber-500", textColor: "text-amber-600", bg: "bg-amber-50" },
- overdue: { label: "Overdue", color: "bg-red-500", textColor: "text-red-600", bg: "bg-red-50" },
- cancelled: { label: "Cancelled", color: "bg-slate-400", textColor: "text-slate-500", bg: "bg-slate-50" },
+ paid: { label: "Paid", color: "bg-success", textColor: "text-success", bg: "bg-success/10" },
+ pending: { label: "Pending", color: "bg-warning", textColor: "text-warning", bg: "bg-warning/10" },
+ overdue: { label: "Overdue", color: "bg-destructive", textColor: "text-destructive", bg: "bg-destructive/10" },
+ cancelled: { label: "Cancelled", color: "bg-muted-foreground/30", textColor: "text-muted-foreground", bg: "bg-muted" },
 } as const
 
 export function PaymentStatusWidget({ compact }: { compact?: boolean }) {
@@ -37,7 +37,7 @@ export function PaymentStatusWidget({ compact }: { compact?: boolean }) {
  <Card>
  <CardHeader className="pb-3">
  <div className="flex items-center gap-2">
- <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+ <div className="w-7 h-7 rounded-lg bg-success/10 flex items-center justify-center">
  </div>
  <CardTitle>Payment Status</CardTitle>
  </div>

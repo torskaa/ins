@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { statusBadge } from "@/components/ui/data-table"
+import { SemanticBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Activity, FileText, Search, Shield } from "lucide-react"
+import { Activity, AlertTriangle, FileText, Search, Shield } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { formatDateTime } from "@/lib/utils"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
@@ -32,12 +32,6 @@ type AuditEntry = {
   createdAt: string
 }
 
-const ACTION_COLORS: Record<string, "success" | "destructive" | "warning" | "default" | "secondary"> = {
-  created: "success",
-  updated: "warning",
-  deleted: "destructive",
-}
-
 const PROPERTY_OPTIONS = [
   { key: "action", label: "Action" },
   { key: "entity", label: "Entity" },
@@ -53,6 +47,7 @@ const PAGE_SIZE = 10
 export default function AuditPage() {
   const [entries, setEntries] = useState<AuditEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -70,10 +65,13 @@ export default function AuditPage() {
     }
     fetch(`/api/audit-entries?${params}`)
       .then((res) => res.json())
-      .then((data) => {
-        if (data.entries) setEntries(data.entries)
-        if (data.total !== undefined) setTotal(data.total)
+      .then((json) => {
+        if (json?.success && json.data) {
+          if (json.data.entries) setEntries(json.data.entries)
+          if (json.data.total !== undefined) setTotal(json.data.total)
+        } else if (!json?.success) throw new Error(json?.error || "Failed to load")
       })
+      .catch((err) => { setError(err.message); setLoading(false) })
       .finally(() => setLoading(false))
   }, [page, filters])
 
@@ -106,7 +104,7 @@ export default function AuditPage() {
       label: "Action",
       className: "w-[120px]",
       cellClassName: undefined,
-      render: (e: AuditEntry) => <span className={statusBadge({ variant: ACTION_COLORS[e.action] || "default" })}>{e.action}</span>,
+      render: (e: AuditEntry) => <SemanticBadge semantic={e.action} category="type" className="">{e.action}</SemanticBadge>,
     },
     {
       key: "entity",
@@ -180,7 +178,11 @@ export default function AuditPage() {
         </div>
       </div>
 
-      {loading ? (
+      {error ? (
+        <div className="animate-fade-in pb-8 space-y-4">
+          <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+        </div>
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState

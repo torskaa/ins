@@ -7,8 +7,9 @@ import { Badge, BadgeDot, SemanticBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
-import { Building2, Calendar, Clock, MapPin, Package, Pencil, Trash2, Truck, XCircle } from "lucide-react"
+import { Building2, Calendar, Clock, HouseIcon, MapPin, Package, Pencil, Trash2, Truck, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Frame, FramePanel } from "@/components/reui/frame"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -18,6 +19,9 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogFooter,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 
 function FieldDisplay({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
@@ -95,9 +99,13 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
   const router = useRouter()
   const [delivery, setDelivery] = useState<DeliveryDetail | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showDelete, setShowDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [updating, setUpdating] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
+  const [form, setForm] = useState<any>({})
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     params.then(({ id }) => setId(id))
@@ -107,9 +115,37 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
     if (!id) return
     fetch(`/api/deliveries/${id}`)
       .then(r => r.json())
-      .then(setDelivery)
+      .then((json) => { if (json?.success) setDelivery(json.data); else throw new Error(json?.error || "Failed to load") })
+      .catch((err) => { setError(err.message) })
       .finally(() => setLoading(false))
   }, [id])
+
+  async function handleSave() {
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/deliveries/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          trackingNumber: form.trackingNumber,
+          carrier: form.carrier,
+          estimatedDate: form.estimatedDate || null,
+          origin: form.origin,
+          destination: form.destination,
+          notes: form.notes,
+        }),
+      })
+      if (!res.ok) throw new Error("Failed")
+      const updated = await res.json()
+      setDelivery((prev: any) => prev ? { ...prev, ...updated } : prev)
+      setShowEdit(false)
+      toast.success("Delivery updated")
+    } catch {
+      toast.error("Failed to update delivery")
+    } finally {
+      setSaving(false)
+    }
+  }
 
   async function handleAdvanceStatus() {
     if (!delivery) return
@@ -168,6 +204,17 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
     }
   }
 
+  if (error) {
+    return (
+      <EmptyState
+        variant="error"
+        title="Failed to load data"
+        description={error}
+        actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+      />
+    )
+  }
+
   if (loading) return <SkeletonDetail cards={4} hasChart={true} />
 
   if (!delivery) {
@@ -177,7 +224,7 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
           <h2 className="text-lg font-semibold">Delivery not found</h2>
           <p className="text-sm text-muted-foreground mt-1">The delivery you are looking for does not exist or has been removed.</p>
         </div>
-        <Button variant="secondary" onClick={() => router.push("/deliveries")}>Back to Deliveries</Button>
+        <Button variant="outline" onClick={() => router.push("/deliveries")}>Back to Deliveries</Button>
       </div>
     )
   }
@@ -198,19 +245,24 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
   return (
     <div className="animate-fade-in pb-8 space-y-4">
       {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/deliveries")}>Deliveries</button>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{delivery.number}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Frame variant="ghost" className="w-fit">
+        <FramePanel className="gap-2 px-3! py-2! border-0!">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/deliveries" className="flex items-center gap-1.5">
+                  <HouseIcon className="size-4" aria-hidden="true" />
+                  Deliveries
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-semibold">{delivery.number}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </FramePanel>
+      </Frame>
 
       <div className="grid grid-cols-12 gap-4">
         {/* Page Header */}
@@ -221,12 +273,12 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-bold font-mono">{delivery.number}</h1>
                   {delivery.distributor && (
-                    <SemanticBadge semantic={delivery.distributor.name} category="category" appearance="outline" className="gap-1 text-[11px]"><Building2 className="w-3 h-3" />{delivery.distributor.name}</SemanticBadge>
+                    <SemanticBadge semantic={delivery.distributor.name} category="category" className="gap-1 text-[11px]"><Building2 className="w-3 h-3" />{delivery.distributor.name}</SemanticBadge>
                   )}
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <SemanticBadge semantic={delivery.status} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{delivery.status.replace(/_/g, " ")}</SemanticBadge>
-                  <SemanticBadge semantic={delivery.trackingNumber || delivery.number} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Package className="w-3 h-3" />{delivery.trackingNumber || "—"}</SemanticBadge>
+                  <SemanticBadge semantic={delivery.status} category="status" className="gap-1 text-[11px]"><BadgeDot />{delivery.status.replace(/_/g, " ")}</SemanticBadge>
+                  <SemanticBadge semantic={delivery.trackingNumber || delivery.number} category="id" className="gap-1 font-mono text-[11px]"><Package className="w-3 h-3" />{delivery.trackingNumber || "—"}</SemanticBadge>
                 </div>
               </div>
             </div>
@@ -238,7 +290,7 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
                   </Button>
                 )}
                 <MoreMenu actions={[
-                  { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => router.push(`/deliveries/${delivery.id}/edit`) },
+                  { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => { setForm({ trackingNumber: delivery.trackingNumber || "", carrier: delivery.carrier || "", estimatedDate: delivery.estimatedDate ? delivery.estimatedDate.split("T")[0] : "", origin: delivery.origin || "", destination: delivery.destination || "", notes: delivery.notes || "" }); setShowEdit(true) } },
                   ...(canCancel ? [{ label: "Cancel", icon: <XCircle className="w-4 h-4" />, onClick: handleCancel }] : []),
                   "separator",
                   { label: "Delete", icon: <Trash2 className="w-4 h-4" />, onClick: () => setShowDelete(true) },
@@ -368,14 +420,14 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
                         <div className="absolute left-[11px] top-5 bottom-0 w-px bg-border" />
                       )}
                       <div className={`w-[22px] h-[22px] rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
-                        entry.status === "delivered" ? "bg-emerald-100" :
-                        entry.status === "failed" || entry.status === "cancelled" ? "bg-red-100" :
-                        "bg-blue-100"
+                        entry.status === "delivered" ? "bg-success/15" :
+                        entry.status === "failed" || entry.status === "cancelled" ? "bg-destructive/15" :
+                        "bg-info/15"
                       }`}>
                         <div className={`w-2 h-2 rounded-full ${
-                          entry.status === "delivered" ? "bg-emerald-600" :
-                          entry.status === "failed" || entry.status === "cancelled" ? "bg-red-600" :
-                          "bg-blue-600"
+                          entry.status === "delivered" ? "bg-success" :
+                          entry.status === "failed" || entry.status === "cancelled" ? "bg-destructive" :
+                          "bg-info"
                         }`} />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -420,6 +472,42 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
         </div>
       </div>
 
+      {/* Edit Dialog */}
+      <Dialog open={showEdit} onOpenChange={setShowEdit}>
+        <DialogContent className="sm:max-w-lg flex flex-col p-0 gap-0 max-h-[90vh]">
+          <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
+            <DialogTitle>Edit Delivery</DialogTitle>
+            <DialogDescription>Update details for <span className="font-medium text-foreground">{delivery?.number}</span></DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Truck className="w-4 h-4 text-primary" />
+                  Delivery Information
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Tracking Number"><Input value={form.trackingNumber} onChange={(e) => setForm({ ...form, trackingNumber: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Carrier"><Input value={form.carrier} onChange={(e) => setForm({ ...form, carrier: e.target.value })} placeholder="e.g. FedEx, UPS" /></FieldGroup>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Origin"><Input value={form.origin} onChange={(e) => setForm({ ...form, origin: e.target.value })} placeholder="City, State" /></FieldGroup>
+                  <FieldGroup label="Destination"><Input value={form.destination} onChange={(e) => setForm({ ...form, destination: e.target.value })} placeholder="City, State" /></FieldGroup>
+                </div>
+                <FieldGroup label="Estimated Date"><Input type="date" value={form.estimatedDate} onChange={(e) => setForm({ ...form, estimatedDate: e.target.value })} /></FieldGroup>
+                <FieldGroup label="Notes"><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Internal notes..." /></FieldGroup>
+              </CardContent>
+            </Card>
+          </div>
+          <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
+            <Button variant="outline" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button onClick={handleSave} loading={saving}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Delete Dialog */}
       <Dialog open={showDelete} onOpenChange={setShowDelete}>
         <DialogContent>
@@ -428,7 +516,7 @@ export default function DeliveryDetailPage({ params }: { params: Promise<{ id: s
             <DialogDescription>Are you sure you want to delete delivery <strong>{delivery.number}</strong>? This action cannot be undone.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="outline" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
             <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
           </DialogFooter>
         </DialogContent>

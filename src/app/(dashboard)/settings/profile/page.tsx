@@ -6,13 +6,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { Eye, EyeOff, Save, User } from "lucide-react"
+import { AlertTriangle, Eye, EyeOff, Save, User } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 import { useRouter } from "next/navigation"
 
 export default function ProfilePage() {
  const router = useRouter()
- const [loading, setLoading] = useState(false)
- const [showCurrent, setShowCurrent] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [showCurrent, setShowCurrent] = useState(false)
  const [showNew, setShowNew] = useState(false)
  const [currentPassword, setCurrentPassword] = useState("")
  const [newPassword, setNewPassword] = useState("")
@@ -21,8 +23,8 @@ export default function ProfilePage() {
  useEffect(() => {
  fetch("/api/users/me")
  .then((res) => res.json())
- .then((data) => { if (data?.email) setUser(data) })
- .catch(() => {})
+ .then((json) => { if (json?.success && json.data?.email) setUser(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+  .catch((err) => { setError(err.message) })
  }, [])
 
  async function handleChangePassword(e: React.FormEvent) {
@@ -44,8 +46,14 @@ export default function ProfilePage() {
  } finally { setLoading(false) }
  }
 
- return (
- <div className="animate-fade-in max-w-2xl pb-28">
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
+
+  return (
+  <div className="animate-fade-in max-w-2xl pb-28">
  <div className="page-header"><div><h1>Profile</h1><p>Manage your account settings</p></div></div>
 
  <Card className="mb-6">

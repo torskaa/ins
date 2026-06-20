@@ -46,7 +46,8 @@ const PAGE_SIZE = 10
 export default function CategoriesPage() {
  const router = useRouter()
  const [categories, setCategories] = useState<Category[]>([])
- const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
  const [search, setSearch] = useState("")
  const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -61,8 +62,9 @@ export default function CategoriesPage() {
  useEffect(() => {
  fetch("/api/categories")
  .then(r => r.json())
- .then((data) => { if (Array.isArray(data)) setCategories(data) })
- .finally(() => setLoading(false))
+  .then((json) => { if (json?.success && Array.isArray(json.data)) setCategories(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+  .catch((err) => { setError(err.message); setLoading(false) })
+  .finally(() => setLoading(false))
  }, [])
 
  async function handleCreate() {
@@ -160,7 +162,14 @@ export default function CategoriesPage() {
     </div>
    </div>
 
-   {loading ? (
+   {error ? (
+    <EmptyState
+      variant="error"
+      title="Failed to load data"
+      description={error}
+      actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+    />
+   ) : loading ? (
     <SkeletonTable rows={6} columns={columns.length} />
    ) : filtered.length === 0 ? (
     <EmptyState

@@ -14,8 +14,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { AlertTriangle, ArrowLeft, CalendarDays, CheckCircle2, Clock, DollarSign, Flag, FolderKanban, Hash, ListTodo, Pencil, Trash2, XCircle } from "lucide-react"
+import { AlertTriangle, ArrowLeft, CalendarDays, CheckCircle2, Clock, DollarSign, Flag, FolderKanban, Hash, HouseIcon, ListTodo, Pencil, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Frame, FramePanel } from "@/components/reui/frame"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -29,14 +30,14 @@ import {
 type Project = { id: string; name: string; description: string; status: string; priority: string; startDate: string; dueDate: string; completedDate: string; budget: number; actualCost: number; tasks: Task[] }
 type Task = { id: string; title: string; description: string; status: string; priority: string; assigneeId: string; dueDate: string; estimatedHours: number; actualHours: number }
 
-const PRIORITY_COLORS: Record<string, string> = { low: "text-slate-500", medium: "text-blue-500", high: "text-orange-500", urgent: "text-red-500" }
+const PRIORITY_COLORS: Record<string, string> = { low: "text-muted-foreground", medium: "text-info", high: "text-warning", urgent: "text-destructive" }
 
 function FieldDisplay({ label, value, mono, badge }: { label: string; value: string; mono?: boolean; badge?: boolean }) {
   return (
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -61,6 +62,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const { id } = use(params)
   const [project, setProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -69,7 +71,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const [form, setForm] = useState<any>({})
 
   function loadProject() {
-    fetch(`/api/projects/${id}`).then(r => r.json()).then(d => { if (d && !d.error) { setProject(d); setForm({ name: d.name, description: d.description || "", status: d.status, priority: d.priority, startDate: d.startDate || "", dueDate: d.dueDate || "", budget: String(d.budget) }) } else toast.error("Project not found") }).finally(() => setLoading(false))
+    fetch(`/api/projects/${id}`).then(r => r.json()).then(json => { if (json?.success && json.data) { const d = json.data; setProject(d); setForm({ name: d.name, description: d.description || "", status: d.status, priority: d.priority, startDate: d.startDate || "", dueDate: d.dueDate || "", budget: String(d.budget) }) } else toast.error(json?.error || "Project not found") }).catch((err) => { setError(err.message) }).finally(() => setLoading(false))
   }
 
   useEffect(() => { loadProject() }, [id])
@@ -128,6 +130,17 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     }
   }
 
+  if (error) {
+    return (
+      <EmptyState
+        variant="error"
+        title="Failed to load data"
+        description={error}
+        actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+      />
+    )
+  }
+
   if (loading) return <SkeletonDetail cards={3} hasChart={true} />
 
   if (!project) {
@@ -137,7 +150,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           <h2 className="text-lg font-semibold">Project not found</h2>
           <p className="text-sm text-muted-foreground mt-1">The project you are looking for does not exist or has been removed.</p>
         </div>
-        <Button variant="secondary" onClick={() => router.push("/projects")}>Back to Projects</Button>
+        <Button variant="outline" onClick={() => router.push("/projects")}>Back to Projects</Button>
       </div>
     )
   }
@@ -148,20 +161,24 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/projects")}>Projects</button>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{project.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Frame variant="ghost" className="w-fit">
+        <FramePanel className="gap-2 px-3! py-2! border-0!">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/projects" className="flex items-center gap-1.5">
+                  <ArrowLeft className="size-4" aria-hidden="true" />
+                  Projects
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-semibold">{project.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </FramePanel>
+      </Frame>
       <div className="grid grid-cols-12 gap-4">
         {/* Page Header */}
         <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
@@ -172,7 +189,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                   <h1 className="text-2xl font-bold">{project.name}</h1>
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <SemanticBadge semantic={project.status} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{project.status}</SemanticBadge>
+                  <SemanticBadge semantic={project.status} category="status" className="gap-1 text-[11px]"><BadgeDot />{project.status}</SemanticBadge>
                   <span className={`text-xs font-medium ${PRIORITY_COLORS[project.priority] || "text-muted-foreground"}`}>
                     <Flag className="w-3 h-3 inline mr-1" />
                     {project.priority} priority
@@ -187,9 +204,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               <div className="flex items-center gap-2">
                 {project.status !== "completed" && project.status !== "cancelled" && (
                   <div className="flex items-center gap-1">
-                    {project.status === "draft" && <Button variant="secondary" size="sm" onClick={() => updateStatus("active")}>Start Project</Button>}
-                    {project.status === "active" && <><Button variant="secondary" size="sm" onClick={() => updateStatus("paused")}>Pause</Button><Button variant="default" size="sm" onClick={() => updateStatus("completed")}>Complete</Button></>}
-                    {project.status === "paused" && <Button variant="secondary" size="sm" onClick={() => updateStatus("active")}>Resume</Button>}
+                    {project.status === "draft" && <Button variant="outline" size="sm" onClick={() => updateStatus("active")}>Start Project</Button>}
+                    {project.status === "active" && <><Button variant="outline" size="sm" onClick={() => updateStatus("paused")}>Pause</Button><Button variant="default" size="sm" onClick={() => updateStatus("completed")}>Complete</Button></>}
+                    {project.status === "paused" && <Button variant="outline" size="sm" onClick={() => updateStatus("active")}>Resume</Button>}
                   </div>
                 )}
                 <MoreMenu actions={[
@@ -304,19 +321,19 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       {/* Tab Module */}
-      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden pt-8">
         <Tabs defaultValue="tasks">
           <TabsList className="w-full overflow-x-auto px-4">
             <TabsTrigger value="tasks" className="gap-1.5"><ListTodo className="w-4 h-4" /> Tasks ({totalTasks})</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="tasks" className="p-3">
+          <TabsContent value="tasks" className="pt-8 px-3 pb-3">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 text-sm font-semibold">
                 <ListTodo className="w-4 h-4 text-primary" />
                 Tasks ({totalTasks})
               </div>
-              <Button variant="secondary" size="sm" onClick={() => setShowAddTask(!showAddTask)} className="gap-1">Add Task</Button>
+              <Button variant="outline" size="sm" onClick={() => setShowAddTask(!showAddTask)} className="gap-1">Add Task</Button>
             </div>
             {showAddTask && (
               <form onSubmit={addTask} className="p-4 rounded-xl bg-surface/50 space-y-3 mb-4">
@@ -341,7 +358,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 {project.tasks.map(task => (
                   <div key={task.id} className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-surface/50 transition-colors">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <button onClick={() => updateTask(task.id, task.status === "done" ? "todo" : "done")} className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${task.status === "done" ? "bg-emerald-500 border-emerald-500 text-white" : "border-muted-foreground"}`}>{task.status === "done" && <span>✓</span>}</button>
+                      <button onClick={() => updateTask(task.id, task.status === "done" ? "todo" : "done")} className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${task.status === "done" ? "bg-success border-success text-primary-foreground" : "border-muted-foreground"}`}>{task.status === "done" && <span>✓</span>}</button>
                       <div className="min-w-0"><p className={`text-sm font-medium truncate ${task.status === "done" ? "line-through text-muted-foreground" : ""}`}>{task.title}</p>
                       <p className="text-xs text-muted-foreground">{task.status.replace("_", " ")} · {task.estimatedHours}h{task.dueDate ? ` · Due ${formatDate(new Date(task.dueDate))}` : ""}</p></div>
                     </div>
@@ -404,7 +421,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             </Card>
           </div>
           <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
-            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowEdit(false)}>Cancel</Button>
             <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
           </DialogFooter>
         </DialogContent>
@@ -418,7 +435,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             <DialogDescription>Are you sure you want to delete <strong>{project.name}</strong>? This action cannot be undone.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="outline" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
             <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
           </DialogFooter>
         </DialogContent>

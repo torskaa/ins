@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { statusBadge } from "@/components/ui/data-table"
+import { SemanticBadge } from "@/components/ui/badge"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { Button } from "@/components/ui/button"
@@ -53,6 +53,7 @@ const PAGE_SIZE = 10
 export default function MaterialsPage() {
   const [materials, setMaterials] = useState<Material[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -65,7 +66,8 @@ export default function MaterialsPage() {
   useEffect(() => {
     fetch("/api/materials")
       .then((res) => res.json())
-      .then((data) => { if (Array.isArray(data)) setMaterials(data) })
+      .then((json) => { if (json?.success && Array.isArray(json.data)) setMaterials(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+      .catch((err) => { setError(err.message); setLoading(false) })
       .finally(() => setLoading(false))
   }, [])
 
@@ -144,9 +146,9 @@ export default function MaterialsPage() {
       label: "Status",
       className: "w-[120px]",
       render: (m: Material) => (
-        <span className={statusBadge({ variant: m.status === "active" ? "success" : "secondary" })}>
+        <SemanticBadge semantic={m.status} category="status">
           {m.status}
-        </span>
+        </SemanticBadge>
       ),
     },
   ]
@@ -192,7 +194,14 @@ export default function MaterialsPage() {
         </div>
       </div>
 
-      {loading ? (
+      {error ? (
+        <EmptyState
+          variant="error"
+          title="Failed to load data"
+          description={error}
+          actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+        />
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState

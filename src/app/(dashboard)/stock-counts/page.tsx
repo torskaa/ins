@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+import { SemanticBadge } from "@/components/ui/badge"
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -39,13 +39,6 @@ type StockCount = {
  _count: { items: number }
 }
 
-const statusColors: Record<string, string> = {
- draft: "bg-slate-100 text-slate-600",
- in_progress: "bg-blue-100 text-blue-700",
- completed: "bg-emerald-100 text-emerald-700",
- cancelled: "bg-red-100 text-red-700",
-}
-
 const PROPERTY_OPTIONS = [
  { key: "warehouse", label: "Warehouse" },
  { key: "countDate", label: "Count Date" },
@@ -58,7 +51,8 @@ const PAGE_SIZE = 10
 
 export default function StockCountsPage() {
  const [stockCounts, setStockCounts] = useState<StockCount[]>([])
- const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
  const [search, setSearch] = useState("")
  const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -71,8 +65,9 @@ export default function StockCountsPage() {
  useEffect(() => {
  fetch("/api/stock-counts")
  .then(r => r.json())
- .then((data) => { if (Array.isArray(data)) setStockCounts(data) })
- .finally(() => setLoading(false))
+  .then((json) => { if (json?.success && Array.isArray(json.data)) setStockCounts(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+  .catch((err) => { setError(err.message); setLoading(false) })
+  .finally(() => setLoading(false))
  }, [])
 
   const filterColumns: FilterColumn[] = [
@@ -109,7 +104,7 @@ export default function StockCountsPage() {
   {
   key: "status",
   label: "Status",
-  render: (s: StockCount) => <Badge className={`${statusColors[s.status] || ""} border-0 font-medium`}>{s.status.replace(/_/g, " ")}</Badge>,
+  render: (s: StockCount) => <SemanticBadge semantic={s.status} category="status" className="">{s.status.replace(/_/g, " ")}</SemanticBadge>,
   },
   {
   key: "warehouse",
@@ -139,7 +134,7 @@ export default function StockCountsPage() {
    className: "text-right",
    cellClassName: "text-right",
    render: (s: StockCount) => (
-   <span className={`font-mono text-sm ${s.discrepancyItems > 0 ? "text-red-600 font-semibold" : "text-foreground"}`}>
+   <span className={`font-mono text-sm ${s.discrepancyItems > 0 ? "text-destructive font-semibold" : "text-foreground"}`}>
    {s.discrepancyItems}
    </span>
    ),
@@ -183,7 +178,14 @@ export default function StockCountsPage() {
     </div>
    </div>
 
-   {loading ? (
+   {error ? (
+    <EmptyState
+      variant="error"
+      title="Failed to load data"
+      description={error}
+      actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+    />
+   ) : loading ? (
     <SkeletonTable rows={6} columns={columns.length} />
    ) : filtered.length === 0 ? (
     <EmptyState

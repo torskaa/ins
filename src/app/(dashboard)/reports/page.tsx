@@ -22,6 +22,7 @@ import {
  Cell,
  Legend,
 } from "recharts"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Activity, AlertTriangle, BarChart3, Calendar, DollarSign, Download, FileText, Globe, Package, ShoppingCart, Tag, TrendingUp, Truck, Users } from "lucide-react"
 
 type DashboardData = {
@@ -117,28 +118,41 @@ export default function ReportsPage() {
  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
  const [orders, setOrders] = useState<Order[]>([])
  const [products, setProducts] = useState<Product[]>([])
- const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
- const fetchAll = useCallback(async () => {
- setLoading(true)
- try {
- const [dashRes, ordersRes, productsRes] = await Promise.all([
- fetch("/api/dashboard"),
- fetch("/api/orders?type=sales"),
- fetch("/api/products"),
- ])
- const [dash, ords, prods]: [DashboardData, unknown, unknown] = await Promise.all([
- dashRes.json(),
- ordersRes.json(),
- productsRes.json(),
- ])
- setDashboardData(dash)
- if (Array.isArray(ords)) setOrders(ords as Order[])
- if (Array.isArray(prods)) setProducts(prods as Product[])
- } finally {
- setLoading(false)
- }
- }, [])
+  const fetchAll = useCallback(async () => {
+  setLoading(true)
+  setError(null)
+  try {
+  const [dashRes, ordersRes, productsRes] = await Promise.all([
+  fetch("/api/dashboard"),
+  fetch("/api/orders?type=sales"),
+  fetch("/api/products"),
+  ])
+  const raw = await Promise.all([
+  dashRes.json(),
+  ordersRes.json(),
+  productsRes.json(),
+  ])
+  const dashJson = raw[0]
+  const ordsJson = raw[1]
+  const prodsJson = raw[2]
+  if (!dashJson?.success) throw new Error(dashJson?.error || "Failed to load dashboard")
+  if (!ordsJson?.success) throw new Error(ordsJson?.error || "Failed to load orders")
+  if (!prodsJson?.success) throw new Error(prodsJson?.error || "Failed to load products")
+  const dash: DashboardData = dashJson.data
+  const ords = ordsJson.data
+  const prods = prodsJson.data
+  setDashboardData(dash)
+  if (Array.isArray(ords)) setOrders(ords as Order[])
+  if (Array.isArray(prods)) setProducts(prods as Product[])
+  } catch (err) {
+  setError((err as Error).message || "Failed to load data")
+  } finally {
+  setLoading(false)
+  }
+  }, [])
 
  useEffect(() => {
  fetchAll()
@@ -281,13 +295,24 @@ export default function ReportsPage() {
  )
  }
 
- return (
- <div className="animate-fade-in">
- <div className="page-header flex items-center justify-between">
- <div>
- <h1>Reports & Analytics</h1>
- <p>Actionable insights for your business</p>
- </div>
+  if (error) {
+    return (
+      <EmptyState
+        variant="error"
+        title="Failed to load data"
+        description={error}
+        actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+      />
+    )
+  }
+
+  return (
+  <div className="animate-fade-in">
+  <div className="page-header flex items-center justify-between">
+  <div>
+  <h1>Reports & Analytics</h1>
+  <p>Actionable insights for your business</p>
+  </div>
  <div className="flex items-center gap-2">
  <Button variant="secondary" size="sm" onClick={handleExportXLSX}>
  Excel

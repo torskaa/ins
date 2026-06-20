@@ -6,10 +6,11 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { EmptyState } from "@/components/ui/empty-state"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
-import { Tag, XCircle } from "lucide-react"
+import { AlertTriangle, Tag, XCircle } from "lucide-react"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
   <div className={cn("space-y-1", className)}>
@@ -23,13 +24,15 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({ name: "", description: "" })
 
   useEffect(() => {
-    fetch(`/api/categories/${id}`).then(r => r.json()).then(d => {
-      if (d.error) { toast.error("Category not found"); router.push("/categories"); return }
+    fetch(`/api/categories/${id}`).then(r => r.json()).then(json => {
+      if (!json?.success) { toast.error(json?.error || "Category not found"); router.push("/categories"); return }
+      const d = json.data
       setForm({ name: d.name || "", description: d.description || "" })
-    }).finally(() => setFetching(false))
+    }).catch((err) => { setError(err.message); setFetching(false) }).finally(() => setFetching(false))
   }, [id, router])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -50,6 +53,11 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
     finally { setLoading(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (fetching) return <Skeleton className="h-48 w-full rounded-xl" />
 
   return (

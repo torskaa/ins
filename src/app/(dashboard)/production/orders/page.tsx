@@ -10,7 +10,7 @@ import { PropertySelector } from "@/components/ui/property-selector"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import { SemanticBadge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { Search, Calendar, ClipboardList, Package } from "lucide-react"
@@ -40,14 +40,6 @@ type ProdOrder = {
   _count: { materials: number; operations: number }
 }
 
-const statusColors: Record<string, string> = {
-  draft: "bg-slate-100 text-slate-600",
-  confirmed: "bg-blue-100 text-blue-700",
-  in_progress: "bg-amber-100 text-amber-700",
-  completed: "bg-emerald-100 text-emerald-700",
-  cancelled: "bg-red-100 text-red-700",
-}
-
 const statusFilters = ["all", "draft", "confirmed", "in_progress", "completed", "cancelled"]
 
 const PROPERTY_OPTIONS = [
@@ -65,6 +57,7 @@ const PAGE_SIZE = 10
 export default function ProductionOrdersPage() {
   const [data, setData] = useState<ProdOrder[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState("all")
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
@@ -78,7 +71,8 @@ export default function ProductionOrdersPage() {
   useEffect(() => {
     fetch("/api/production-orders")
       .then((r) => r.json())
-      .then((d) => { if (Array.isArray(d)) setData(d) })
+      .then((json) => { if (json?.success && Array.isArray(json.data)) setData(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+      .catch((err) => { setError(err.message); setLoading(false) })
       .finally(() => setLoading(false))
   }, [])
 
@@ -127,11 +121,7 @@ export default function ProductionOrdersPage() {
       key: "status",
       label: "Status",
       className: "w-[120px]",
-      render: (o: ProdOrder) => (
-        <Badge className={`${statusColors[o.status] || ""} border-0 font-medium`}>
-          {o.status.replace(/_/g, " ")}
-        </Badge>
-      ),
+      render: (o: ProdOrder) => <SemanticBadge semantic={o.status} category="status" className="">{o.status.replace(/_/g, " ")}</SemanticBadge>,
     },
     {
       key: "quantity",
@@ -146,7 +136,7 @@ export default function ProductionOrdersPage() {
       className: "text-right",
       cellClassName: "text-right",
       render: (o: ProdOrder) => (
-        <span className={"font-mono text-sm" + (o.producedQty > 0 ? " text-emerald-600" : " text-foreground")}>
+        <span className={"font-mono text-sm" + (o.producedQty > 0 ? " text-success" : " text-foreground")}>
           {o.producedQty || "—"}
         </span>
       ),
@@ -209,14 +199,21 @@ export default function ProductionOrdersPage() {
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${statusFilter === s ? "bg-primary text-white" : "bg-surface text-muted-foreground hover:text-foreground"}`}
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${statusFilter === s ? "bg-primary text-primary-foreground" : "bg-surface text-muted-foreground hover:text-foreground"}`}
           >
             {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
           </button>
         ))}
       </div>
 
-      {loading ? (
+      {error ? (
+        <EmptyState
+          variant="error"
+          title="Failed to load data"
+          description={error}
+          actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+        />
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState

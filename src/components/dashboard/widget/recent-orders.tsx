@@ -23,7 +23,7 @@ export function RecentOrdersWidget({ compact }: { compact?: boolean }) {
  useEffect(() => {
  fetch("/api/dashboard")
  .then((r) => r.json())
- .then((d) => setOrders(d.recentOrders || []))
+ .then((d) => setOrders(d.data?.recentOrders || d.recentOrders || []))
  .finally(() => setLoading(false))
  }, [])
 
@@ -33,7 +33,7 @@ export function RecentOrdersWidget({ compact }: { compact?: boolean }) {
  <Card>
  <CardHeader className="pb-3">
  <div className="flex items-center gap-2">
- <div className="w-7 h-7 rounded-lg bg-violet-500/10 flex items-center justify-center">
+ <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
  </div>
  <CardTitle>Recent Orders</CardTitle>
  </div>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,25 +12,26 @@ import { Building2, Save, Settings2 } from "lucide-react"
 import { SkeletonPageHeader, SkeletonCard } from "@/components/ui/skeleton"
 
 export default function SettingsPage() {
- const [loading, setLoading] = useState(true)
- const [saving, setSaving] = useState({ org: false, prefs: false })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [saving, setSaving] = useState({ org: false, prefs: false })
  const [org, setOrg] = useState({ name: "", email: "", phone: "" })
  const [prefs, setPrefs] = useState({ currency: "THB", taxRate: "7", lowStockThreshold: "10", dateFormat: "DD/MM/YYYY", timezone: "Asia/Bangkok" })
 
  useEffect(() => {
- Promise.all([
- fetch("/api/settings").then(r => r.json()),
- ]).then(([s]) => {
- if (s && !s.error) {
- setPrefs({
- currency: s.currency || "THB",
- taxRate: String(s.taxRate || 7),
- lowStockThreshold: String(s.lowStockThreshold || 10),
- dateFormat: s.dateFormat || "DD/MM/YYYY",
- timezone: s.timezone || "Asia/Bangkok",
- })
- }
- }).finally(() => setLoading(false))
+  Promise.all([
+    fetch("/api/settings").then(r => r.json()),
+    ]).then(([s]) => {
+    if (s && !s.error) {
+    setPrefs({
+    currency: s.currency || "THB",
+    taxRate: String(s.taxRate || 7),
+    lowStockThreshold: String(s.lowStockThreshold || 10),
+    dateFormat: s.dateFormat || "DD/MM/YYYY",
+    timezone: s.timezone || "Asia/Bangkok",
+    })
+    }
+    }).catch((err) => { setError(err.message || "Failed to load data"); setLoading(false) }).finally(() => setLoading(false))
  }, [])
 
  async function handleSavePrefs() {
@@ -52,9 +54,19 @@ export default function SettingsPage() {
  finally { setSaving({ ...saving, prefs: false }) }
  }
 
- if (loading) return <div className="animate-fade-in space-y-6"><SkeletonPageHeader /><div className="grid grid-cols-2 gap-6"><SkeletonCard /><SkeletonCard /></div></div>
+  if (error) {
+    return (
+      <EmptyState
+        variant="error"
+        title="Failed to load data"
+        description={error}
+        actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+      />
+    )
+  }
+  if (loading) return <div className="animate-fade-in space-y-6"><SkeletonPageHeader /><div className="grid grid-cols-2 gap-6"><SkeletonCard /><SkeletonCard /></div></div>
 
- return (
+  return (
  <div className="animate-fade-in">
  <div className="page-header"><h1>Settings</h1><p>Manage your organization settings and preferences</p></div>
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

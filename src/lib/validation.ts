@@ -1,6 +1,8 @@
 import { z } from "zod"
 import { AppError } from "@/lib/errors"
 
+export { z }
+
 const cuidRegex = /^c[a-z0-9]{24}$/
 
 export const idSchema = z.string().regex(cuidRegex, "Invalid ID format")

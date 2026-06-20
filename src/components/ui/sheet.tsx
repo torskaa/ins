@@ -35,9 +35,9 @@ const SheetContent = React.forwardRef<
  className={cn(
  "fixed z-50 gap-4 bg-modal shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-200 data-[state=open]:duration-300",
  side === "right" &&
- "inset-y-0 right-0 h-full w-full max-w-sm border-l border-slate-200 data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
+ "inset-y-0 right-0 h-full w-full max-w-sm border-l border-border data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
  side === "left" &&
- "inset-y-0 left-0 h-full w-full max-w-sm border-r border-slate-200 data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
+ "inset-y-0 left-0 h-full w-full max-w-sm border-r border-border data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
  className,
  )}
  {...props}
@@ -62,7 +62,7 @@ const SheetTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
  <DialogPrimitive.Title
  ref={ref}
- className={cn("text-base font-semibold text-slate-900", className)}
+ className={cn("text-base font-semibold text-foreground", className)}
  {...props}
  />
 ))
@@ -74,7 +74,7 @@ const SheetDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
  <DialogPrimitive.Description
  ref={ref}
- className={cn("text-sm text-slate-500", className)}
+ className={cn("text-sm text-muted-foreground", className)}
  {...props}
  />
 ))

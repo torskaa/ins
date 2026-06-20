@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Building2, Layers, Settings } from "lucide-react"
+import { AlertTriangle, Building2, Layers, Settings } from "lucide-react"
 
 type Workspace = {
  id: string
@@ -18,20 +18,27 @@ type Workspace = {
 }
 
 export default function WorkspacesPage() {
- const [workspaces, setWorkspaces] = useState<Workspace[]>([])
- const [loading, setLoading] = useState(true)
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
  const handleNew = useCallback(() => { window.location.href = "/workspaces/new" }, [])
  useHotkey("c", handleNew)
 
  useEffect(() => {
  fetch("/api/workspaces")
  .then((r) => r.json())
- .then((d) => { if (Array.isArray(d)) setWorkspaces(d) })
- .catch(() => {})
- .finally(() => setLoading(false))
+ .then((json) => { if (json?.success && Array.isArray(json.data)) setWorkspaces(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+  .catch((err) => { setError(err.message); setLoading(false) })
+  .finally(() => setLoading(false))
  }, [])
 
- if (loading) return <div className="animate-fade-in p-8 text-center text-muted-foreground">Loading...</div>
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
+
+  if (loading) return <div className="animate-fade-in p-8 text-center text-muted-foreground">Loading...</div>
 
  return (
  <div className="animate-fade-in">

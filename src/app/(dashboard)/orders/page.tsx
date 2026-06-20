@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useEffect, useCallback } from "react"
 import { Badge } from "@/components/ui/badge"
-import { statusBadge } from "@/components/ui/data-table"
+import { SemanticBadge } from "@/components/ui/badge"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { Button } from "@/components/ui/button"
@@ -41,14 +41,7 @@ type Order = {
  items: any[]
 }
 
-const statusColors: Record<string, "default" | "secondary" | "success" | "destructive" | "warning" | "outline"> = {
- draft: "secondary",
- confirmed: "default",
- processing: "warning",
- shipped: "default",
- delivered: "success",
- cancelled: "destructive",
-}
+
 
 const PROPERTY_OPTIONS = [
  { key: "items", label: "Items" },
@@ -62,7 +55,8 @@ const PAGE_SIZE = 10
 
 function OrdersContent() {
  const [orders, setOrders] = useState<Order[]>([])
- const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
  const [search, setSearch] = useState("")
  const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -77,8 +71,9 @@ function OrdersContent() {
  useEffect(() => {
  fetch(`/api/orders?type=${type}`)
  .then((res) => res.json())
- .then((data) => { if (Array.isArray(data)) setOrders(data) })
- .finally(() => setLoading(false))
+  .then((json) => { if (json?.success && Array.isArray(json.data)) setOrders(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+  .catch((err) => { setError(err.message || "Failed to load data"); setLoading(false) })
+  .finally(() => setLoading(false))
  }, [type])
 
   const filterColumns: FilterColumn[] = [
@@ -134,9 +129,9 @@ function OrdersContent() {
    key: "status",
    label: "Status",
    render: (o: Order) => (
-   <span className={statusBadge({ variant: statusColors[o.status] || "default" })}>
-   {o.status}
-   </span>
+<SemanticBadge semantic={o.status} category="status" className="">
+    {o.status}
+    </SemanticBadge>
    ),
    },
    {
@@ -200,7 +195,14 @@ function OrdersContent() {
         </div>
       </div>
 
-      {loading ? (
+      {error ? (
+        <EmptyState
+          variant="error"
+          title="Failed to load data"
+          description={error}
+          actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+        />
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState

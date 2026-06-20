@@ -4,11 +4,11 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+import { SemanticBadge } from "@/components/ui/badge"
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
-import { Activity, Package, Warehouse, Search } from "lucide-react"
+import { Activity, AlertTriangle, Package, Warehouse, Search } from "lucide-react"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
 import { formatDate } from "@/lib/utils"
@@ -23,13 +23,6 @@ import {
 } from "@/components/ui/pagination"
 
 type Movement = { id: string; type: string; quantity: number; reference: string; createdAt: string; product: { id: string; name: string; sku: string }; warehouse: { id: string; name: string } }
-
-const TYPE_COLORS: Record<string, string> = {
-  received: "bg-emerald-100 text-emerald-700", sold: "bg-red-100 text-red-700",
-  adjusted: "bg-orange-100 text-orange-700", transferred: "bg-blue-100 text-blue-700",
-  returned: "bg-purple-100 text-purple-700", damaged: "bg-red-100 text-red-700",
-  issued: "bg-yellow-100 text-yellow-700", produced: "bg-green-100 text-green-700",
-}
 
 const PROPERTY_OPTIONS = [
   { key: "createdAt", label: "Date" },
@@ -47,6 +40,7 @@ export default function StockMovementsPage() {
   const router = useRouter()
   const [movements, setMovements] = useState<Movement[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -56,7 +50,7 @@ export default function StockMovementsPage() {
   useEffect(() => {
     setLoading(true)
     fetch("/api/stock-movements?limit=200")
-      .then(r => r.json()).then(d => { if (d.movements) setMovements(d.movements) }).finally(() => setLoading(false))
+      .then(r => r.json()).then(json => { if (json?.success && json.data?.movements) setMovements(json.data.movements); else if (!json?.success) throw new Error(json?.error || "Failed to load") }).catch((err) => { setError(err.message); setLoading(false) }).finally(() => setLoading(false))
   }, [])
 
   const filterColumns: FilterColumn[] = [
@@ -91,7 +85,7 @@ export default function StockMovementsPage() {
       key: "type",
       label: "Type",
       className: "w-[120px]",
-      render: (m: Movement) => <Badge className={TYPE_COLORS[m.type] || ""}>{m.type}</Badge>,
+      render: (m: Movement) => <SemanticBadge semantic={m.type} category="type" className="">{m.type}</SemanticBadge>,
     },
     {
       key: "product",
@@ -108,7 +102,7 @@ export default function StockMovementsPage() {
       label: "Qty",
       className: "text-right",
       cellClassName: "text-right",
-      render: (m: Movement) => <span className={`font-mono text-sm font-medium ${m.quantity > 0 ? "text-emerald-600" : "text-red-600"}`}>{m.quantity > 0 ? "+" : ""}{m.quantity}</span>,
+      render: (m: Movement) => <span className={`font-mono text-sm font-medium ${m.quantity > 0 ? "text-success" : "text-destructive"}`}>{m.quantity > 0 ? "+" : ""}{m.quantity}</span>,
     },
     {
       key: "warehouse",
@@ -154,12 +148,12 @@ export default function StockMovementsPage() {
 
       {loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
+      ) : error ? (
+        <div className="animate-fade-in pb-8 space-y-4">
+          <EmptyState variant="default" title="Unable to load movements" description="There was a problem fetching stock movements. Please try again." icons={[<Activity key="e1" className="w-6 h-6" />, <AlertTriangle key="e2" className="w-6 h-6" />, <Package key="e3" className="w-6 h-6" />]} actions={[{ label: "Retry", onClick: () => window.location.reload() }]} />
+        </div>
       ) : filtered.length === 0 ? (
-        <EmptyState
-          icons={[<Activity className="w-5 h-5" />, <Package className="w-5 h-5" />, <Warehouse className="w-5 h-5" />]}
-          title="No movements yet"
-          description="Stock movements are recorded automatically."
-        />
+        <EmptyState icons={[<Activity className="w-5 h-5" />, <Package className="w-5 h-5" />, <Warehouse className="w-5 h-5" />]} title="No movements yet" description="Stock movements are recorded automatically." />
       ) : (
         <div data-slot="frame">
           <Table className="[&_th]:px-4 [&_td]:px-4 [&_th]:py-3 [&_td]:py-3">
@@ -172,7 +166,7 @@ export default function StockMovementsPage() {
             </TableHeader>
             <TableBody>
               {paginated.map((m) => (
-                <TableRow key={m.id}>
+                <TableRow key={m.id} className="cursor-pointer" onClick={() => router.push(`/stock-movements/${m.id}`)}>
                   {columns.map((col) => (
                     <TableCell key={col.key} className={col.cellClassName}>
                       {col.render ? col.render(m) : String((m as any)[col.key] ?? "")}

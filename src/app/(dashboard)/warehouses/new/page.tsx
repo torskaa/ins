@@ -9,8 +9,33 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Building2, Phone, Gauge, BadgeCheck, MapPinned, XCircle } from "lucide-react"
 import { toast } from "sonner"
+import { z } from "zod"
+import { useFormValidation } from "@/hooks/use-form-validation"
 
-function Field({ label, required, className, children }: React.HTMLAttributes<HTMLDivElement> & { label: string; required?: boolean }) {
+const warehouseSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  code: z.string().optional(),
+  type: z.string().optional(),
+  description: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  postalCode: z.string().optional(),
+  country: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().optional(),
+  manager: z.string().optional(),
+  capacity: z.string().optional(),
+  capacityUnit: z.string().optional(),
+  temperatureMin: z.string().optional(),
+  temperatureMax: z.string().optional(),
+  humidity: z.string().optional(),
+  operatingHours: z.string().optional(),
+  status: z.string().optional(),
+  priority: z.string().optional(),
+  location: z.string().optional(),
+})
+
+function Field({ label, required, error, className, children }: React.HTMLAttributes<HTMLDivElement> & { label: string; required?: boolean; error?: string }) {
   return (
     <div className={cn("space-y-1", className)}>
       <Label className="text-xs font-medium">
@@ -18,53 +43,26 @@ function Field({ label, required, className, children }: React.HTMLAttributes<HT
         {required && <span className="text-destructive ml-0.5">*</span>}
       </Label>
       {children}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   )
 }
 
 export default function NewWarehousePage() {
   const router = useRouter()
+  const { register, handleSubmit, formState: { errors } } = useFormValidation(warehouseSchema)
   const [loading, setLoading] = useState(false)
-  const [form, setForm] = useState({
-    name: "",
-    code: "",
-    type: "",
-    description: "",
-    address: "",
-    city: "",
-    postalCode: "",
-    country: "",
-    phone: "",
-    email: "",
-    manager: "",
-    capacity: "",
-    capacityUnit: "",
-    temperatureMin: "",
-    temperatureMax: "",
-    humidity: "",
-    operatingHours: "",
-    status: "",
-    priority: "",
-    location: "",
-  })
 
-  function set(key: string) {
-    return (e: React.ChangeEvent<HTMLInputElement>) =>
-      setForm({ ...form, [key]: e.target.value })
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!form.name) { toast.error("Name is required"); return }
+  async function onSubmit(data: any) {
     setLoading(true)
     try {
       const res = await fetch("/api/warehouses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: form.name,
-          location: form.location || null,
-          capacity: form.capacity ? parseInt(form.capacity) : null,
+          name: data.name,
+          location: data.location || null,
+          capacity: data.capacity ? parseInt(data.capacity) : null,
         }),
       })
       if (!res.ok) throw new Error()
@@ -81,7 +79,7 @@ export default function NewWarehousePage() {
         Back
       </button>
       <div className="page-header"><h1>New Warehouse</h1></div>
-      <form onSubmit={handleSubmit} className="grid grid-cols-12 gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-12 gap-4">
         <div className="col-span-8 flex flex-col gap-4">
           <Card>
             <CardHeader className="px-4 pt-4 pb-0">
@@ -92,33 +90,33 @@ export default function NewWarehousePage() {
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Name" required>
-                  <Input value={form.name} onChange={set("name")} required />
+                <Field label="Name" required error={errors.name?.message}>
+                  <Input {...register("name")} />
                 </Field>
-                <Field label="Code">
-                  <Input value={form.code} onChange={set("code")} />
+                <Field label="Code" error={errors.code?.message}>
+                  <Input {...register("code")} />
                 </Field>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Type">
-                  <Input value={form.type} onChange={set("type")} />
+                <Field label="Type" error={errors.type?.message}>
+                  <Input {...register("type")} />
                 </Field>
-                <Field label="Description">
-                  <Input value={form.description} onChange={set("description")} />
+                <Field label="Description" error={errors.description?.message}>
+                  <Input {...register("description")} />
                 </Field>
               </div>
-              <Field label="Address">
-                <Input value={form.address} onChange={set("address")} />
+              <Field label="Address" error={errors.address?.message}>
+                <Input {...register("address")} />
               </Field>
               <div className="grid grid-cols-3 gap-3">
-                <Field label="City">
-                  <Input value={form.city} onChange={set("city")} />
+                <Field label="City" error={errors.city?.message}>
+                  <Input {...register("city")} />
                 </Field>
-                <Field label="Postal Code">
-                  <Input value={form.postalCode} onChange={set("postalCode")} />
+                <Field label="Postal Code" error={errors.postalCode?.message}>
+                  <Input {...register("postalCode")} />
                 </Field>
-                <Field label="Country">
-                  <Input value={form.country} onChange={set("country")} />
+                <Field label="Country" error={errors.country?.message}>
+                  <Input {...register("country")} />
                 </Field>
               </div>
             </CardContent>
@@ -133,15 +131,15 @@ export default function NewWarehousePage() {
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Phone">
-                  <Input value={form.phone} onChange={set("phone")} />
+                <Field label="Phone" error={errors.phone?.message}>
+                  <Input {...register("phone")} />
                 </Field>
-                <Field label="Email">
-                  <Input value={form.email} onChange={set("email")} />
+                <Field label="Email" error={errors.email?.message}>
+                  <Input {...register("email")} />
                 </Field>
               </div>
-              <Field label="Manager">
-                <Input value={form.manager} onChange={set("manager")} />
+              <Field label="Manager" error={errors.manager?.message}>
+                <Input {...register("manager")} />
               </Field>
             </CardContent>
           </Card>
@@ -155,27 +153,27 @@ export default function NewWarehousePage() {
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Capacity">
-                  <Input type="number" min="0" value={form.capacity} onChange={set("capacity")} />
+                <Field label="Capacity" error={errors.capacity?.message}>
+                  <Input type="number" min="0" {...register("capacity")} />
                 </Field>
-                <Field label="Capacity Unit">
-                  <Input value={form.capacityUnit} onChange={set("capacityUnit")} />
-                </Field>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Temp. Min">
-                  <Input type="number" value={form.temperatureMin} onChange={set("temperatureMin")} />
-                </Field>
-                <Field label="Temp. Max">
-                  <Input type="number" value={form.temperatureMax} onChange={set("temperatureMax")} />
+                <Field label="Capacity Unit" error={errors.capacityUnit?.message}>
+                  <Input {...register("capacityUnit")} />
                 </Field>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Humidity">
-                  <Input type="number" value={form.humidity} onChange={set("humidity")} />
+                <Field label="Temp. Min" error={errors.temperatureMin?.message}>
+                  <Input type="number" {...register("temperatureMin")} />
                 </Field>
-                <Field label="Operating Hours">
-                  <Input value={form.operatingHours} onChange={set("operatingHours")} />
+                <Field label="Temp. Max" error={errors.temperatureMax?.message}>
+                  <Input type="number" {...register("temperatureMax")} />
+                </Field>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Humidity" error={errors.humidity?.message}>
+                  <Input type="number" {...register("humidity")} />
+                </Field>
+                <Field label="Operating Hours" error={errors.operatingHours?.message}>
+                  <Input {...register("operatingHours")} />
                 </Field>
               </div>
             </CardContent>
@@ -191,8 +189,8 @@ export default function NewWarehousePage() {
               </div>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
-              <Field label="Status">
-                <Input value={form.status} onChange={set("status")} />
+              <Field label="Status" error={errors.status?.message}>
+                <Input {...register("status")} />
               </Field>
             </CardContent>
           </Card>
@@ -205,11 +203,11 @@ export default function NewWarehousePage() {
               </div>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
-              <Field label="Location">
-                <Input value={form.location} onChange={set("location")} />
+              <Field label="Location" error={errors.location?.message}>
+                <Input {...register("location")} />
               </Field>
-              <Field label="Priority">
-                <Input type="number" min="0" value={form.priority} onChange={set("priority")} />
+              <Field label="Priority" error={errors.priority?.message}>
+                <Input type="number" min="0" {...register("priority")} />
               </Field>
             </CardContent>
           </Card>

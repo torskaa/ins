@@ -39,9 +39,9 @@ export default function NewApiKeyPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim(), permissions: parsed, expiresAt: expiresAt || null }),
       })
-      if (!res.ok) { const err = await res.json(); throw new Error(err.error || "Failed to create") }
-      const data = await res.json()
-      setCreatedKey(data.raw)
+      const json = await res.json()
+      if (!json.success) throw new Error(json.error || "Failed to create")
+      setCreatedKey(json.data.raw)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to create API key")
     } finally { setLoading(false) }

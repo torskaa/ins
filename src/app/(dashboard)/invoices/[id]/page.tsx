@@ -13,8 +13,9 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { AlertTriangle, Banknote, Clock, DollarSign, FileText, Hash, Mail, Package, Pencil, Trash2, XCircle } from "lucide-react"
+import { AlertTriangle, Banknote, Clock, DollarSign, FileText, Hash, HouseIcon, Mail, Package, Pencil, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Frame, FramePanel } from "@/components/reui/frame"
 import { formatCurrency, formatDate, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -38,7 +39,7 @@ function FieldDisplay({ label, value, mono, badge }: { label: string; value: str
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -67,6 +68,7 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
   const router = useRouter()
   const [invoice, setInvoice] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -87,8 +89,9 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
         if (!r.ok) throw new Error("Failed to load")
         return r.json()
       })
-      .then((data) => {
-        if (data) {
+      .then((json) => {
+        if (json?.success && json.data) {
+          const data = json.data
           setInvoice(data)
           setForm({
             number: data.number,
@@ -99,9 +102,9 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
             discount: String(data.discount || 0),
             status: data.status,
           })
-        }
+        } else if (!json?.success) throw new Error(json?.error || "Failed to load")
       })
-      .catch(() => {})
+      .catch((err) => { setError(err.message); setLoading(false) })
       .finally(() => setLoading(false))
   }, [id])
 
@@ -158,6 +161,12 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
     }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
+
   if (loading) return <SkeletonDetail cards={3} hasChart={true} />
 
   if (!invoice) {
@@ -167,7 +176,7 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
           <h2 className="text-lg font-semibold">Invoice not found</h2>
           <p className="text-sm text-muted-foreground mt-1">The invoice you are looking for does not exist or has been removed.</p>
         </div>
-        <Button variant="secondary" onClick={() => router.push("/invoices")}>Back to Invoices</Button>
+        <Button variant="outline" onClick={() => router.push("/invoices")}>Back to Invoices</Button>
       </div>
     )
   }
@@ -193,37 +202,42 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
   const paymentColumns = [
     { key: "date", label: "Date", render: (item: any) => <span className="text-sm">{formatDate(new Date(item.date))}</span> },
     { key: "amount", label: "Amount", render: (item: any) => <span className="font-mono text-sm font-medium">{formatCurrency(item.amount)}</span> },
-    { key: "method", label: "Method", render: (item: any) => <SemanticBadge semantic={item.method} category="method" className="capitalize" /> },
+    { key: "method", label: "Method", render: (item: any) => <SemanticBadge semantic={item.method} category="method" className="" /> },
     { key: "reference", label: "Reference", render: (item: any) => <span className="font-mono text-xs text-muted-foreground">{item.reference || "—"}</span> },
   ]
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/invoices")}>Invoices</button>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{invoice.number}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Frame variant="ghost" className="w-fit">
+        <FramePanel className="gap-2 px-3! py-2! border-0!">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/invoices" className="flex items-center gap-1.5">
+                  <HouseIcon className="size-4" aria-hidden="true" />
+                  Invoices
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-semibold">{invoice.number}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </FramePanel>
+      </Frame>
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
           <div className="flex items-start justify-between gap-6">
             <div className="flex flex-col gap-2 min-w-0 flex-1">
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-2xl font-bold">{invoice.number}</h1>
-                <SemanticBadge semantic={status} category="status" appearance="outline" className="gap-1 capitalize text-[11px]">
+                <SemanticBadge semantic={status} category="status" className="gap-1 text-[11px]">
                   <StatusIcon className="w-3 h-3" />
                   {statusConfig[status]?.label || status}
                   {overdue > 0 && ` (${overdue}d)`}
                 </SemanticBadge>
-                <SemanticBadge semantic={invoice.number} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{invoice.number}</SemanticBadge>
+                <SemanticBadge semantic={invoice.number} category="id" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{invoice.number}</SemanticBadge>
               </div>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <span>{invoice.customer?.name}</span>
@@ -390,7 +404,7 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
-      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden pt-8">
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="w-full overflow-x-auto px-4">
             <TabsTrigger value="items" className="gap-1.5"><Package className="w-4 h-4" /> Items ({invoice.items?.length || 0})</TabsTrigger>
@@ -399,7 +413,7 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
             <TabsTrigger value="activity" className="gap-1.5"><Clock className="w-4 h-4" /> Activity</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="items" className="p-3">
+          <TabsContent value="items" className="pt-8 px-3 pb-3">
             <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <Package className="w-4 h-4 text-primary" />
               Invoice Items
@@ -458,7 +472,7 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
             )}
           </TabsContent>
 
-          <TabsContent value="payments" className="p-3">
+          <TabsContent value="payments" className="pt-8 px-3 pb-3">
             <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <Banknote className="w-4 h-4 text-primary" />
               Payment History
@@ -497,13 +511,13 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
           </TabsContent>
 
           {invoice.order && (
-            <TabsContent value="order" className="p-3">
+            <TabsContent value="order" className="pt-8 px-3 pb-3">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <h3 className="text-sm font-medium">Linked Order</h3>
                   <p className="text-xs text-muted-foreground">Order #{invoice.order.number}</p>
                 </div>
-                <SemanticBadge semantic={invoice.order.status} category="status" className="capitalize" />
+                <SemanticBadge semantic={invoice.order.status} category="status" className="" />
               </div>
               {(!invoice.order.items || invoice.order.items.length === 0) ? (
                 <EmptyState
@@ -548,7 +562,7 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
             </TabsContent>
           )}
 
-          <TabsContent value="activity" className="p-3">
+          <TabsContent value="activity" className="pt-8 px-3 pb-3">
             <div className="flex items-center gap-2 text-sm font-semibold mb-2">
               <Clock className="w-4 h-4 text-primary" />
               Activity Log
@@ -635,7 +649,7 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
             </Card>
           </div>
           <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
-            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowEdit(false)}>Cancel</Button>
             <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
           </DialogFooter>
         </DialogContent>
@@ -648,7 +662,7 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
             <DialogDescription>Are you sure you want to delete <strong>{invoice.number}</strong>? This action cannot be undone.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="outline" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
             <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
           </DialogFooter>
         </DialogContent>

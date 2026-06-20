@@ -48,6 +48,7 @@ const PAGE_SIZE = 10
 export default function CRMPage() {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -60,7 +61,8 @@ export default function CRMPage() {
   useEffect(() => {
     fetch("/api/customers")
       .then(r => r.json())
-      .then((data) => { if (Array.isArray(data)) setCustomers(data) })
+      .then((json) => { if (json?.success && Array.isArray(json.data)) setCustomers(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+      .catch((err) => { setError(err.message); setLoading(false) })
       .finally(() => setLoading(false))
   }, [])
 
@@ -171,7 +173,14 @@ export default function CRMPage() {
         </div>
       </div>
 
-      {loading ? (
+      {error ? (
+        <EmptyState
+          variant="error"
+          title="Failed to load data"
+          description={error}
+          actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+        />
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState icons={[<Users className="w-5 h-5" />, <Building2 className="w-5 h-5" />, <Mail className="w-5 h-5" />]} title="No customers yet" description="Add your first customer to start tracking relationships." actions={[{ label: "Add Customer", onClick: () => router.push("/crm/new") }]} />

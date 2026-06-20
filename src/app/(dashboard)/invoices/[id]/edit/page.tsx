@@ -10,20 +10,23 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { cn, formatCurrency } from "@/lib/utils"
 import { SkeletonForm } from "@/components/ui/skeleton"
-import { XCircle, Receipt } from "lucide-react"
+import { AlertTriangle, XCircle, Receipt } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export default function EditInvoicePage() {
   const router = useRouter()
   const params = useParams()
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({ status: "", issueDate: "", dueDate: "", notes: "" })
 
   useEffect(() => {
     fetch(`/api/invoices/${params.id}`)
       .then(r => r.json())
-      .then(d => {
-        if (d.error) { toast.error("Invoice not found"); router.push("/invoices"); return }
+      .then(json => {
+        if (!json?.success) { toast.error(json?.error || "Invoice not found"); router.push("/invoices"); return }
+        const d = json.data
         setForm({
           status: d.status || "draft",
           issueDate: d.issueDate ? d.issueDate.split("T")[0] : "",
@@ -31,6 +34,7 @@ export default function EditInvoicePage() {
           notes: d.notes || "",
         })
       })
+      .catch((err) => { setError(err.message); setFetching(false) })
       .finally(() => setFetching(false))
   }, [params.id, router])
 
@@ -51,6 +55,11 @@ export default function EditInvoicePage() {
     finally { setLoading(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (fetching) return <SkeletonForm fields={5} />
 
   const Field = ({ id, label, required, children, className }: { id?: string; label: ReactNode; required?: boolean; children: ReactNode; className?: string }) => (

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { SemanticBadge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { BadgePercent, Percent, Receipt, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
@@ -40,6 +40,7 @@ export default function TaxRatesPage() {
   const router = useRouter()
   const [rates, setRates] = useState<TaxRate[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -49,7 +50,7 @@ export default function TaxRatesPage() {
   useHotkey("c", handleNew)
 
   useEffect(() => {
-    fetch("/api/tax-rates").then(r => r.json()).then(d => { if (Array.isArray(d)) setRates(d) }).finally(() => setLoading(false))
+    fetch("/api/tax-rates").then(r => r.json()).then(json => { if (json?.success && Array.isArray(json.data)) setRates(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") }).catch((err) => { setError(err.message); setLoading(false) }).finally(() => setLoading(false))
   }, [])
 
   const filterColumns: FilterColumn[] = [
@@ -97,18 +98,18 @@ export default function TaxRatesPage() {
     {
       key: "isDefault",
       label: "Default",
-      render: (r: TaxRate) => r.isDefault ? <Badge className="bg-emerald-100 text-emerald-700 border-0">Default</Badge> : null,
+      render: (r: TaxRate) => r.isDefault ? <SemanticBadge semantic="default" category="status">Default</SemanticBadge> : null,
     },
     {
       key: "isActive",
       label: "Status",
       className: "w-[120px]",
-      render: (r: TaxRate) => <Badge variant={r.isActive ? "primary" : "secondary"}>{r.isActive ? "Active" : "Inactive"}</Badge>,
+      render: (r: TaxRate) => <SemanticBadge semantic={r.isActive ? "active" : "inactive"} category="status">{r.isActive ? "Active" : "Inactive"}</SemanticBadge>,
     },
     {
       key: "type",
       label: "Type",
-      render: (r: TaxRate) => <Badge variant="outline">{r.type === "vat" ? "VAT" : r.type === "withholding" ? "Withholding" : r.type}</Badge>,
+      render: (r: TaxRate) => <SemanticBadge semantic={r.type} category="type">{r.type === "vat" ? "VAT" : r.type === "withholding" ? "Withholding" : r.type}</SemanticBadge>,
     },
   ]
 
@@ -156,7 +157,14 @@ export default function TaxRatesPage() {
         </div>
       </div>
 
-      {loading ? (
+      {error ? (
+        <EmptyState
+          variant="error"
+          title="Failed to load data"
+          description={error}
+          actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+        />
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState

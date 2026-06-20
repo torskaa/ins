@@ -9,8 +9,9 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 import { cn } from "@/lib/utils"
-import { XCircle, Package, List } from "lucide-react"
+import { AlertTriangle, XCircle, Package, List } from "lucide-react"
 
 type MaterialRow = { key: string; materialId: string; quantity: string; scrapAllowance: string; unit: string; wastePercent: string }
 
@@ -26,6 +27,7 @@ export default function EditBOMPage({ params }: { params: Promise<{ id: string }
   const { id } = use(params)
   const [saving, setSaving] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [goods, setGoods] = useState<any[]>([])
   const [materials, setMaterials] = useState<any[]>([])
   const [finishedGoodId, setFinishedGoodId] = useState("")
@@ -34,37 +36,42 @@ export default function EditBOMPage({ params }: { params: Promise<{ id: string }
 
   useEffect(() => {
     async function load() {
-      const [bomRes, goodsRes, matsRes] = await Promise.all([
-        fetch(`/api/bom/${id}`),
-        fetch("/api/products?type=finished_good"),
-        fetch("/api/materials"),
-      ])
-      if (!bomRes.ok) { toast.error("BOM not found"); router.push("/bom"); return }
-      const bomData = await bomRes.json()
-      const goodsData = goodsRes.ok ? await goodsRes.json() : []
-      const matsData = matsRes.ok ? await matsRes.json() : []
+      try {
+        const [bomRes, goodsRes, matsRes] = await Promise.all([
+          fetch(`/api/bom/${id}`),
+          fetch("/api/products?type=finished_good"),
+          fetch("/api/materials"),
+        ])
+        if (!bomRes.ok) { toast.error("BOM not found"); router.push("/bom"); return }
+        const bomData = await bomRes.json()
+        const goodsData = goodsRes.ok ? await goodsRes.json() : []
+        const matsData = matsRes.ok ? await matsRes.json() : []
 
-      setGoods(Array.isArray(goodsData) ? goodsData : [])
-      const allMats = Array.isArray(matsData) ? matsData : []
-      setMaterials(allMats)
+        setGoods(Array.isArray(goodsData) ? goodsData : [])
+        const allMats = Array.isArray(matsData) ? matsData : []
+        setMaterials(allMats)
 
-      const bom = bomData.bom || bomData
-      setFinishedGoodId(bom.finishedGoodId || "")
+        const bom = bomData.bom || bomData
+        setFinishedGoodId(bom.finishedGoodId || "")
 
-      if (bomData.components && Array.isArray(bomData.components)) {
-        setRows(bomData.components.map((c: any) => ({
-          key: crypto.randomUUID(),
-          materialId: c.material?.id || c.materialId || "",
-          quantity: String(c.quantity || 1),
-          scrapAllowance: String(c.scrapAllowance || 0),
-          unit: c.unit || "pcs",
-          wastePercent: String(c.wastePercent || 0),
-        })))
-      } else {
-        setRows([createRow()])
+        if (bomData.components && Array.isArray(bomData.components)) {
+          setRows(bomData.components.map((c: any) => ({
+            key: crypto.randomUUID(),
+            materialId: c.material?.id || c.materialId || "",
+            quantity: String(c.quantity || 1),
+            scrapAllowance: String(c.scrapAllowance || 0),
+            unit: c.unit || "pcs",
+            wastePercent: String(c.wastePercent || 0),
+          })))
+        } else {
+          setRows([createRow()])
+        }
+        setNotes(bom.notes || "")
+      } catch (err: any) {
+        setError(err.message)
+      } finally {
+        setFetching(false)
       }
-      setNotes(bom.notes || "")
-      setFetching(false)
     }
     load()
   }, [id, router])
@@ -84,7 +91,7 @@ export default function EditBOMPage({ params }: { params: Promise<{ id: string }
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ materialId: row.materialId }),
-        }).catch(() => {})
+        }).catch((err) => { setError(err.message) })
       ))
       for (const row of rows) {
         const res = await fetch("/api/bom", {
@@ -109,6 +116,11 @@ export default function EditBOMPage({ params }: { params: Promise<{ id: string }
     finally { setSaving(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (fetching) return <SkeletonForm fields={5} />
 
   const Field = ({ id, label, required, children, className }: { id?: string; label: ReactNode; required?: boolean; children: ReactNode; className?: string }) => (

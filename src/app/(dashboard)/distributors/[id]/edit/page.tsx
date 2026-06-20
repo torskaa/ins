@@ -11,8 +11,9 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { Building2, Calendar, FileText, Mail, MessageSquare, Phone, Save, User, XCircle } from "lucide-react"
+import { AlertTriangle, Building2, Calendar, FileText, Mail, MessageSquare, Phone, Save, User, XCircle } from "lucide-react"
 import { SkeletonForm } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
   <div className={cn("space-y-1", className)}>
@@ -31,6 +32,7 @@ export default function EditDistributorPage({ params }: { params: Promise<{ id: 
   const { id } = use(params)
   const router = useRouter()
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({
     name: "", email: "", phone: "", address: "", taxId: "",
@@ -41,7 +43,9 @@ export default function EditDistributorPage({ params }: { params: Promise<{ id: 
   useEffect(() => {
     fetch(`/api/distributors/${id}`)
     .then(r => r.json())
-    .then((data) => {
+    .then((json) => {
+      if (!json?.success) throw new Error(json?.error || "Failed to load")
+      const data = json.data
       setForm({
         name: data.name || "",
         email: data.email || "",
@@ -57,7 +61,7 @@ export default function EditDistributorPage({ params }: { params: Promise<{ id: 
         notes: data.notes || "",
       })
     })
-    .finally(() => setLoading(false))
+    .catch((err) => { setError(err.message); setLoading(false) })
   }, [id])
 
   async function handleSubmit(e: React.FormEvent) {

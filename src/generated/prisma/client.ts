@@ -307,6 +307,26 @@ export type WikiArticle = Prisma.WikiArticleModel
  */
 export type KnowledgeDocument = Prisma.KnowledgeDocumentModel
 /**
+ * Model AiExecutionLog
+ * 
+ */
+export type AiExecutionLog = Prisma.AiExecutionLogModel
+/**
+ * Model AgentRun
+ * 
+ */
+export type AgentRun = Prisma.AgentRunModel
+/**
+ * Model AgentStep
+ * 
+ */
+export type AgentStep = Prisma.AgentStepModel
+/**
+ * Model AgentApproval
+ * 
+ */
+export type AgentApproval = Prisma.AgentApprovalModel
+/**
  * Model TrainingProgram
  * 
  */

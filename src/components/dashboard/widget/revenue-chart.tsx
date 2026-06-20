@@ -27,8 +27,9 @@ export function RevenueChart({ compact }: { compact?: boolean }) {
  fetch("/api/dashboard")
  .then((r) => r.json())
  .then((d) => {
- if (d.monthlyRevenue?.length) {
- setData(d.monthlyRevenue)
+ const monthly = d.data?.monthlyRevenue || d.monthlyRevenue
+ if (monthly?.length) {
+ setData(monthly)
  } else {
  setData(generateMonthlyRevenue())
  }

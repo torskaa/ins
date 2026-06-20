@@ -8,12 +8,12 @@ import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import { SemanticBadge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
-import { Search, Layers } from "lucide-react"
+import { AlertTriangle, Search, Layers } from "lucide-react"
 import {
   Pagination,
   PaginationContent,
@@ -24,8 +24,6 @@ import {
 } from "@/components/ui/pagination"
 
 type Group = { id: string; name: string; code: string; type: string; description: string; _count: { accounts: number } }
-
-const TYPE_COLORS: Record<string, string> = { asset: "bg-blue-100 text-blue-700", liability: "bg-orange-100 text-orange-700", equity: "bg-purple-100 text-purple-700", revenue: "bg-emerald-100 text-emerald-700", expense: "bg-red-100 text-red-700" }
 
 const PROPERTY_OPTIONS = [
   { key: "code", label: "Code" },
@@ -41,6 +39,7 @@ export default function AccountGroupsPage() {
   const router = useRouter()
   const [groups, setGroups] = useState<Group[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -50,7 +49,7 @@ export default function AccountGroupsPage() {
   useHotkey("c", handleNew)
 
   useEffect(() => {
-    fetch("/api/finance/groups").then(r => r.json()).then(d => { if (Array.isArray(d)) setGroups(d) }).finally(() => setLoading(false))
+    fetch("/api/finance/groups").then(r => r.json()).then(json => { if (json?.success && Array.isArray(json.data)) setGroups(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") }).catch((err) => { setError(err.message); setLoading(false) }).finally(() => setLoading(false))
   }, [])
 
   const filterColumns: FilterColumn[] = [
@@ -98,7 +97,7 @@ export default function AccountGroupsPage() {
       key: "type",
       label: "Type",
       className: "w-[120px]",
-      render: (g: Group) => <Badge className={TYPE_COLORS[g.type] || ""}>{g.type.replace("_", " ")}</Badge>,
+      render: (g: Group) => <SemanticBadge semantic={g.type} category="type" className="">{g.type.replace("_", " ")}</SemanticBadge>,
     },
     {
       key: "description",
@@ -148,7 +147,11 @@ export default function AccountGroupsPage() {
         </div>
       </div>
 
-      {loading ? (
+      {error ? (
+        <div className="animate-fade-in pb-8 space-y-4">
+          <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+        </div>
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState

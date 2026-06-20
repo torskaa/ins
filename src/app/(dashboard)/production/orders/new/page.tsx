@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { XCircle, ClipboardList, Package, Cog, Beaker, Play } from "lucide-react"
+import { AlertTriangle, XCircle, ClipboardList, Package, Cog, Beaker, Play } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 
 type Product = { id: string; name: string; sku: string }
@@ -21,6 +21,7 @@ type WorkCenter = { id: string; name: string; code: string }
 export default function NewProductionOrderPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [boms, setBoms] = useState<BOM[]>([])
   const [warehouses, setWarehouses] = useState<Warehouse[]>([])
@@ -32,10 +33,10 @@ export default function NewProductionOrderPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/products").then(r => r.json()),
-      fetch("/api/bill-of-materials").then(r => r.json()).catch(() => []),
-      fetch("/api/warehouses").then(r => r.json()).catch(() => []),
-      fetch("/api/work-centers").then(r => r.json()).catch(() => []),
+      fetch("/api/products").then(r => r.json()).catch((err) => { setError(err.message); setLoading(false); return [] }),
+      fetch("/api/bill-of-materials").then(r => r.json()).catch((err) => { setError(err.message); setLoading(false); return [] }),
+      fetch("/api/warehouses").then(r => r.json()).catch((err) => { setError(err.message); setLoading(false); return [] }),
+      fetch("/api/work-centers").then(r => r.json()).catch((err) => { setError(err.message); setLoading(false); return [] }),
     ]).then(([p, b, w, wc]) => {
       setProducts(Array.isArray(p) ? p : [])
       setBoms(Array.isArray(b) ? b : [])
@@ -80,6 +81,11 @@ export default function NewProductionOrderPage() {
     </div>
   )
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   return (
     <div className="animate-fade-in pb-28">
       <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">

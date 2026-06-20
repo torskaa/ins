@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { Check, CheckCircle, Clock, Hash, Pencil, Shield, Trash2, Users, XCircle } from "lucide-react"
+import { AlertTriangle, Check, CheckCircle, Clock, Hash, Pencil, Shield, Trash2, Users, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -30,7 +30,7 @@ function FieldDisplay({ label, value, mono, badge }: { label: string; value: str
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -54,6 +54,7 @@ export default function EditRolePage({ params: paramsPromise }: { params: Promis
   const params = use(paramsPromise)
   const router = useRouter()
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
@@ -66,13 +67,14 @@ export default function EditRolePage({ params: paramsPromise }: { params: Promis
   useEffect(() => {
     fetch(`/api/roles/${params.id}`)
       .then((res) => res.json())
-      .then((data) => {
-        if (data?.error) { toast.error(data.error); return }
-        setRole(data)
-        setName(data.name || "")
-        setDescription(data.description || "")
-        setPermissions(JSON.stringify(typeof data.permissions === "string" ? JSON.parse(data.permissions) : data.permissions || {}, null, 2))
+      .then((json) => {
+        if (!json?.success) { toast.error(json?.error || "Failed to load"); return }
+        setRole(json.data)
+        setName(json.data.name || "")
+        setDescription(json.data.description || "")
+        setPermissions(JSON.stringify(typeof json.data.permissions === "string" ? JSON.parse(json.data.permissions) : json.data.permissions || {}, null, 2))
       })
+      .catch((err) => { setError(err.message); setLoading(false) })
       .finally(() => setLoading(false))
   }, [params.id])
 
@@ -108,6 +110,11 @@ export default function EditRolePage({ params: paramsPromise }: { params: Promis
     } finally { setDeleting(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (loading) return <SkeletonDetail cards={2} hasChart={false} />
 
   if (!role) {
@@ -152,7 +159,7 @@ export default function EditRolePage({ params: paramsPromise }: { params: Promis
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-bold">{role.name}</h1>
                   {role.isSystem && (
-                    <SemanticBadge semantic="system" category="status" appearance="outline" className="gap-1 text-[11px]"><BadgeDot />System</SemanticBadge>
+                    <SemanticBadge semantic="system" category="status" className="gap-1 text-[11px]"><BadgeDot />System</SemanticBadge>
                   )}
                 </div>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">

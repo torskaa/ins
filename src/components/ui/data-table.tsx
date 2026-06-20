@@ -55,7 +55,7 @@ export const statusBadge = cva("inline-flex items-center rounded-md px-2 py-0.5 
  secondary: "bg-secondary/15 text-secondary-dark",
  success: "bg-success/15 text-success",
  destructive: "bg-destructive/15 text-destructive",
- warning: "bg-warning/15 text-amber-700",
+ warning: "bg-warning/15 text-warning",
  outline: "border border-border text-muted-foreground",
  },
  },
@@ -195,7 +195,7 @@ export function DataTable<T extends { id: string }>({
  onClick={() => setPage(p)}
  className={cn(
  "px-2 py-1 text-xs rounded border",
- p === page ? "bg-primary text-white border-primary" : "border-border hover:bg-muted"
+ p === page ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted"
  )}
  >
  {p}

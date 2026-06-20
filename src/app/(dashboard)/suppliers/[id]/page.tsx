@@ -14,8 +14,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { Award, BadgePercent, Boxes, Building2, CheckCircle, Clock, DollarSign, FileText, Hash, MapPin, Package, Pencil, Phone, ShoppingCart, Trash2, User, XCircle } from "lucide-react"
+import { Award, BadgePercent, Boxes, Building2, CheckCircle, Clock, DollarSign, FileText, Hash, HouseIcon, MapPin, Package, Pencil, Phone, ShoppingCart, Trash2, User, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Frame, FramePanel } from "@/components/reui/frame"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -111,7 +112,7 @@ function FieldDisplay({ label, value, mono, badge }: { label: string; value: str
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -134,6 +135,7 @@ function FieldGroup({ label, children, required }: { label: string; children: Re
 export default function SupplierDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [supplier, setSupplier] = useState<Supplier | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -154,7 +156,8 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
     if (!id) return
     fetch(`/api/suppliers/${id}`)
       .then((res) => res.json())
-      .then((d) => { setSupplier(d); setForm({ name: d.name, email: d.email || "", phone: d.phone || "", taxId: d.taxId || "", paymentTerms: d.paymentTerms || "", currency: d.currency, address: d.address || "", contactPerson: d.contactPerson || "", contactPersonRole: d.contactPersonRole || "", website: d.website || "", preferredChannel: d.preferredChannel || "", defaultLeadTime: d.defaultLeadTime != null ? String(d.defaultLeadTime) : "", notes: d.notes || "", rating: d.rating }) })
+      .then((json) => { if (json?.success) { const d = json.data; setSupplier(d); setForm({ name: d.name, email: d.email || "", phone: d.phone || "", taxId: d.taxId || "", paymentTerms: d.paymentTerms || "", currency: d.currency, address: d.address || "", contactPerson: d.contactPerson || "", contactPersonRole: d.contactPersonRole || "", website: d.website || "", preferredChannel: d.preferredChannel || "", defaultLeadTime: d.defaultLeadTime != null ? String(d.defaultLeadTime) : "", notes: d.notes || "", rating: d.rating }) } else throw new Error(json?.error || "Failed to load") })
+      .catch((err) => { setError(err.message) })
       .finally(() => setLoading(false))
   }, [id])
 
@@ -197,7 +200,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
       { key: "stock", label: "Stock", render: (item: Product) => (
         <span className={item.stock <= 0 ? "text-destructive font-medium" : ""}>{item.stock}</span>
       )},
-      { key: "status", label: "Status", render: (item: Product) => <SemanticBadge semantic={item.status} category="status" className="capitalize" /> },
+      { key: "status", label: "Status", render: (item: Product) => <SemanticBadge semantic={item.status} category="status" className="" /> },
     ],
     [supplier]
   )
@@ -207,7 +210,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
       { key: "orderNumber", label: "Order #", render: (item: PurchaseOrder) => (
         <span className="font-medium text-info hover:underline cursor-pointer" onClick={() => router.push(`/purchase-orders/${item.id}`)}>{item.orderNumber}</span>
       )},
-      { key: "status", label: "Status", render: (item: PurchaseOrder) => <SemanticBadge semantic={item.status} category="status" className="capitalize" /> },
+      { key: "status", label: "Status", render: (item: PurchaseOrder) => <SemanticBadge semantic={item.status} category="status" className="" /> },
       { key: "itemsCount", label: "Items", render: (item: PurchaseOrder) => item.items.length },
       { key: "totalAmount", label: "Total", render: (item: PurchaseOrder) => formatCurrency(item.totalAmount, item.currency) },
       { key: "orderDate", label: "Date", render: (item: PurchaseOrder) => formatDateTime(new Date(item.orderDate)) },
@@ -238,6 +241,17 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
     []
   )
 
+  if (error) {
+    return (
+      <EmptyState
+        variant="error"
+        title="Failed to load data"
+        description={error}
+        actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+      />
+    )
+  }
+
   if (loading) return <SkeletonDetail cards={5} hasChart={false} />
 
   if (!supplier) {
@@ -247,7 +261,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
           <h2 className="text-lg font-semibold">Supplier not found</h2>
           <p className="text-sm text-muted-foreground mt-1">The supplier you are looking for does not exist or has been removed.</p>
         </div>
-        <Button variant="secondary" onClick={() => router.push("/suppliers")}>Back to Suppliers</Button>
+        <Button variant="outline" onClick={() => router.push("/suppliers")}>Back to Suppliers</Button>
       </div>
     )
   }
@@ -257,20 +271,24 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/suppliers")}>Suppliers</button>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{supplier.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Frame variant="ghost" className="w-fit">
+        <FramePanel className="gap-2 px-3! py-2! border-0!">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/suppliers" className="flex items-center gap-1.5">
+                  <HouseIcon className="size-4" aria-hidden="true" />
+                  Suppliers
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-semibold">{supplier.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </FramePanel>
+      </Frame>
       <div className="grid grid-cols-12 gap-4">
         {/* Page Header */}
         <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
@@ -281,7 +299,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
                   <h1 className="text-2xl font-bold">{supplier.name}</h1>
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <SemanticBadge semantic={supplier.rating} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{supplier.rating}</SemanticBadge>
+                  <SemanticBadge semantic={supplier.rating} category="status" className="gap-1 text-[11px]"><BadgeDot />{supplier.rating}</SemanticBadge>
                 </div>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span>{perf?.totalProducts ?? supplier.products.length} products</span>
@@ -400,7 +418,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
       </div>
 
       {/* Tab Module */}
-      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden pt-8">
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="w-full overflow-x-auto px-4">
             <TabsTrigger value="products" className="gap-1.5"><Package className="w-4 h-4" /> Products ({supplier.products?.length || 0})</TabsTrigger>
@@ -409,7 +427,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
             <TabsTrigger value="pricing" className="gap-1.5"><DollarSign className="w-4 h-4" /> Pricing ({supplier.supplierPrices?.length || 0})</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="products" className="p-3">
+          <TabsContent value="products" className="pt-8 px-3 pb-3">
             <div className="flex items-center mb-3">
               <Input
                 placeholder="Search products..."
@@ -456,7 +474,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
             })()}
           </TabsContent>
 
-          <TabsContent value="purchase-orders" className="p-3">
+          <TabsContent value="purchase-orders" className="pt-8 px-3 pb-3">
             <div className="flex items-center mb-3">
               <Input
                 placeholder="Search orders..."
@@ -503,7 +521,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
             })()}
           </TabsContent>
 
-          <TabsContent value="lots" className="p-3">
+          <TabsContent value="lots" className="pt-8 px-3 pb-3">
             <div className="flex items-center mb-3">
               <Input
                 placeholder="Search lots..."
@@ -550,7 +568,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
             })()}
           </TabsContent>
 
-          <TabsContent value="pricing" className="p-3">
+          <TabsContent value="pricing" className="pt-8 px-3 pb-3">
             <div className="flex items-center mb-3">
               <Input
                 placeholder="Search prices..."
@@ -671,7 +689,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
             </Card>
           </div>
           <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
-            <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowEdit(false)}>Cancel</Button>
             <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
           </DialogFooter>
         </DialogContent>
@@ -685,7 +703,7 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
             <DialogDescription>Are you sure you want to delete <strong>{supplier.name}</strong>? This action cannot be undone.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="outline" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
             <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
           </DialogFooter>
         </DialogContent>

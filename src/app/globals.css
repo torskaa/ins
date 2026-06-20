@@ -5,17 +5,17 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-general-sans), var(--font-satoshi), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
 
   --color-canvas: #ffffff;
   --color-background: #ffffff;
   --color-foreground: #0c0c0c;
 
-  --color-primary: #18181b;
+  --color-primary: #282828;
   --color-primary-foreground: #ffffff;
-  --color-primary-dark: #09090b;
-  --color-primary-light: #27272a;
+  --color-primary-dark: #1a1a1a;
+  --color-primary-light: #3a3a3a;
 
   --color-secondary: #c084fc;
   --color-secondary-dark: #a855f7;
@@ -39,7 +39,7 @@
   --color-modal: #fafafa;
 
   --color-input: #e8e8e8;
-  --color-ring: #18181b;
+  --color-ring: #282828;
   --color-border: #e8e8e8;
   --color-border-light: #d4d4d4;
   --color-border-muted: #f0f0f0;
@@ -70,7 +70,7 @@
   --shadow-card-hover: 0 4px 16px -2px rgb(0 0 0 / 0.06), 0 0 0 1px rgb(0 0 0 / 0.04);
   --shadow-dropdown: 0 8px 32px -4px rgb(0 0 0 / 0.08), 0 0 0 1px rgb(0 0 0 / 0.04);
   --shadow-modal: 0 16px 48px -8px rgb(0 0 0 / 0.12), 0 0 0 1px rgb(0 0 0 / 0.04);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-satoshi), var(--font-general-sans), system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-accent: var(--sidebar-accent);
@@ -86,6 +86,23 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-invert-foreground: var(--invert-foreground);
+  --color-invert: var(--invert);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info-foreground: var(--info-foreground);
+  --color-success-foreground: var(--success-foreground);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-primary-accent: #282828;
+  --color-primary-soft: #e8e8e8;
+  --color-success-accent: #16a34a;
+  --color-success-soft: #dcfce7;
+  --color-warning-accent: #f59e0b;
+  --color-warning-soft: #fef3c7;
+  --color-info-accent: #3b82f6;
+  --color-info-soft: #dbeafe;
+  --color-destructive-accent: #ef4444;
+  --color-destructive-soft: #fee2e2;
 }
 
 .dark {
@@ -95,7 +112,7 @@
   --color-background: #0a0a0a;
   --color-foreground: #ededed;
   --color-primary: #fafafa;
-  --color-primary-foreground: #18181b;
+  --color-primary-foreground: #282828;
   --color-primary-dark: #ffffff;
   --color-primary-light: #e4e4e7;
   --color-popover: #18181b;
@@ -148,6 +165,15 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --destructive-foreground: var(--color-red-600);
+  --success: var(--color-emerald-500);
+  --success-foreground: var(--color-emerald-600);
+  --info: var(--color-violet-500);
+  --info-foreground: var(--color-violet-600);
+  --warning: var(--color-yellow-500);
+  --warning-foreground: var(--color-yellow-600);
+  --invert: var(--color-zinc-700);
+  --invert-foreground: var(--color-zinc-50);
 }
 
 @layer base {
@@ -366,7 +392,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: oklch(0.24 0 0);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -386,10 +412,19 @@
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary: oklch(0.24 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --destructive-foreground: var(--color-red-800);
+  --success: var(--color-emerald-500);
+  --success-foreground: var(--color-emerald-900);
+  --info: var(--color-violet-500);
+  --info-foreground: var(--color-violet-900);
+  --warning: var(--color-yellow-500);
+  --warning-foreground: var(--color-yellow-900);
+  --invert: var(--color-zinc-900);
+  --invert-foreground: var(--color-zinc-50);
 }

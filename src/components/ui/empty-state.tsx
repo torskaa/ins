@@ -102,7 +102,7 @@ export const EmptyState = forwardRef<
  const variantClasses = {
  default: "bg-card border border-border/60 hover:border-border hover:bg-surface/50",
  subtle: "bg-card border border-transparent hover:bg-surface/30",
- error: "bg-card border border-red-200 bg-red-50/50 hover:bg-red-50/80",
+ error: "bg-card border border-destructive/20 bg-destructive/10 hover:bg-destructive/15",
  }
 
  const sizeTitle = { sm: "text-base", default: "text-lg", lg: "text-xl" }

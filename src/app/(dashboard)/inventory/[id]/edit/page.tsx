@@ -10,18 +10,19 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
-import { XCircle, Package, DollarSign, Boxes, Layers, Barcode, Ruler } from "lucide-react"
+import { AlertTriangle, XCircle, Package, DollarSign, Boxes, Layers, Barcode, Ruler } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
+import { cn } from "@/lib/utils"
+import { useFormValidation } from "@/hooks/use-form-validation"
+import { productSchema, z } from "@/lib/validation"
 
-const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
+const Field = ({ id, label, required, children, error, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; error?: string; className?: string }) => (
   <div className={cn("space-y-1", className)}>
     <Label htmlFor={id} className="text-xs font-medium">{label}{required && <span className="text-destructive ml-0.5">*</span>}</Label>
     {children}
+    {error && <p className="text-xs text-destructive">{error}</p>}
   </div>
 )
-
-import { cn } from "@/lib/utils"
-
-type Product = { id: string; name: string; sku: string }
 
 const TYPE_OPTIONS = [
   { value: "raw_material", label: "Raw Material" },
@@ -45,8 +46,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   const [id, setId] = useState("")
   const [saving, setSaving] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
-  const [form, setForm] = useState({ name: "", sku: "", description: "", type: "finished_good", status: "active", price: "0", costPrice: "0", stock: "0", minStock: "0", categoryId: "", vatStatus: "include_vat", unit: "pcs", barcode: "", weight: "0", image: "", leadTime: "0" })
+  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useFormValidation(productSchema)
 
   useEffect(() => { params.then((p) => setId(p.id)) }, [params])
   useEffect(() => {
@@ -56,29 +58,70 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       fetch("/api/categories").then(r => r.json()),
     ]).then(([prod, cats]) => {
       if (prod.error) { toast.error("Product not found"); router.push("/inventory"); return }
-      setForm({ name: prod.name || "", sku: prod.sku || "", description: prod.description || "", type: prod.type || "finished_good", status: prod.status || "active", price: String(prod.price || 0), costPrice: String(prod.costPrice || 0), stock: String(prod.stock || 0), minStock: String(prod.minStock || 0), categoryId: prod.categoryId || "", vatStatus: prod.vatStatus || "include_vat", unit: prod.unit || "pcs", barcode: prod.barcode || "", weight: String(prod.weight || 0), image: prod.image || "", leadTime: String(prod.leadTime || 0) })
+      reset({
+        name: prod.name || "",
+        sku: prod.sku || "",
+        description: prod.description || "",
+        type: prod.type || "finished_good",
+        status: prod.status || "active",
+        unitPrice: prod.price ? parseFloat(prod.price) : 0,
+        costPrice: prod.costPrice ? parseFloat(prod.costPrice) : 0,
+        stock: prod.stock ? parseInt(prod.stock) : 0,
+        minStock: prod.minStock ? parseInt(prod.minStock) : 0,
+        categoryId: prod.categoryId || undefined,
+        vatStatus: prod.vatStatus || "include_vat",
+        uom: prod.unit || "pcs",
+        barcode: prod.barcode || "",
+        weight: prod.weight ? parseFloat(prod.weight) : 0,
+        image: prod.image || "",
+        leadTime: prod.leadTime ? parseInt(prod.leadTime) : 0,
+      })
       if (Array.isArray(cats)) setCategories(cats)
-    }).finally(() => setFetching(false))
-  }, [id, router])
+    }).catch((err) => { setError(err.message); setFetching(false) }).finally(() => setFetching(false))
+  }, [id, router, reset])
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!form.name) { toast.error("Name is required"); return }
+  async function onSubmit(data: z.infer<typeof productSchema>) {
     setSaving(true)
     try {
-      const res = await fetch(`/api/products/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, price: parseFloat(form.price), costPrice: parseFloat(form.costPrice), stock: parseInt(form.stock) || 0, minStock: parseInt(form.minStock) || 0, weight: parseFloat(form.weight) || 0, leadTime: parseInt(form.leadTime) || 0 }) })
+      const res = await fetch(`/api/products/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          sku: data.sku,
+          description: data.description,
+          type: data.type,
+          status: data.status,
+          price: data.unitPrice,
+          costPrice: data.costPrice,
+          stock: data.stock,
+          minStock: data.minStock,
+          categoryId: data.categoryId,
+          vatStatus: data.vatStatus,
+          unit: data.uom,
+          barcode: data.barcode,
+          weight: data.weight,
+          image: data.image,
+          leadTime: data.leadTime,
+        }),
+      })
       if (!res.ok) throw new Error()
       toast.success("Product updated"); router.push(`/inventory/${id}`); router.refresh()
     } catch { toast.error("Failed to update") } finally { setSaving(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (fetching) return <SkeletonForm fields={8} />
 
   return (
     <div className="animate-fade-in pb-28">
       <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">Back</button>
-      <div className="page-header mb-5"><h1>Edit Product</h1><p>{form.sku} · {form.name}</p></div>
-      <form onSubmit={handleSubmit}>
+      <div className="page-header mb-5"><h1>Edit Product</h1><p>{watch("sku")} · {watch("name")}</p></div>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-8 flex flex-col gap-4">
             <Card>
@@ -90,17 +133,19 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               </CardHeader>
               <CardContent className="p-4 space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Name" required><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
-                  <Field label="SKU"><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} /></Field>
+                  <Field label="Name" required error={errors.name?.message}><Input {...register("name")} /></Field>
+                  <Field label="SKU" error={errors.sku?.message}><Input {...register("sku")} /></Field>
                 </div>
-                <Field label="Description"><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></Field>
+                <Field label="Description" error={errors.description?.message}><Textarea {...register("description")} rows={2} /></Field>
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Type"><Select options={TYPE_OPTIONS} value={form.type} onChange={(e: any) => setForm({ ...form, type: e.target.value })} /></Field>
-                  <Field label="Unit"><Input value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} /></Field>
+                  <Field label="Type" error={errors.type?.message}>
+                    <Select options={TYPE_OPTIONS} value={watch("type")} onChange={(e: any) => setValue("type", e.target.value, { shouldValidate: true })} />
+                  </Field>
+                  <Field label="Unit" error={errors.uom?.message}><Input {...register("uom")} /></Field>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Barcode"><Input value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} /></Field>
-                  <Field label="Weight (kg)"><Input type="number" min="0" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} /></Field>
+                  <Field label="Barcode" error={errors.barcode?.message}><Input {...register("barcode")} /></Field>
+                  <Field label="Weight (kg)" error={errors.weight?.message}><Input type="number" min="0" {...register("weight")} /></Field>
                 </div>
               </CardContent>
             </Card>
@@ -114,13 +159,13 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               </CardHeader>
               <CardContent className="p-4 space-y-3">
                 <div className="grid grid-cols-3 gap-3">
-                  <Field label="Selling Price"><Input type="number" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></Field>
-                  <Field label="Cost Price"><Input type="number" min="0" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: e.target.value })} /></Field>
-                  <Field label="Stock"><Input type="number" min="0" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} /></Field>
+                  <Field label="Selling Price" error={errors.unitPrice?.message}><Input type="number" min="0" {...register("unitPrice")} /></Field>
+                  <Field label="Cost Price" error={errors.costPrice?.message}><Input type="number" min="0" {...register("costPrice")} /></Field>
+                  <Field label="Stock" error={errors.stock?.message}><Input type="number" min="0" {...register("stock")} /></Field>
                 </div>
                 <div className="grid grid-cols-3 gap-3">
-                  <Field label="Min Stock"><Input type="number" min="0" value={form.minStock} onChange={(e) => setForm({ ...form, minStock: e.target.value })} /></Field>
-                  <Field label="Lead Time (days)"><Input type="number" min="0" value={form.leadTime} onChange={(e) => setForm({ ...form, leadTime: e.target.value })} /></Field>
+                  <Field label="Min Stock" error={errors.minStock?.message}><Input type="number" min="0" {...register("minStock")} /></Field>
+                  <Field label="Lead Time (days)" error={errors.leadTime?.message}><Input type="number" min="0" {...register("leadTime")} /></Field>
                 </div>
               </CardContent>
             </Card>
@@ -135,9 +180,15 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 </div>
               </CardHeader>
               <CardContent className="p-4 space-y-3">
-                <Field label="Category"><Select options={categories.map((c) => ({ value: c.id, label: c.name }))} value={form.categoryId} onChange={(e: any) => setForm({ ...form, categoryId: e.target.value })} placeholder="Select category" /></Field>
-                <Field label="Status"><Select options={STATUS_OPTIONS} value={form.status} onChange={(e: any) => setForm({ ...form, status: e.target.value })} /></Field>
-                <Field label="VAT Status"><Select options={VAT_OPTIONS} value={form.vatStatus} onChange={(e: any) => setForm({ ...form, vatStatus: e.target.value })} /></Field>
+                <Field label="Category" error={errors.categoryId?.message}>
+                  <Select options={categories.map((c) => ({ value: c.id, label: c.name }))} value={watch("categoryId")} onChange={(e: any) => setValue("categoryId", e.target.value, { shouldValidate: true })} placeholder="Select category" />
+                </Field>
+                <Field label="Status" error={errors.status?.message}>
+                  <Select options={STATUS_OPTIONS} value={watch("status")} onChange={(e: any) => setValue("status", e.target.value, { shouldValidate: true })} />
+                </Field>
+                <Field label="VAT Status" error={errors.vatStatus?.message}>
+                  <Select options={VAT_OPTIONS} value={watch("vatStatus")} onChange={(e: any) => setValue("vatStatus", e.target.value, { shouldValidate: true })} />
+                </Field>
               </CardContent>
             </Card>
           </div>

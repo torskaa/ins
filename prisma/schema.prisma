@@ -110,6 +110,9 @@ model Organization {
   roles           Role[]
   apiKeys         ApiKey[]
   auditEntries    AuditEntry[]
+  stockMovements  StockMovement[]
+  aiExecutionLogs AiExecutionLog[]
+  agentRuns       AgentRun[]
 }
 
 model OrganizationMember {
@@ -412,24 +415,26 @@ model Warehouse {
 }
 
 model StockMovement {
-  id          String            @id @default(cuid())
-  type        StockMovementType
-  quantity    Int
-  description String?
-  reference   String?
-  productId   String
-  warehouseId String?
-  orderId     String?
-  createdById String?
-  createdAt   DateTime          @default(now())
+  id              String            @id @default(cuid())
+  type            StockMovementType
+  quantity        Int
+  description     String?
+  reference       String?
+  productId       String
+  warehouseId     String?
+  orderId         String?
+  createdById     String?
+  organizationId  String
+  createdAt       DateTime          @default(now())
 
-  product   Product    @relation(fields: [productId], references: [id])
-  warehouse Warehouse? @relation(fields: [warehouseId], references: [id])
-  order     Order?     @relation(fields: [orderId], references: [id])
-  lotId     String?
-  lot       Lot?       @relation(fields: [lotId], references: [id])
-  deliveryId String?
-  delivery   Delivery? @relation(fields: [deliveryId], references: [id])
+  product      Product    @relation(fields: [productId], references: [id])
+  warehouse    Warehouse? @relation(fields: [warehouseId], references: [id])
+  order        Order?     @relation(fields: [orderId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+  lotId        String?
+  lot          Lot?       @relation(fields: [lotId], references: [id])
+  deliveryId   String?
+  delivery     Delivery?  @relation(fields: [deliveryId], references: [id])
 }
 
 model Supplier {
@@ -1217,6 +1222,80 @@ model KnowledgeDocument {
   updatedAt      DateTime @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model AiExecutionLog {
+  id             String   @id @default(cuid())
+  userId         String
+  organizationId String
+  toolName       String
+  input          Json
+  output         Json?
+  status         String   @default("success")
+  errorMessage   String?
+  durationMs     Int?
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([organizationId, createdAt])
+  @@index([toolName, createdAt])
+}
+
+model AgentRun {
+  id             String    @id @default(cuid())
+  agentId        String
+  organizationId String
+  userId         String
+  task           String
+  status         String    @default("idle")
+  summary        String?
+  startedAt      DateTime
+  completedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id])
+  steps         AgentStep[]
+  approvals     AgentApproval[]
+
+  @@index([organizationId, createdAt])
+  @@index([userId, createdAt])
+  @@index([agentId, createdAt])
+  @@index([status])
+}
+
+model AgentStep {
+  id         String   @id @default(cuid())
+  runId      String
+  toolName   String
+  status     String   @default("pending")
+  input      Json
+  output     Json?
+  durationMs Int?
+  createdAt  DateTime @default(now())
+
+  run AgentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
+}
+
+model AgentApproval {
+  id          String    @id @default(cuid())
+  runId       String
+  toolName    String
+  status      String    @default("pending")
+  requestedAt DateTime  @default(now())
+  resolvedAt  DateTime?
+  resolvedBy  String?
+
+  run AgentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
+  @@index([status])
 }
 
 model TrainingProgram {

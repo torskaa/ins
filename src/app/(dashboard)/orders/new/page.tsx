@@ -10,13 +10,16 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { formatCurrency, cn } from "@/lib/utils"
-import { XCircle, ShoppingCart, FileText, Package, ClipboardList } from "lucide-react"
+import { AlertTriangle, XCircle, ShoppingCart, FileText, Package, ClipboardList } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
+import { useFormValidation } from "@/hooks/use-form-validation"
+import { orderSchema } from "@/lib/validation"
 
-const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
+const Field = ({ id, label, required, children, error, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; error?: string; className?: string }) => (
   <div className={cn("space-y-1", className)}>
     <Label htmlFor={id} className="text-xs font-medium">{label}{required && <span className="text-destructive ml-0.5">*</span>}</Label>
     {children}
+    {error && <p className="text-xs text-destructive">{error}</p>}
   </div>
 )
 
@@ -24,20 +27,20 @@ function NewOrderForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const type = searchParams.get("type") || "sales"
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useFormValidation(orderSchema, {
+    defaultValues: { type: type as "sales" | "purchase" },
+  })
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [customers, setCustomers] = useState<any[]>([])
   const [suppliers, setSuppliers] = useState<any[]>([])
   const [products, setProducts] = useState<any[]>([])
   const [items, setItems] = useState<{ productId: string; productName: string; quantity: number; unitPrice: number }[]>([])
-  const [customerId, setCustomerId] = useState("")
-  const [supplierId, setSupplierId] = useState("")
-  const [notes, setNotes] = useState("")
-  const [expectedDate, setExpectedDate] = useState("")
 
   useEffect(() => {
-    fetch("/api/customers").then(r => r.json()).then((data) => { if (Array.isArray(data)) setCustomers(data) }).catch(() => {})
-    fetch("/api/suppliers").then(r => r.json()).then((data) => { if (Array.isArray(data)) setSuppliers(data) }).catch(() => {})
-    fetch("/api/products").then(r => r.json()).then((data) => { if (Array.isArray(data)) setProducts(data) }).catch(() => {})
+    fetch("/api/customers").then(r => r.json()).then((json) => { if (json?.success && Array.isArray(json.data)) setCustomers(json.data) }).catch((err) => { setError(err.message); setLoading(false) })
+    fetch("/api/suppliers").then(r => r.json()).then((json) => { if (json?.success && Array.isArray(json.data)) setSuppliers(json.data) }).catch((err) => { setError(err.message); setLoading(false) })
+    fetch("/api/products").then(r => r.json()).then((json) => { if (json?.success && Array.isArray(json.data)) setProducts(json.data) }).catch((err) => { setError(err.message); setLoading(false) })
   }, [])
 
   function addItem() {
@@ -61,8 +64,7 @@ function NewOrderForm() {
 
   const total = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  async function onSubmit(data: any) {
     if (items.length === 0) {
       toast.error("Please add at least one item")
       return
@@ -72,12 +74,12 @@ function NewOrderForm() {
       const body: any = {
         type,
         items: items.map(i => ({ productId: i.productId, quantity: i.quantity, unitPrice: i.unitPrice })),
-        notes,
-        expectedDate: expectedDate || undefined,
+        notes: data.notes,
+        expectedDate: data.expectedDate || undefined,
         status: "draft",
       }
-      if (type === "sales") body.customerId = customerId
-      else body.supplierId = supplierId
+      if (type === "sales") body.customerId = data.customerId
+      else body.supplierId = data.supplierId
 
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -95,6 +97,11 @@ function NewOrderForm() {
     }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   return (
     <div className="animate-fade-in pb-28">
       <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">Back</button>
@@ -103,7 +110,7 @@ function NewOrderForm() {
         <p>Create a new order in the system</p>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-8 flex flex-col gap-4">
             <Card>
@@ -114,20 +121,20 @@ function NewOrderForm() {
                 </div>
               </CardHeader>
               <CardContent className="p-4 space-y-3">
-                <Field label={`${type === "sales" ? "Customer" : "Supplier"} *`}>
+                <Field label={`${type === "sales" ? "Customer" : "Supplier"} *`} error={type === "sales" ? errors.customerId?.message : errors.supplierId?.message}>
                   {type === "sales" ? (
-                    <Select options={customers.map(c => ({ value: c.id, label: c.name }))} placeholder="Select customer" value={customerId} onChange={(e: any) => setCustomerId(e.target.value)} />
+                    <Select options={customers.map(c => ({ value: c.id, label: c.name }))} placeholder="Select customer" value={watch("customerId")} onChange={(e: any) => setValue("customerId", e.target.value, { shouldValidate: true })} />
                   ) : (
-                    <Select options={suppliers.map(s => ({ value: s.id, label: s.name }))} placeholder="Select supplier" value={supplierId} onChange={(e: any) => setSupplierId(e.target.value)} />
+                    <Select options={suppliers.map(s => ({ value: s.id, label: s.name }))} placeholder="Select supplier" value={watch("supplierId")} onChange={(e: any) => setValue("supplierId", e.target.value, { shouldValidate: true })} />
                   )}
                 </Field>
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Expected Date">
-                    <Input type="date" value={expectedDate} onChange={(e) => setExpectedDate(e.target.value)} />
+                  <Field label="Expected Date" error={errors.expectedDate?.message}>
+                    <Input type="date" {...register("expectedDate")} />
                   </Field>
                 </div>
-                <Field label="Notes">
-                  <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
+                <Field label="Notes" error={errors.notes?.message}>
+                  <Textarea {...register("notes")} rows={3} />
                 </Field>
               </CardContent>
             </Card>

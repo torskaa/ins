@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { statusBadge } from "@/components/ui/data-table"
+import { SemanticBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { toast } from "sonner"
-import { Key, Settings2, ShieldAlert, Search } from "lucide-react"
+import { AlertTriangle, Key, Settings2, ShieldAlert, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { formatDate } from "@/lib/utils"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
@@ -48,6 +48,7 @@ const PAGE_SIZE = 10
 export default function ApiKeysPage() {
   const [keys, setKeys] = useState<ApiKey[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -60,7 +61,8 @@ export default function ApiKeysPage() {
   useEffect(() => {
     fetch("/api/api-keys")
       .then((res) => res.json())
-      .then((data) => { if (Array.isArray(data)) setKeys(data) })
+      .then((json) => { if (json?.success && Array.isArray(json.data)) setKeys(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+      .catch((err) => { setError(err.message); setLoading(false) })
       .finally(() => setLoading(false))
   }, [])
 
@@ -141,8 +143,8 @@ export default function ApiKeysPage() {
       className: "w-[120px]",
       cellClassName: undefined,
       render: (k: ApiKey) => k.active
-        ? <span className={statusBadge({ variant: "success" })}>Active</span>
-        : <span className={statusBadge({ variant: "secondary" })}>Inactive</span>,
+        ? <SemanticBadge semantic="active" category="status" className="">Active</SemanticBadge>
+        : <SemanticBadge semantic="inactive" category="status" className="">Inactive</SemanticBadge>,
     },
   ]
 
@@ -186,7 +188,11 @@ export default function ApiKeysPage() {
         </div>
       </div>
 
-      {loading ? (
+      {error ? (
+        <div className="animate-fade-in pb-8 space-y-4">
+          <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+        </div>
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState

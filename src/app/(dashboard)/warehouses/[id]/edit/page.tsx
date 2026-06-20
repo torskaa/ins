@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Warehouse, XCircle } from "lucide-react"
+import { AlertTriangle, Warehouse, XCircle } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
@@ -23,13 +24,15 @@ export default function EditWarehousePage({ params }: { params: Promise<{ id: st
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({ name: "", location: "", capacity: "", binLocation: "" })
 
   useEffect(() => {
-    fetch(`/api/warehouses/${id}`).then(r => r.json()).then(d => {
-      if (d.error) { toast.error("Warehouse not found"); router.push("/warehouses"); return }
+    fetch(`/api/warehouses/${id}`).then(r => r.json()).then(json => {
+      if (!json?.success) { toast.error(json?.error || "Warehouse not found"); router.push("/warehouses"); return }
+      const d = json.data
       setForm({ name: d.name || "", location: d.location || "", capacity: d.capacity ? String(d.capacity) : "", binLocation: d.binLocation || "" })
-    }).finally(() => setFetching(false))
+    }).catch((err) => { setError(err.message); setFetching(false) }).finally(() => setFetching(false))
   }, [id, router])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -55,6 +58,11 @@ export default function EditWarehousePage({ params }: { params: Promise<{ id: st
     finally { setLoading(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (fetching) return <Skeleton className="h-48 w-full rounded-xl" />
 
   return (

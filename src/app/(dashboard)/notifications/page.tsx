@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Bell, Package, ShoppingCart, AlertTriangle, CheckCircle, Info, Clock, Mail } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
-import { Badge } from "@/components/ui/badge"
+import { Badge, SemanticBadge } from "@/components/ui/badge"
 import { timeAgo } from "@/lib/utils"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -15,8 +15,8 @@ const typeConfig: Record<string, { icon: any; color: string; bg: string }> = {
  warning: { icon: AlertTriangle, color: "text-warning", bg: "bg-warning/15" },
  success: { icon: CheckCircle, color: "text-success", bg: "bg-success/15" },
  info: { icon: Info, color: "text-primary", bg: "bg-primary/10" },
- low_stock: { icon: Package, color: "text-amber-600", bg: "bg-amber-100" },
- order: { icon: ShoppingCart, color: "text-blue-600", bg: "bg-blue-100" },
+  low_stock: { icon: Package, color: "text-warning", bg: "bg-warning/15" },
+  order: { icon: ShoppingCart, color: "text-info", bg: "bg-info/15" },
 }
 
 type Notification = {
@@ -30,15 +30,17 @@ type Notification = {
 }
 
 export default function NotificationsPage() {
- const [notifications, setNotifications] = useState<Notification[]>([])
- const [loading, setLoading] = useState(true)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
  const [marking, setMarking] = useState(false)
 
  useEffect(() => {
- fetch("/api/notifications")
- .then(r => r.json())
- .then((data) => { if (Array.isArray(data)) setNotifications(data) })
- .finally(() => setLoading(false))
+   fetch("/api/notifications")
+   .then(r => r.json())
+   .then((json) => { if (json?.success && Array.isArray(json.data)) setNotifications(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+   .catch((err) => { setError(err.message); setLoading(false) })
+   .finally(() => setLoading(false))
  }, [])
 
  async function handleMarkAllRead() {
@@ -68,7 +70,7 @@ export default function NotificationsPage() {
  </div>
  <div className="flex items-center gap-2">
  {unreadCount > 0 && (
- <Badge variant="primary" className="bg-primary text-white">{unreadCount} unread</Badge>
+ <Badge variant="primary" className="bg-primary text-primary-foreground">{unreadCount} unread</Badge>
  )}
  <MoreMenu actions={[
  { label: "Mark All Read", icon: ActionIcons.Refresh, onClick: handleMarkAllRead },
@@ -78,8 +80,15 @@ export default function NotificationsPage() {
 
  <Card>
  <CardContent className="p-0">
- {loading ? (
- <div className="space-y-0 divide-y divide-border">
+  {error ? (
+   <EmptyState
+     variant="error"
+     title="Failed to load data"
+     description={error}
+     actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+   />
+  ) : loading ? (
+  <div className="space-y-0 divide-y divide-border">
  {[1, 2, 3].map(i => (
  <div key={i} className="flex items-start gap-4 p-5">
  <Skeleton className="w-9 h-9 rounded-lg shrink-0" />
@@ -112,7 +121,7 @@ export default function NotificationsPage() {
  <div className="flex items-center gap-2 mb-0.5">
  <p className={`text-sm ${!notif.read ? "font-semibold" : "font-medium"}`}>{notif.title}</p>
  {!notif.read && <span className="w-2 h-2 rounded-full bg-primary shrink-0" />}
- <Badge variant={notif.type === "warning" || notif.type === "low_stock" ? "destructive" : notif.type === "success" ? "success" : "primary"} className="capitalize">{notif.type.replace(/_/g, " ")}</Badge>
+  <SemanticBadge semantic={notif.type} category="type">{notif.type.replace(/_/g, " ")}</SemanticBadge>
  </div>
  <p className="text-sm text-muted-foreground">{notif.message}</p>
  <p className="text-xs text-muted-foreground/60 mt-1">{timeAgo(new Date(notif.createdAt))}</p>

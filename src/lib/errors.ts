@@ -48,10 +48,10 @@ export class ConflictError extends AppError {
 export function handleApiError(error: unknown) {
   if (error instanceof AppError) {
     return Response.json(
-      { error: error.message, code: error.code, details: error.details },
+      { success: false, data: null, error: error.message, code: error.code, details: error.details },
       { status: error.statusCode }
     )
   }
   console.error("Unhandled error:", error)
-  return Response.json({ error: "Internal server error", code: "INTERNAL_ERROR" }, { status: 500 })
+  return Response.json({ success: false, data: null, error: "Internal server error", code: "INTERNAL_ERROR" }, { status: 500 })
 }

@@ -1,11 +1,31 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const satoshi = localFont({
+  src: [
+    { path: "../../public/fonts/Satoshi-Light.woff2", weight: "300" },
+    { path: "../../public/fonts/Satoshi-Regular.woff2", weight: "400" },
+    { path: "../../public/fonts/Satoshi-Medium.woff2", weight: "500" },
+    { path: "../../public/fonts/Satoshi-Bold.woff2", weight: "700" },
+    { path: "../../public/fonts/Satoshi-Black.woff2", weight: "900" },
+  ],
+  variable: "--font-satoshi",
+  display: "swap",
+});
+
+const generalSans = localFont({
+  src: [
+    { path: "../../public/fonts/GeneralSans-Light.woff2", weight: "300" },
+    { path: "../../public/fonts/GeneralSans-Regular.woff2", weight: "400" },
+    { path: "../../public/fonts/GeneralSans-Medium.woff2", weight: "500" },
+    { path: "../../public/fonts/GeneralSans-Semibold.woff2", weight: "600" },
+    { path: "../../public/fonts/GeneralSans-Bold.woff2", weight: "700" },
+  ],
+  variable: "--font-general-sans",
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -26,7 +46,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${satoshi.variable} ${generalSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning><Providers>{children}</Providers></body>
     </html>

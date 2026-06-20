@@ -104,6 +104,10 @@ export const ModelName = {
   WorkflowTransition: 'WorkflowTransition',
   WikiArticle: 'WikiArticle',
   KnowledgeDocument: 'KnowledgeDocument',
+  AiExecutionLog: 'AiExecutionLog',
+  AgentRun: 'AgentRun',
+  AgentStep: 'AgentStep',
+  AgentApproval: 'AgentApproval',
   TrainingProgram: 'TrainingProgram'
 } as const
 
@@ -394,6 +398,7 @@ export const StockMovementScalarFieldEnum = {
   warehouseId: 'warehouseId',
   orderId: 'orderId',
   createdById: 'createdById',
+  organizationId: 'organizationId',
   createdAt: 'createdAt',
   lotId: 'lotId',
   deliveryId: 'deliveryId'
@@ -1035,6 +1040,68 @@ export const KnowledgeDocumentScalarFieldEnum = {
 export type KnowledgeDocumentScalarFieldEnum = (typeof KnowledgeDocumentScalarFieldEnum)[keyof typeof KnowledgeDocumentScalarFieldEnum]
 
 
+export const AiExecutionLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  organizationId: 'organizationId',
+  toolName: 'toolName',
+  input: 'input',
+  output: 'output',
+  status: 'status',
+  errorMessage: 'errorMessage',
+  durationMs: 'durationMs',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+} as const
+
+export type AiExecutionLogScalarFieldEnum = (typeof AiExecutionLogScalarFieldEnum)[keyof typeof AiExecutionLogScalarFieldEnum]
+
+
+export const AgentRunScalarFieldEnum = {
+  id: 'id',
+  agentId: 'agentId',
+  organizationId: 'organizationId',
+  userId: 'userId',
+  task: 'task',
+  status: 'status',
+  summary: 'summary',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AgentRunScalarFieldEnum = (typeof AgentRunScalarFieldEnum)[keyof typeof AgentRunScalarFieldEnum]
+
+
+export const AgentStepScalarFieldEnum = {
+  id: 'id',
+  runId: 'runId',
+  toolName: 'toolName',
+  status: 'status',
+  input: 'input',
+  output: 'output',
+  durationMs: 'durationMs',
+  createdAt: 'createdAt'
+} as const
+
+export type AgentStepScalarFieldEnum = (typeof AgentStepScalarFieldEnum)[keyof typeof AgentStepScalarFieldEnum]
+
+
+export const AgentApprovalScalarFieldEnum = {
+  id: 'id',
+  runId: 'runId',
+  toolName: 'toolName',
+  status: 'status',
+  requestedAt: 'requestedAt',
+  resolvedAt: 'resolvedAt',
+  resolvedBy: 'resolvedBy'
+} as const
+
+export type AgentApprovalScalarFieldEnum = (typeof AgentApprovalScalarFieldEnum)[keyof typeof AgentApprovalScalarFieldEnum]
+
+
 export const TrainingProgramScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -1061,10 +1128,42 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const NullsOrder = {
   first: 'first',
   last: 'last'
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 

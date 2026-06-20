@@ -8,7 +8,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
-import { Badge } from "@/components/ui/badge"
+import { SemanticBadge } from "@/components/ui/badge"
 import { Projector, FolderKanban, Calendar, Search } from "lucide-react"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -26,9 +26,6 @@ import {
 
 type Project = { id: string; name: string; status: string; priority: string; startDate: string; dueDate: string; budget: number; _count: { tasks: number } }
 
-const STATUS_COLORS: Record<string, string> = { draft: "bg-slate-100 text-slate-700", active: "bg-blue-100 text-blue-700", paused: "bg-orange-100 text-orange-700", completed: "bg-emerald-100 text-emerald-700", cancelled: "bg-red-100 text-red-700" }
-const PRIORITY_COLORS: Record<string, string> = { low: "bg-slate-100 text-slate-600", medium: "bg-blue-100 text-blue-700", high: "bg-orange-100 text-orange-700", urgent: "bg-red-100 text-red-700" }
-
 const PROPERTY_OPTIONS = [
   { key: "status", label: "Status" },
   { key: "priority", label: "Priority" },
@@ -45,6 +42,7 @@ export default function ProjectsPage() {
   const router = useRouter()
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -54,7 +52,7 @@ export default function ProjectsPage() {
   useHotkey("c", handleNew)
 
   useEffect(() => {
-    fetch("/api/projects").then(r => r.json()).then(d => { if (Array.isArray(d)) setProjects(d) }).finally(() => setLoading(false))
+    fetch("/api/projects").then(r => r.json()).then(json => { if (json?.success && Array.isArray(json.data)) setProjects(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") }).catch((err) => { setError(err.message); setLoading(false) }).finally(() => setLoading(false))
   }, [])
 
   const filterColumns: FilterColumn[] = [
@@ -93,8 +91,8 @@ export default function ProjectsPage() {
         </div>
       ),
     },
-    { key: "status", label: "Status", className: undefined, cellClassName: undefined, render: (p: Project) => <Badge className={STATUS_COLORS[p.status] || ""}>{p.status}</Badge> },
-    { key: "priority", label: "Priority", className: undefined, cellClassName: undefined, render: (p: Project) => <Badge className={PRIORITY_COLORS[p.priority] || ""} variant="outline">{p.priority}</Badge> },
+    { key: "status", label: "Status", className: undefined, cellClassName: undefined, render: (p: Project) => <SemanticBadge semantic={p.status} category="status" className="">{p.status}</SemanticBadge> },
+    { key: "priority", label: "Priority", className: undefined, cellClassName: undefined, render: (p: Project) => <SemanticBadge semantic={p.priority} category="priority" className="">{p.priority}</SemanticBadge> },
     { key: "startDate", label: "Start", className: undefined, cellClassName: undefined, render: (p: Project) => <span className="text-sm text-foreground">{p.startDate ? formatDate(new Date(p.startDate)) : "—"}</span> },
     { key: "dueDate", label: "Due", className: undefined, cellClassName: undefined, render: (p: Project) => <span className="text-sm text-foreground">{p.dueDate ? formatDate(new Date(p.dueDate)) : "—"}</span> },
     { key: "budget", label: "Budget", className: undefined, cellClassName: undefined, render: (p: Project) => <span className="font-mono text-sm">{formatCurrency(p.budget)}</span> },
@@ -131,7 +129,14 @@ export default function ProjectsPage() {
           )}
         </div>
       </div>
-      {loading ? (
+      {error ? (
+        <EmptyState
+          variant="error"
+          title="Failed to load data"
+          description={error}
+          actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+        />
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState icons={[<FolderKanban className="w-5 h-5" />, <Projector className="w-5 h-5" />, <Calendar className="w-5 h-5" />]} title="No projects yet" description="Create your first project to start managing tasks." />

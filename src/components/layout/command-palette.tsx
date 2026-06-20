@@ -60,21 +60,21 @@ const navItems = [
 ]
 
 const groupMeta: Record<string, { icon: React.ElementType; label: string; color: string }> = {
- products: { icon: Package, label: "Products", color: "text-blue-600 bg-blue-50" },
- customers: { icon: Users, label: "Customers", color: "text-indigo-600 bg-indigo-50" },
- invoices: { icon: FileText, label: "Invoices", color: "text-cyan-600 bg-cyan-50" },
- orders: { icon: ShoppingCart, label: "Orders", color: "text-sky-600 bg-sky-50" },
- suppliers: { icon: Truck, label: "Suppliers", color: "text-blue-600 bg-blue-50" },
- categories: { icon: FolderTree, label: "Categories", color: "text-amber-600 bg-amber-50" },
- quotations: { icon: FileCheck, label: "Quotations", color: "text-violet-600 bg-violet-50" },
- payments: { icon: Banknote, label: "Payments", color: "text-emerald-600 bg-emerald-50" },
- warehouses: { icon: MapPin, label: "Warehouses", color: "text-rose-600 bg-rose-50" },
- documents: { icon: FolderOpen, label: "Documents", color: "text-orange-600 bg-orange-50" },
- training: { icon: GraduationCap, label: "Training", color: "text-teal-600 bg-teal-50" },
- wiki: { icon: BookOpen, label: "Wiki", color: "text-slate-600 bg-slate-50" },
- distributors: { icon: Truck, label: "Distributors", color: "text-blue-600 bg-blue-50" },
- deliveries: { icon: Package, label: "Deliveries", color: "text-indigo-600 bg-indigo-50" },
- stockCounts: { icon: ClipboardList, label: "Stock Counts", color: "text-amber-600 bg-amber-50" },
+ products: { icon: Package, label: "Products", color: "text-primary bg-primary/10" },
+ customers: { icon: Users, label: "Customers", color: "text-primary bg-primary/10" },
+ invoices: { icon: FileText, label: "Invoices", color: "text-primary bg-primary/10" },
+ orders: { icon: ShoppingCart, label: "Orders", color: "text-primary bg-primary/10" },
+ suppliers: { icon: Truck, label: "Suppliers", color: "text-primary bg-primary/10" },
+ categories: { icon: FolderTree, label: "Categories", color: "text-primary bg-primary/10" },
+ quotations: { icon: FileCheck, label: "Quotations", color: "text-primary bg-primary/10" },
+ payments: { icon: Banknote, label: "Payments", color: "text-primary bg-primary/10" },
+ warehouses: { icon: MapPin, label: "Warehouses", color: "text-primary bg-primary/10" },
+ documents: { icon: FolderOpen, label: "Documents", color: "text-primary bg-primary/10" },
+ training: { icon: GraduationCap, label: "Training", color: "text-primary bg-primary/10" },
+ wiki: { icon: BookOpen, label: "Wiki", color: "text-primary bg-primary/10" },
+ distributors: { icon: Truck, label: "Distributors", color: "text-primary bg-primary/10" },
+ deliveries: { icon: Package, label: "Deliveries", color: "text-primary bg-primary/10" },
+ stockCounts: { icon: ClipboardList, label: "Stock Counts", color: "text-primary bg-primary/10" },
 }
 
 const groupKeys: (keyof GroupedResults)[] = ["products", "customers", "invoices", "orders", "suppliers", "categories", "quotations", "payments", "warehouses", "documents", "training", "wiki", "distributors", "deliveries", "stockCounts"]
@@ -218,29 +218,29 @@ export function CommandPalette() {
  return (
  <div key={key}>
  <div className="flex items-center gap-2 px-4 pt-3 pb-1">
- <Icon className="w-3.5 h-3.5 text-slate-400" />
- <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{meta.label}</p>
+ <Icon className="w-3.5 h-3.5 text-muted-foreground" />
+ <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{meta.label}</p>
  </div>
  {items.map((item) => (
  <button
  key={`${key}-${item.id}`}
  onClick={() => onSelect(item.href)}
- className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-slate-50 transition-colors"
+ className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-muted/50 transition-colors"
  >
  {item.image || key === "customers" || key === "suppliers" ? (
  <Avatar className="size-7 shrink-0 ring-1 ring-slate-200">
  <AvatarImage src={item.image || undefined} alt={item.label} />
- <AvatarFallback className="bg-slate-100 text-slate-500 text-[10px]">{item.fallback || item.label[0]}</AvatarFallback>
+ <AvatarFallback className="bg-muted text-muted-foreground text-[10px]">{item.fallback || item.label[0]}</AvatarFallback>
  </Avatar>
  ) : (
- <div className="size-7 shrink-0 rounded-md bg-slate-100 flex items-center justify-center">
- <Icon className="w-3.5 h-3.5 text-slate-500" />
+ <div className="size-7 shrink-0 rounded-md bg-muted flex items-center justify-center">
+ <Icon className="w-3.5 h-3.5 text-muted-foreground" />
  </div>
  )}
  <div className="flex-1 min-w-0">
- <p className="text-sm font-medium text-slate-900 truncate">{item.label}</p>
+ <p className="text-sm font-medium text-foreground truncate">{item.label}</p>
  {item.sublabel && (
- <p className="text-xs text-slate-500 truncate">{item.sublabel}</p>
+ <p className="text-xs text-muted-foreground truncate">{item.sublabel}</p>
  )}
  </div>
  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${meta.color}`}>
@@ -278,10 +278,10 @@ export function CommandPalette() {
  </div>
 
  {showDropdown && (
- <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-[0_8px_40px_-8px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.04)] z-50 overflow-hidden animate-scale-in origin-top max-h-[70vh] overflow-y-auto">
+ <div className="absolute left-0 right-0 top-full mt-1.5 bg-card border border-border rounded-2xl shadow-[0_8px_40px_-8px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.04)] z-50 overflow-hidden animate-scale-in origin-top max-h-[70vh] overflow-y-auto">
  {loading ? (
- <div className="px-4 py-3 border-b border-slate-100">
- <span className="text-sm text-slate-500">Searching...</span>
+ <div className="px-4 py-3 border-b border-border">
+ <span className="text-sm text-muted-foreground">Searching...</span>
  </div>
  ) : (
  renderGroupItems(results, handleSelect)
@@ -290,15 +290,15 @@ export function CommandPalette() {
  {!loading && showPages && (
  <div className={cn(groupHasItems(results) && "border-t border-slate-100")}>
  <div className="flex items-center gap-2 px-4 pt-3 pb-1">
- <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Pages</p>
+ <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Pages</p>
  </div>
  {filteredNav.map((item) => (
  <button
  key={item.href}
  onClick={() => handleSelect(item.href)}
- className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-slate-50 transition-colors"
+ className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-muted/50 transition-colors"
  >
- <div className="size-7 shrink-0 rounded-md bg-slate-100 flex items-center justify-center">
+ <div className="size-7 shrink-0 rounded-md bg-muted flex items-center justify-center">
  </div>
  <p className="text-sm font-medium text-slate-900">{item.label}</p>
  </button>
@@ -308,10 +308,10 @@ export function CommandPalette() {
 
  {!loading && !groupHasItems(results) && !showPages && (
  <div className="flex flex-col items-center py-8 text-center px-4">
- <div className="size-10 rounded-xl bg-slate-100 flex items-center justify-center mb-2">
+ <div className="size-10 rounded-xl bg-muted flex items-center justify-center mb-2">
  </div>
- <p className="text-sm text-slate-500">No results for &quot;{query}&quot;</p>
- <p className="text-xs text-slate-400 mt-0.5">Try searching for products, customers, or documents</p>
+ <p className="text-sm text-muted-foreground">No results for &quot;{query}&quot;</p>
+ <p className="text-xs text-muted-foreground mt-0.5">Try searching for products, customers, or documents</p>
  </div>
  )}
  </div>
@@ -327,22 +327,22 @@ export function CommandPalette() {
  <CommandList>
  {modalLoading && (
  <div className="flex items-center justify-center py-8">
- <div className="size-5 rounded-full border-2 border-slate-200 border-t-primary animate-spin" />
+ <div className="size-5 rounded-full border-2 border-border border-t-primary animate-spin" />
  </div>
  )}
 
  {!modalLoading && modalQuery && !modalHasItems && !showModalPages && (
  <div className="flex flex-col items-center py-8 text-center px-4">
- <div className="size-10 rounded-xl bg-slate-100 flex items-center justify-center mb-2">
+ <div className="size-10 rounded-xl bg-muted flex items-center justify-center mb-2">
  </div>
- <p className="text-sm text-slate-500">No results for &ldquo;{modalQuery}&rdquo;</p>
- <p className="text-xs text-slate-400 mt-0.5">Try searching for products, customers, or documents</p>
+ <p className="text-sm text-muted-foreground">No results for &ldquo;{modalQuery}&rdquo;</p>
+ <p className="text-xs text-muted-foreground mt-0.5">Try searching for products, customers, or documents</p>
  </div>
  )}
 
  {!modalLoading && modalHasItems && (
  <>
- <div className="px-4 py-2.5 border-b border-slate-100">
+ <div className="px-4 py-2.5 border-b border-border">
  <div className="flex items-center gap-2">
  <button
  onClick={() => setModalExpanded((v) => !v)}
@@ -350,11 +350,11 @@ export function CommandPalette() {
  >
  <ChevronRight
  className={cn(
- "w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform duration-150",
+ "w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform duration-150",
  modalExpanded && "rotate-90",
  )}
  />
- <span className="text-sm font-medium text-slate-700">
+ <span className="text-sm font-medium text-muted-foreground">
  Found {modalCount} result{modalCount === 1 ? "" : "s"}
  </span>
  </button>
@@ -363,8 +363,8 @@ export function CommandPalette() {
  {modalExpanded && (
  <div className="border-b border-slate-50">
  <div className="flex items-center gap-2 px-4 py-1.5">
- <span className="text-xs text-slate-500 font-medium">Searched for</span>
- <span className="text-xs text-slate-400 truncate">&ldquo;{modalQuery}&rdquo;</span>
+ <span className="text-xs text-muted-foreground font-medium">Searched for</span>
+ <span className="text-xs text-muted-foreground truncate">&ldquo;{modalQuery}&rdquo;</span>
  </div>
  <div className="flex flex-col">
  {groupKeys.map((key) => {
@@ -379,7 +379,7 @@ export function CommandPalette() {
  {item.image || key === "customers" || key === "suppliers" ? (
  <Avatar className="size-6 shrink-0 ring-1 ring-slate-200">
  <AvatarImage src={item.image || undefined} alt={item.label} />
- <AvatarFallback className="bg-slate-100 text-slate-500 text-[10px]">{item.fallback || item.label[0]}</AvatarFallback>
+ <AvatarFallback className="bg-muted text-muted-foreground text-[10px]">{item.fallback || item.label[0]}</AvatarFallback>
  </Avatar>
  ) : (
  <Icon className="w-4 h-4 text-muted-foreground" />

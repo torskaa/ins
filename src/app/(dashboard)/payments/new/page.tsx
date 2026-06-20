@@ -10,11 +10,24 @@ import { Select } from "@/components/ui/select"
 import { Banknote, XCircle, FileText, ShoppingCart } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { z } from "zod"
+import { useFormValidation } from "@/hooks/use-form-validation"
 
-const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
+const paymentSchema = z.object({
+  amount: z.coerce.number().positive("Amount must be positive"),
+  method: z.string().min(1, "Method is required"),
+  reference: z.string().optional(),
+  date: z.string().optional(),
+  notes: z.string().optional(),
+  invoiceId: z.string().optional(),
+  orderId: z.string().optional(),
+})
+
+const Field = ({ id, label, required, children, error, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; error?: string; className?: string }) => (
   <div className={cn("space-y-1", className)}>
     <Label htmlFor={id} className="text-xs font-medium">{label}{required && <span className="text-destructive ml-0.5">*</span>}</Label>
     {children}
+    {error && <p className="text-xs text-destructive">{error}</p>}
   </div>
 )
 
@@ -27,10 +40,12 @@ const METHOD_OPTIONS = [
 
 export default function NewPaymentPage() {
   const router = useRouter()
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useFormValidation(paymentSchema, {
+    defaultValues: { date: new Date().toISOString().split("T")[0], method: "bank_transfer" },
+  })
   const [loading, setLoading] = useState(false)
   const [invoices, setInvoices] = useState<any[]>([])
   const [orders, setOrders] = useState<any[]>([])
-  const [form, setForm] = useState({ amount: "", method: "bank_transfer", reference: "", date: new Date().toISOString().split("T")[0], notes: "", invoiceId: "", orderId: "" })
 
   useEffect(() => {
     Promise.all([
@@ -42,22 +57,20 @@ export default function NewPaymentPage() {
     })
   }, [])
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!form.amount || parseFloat(form.amount) <= 0) { toast.error("Valid amount is required"); return }
+  async function onSubmit(data: any) {
     setLoading(true)
     try {
       const res = await fetch("/api/payments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: parseFloat(form.amount),
-          method: form.method,
-          reference: form.reference || null,
-          date: form.date || undefined,
-          notes: form.notes || null,
-          invoiceId: form.invoiceId || null,
-          orderId: form.orderId || null,
+          amount: data.amount,
+          method: data.method,
+          reference: data.reference || null,
+          date: data.date || undefined,
+          notes: data.notes || null,
+          invoiceId: data.invoiceId || null,
+          orderId: data.orderId || null,
         }),
       })
       if (!res.ok) throw new Error()
@@ -72,7 +85,7 @@ export default function NewPaymentPage() {
     <div className="animate-fade-in pb-28">
       <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">Back</button>
       <div className="page-header mb-5"><h1>Record Payment</h1></div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-8 flex flex-col gap-4">
             <Card className="flex-1">
@@ -84,23 +97,23 @@ export default function NewPaymentPage() {
               </CardHeader>
               <CardContent className="p-4 space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Amount" required>
-                    <Input type="number" min="0" step="0.01" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required />
+                  <Field label="Amount" required error={errors.amount?.message}>
+                    <Input type="number" min="0" step="0.01" {...register("amount")} />
                   </Field>
-                  <Field label="Method">
-                    <Select options={METHOD_OPTIONS} value={form.method} onChange={(e: any) => setForm({ ...form, method: e.target.value })} />
+                  <Field label="Method" error={errors.method?.message}>
+                    <Select options={METHOD_OPTIONS} value={watch("method")} onChange={(e: any) => setValue("method", e.target.value, { shouldValidate: true })} />
                   </Field>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Reference">
-                    <Input value={form.reference} onChange={(e) => setForm({ ...form, reference: e.target.value })} placeholder="e.g. TRANS-001" />
+                  <Field label="Reference" error={errors.reference?.message}>
+                    <Input {...register("reference")} placeholder="e.g. TRANS-001" />
                   </Field>
-                  <Field label="Date">
-                    <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+                  <Field label="Date" error={errors.date?.message}>
+                    <Input type="date" {...register("date")} />
                   </Field>
                 </div>
-                <Field label="Notes">
-                  <Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+                <Field label="Notes" error={errors.notes?.message}>
+                  <Input {...register("notes")} />
                 </Field>
               </CardContent>
             </Card>
@@ -115,11 +128,11 @@ export default function NewPaymentPage() {
                 </div>
               </CardHeader>
               <CardContent className="p-4 space-y-3">
-                <Field label="Invoice (optional)">
-                  <Select options={invoices.map(i => ({ value: i.id, label: `${i.number} - ${i.customer?.name}` }))} placeholder="Select invoice" value={form.invoiceId} onChange={(e: any) => setForm({ ...form, invoiceId: e.target.value })} />
+                <Field label="Invoice (optional)" error={errors.invoiceId?.message}>
+                  <Select options={invoices.map(i => ({ value: i.id, label: `${i.number} - ${i.customer?.name}` }))} placeholder="Select invoice" value={watch("invoiceId")} onChange={(e: any) => setValue("invoiceId", e.target.value)} />
                 </Field>
-                <Field label="Order (optional)">
-                  <Select options={orders.map(o => ({ value: o.id, label: `${o.number} - ${o.customer?.name || o.supplier?.name}` }))} placeholder="Select order" value={form.orderId} onChange={(e: any) => setForm({ ...form, orderId: e.target.value })} />
+                <Field label="Order (optional)" error={errors.orderId?.message}>
+                  <Select options={orders.map(o => ({ value: o.id, label: `${o.number} - ${o.customer?.name || o.supplier?.name}` }))} placeholder="Select order" value={watch("orderId")} onChange={(e: any) => setValue("orderId", e.target.value)} />
                 </Field>
               </CardContent>
             </Card>

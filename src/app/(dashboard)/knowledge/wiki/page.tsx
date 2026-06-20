@@ -3,12 +3,12 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { SemanticBadge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Search, FileText, BookOpen, Layers } from "lucide-react"
+import { AlertTriangle, Search, FileText, BookOpen, Layers } from "lucide-react"
 import { SkeletonText } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
 
@@ -26,8 +26,9 @@ const categories = ["Getting Started", "Inventory", "Orders", "CRM", "Reports", 
 
 export default function WikiPage() {
  const router = useRouter()
- const [articles, setArticles] = useState<Article[]>([])
- const [loading, setLoading] = useState(true)
+  const [articles, setArticles] = useState<Article[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
  const [search, setSearch] = useState("")
  const [activeCategory, setActiveCategory] = useState<string | null>(null)
  const handleNew = useCallback(() => router.push("/knowledge/wiki/new"), [router])
@@ -36,8 +37,8 @@ export default function WikiPage() {
  useEffect(() => {
  fetch("/api/knowledge/wiki")
  .then((r) => r.json())
- .then((data) => { setArticles(data); setLoading(false) })
- .catch(() => setLoading(false))
+ .then((json) => { if (json?.success) setArticles(json.data); else throw new Error(json?.error || "Failed to load"); setLoading(false) })
+      .catch((err) => { setError(err.message); setLoading(false) })
  }, [])
 
  const filtered = articles.filter((a) => {
@@ -88,10 +89,14 @@ export default function WikiPage() {
  ))}
  </div>
 
- {loading ? (
- <div className="space-y-3">
- {[1, 2, 3].map((i) => <SkeletonText key={i} lines={2} />)}
- </div>
+  {error ? (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  ) : loading ? (
+  <div className="space-y-3">
+  {[1, 2, 3].map((i) => <SkeletonText key={i} lines={2} />)}
+  </div>
  ) : (
  <div className="grid gap-3">
  {filtered.map((article) => (
@@ -104,7 +109,7 @@ export default function WikiPage() {
  </div>
  <p className="text-sm text-muted-foreground line-clamp-1 mb-2">{article.excerpt}</p>
  <div className="flex items-center gap-3 text-xs text-muted-foreground">
- <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-normal">{article.category}</Badge>
+  <SemanticBadge semantic={article.category} category="category" className="text-[10px] px-1.5 py-0">{article.category}</SemanticBadge>
  <span className="flex items-center gap-1">{article.readTime}</span>
  <span>Updated {article.updated}</span>
  </div>

@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Banknote, Building2, Calendar, ClipboardList, Clock, CreditCard, DollarSign, FileCode, FileSignature, FileText, Hash, Mail, Package, Pencil, Phone, Receipt, ShoppingCart, Trash2, XCircle } from "lucide-react"
+import { Banknote, Building2, Calendar, ClipboardList, Clock, CreditCard, DollarSign, FileCode, FileSignature, FileText, Hash, HouseIcon, Mail, Package, Pencil, Phone, Receipt, ShoppingCart, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Frame, FramePanel } from "@/components/reui/frame"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -19,6 +20,10 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogFooter,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 
 function FieldDisplay({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
@@ -64,10 +69,13 @@ type Customer = {
 export default function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [customer, setCustomer] = useState<Customer | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [id, setId] = useState("")
   const [activeTab, setActiveTab] = useState("orders")
   const [showDelete, setShowDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
+  const [form, setForm] = useState<any>({})
   const [searchOrders, setSearchOrders] = useState("")
   const [searchQuotations, setSearchQuotations] = useState("")
   const [searchInvoices, setSearchInvoices] = useState("")
@@ -78,7 +86,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
 
   useEffect(() => {
     if (!id) return
-    fetch(`/api/customers/${id}`).then(r => r.json()).then(setCustomer).finally(() => setLoading(false))
+    fetch(`/api/customers/${id}`).then(r => r.json()).then(r => { if (r?.success) setCustomer(r.data); else setError(r?.error || "Failed to load") }).catch((err) => { setError(err.message || "Failed to load data") }).finally(() => setLoading(false))
   }, [id])
 
   async function handleDelete() {
@@ -94,6 +102,42 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
     }
   }
 
+  async function handleSave() {
+    try {
+      const res = await fetch(`/api/customers/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          company: form.company,
+          taxId: form.taxId,
+          creditLimit: parseFloat(form.creditLimit) || 0,
+          notes: form.notes,
+        }),
+      })
+      if (!res.ok) throw new Error("Failed")
+      const updated = await res.json()
+      setCustomer(prev => prev ? { ...prev, ...updated, financialSummary: prev.financialSummary } : prev)
+      setShowEdit(false)
+      toast.success("Customer updated")
+    } catch {
+      toast.error("Failed to update customer")
+    }
+  }
+
+  if (error) {
+    return (
+      <EmptyState
+        variant="error"
+        title="Failed to load data"
+        description={error}
+        actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+      />
+    )
+  }
+
   if (loading) return <SkeletonDetail cards={6} hasChart={true} />
 
   if (!customer) {
@@ -103,24 +147,37 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
           <h2 className="text-lg font-semibold">Customer not found</h2>
           <p className="text-sm text-muted-foreground mt-1">The customer you are looking for does not exist or has been removed.</p>
         </div>
-        <Button variant="secondary" onClick={() => router.push("/crm")}>Back to CRM</Button>
+        <Button variant="outline" onClick={() => router.push("/crm")}>Back to CRM</Button>
       </div>
     )
   }
 
-  const { orders, quotations, invoices, payments, financialSummary: fs } = customer
+  const {
+    orders = [],
+    quotations = [],
+    invoices = [],
+    payments = [],
+    financialSummary: {
+      totalOrderValue = 0,
+      totalOrders = 0,
+      totalInvoiced = 0,
+      totalPaid = 0,
+      totalDue = 0,
+      creditRemaining = 0,
+    } = {},
+  } = customer
 
   const orderColumns = [
     { key: "number", label: "Order #", render: (item: Order) => <span className="font-mono text-xs font-medium">{item.number}</span> },
-    { key: "type", label: "Type", render: (item: Order) => <SemanticBadge semantic={item.type} category="type" className="capitalize text-[10px]" /> },
-    { key: "status", label: "Status", render: (item: Order) => <SemanticBadge semantic={item.status} category="status" className="capitalize text-[10px]" /> },
+    { key: "type", label: "Type", render: (item: Order) => <SemanticBadge semantic={item.type} category="type" className="text-[10px]" /> },
+    { key: "status", label: "Status", render: (item: Order) => <SemanticBadge semantic={item.status} category="status" className="text-[10px]" /> },
     { key: "total", label: "Total", render: (item: Order) => <span className="font-mono text-xs font-medium">{formatCurrency(item.total)}</span> },
     { key: "orderDate", label: "Date", render: (item: Order) => <span className="text-xs text-muted-foreground">{formatDate(new Date(item.orderDate))}</span> },
   ]
 
   const quotationColumns = [
     { key: "number", label: "Quotation #", render: (item: Quotation) => <span className="font-mono text-xs font-medium">{item.number}</span> },
-    { key: "status", label: "Status", render: (item: Quotation) => <SemanticBadge semantic={item.status} category="status" className="capitalize text-[10px]" /> },
+    { key: "status", label: "Status", render: (item: Quotation) => <SemanticBadge semantic={item.status} category="status" className="text-[10px]" /> },
     { key: "total", label: "Total", render: (item: Quotation) => <span className="font-mono text-xs font-medium">{formatCurrency(item.total)}</span> },
     { key: "validUntil", label: "Valid Until", render: (item: Quotation) => <span className="text-xs text-muted-foreground">{formatDate(new Date(item.validUntil))}</span> },
     { key: "createdAt", label: "Date", render: (item: Quotation) => <span className="text-xs text-muted-foreground">{formatDate(new Date(item.createdAt))}</span> },
@@ -128,7 +185,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
 
   const invoiceColumns = [
     { key: "number", label: "Invoice #", render: (item: Invoice) => <span className="font-mono text-xs font-medium">{item.number}</span> },
-    { key: "status", label: "Status", render: (item: Invoice) => <SemanticBadge semantic={item.status} category="status" className="capitalize text-[10px]" /> },
+    { key: "status", label: "Status", render: (item: Invoice) => <SemanticBadge semantic={item.status} category="status" className="text-[10px]" /> },
     { key: "total", label: "Total", render: (item: Invoice) => <span className="font-mono text-xs font-medium">{formatCurrency(item.total)}</span> },
     { key: "paidAmount", label: "Paid", render: (item: Invoice) => <span className="font-mono text-xs text-muted-foreground">{formatCurrency(item.paidAmount)}</span> },
     { key: "issueDate", label: "Issue Date", render: (item: Invoice) => <span className="text-xs text-muted-foreground">{formatDate(new Date(item.issueDate))}</span> },
@@ -151,20 +208,24 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      {/* Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/crm")}>CRM</button>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{customer.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Frame variant="ghost" className="w-fit">
+        <FramePanel className="gap-2 px-3! py-2! border-0!">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/crm" className="flex items-center gap-1.5">
+                  <HouseIcon className="size-4" aria-hidden="true" />
+                  CRM
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-semibold">{customer.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </FramePanel>
+      </Frame>
 
       <div className="grid grid-cols-12 gap-4">
         {/* Page Header */}
@@ -175,11 +236,11 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-bold">{customer.name}</h1>
                   {customer.company && (
-                    <SemanticBadge semantic={customer.company} category="category" appearance="outline" className="gap-1 text-[11px]"><Building2 className="w-3 h-3" />{customer.company}</SemanticBadge>
+                    <SemanticBadge semantic={customer.company} category="category" className="gap-1 text-[11px]"><Building2 className="w-3 h-3" />{customer.company}</SemanticBadge>
                   )}
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <SemanticBadge semantic={customer.email || "client"} category="id" appearance="outline" className="gap-1 text-[11px]"><Mail className="w-3 h-3" />{customer.email || "—"}</SemanticBadge>
+                  <SemanticBadge semantic={customer.email || "client"} category="id" className="gap-1 text-[11px]"><Mail className="w-3 h-3" />{customer.email || "—"}</SemanticBadge>
                   {customer.phone && <span className="flex items-center gap-1 text-sm text-muted-foreground"><Phone className="w-3 h-3" />{customer.phone}</span>}
                 </div>
               </div>
@@ -188,7 +249,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
               <div className="flex items-center gap-2">
                 <Button size="sm" onClick={() => router.push(`/orders/new?customerId=${customer.id}`)} className="gap-1.5 h-9 text-xs"><ShoppingCart className="w-3.5 h-3.5" /> New Order</Button>
                 <MoreMenu actions={[
-                  { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => router.push(`/crm/${id}/edit`) },
+                  { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => { setForm({ name: customer.name, email: customer.email || "", phone: customer.phone || "", company: customer.company || "", taxId: customer.taxId || "", creditLimit: String(customer.creditLimit || 0), notes: customer.notes || "" }); setShowEdit(true) } },
                   "separator",
                   { label: "Delete", icon: <Trash2 className="w-4 h-4" />, onClick: () => setShowDelete(true) },
                 ]} />
@@ -206,10 +267,10 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
           <Card className="col-span-6 border-border/50">
             <CardContent className="p-3.5">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0"><DollarSign className="w-4 h-4 text-emerald-600" /></div>
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><DollarSign className="w-4 h-4 text-primary" /></div>
                 <div className="min-w-0">
                   <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Total Value</p>
-                  <p className="text-base font-semibold font-mono mt-0.5">{formatCurrency(fs.totalOrderValue)}</p>
+                  <p className="text-base font-semibold font-mono mt-0.5">{formatCurrency(totalOrderValue)}</p>
                 </div>
               </div>
             </CardContent>
@@ -217,10 +278,10 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
           <Card className="col-span-6 border-border/50">
             <CardContent className="p-3.5">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0"><CreditCard className="w-4 h-4 text-amber-600" /></div>
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><CreditCard className="w-4 h-4 text-primary" /></div>
                 <div className="min-w-0">
                   <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Credit Remaining</p>
-                  <p className="text-base font-semibold font-mono mt-0.5">{formatCurrency(fs.creditRemaining)}</p>
+                  <p className="text-base font-semibold font-mono mt-0.5">{formatCurrency(creditRemaining)}</p>
                 </div>
               </div>
             </CardContent>
@@ -228,10 +289,10 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
           <Card className="col-span-3 border-border/50">
             <CardContent className="p-3">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-md bg-blue-100 flex items-center justify-center shrink-0"><ShoppingCart className="w-3.5 h-3.5 text-blue-600" /></div>
+                <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0"><ShoppingCart className="w-3.5 h-3.5 text-primary" /></div>
                 <div className="min-w-0">
                   <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider truncate">Total Orders</p>
-                  <p className="text-sm font-semibold font-mono">{fs.totalOrders}</p>
+                  <p className="text-sm font-semibold font-mono">{totalOrders}</p>
                 </div>
               </div>
             </CardContent>
@@ -239,10 +300,10 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
           <Card className="col-span-3 border-border/50">
             <CardContent className="p-3">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-md bg-violet-100 flex items-center justify-center shrink-0"><Receipt className="w-3.5 h-3.5 text-violet-600" /></div>
+                <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0"><Receipt className="w-3.5 h-3.5 text-primary" /></div>
                 <div className="min-w-0">
                   <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider truncate">Total Invoiced</p>
-                  <p className="text-sm font-semibold font-mono">{formatCurrency(fs.totalInvoiced)}</p>
+                  <p className="text-sm font-semibold font-mono">{formatCurrency(totalInvoiced)}</p>
                 </div>
               </div>
             </CardContent>
@@ -250,10 +311,10 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
           <Card className="col-span-3 border-border/50">
             <CardContent className="p-3">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-md bg-green-100 flex items-center justify-center shrink-0"><CreditCard className="w-3.5 h-3.5 text-green-600" /></div>
+                <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0"><CreditCard className="w-3.5 h-3.5 text-primary" /></div>
                 <div className="min-w-0">
                   <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider truncate">Total Paid</p>
-                  <p className="text-sm font-semibold font-mono">{formatCurrency(fs.totalPaid)}</p>
+                  <p className="text-sm font-semibold font-mono">{formatCurrency(totalPaid)}</p>
                 </div>
               </div>
             </CardContent>
@@ -261,10 +322,10 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
           <Card className="col-span-3 border-border/50">
             <CardContent className="p-3">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-md bg-rose-100 flex items-center justify-center shrink-0"><FileText className="w-3.5 h-3.5 text-rose-600" /></div>
+                <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0"><FileText className="w-3.5 h-3.5 text-primary" /></div>
                 <div className="min-w-0">
                   <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider truncate">Total Due</p>
-                  <p className="text-sm font-semibold font-mono">{formatCurrency(fs.totalDue)}</p>
+                  <p className="text-sm font-semibold font-mono">{formatCurrency(totalDue)}</p>
                 </div>
               </div>
             </CardContent>
@@ -312,33 +373,33 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
             <CardContent className="p-4 space-y-3">
               <div className="flex items-baseline justify-between">
                 <span className="text-xs text-muted-foreground">Total Order Value</span>
-                <span className="text-lg font-semibold font-mono">{formatCurrency(fs.totalOrderValue)}</span>
+                <span className="text-lg font-semibold font-mono">{formatCurrency(totalOrderValue)}</span>
               </div>
               <Progress
                 className="h-1.5"
                 indicatorClassName="bg-success"
-                value={customer.creditLimit > 0 ? Math.min((fs.totalOrderValue / customer.creditLimit) * 100, 100) : 0}
+                value={customer.creditLimit > 0 ? Math.min(((totalOrderValue) / customer.creditLimit) * 100, 100) : 0}
               />
               <div className="flex justify-between text-[11px] text-muted-foreground">
                 <span>Credit Limit: {formatCurrency(customer.creditLimit)}</span>
-                <span>Remaining: {formatCurrency(fs.creditRemaining)}</span>
+                <span>Remaining: {formatCurrency(creditRemaining)}</span>
               </div>
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <div className="text-center p-2 rounded-lg bg-muted/30">
                   <p className="text-[10px] text-muted-foreground">Orders</p>
-                  <p className="text-sm font-semibold font-mono">{fs.totalOrders}</p>
+                  <p className="text-sm font-semibold font-mono">{totalOrders}</p>
                 </div>
                 <div className="text-center p-2 rounded-lg bg-muted/30">
                   <p className="text-[10px] text-muted-foreground">Invoiced</p>
-                  <p className="text-sm font-semibold font-mono">{formatCurrency(fs.totalInvoiced)}</p>
+                  <p className="text-sm font-semibold font-mono">{formatCurrency(totalInvoiced)}</p>
                 </div>
                 <div className="text-center p-2 rounded-lg bg-muted/30">
                   <p className="text-[10px] text-muted-foreground">Paid</p>
-                  <p className="text-sm font-semibold font-mono">{formatCurrency(fs.totalPaid)}</p>
+                  <p className="text-sm font-semibold font-mono">{formatCurrency(totalPaid)}</p>
                 </div>
                 <div className="text-center p-2 rounded-lg bg-muted/30">
                   <p className="text-[10px] text-muted-foreground">Due</p>
-                  <p className="text-sm font-semibold font-mono">{formatCurrency(fs.totalDue)}</p>
+                  <p className="text-sm font-semibold font-mono">{formatCurrency(totalDue)}</p>
                 </div>
               </div>
             </CardContent>
@@ -363,7 +424,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
       </div>
 
       {/* Unified Tab Module */}
-      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden pt-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="w-full overflow-x-auto px-4">
             <TabsTrigger value="orders" className="gap-1.5"><ShoppingCart className="w-4 h-4" /> Orders{orders.length > 0 && <span className="ml-1 text-[11px] text-muted-foreground">({orders.length})</span>}</TabsTrigger>
@@ -372,7 +433,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
             <TabsTrigger value="payments" className="gap-1.5"><Banknote className="w-4 h-4" /> Payments{payments.length > 0 && <span className="ml-1 text-[11px] text-muted-foreground">({payments.length})</span>}</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="orders" className="p-3">
+          <TabsContent value="orders" className="pt-8 px-3 pb-3">
             {(() => {
               if (orders.length === 0) {
                 return (
@@ -428,7 +489,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
             })()}
           </TabsContent>
 
-          <TabsContent value="quotations" className="p-3">
+          <TabsContent value="quotations" className="pt-8 px-3 pb-3">
             {(() => {
               if (quotations.length === 0) {
                 return (
@@ -484,7 +545,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
             })()}
           </TabsContent>
 
-          <TabsContent value="invoices" className="p-3">
+          <TabsContent value="invoices" className="pt-8 px-3 pb-3">
             {(() => {
               if (invoices.length === 0) {
                 return (
@@ -540,7 +601,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
             })()}
           </TabsContent>
 
-          <TabsContent value="payments" className="p-3">
+          <TabsContent value="payments" className="pt-8 px-3 pb-3">
             {(() => {
               if (payments.length === 0) {
                 return (
@@ -598,6 +659,45 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
         </Tabs>
       </div>
 
+      {/* Edit Dialog */}
+      <Dialog open={showEdit} onOpenChange={setShowEdit}>
+        <DialogContent className="sm:max-w-lg flex flex-col p-0 gap-0 max-h-[90vh]">
+          <DialogHeader className="px-6 pt-6 pb-0 shrink-0">
+            <DialogTitle>Edit Customer</DialogTitle>
+            <DialogDescription>Update details for <span className="font-medium text-foreground">{customer?.name}</span></DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+            <Card>
+              <CardHeader className="px-4 pt-4 pb-0">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Building2 className="w-4 h-4 text-primary" />
+                  Profile Information
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Name" required><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Email"><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></FieldGroup>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Phone"><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Company"><Input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} /></FieldGroup>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldGroup label="Tax ID"><Input value={form.taxId} onChange={(e) => setForm({ ...form, taxId: e.target.value })} /></FieldGroup>
+                  <FieldGroup label="Credit Limit"><Input type="number" step="0.01" value={form.creditLimit} onChange={(e) => setForm({ ...form, creditLimit: e.target.value })} /></FieldGroup>
+                </div>
+                <FieldGroup label="Notes"><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} /></FieldGroup>
+              </CardContent>
+            </Card>
+          </div>
+          <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
+            <Button variant="outline" onClick={() => setShowEdit(false)}>Cancel</Button>
+            <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Delete Dialog */}
       <Dialog open={showDelete} onOpenChange={setShowDelete}>
         <DialogContent>
@@ -606,7 +706,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
             <DialogDescription>Are you sure you want to delete <strong>{customer.name}</strong>? This action cannot be undone.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button variant="outline" onClick={() => setShowDelete(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
             <Button variant="destructive" onClick={handleDelete} loading={deleting}><Trash2 className="w-4 h-4" /> Delete</Button>
           </DialogFooter>
         </DialogContent>

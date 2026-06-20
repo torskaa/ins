@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Badge, SemanticBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
@@ -70,7 +70,8 @@ function groupBOMs(boms: BOMItem[]): BOMGroup[] {
 
 export default function BOMPage() {
  const [boms, setBoms] = useState<BOMItem[]>([])
- const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
  const [deleteId, setDeleteId] = useState<string | null>(null)
  const [deleting, setDeleting] = useState(false)
  const [expandedVersion, setExpandedVersion] = useState<Map<string, number>>(new Map())
@@ -81,20 +82,22 @@ export default function BOMPage() {
  useEffect(() => {
  fetch("/api/bom")
  .then((res) => res.json())
- .then((data) => {
- const list = Array.isArray(data) ? data : []
- setBoms(list)
- const groups = groupBOMs(list)
- const exp = new Map<string, number>()
- for (const g of groups) {
- if (g.versions.length > 0) exp.set(g.finishedGoodId, g.versions[0].version)
- }
- setExpandedVersion(exp)
- })
- .finally(() => setLoading(false))
- }, [])
+  .then((json) => {
+  const list = json?.success && Array.isArray(json.data) ? json.data : []
+  setBoms(list)
+  const groups = groupBOMs(list)
+  const exp = new Map<string, number>()
+  for (const g of groups) {
+  if (g.versions.length > 0) exp.set(g.finishedGoodId, g.versions[0].version)
+  }
+  setExpandedVersion(exp)
+  if (!json?.success) throw new Error(json?.error || "Failed to load")
+  })
+  .catch((err) => { setError(err.message || "Failed to load data"); setLoading(false) })
+  .finally(() => setLoading(false))
+  }, [])
 
- async function handleDelete() {
+  async function handleDelete() {
  if (!deleteId) return
  setDeleting(true)
  try {
@@ -119,7 +122,30 @@ export default function BOMPage() {
  const latest = groups.filter((g) => g.versions[0]?.status === "approved")
  const draft = groups.filter((g) => g.versions[0]?.status === "draft")
 
- if (!loading && boms.length === 0) {
+  if (error) {
+    return (
+      <div className="animate-fade-in">
+        <div className="page-header flex items-center justify-between">
+          <div>
+            <h1>Bill of Materials</h1>
+            <p>Manufacturing engine — define, version, and approve production recipes</p>
+          </div>
+        </div>
+        <Card>
+          <CardContent className="p-8">
+            <EmptyState
+              variant="error"
+              title="Failed to load data"
+              description={error}
+              actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+            />
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (!loading && boms.length === 0) {
  return (
  <div className="animate-fade-in">
  <div className="page-header flex items-center justify-between">
@@ -163,9 +189,16 @@ export default function BOMPage() {
  </Button>
  </div>
 
- {loading ? (
- <SkeletonTable rows={5} columns={4} />
- ) : (
+  {error ? (
+  <EmptyState
+    variant="error"
+    title="Failed to load data"
+    description={error}
+    actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+  />
+  ) : loading ? (
+  <SkeletonTable rows={5} columns={4} />
+  ) : (
  <div className="space-y-4">
  {groups.map((group) => {
  const activeVersion = expandedVersion.get(group.finishedGoodId) || group.versions[0]?.version
@@ -204,9 +237,9 @@ export default function BOMPage() {
  </select>
  )}
  {activeVg && (
- <Badge variant={(statusColors[activeVg.status] || "secondary") as any}>
- v{activeVg.version} · {activeVg.status}
- </Badge>
+  <SemanticBadge semantic={activeVg.status} category="status">
+  v{activeVg.version} · {activeVg.status}
+  </SemanticBadge>
  )}
  <span className="text-xs text-muted-foreground">{activeVg?.items.length || 0} items</span>
  </div>

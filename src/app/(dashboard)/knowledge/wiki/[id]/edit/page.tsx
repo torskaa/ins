@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
-import { BookOpen, XCircle } from "lucide-react"
+import { AlertTriangle, BookOpen, XCircle } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 import { cn } from "@/lib/utils"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
@@ -25,15 +26,18 @@ export default function EditWikiArticlePage({ params }: { params: Promise<{ id: 
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({ title: "", category: "Getting Started", excerpt: "", content: "" })
 
   useEffect(() => {
     fetch(`/api/knowledge/wiki/${id}`)
       .then(r => r.json())
-      .then(d => {
-        if (d.error) { toast.error("Article not found"); router.push("/knowledge/wiki"); return }
+      .then(json => {
+        if (!json?.success) { toast.error(json?.error || "Article not found"); router.push("/knowledge/wiki"); return }
+        const d = json.data
         setForm({ title: d.title || "", category: d.category || "Getting Started", excerpt: d.excerpt || "", content: d.content || "" })
       })
+      .catch((err) => { setError(err.message); setFetching(false) })
       .finally(() => setFetching(false))
   }, [id, router])
 
@@ -55,6 +59,11 @@ export default function EditWikiArticlePage({ params }: { params: Promise<{ id: 
     finally { setLoading(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (fetching) return <div className="animate-fade-in pb-28"><SkeletonForm fields={4} /></div>
 
   return (

@@ -13,7 +13,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { Clock, DollarSign, FileText, Hash, Pencil, Trash2, XCircle, Banknote } from "lucide-react"
+import { AlertTriangle, Clock, DollarSign, FileText, Hash, Pencil, Trash2, XCircle, Banknote } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { formatCurrency, formatDate, cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -30,7 +30,7 @@ function FieldDisplay({ label, value, mono, badge }: { label: string; value: str
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -54,6 +54,7 @@ export default function JournalEntryDetailPage({ params }: { params: Promise<{ i
   const router = useRouter()
   const [entry, setEntry] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -69,8 +70,9 @@ export default function JournalEntryDetailPage({ params }: { params: Promise<{ i
     if (!id) return
     fetch(`/api/finance/journal-entries/${id}`)
       .then((r) => r.json())
-      .then((data) => {
-        if (data && !data.error) {
+      .then((json) => {
+        if (json?.success && json.data) {
+          const data = json.data
           setEntry(data)
           setForm({
             number: data.number,
@@ -81,12 +83,18 @@ export default function JournalEntryDetailPage({ params }: { params: Promise<{ i
             referenceId: data.referenceId || "",
           })
         } else {
-          toast.error("Entry not found")
+          toast.error(json?.error || "Entry not found")
         }
       })
+      .catch((err) => { setError(err.message); setLoading(false) })
       .finally(() => setLoading(false))
   }, [id])
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (loading) return <SkeletonDetail cards={3} hasChart={true} />
 
   if (!entry) {
@@ -171,8 +179,8 @@ export default function JournalEntryDetailPage({ params }: { params: Promise<{ i
             <div className="flex flex-col gap-2 min-w-0 flex-1">
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-2xl font-bold">Journal Entry #{entry.number}</h1>
-                <SemanticBadge semantic={entry.status} category="status" appearance="outline" className="gap-1 capitalize text-[11px]"><BadgeDot />{entry.status}</SemanticBadge>
-                <SemanticBadge semantic={`#${entry.number}`} category="id" appearance="outline" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />#{entry.number}</SemanticBadge>
+                <SemanticBadge semantic={entry.status} category="status" className="gap-1 text-[11px]"><BadgeDot />{entry.status}</SemanticBadge>
+                <SemanticBadge semantic={`#${entry.number}`} category="id" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />#{entry.number}</SemanticBadge>
               </div>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <span>{formatDate(new Date(entry.date))}{entry.referenceType ? ` · ${entry.referenceType}` : ""}</span>

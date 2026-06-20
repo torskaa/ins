@@ -10,21 +10,23 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { formatCurrency } from "@/lib/utils"
-import { XCircle } from "lucide-react"
+import { AlertTriangle, XCircle } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 type Line = { key: string; accountId: string; debit: string; credit: string; description: string }
 type AccountOption = { id: string; code: string; name: string; type: string }
 
 export default function NewJournalEntryPage() {
  const router = useRouter()
- const [loading, setLoading] = useState(false)
- const [accounts, setAccounts] = useState<AccountOption[]>([])
- const [form, setForm] = useState({ date: new Date().toISOString().slice(0, 10), description: "", referenceType: "" })
- const [lines, setLines] = useState<Line[]>([createLine()])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [accounts, setAccounts] = useState<AccountOption[]>([])
+  const [form, setForm] = useState({ date: new Date().toISOString().slice(0, 10), description: "", referenceType: "" })
+  const [lines, setLines] = useState<Line[]>([createLine()])
 
- useEffect(() => {
- fetch("/api/finance/accounts").then(r => r.json()).then(d => { if (d.accounts) setAccounts(d.accounts) })
- }, [])
+  useEffect(() => {
+  fetch("/api/finance/accounts").then(r => r.json()).then(json => { if (json?.success && json.data?.accounts) setAccounts(json.data.accounts) }).catch((err) => setError(err.message))
+  }, [])
 
  function createLine(): Line { return { key: crypto.randomUUID(), accountId: "", debit: "0", credit: "0", description: "" } }
 
@@ -47,9 +49,14 @@ export default function NewJournalEntryPage() {
  } catch (e: any) { toast.error(e.message || "Failed") } finally { setLoading(false) }
  }
 
- return (
- <div className="animate-fade-in max-w-4xl">
- <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">Back</button>
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
+  return (
+  <div className="animate-fade-in max-w-4xl">
+  <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">Back</button>
  <div className="page-header"><h1>New Journal Entry</h1><p>Create a general ledger entry with balanced debits and credits</p></div>
  <form onSubmit={handleSubmit} className="space-y-5">
  <Card><CardHeader><CardTitle className="flex items-center gap-2">Entry Info</CardTitle></CardHeader>
@@ -89,7 +96,7 @@ export default function NewJournalEntryPage() {
  <div className="col-span-5 text-right">Totals</div>
  <div className="col-span-2 text-right font-mono">{formatCurrency(totalDebit)}</div>
  <div className="col-span-2 text-right font-mono">{formatCurrency(totalCredit)}</div>
- <div className="col-span-3"><span className={balanced ? "text-emerald-600" : "text-red-600"}>{balanced ? "✓ Balanced" : `Diff: ${formatCurrency(Math.abs(totalDebit - totalCredit))}`}</span></div>
+ <div className="col-span-3"><span className={balanced ? "text-success" : "text-destructive"}>{balanced ? "✓ Balanced" : `Diff: ${formatCurrency(Math.abs(totalDebit - totalCredit))}`}</span></div>
  </div>
  </CardContent>
  </Card>

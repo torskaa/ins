@@ -10,7 +10,8 @@ import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
-import { GraduationCap, XCircle } from "lucide-react"
+import { AlertTriangle, GraduationCap, XCircle } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 import { cn } from "@/lib/utils"
 
 const TYPE_OPTIONS = [
@@ -37,15 +38,18 @@ export default function EditTrainingPage({ params }: { params: Promise<{ id: str
   const { id } = use(params)
   const [saving, setSaving] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({ title: "", type: "Course", level: "Beginner", description: "", duration: "", modules: "1" })
 
   useEffect(() => {
     fetch(`/api/knowledge/training/${id}`)
       .then(r => r.json())
-      .then((d) => {
-        if (!d || d.error) { toast.error("Program not found"); router.push("/knowledge/training"); return }
+      .then((json) => {
+        if (!json?.success) { toast.error(json?.error || "Program not found"); router.push("/knowledge/training"); return }
+        const d = json.data
         setForm({ title: d.title || "", type: d.type || "Course", level: d.level || "Beginner", description: d.description || "", duration: d.duration || "", modules: String(d.modules || 1) })
       })
+      .catch((err) => { setError(err.message); setFetching(false) })
       .finally(() => setFetching(false))
   }, [id, router])
 
@@ -67,6 +71,11 @@ export default function EditTrainingPage({ params }: { params: Promise<{ id: str
     finally { setSaving(false) }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (fetching) return <div className="animate-fade-in pb-28"><SkeletonForm fields={5} /></div>
 
   return (

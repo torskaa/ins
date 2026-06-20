@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { formatCurrency, cn } from "@/lib/utils"
-import { XCircle, FileText, Package, DollarSign, ClipboardList } from "lucide-react"
+import { AlertTriangle, XCircle, FileText, Package, DollarSign, ClipboardList } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
@@ -22,6 +22,7 @@ const Field = ({ id, label, required, children, className }: { id?: string; labe
 
 export default function NewInvoicePage() {
   const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
   const [customers, setCustomers] = useState<any[]>([])
   const [products, setProducts] = useState<any[]>([])
   const [customerId, setCustomerId] = useState("")
@@ -38,7 +39,7 @@ export default function NewInvoicePage() {
     ]).then(([c, p]) => {
       if (Array.isArray(c)) setCustomers(c)
       if (Array.isArray(p)) setProducts(p)
-    })
+    }).catch((err) => setError(err.message))
   }, [])
 
   function addItem() {
@@ -95,6 +96,11 @@ export default function NewInvoicePage() {
 
   const subtotal = items.reduce((s, i) => s + i.total, 0)
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   return (
     <div className="animate-fade-in pb-28">
       <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">Back</button>

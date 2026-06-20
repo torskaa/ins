@@ -13,7 +13,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { Clock, Download, File as FileIcon, FileArchive, FileImage, FileSpreadsheet, FileText, Hash, Pencil, Tag, Trash2, XCircle, Building2 } from "lucide-react"
+import { AlertTriangle, Clock, Download, File as FileIcon, FileArchive, FileImage, FileSpreadsheet, FileText, Hash, Pencil, Tag, Trash2, XCircle, Building2 } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { formatDate, cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -46,7 +46,7 @@ function FieldDisplay({ label, value, mono, badge }: { label: string; value: str
     <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground font-medium mb-0.5 truncate">{label}</p>
       {badge ? (
-        <Badge variant={value === "active" ? "success" : "secondary"} className="capitalize">{value}</Badge>
+        <SemanticBadge semantic={value} category="status">{value}</SemanticBadge>
       ) : (
         <p className={cn("text-sm truncate", mono ? "font-mono" : "font-medium")}>{value || "—"}</p>
       )}
@@ -70,6 +70,7 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
   const router = useRouter()
   const [doc, setDoc] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showDelete, setShowDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [tab, setTab] = useState("info")
@@ -84,8 +85,8 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
     setLoading(true)
     fetch(`/api/knowledge/documents/${id}`)
       .then((r) => r.json())
-      .then((data) => { setDoc(data) })
-      .catch(() => {})
+      .then((json) => { if (json?.success) setDoc(json.data); else throw new Error(json?.error || "Failed to load") })
+      .catch((err) => { setError(err.message); setLoading(false) })
       .finally(() => setLoading(false))
   }, [id])
 
@@ -102,6 +103,12 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
       setDeleting(false)
     }
   }
+
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
 
   if (loading) return <SkeletonDetail cards={4} hasChart={false} />
 
@@ -121,7 +128,7 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
 
   const columns = [
     { key: "name", label: "Name", render: (item: any) => <span className="font-medium">{item.name}</span> },
-    { key: "type", label: "Type", render: (item: any) => <SemanticBadge semantic={item.type} category="type" className="capitalize" /> },
+    { key: "type", label: "Type", render: (item: any) => <SemanticBadge semantic={item.type} category="type" className="" /> },
     { key: "fileType", label: "File Type", render: (item: any) => <span className="text-muted-foreground">{fileTypeLabels[item.fileType] || item.fileType}</span> },
     { key: "size", label: "Size", render: (item: any) => <span className="font-mono text-xs">{item.size}</span> },
     { key: "uploadedAt", label: "Uploaded", render: (item: any) => <span className="text-muted-foreground text-sm">{formatDate(new Date(item.uploadedAt))}</span> },
@@ -155,7 +162,7 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
                   <SemanticBadge semantic={doc.fileType} category="type" className="font-mono text-[11px]">{fileTypeLabels[doc.fileType] || doc.fileType}</SemanticBadge>
-                  <SemanticBadge semantic={doc.type} category="type" appearance="outline" className="capitalize text-[11px]" />
+                  <SemanticBadge semantic={doc.type} category="type" className="text-[11px]" />
                 </div>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span>Uploaded by {doc.uploadedBy}</span>

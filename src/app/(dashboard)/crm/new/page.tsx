@@ -10,29 +10,29 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { User, XCircle } from "lucide-react"
+import { useFormValidation } from "@/hooks/use-form-validation"
+import { customerSchema } from "@/lib/validation"
 
-const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
+const Field = ({ id, label, required, children, error, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; error?: string; className?: string }) => (
   <div className={cn("space-y-1", className)}>
     <Label htmlFor={id} className="text-xs font-medium">{label}{required && <span className="text-destructive ml-0.5">*</span>}</Label>
     {children}
+    {error && <p className="text-xs text-destructive">{error}</p>}
   </div>
 )
 
 export default function NewCustomerPage() {
   const router = useRouter()
+  const { register, handleSubmit, formState: { errors } } = useFormValidation(customerSchema)
   const [loading, setLoading] = useState(false)
-  const [form, setForm] = useState({
-    name: "", email: "", phone: "", company: "", address: "", taxId: "", notes: "",
-  })
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  async function onSubmit(data: any) {
     setLoading(true)
     try {
       const res = await fetch("/api/customers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(data),
       })
       if (!res.ok) throw new Error()
       toast.success("Customer created")
@@ -51,7 +51,7 @@ export default function NewCustomerPage() {
         <h1>Add Customer</h1>
         <p>Create a new customer record</p>
       </div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-8 flex flex-col gap-4">
             <Card className="flex-1">
@@ -63,29 +63,29 @@ export default function NewCustomerPage() {
               </CardHeader>
               <CardContent className="p-4 space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <Field id="name" label="Name" required>
-                    <Input id="name" required value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} />
+                  <Field id="name" label="Name" required error={errors.name?.message}>
+                    <Input id="name" {...register("name")} />
                   </Field>
-                  <Field id="company" label="Company">
-                    <Input id="company" value={form.company} onChange={(e) => setForm({...form, company: e.target.value})} />
+                  <Field id="company" label="Company" error={errors.company?.message}>
+                    <Input id="company" {...register("company")} />
                   </Field>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <Field id="email" label="Email">
-                    <Input id="email" type="email" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} />
+                  <Field id="email" label="Email" error={errors.email?.message}>
+                    <Input id="email" type="email" {...register("email")} />
                   </Field>
-                  <Field id="phone" label="Phone">
-                    <Input id="phone" value={form.phone} onChange={(e) => setForm({...form, phone: e.target.value})} />
+                  <Field id="phone" label="Phone" error={errors.phone?.message}>
+                    <Input id="phone" {...register("phone")} />
                   </Field>
                 </div>
-                <Field id="address" label="Address">
-                  <Textarea id="address" value={form.address} onChange={(e) => setForm({...form, address: e.target.value})} />
+                <Field id="address" label="Address" error={errors.address?.message}>
+                  <Textarea id="address" {...register("address")} />
                 </Field>
-                <Field id="taxId" label="Tax ID">
-                  <Input id="taxId" value={form.taxId} onChange={(e) => setForm({...form, taxId: e.target.value})} />
+                <Field id="taxId" label="Tax ID" error={errors.taxId?.message}>
+                  <Input id="taxId" {...register("taxId")} />
                 </Field>
-                <Field id="notes" label="Notes">
-                  <Textarea id="notes" value={form.notes} onChange={(e) => setForm({...form, notes: e.target.value})} />
+                <Field id="notes" label="Notes" error={errors.notes?.message}>
+                  <Textarea id="notes" {...register("notes")} />
                 </Field>
               </CardContent>
             </Card>

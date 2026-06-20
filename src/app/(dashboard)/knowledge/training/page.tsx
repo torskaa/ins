@@ -3,12 +3,12 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { SemanticBadge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
-import { Search, GraduationCap, BookOpen, Layers } from "lucide-react"
+import { AlertTriangle, Search, GraduationCap, BookOpen, Layers } from "lucide-react"
 import { SkeletonCard } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
 
@@ -26,8 +26,9 @@ type Program = {
 
 export default function TrainingPage() {
  const router = useRouter()
- const [programs, setPrograms] = useState<Program[]>([])
- const [loading, setLoading] = useState(true)
+  const [programs, setPrograms] = useState<Program[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
  const [search, setSearch] = useState("")
  const handleNew = useCallback(() => router.push("/knowledge/training/new"), [router])
  useHotkey("c", handleNew)
@@ -35,8 +36,8 @@ export default function TrainingPage() {
  useEffect(() => {
  fetch("/api/knowledge/training")
  .then((r) => r.json())
- .then((data) => { setPrograms(data); setLoading(false) })
- .catch(() => setLoading(false))
+ .then((json) => { if (json?.success) setPrograms(json.data); else throw new Error(json?.error || "Failed to load"); setLoading(false) })
+      .catch((err) => { setError(err.message); setLoading(false) })
  }, [])
 
  const filtered = programs.filter(
@@ -63,10 +64,14 @@ export default function TrainingPage() {
  />
  </div>
 
- {loading ? (
- <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
- {[1, 2, 3].map((i) => <SkeletonCard key={i} />)}
- </div>
+  {error ? (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  ) : loading ? (
+  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  {[1, 2, 3].map((i) => <SkeletonCard key={i} />)}
+  </div>
  ) : (
  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
  {filtered.map((program) => (
@@ -76,16 +81,16 @@ export default function TrainingPage() {
  <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
  null
  </div>
- <Badge variant={program.level === "Beginner" ? "outline" : program.level === "Intermediate" ? "secondary" : "primary"} className="text-[10px]">
- {program.level}
- </Badge>
+  <SemanticBadge semantic={program.level} category="status" className="text-[10px]">
+  {program.level}
+  </SemanticBadge>
  </div>
 
  <h3 className="font-medium text-sm mb-1 group-hover:text-primary transition-colors">{program.title}</h3>
  <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{program.description}</p>
 
  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-auto mb-3 flex-wrap">
- <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-normal">{program.type}</Badge>
+  <SemanticBadge semantic={program.type} category="type" className="text-[10px] px-1.5 py-0">{program.type}</SemanticBadge>
  <span>{program.modules} modules</span>
  <span className="flex items-center gap-1">{program.duration}</span>
  </div>

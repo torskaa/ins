@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
-import { apiHandler, requireOrg } from "@/lib/middleware"
+import { apiHandler } from "@/lib/middleware"
 
 export const GET = apiHandler(async (request: Request) => {
-  const { org } = await requireOrg()
   const { searchParams } = new URL(request.url)
   const page = parseInt(searchParams.get("page") || "1")
   const limit = parseInt(searchParams.get("limit") || "50")
   const productId = searchParams.get("productId")
   const type = searchParams.get("type")
-  const where: any = { organizationId: org.id }
+  const where: any = {}
   if (productId) where.productId = productId
   if (type) where.type = type
   const [movements, total] = await Promise.all([

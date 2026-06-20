@@ -10,9 +10,9 @@ import { PropertySelector } from "@/components/ui/property-selector"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Input } from "@/components/ui/input"
-import { statusBadge } from "@/components/ui/data-table"
+import { SemanticBadge } from "@/components/ui/badge"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { Search, Wrench, Activity, Settings2 } from "lucide-react"
+import { AlertTriangle, Search, Wrench, Activity, Settings2 } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { downloadCSV, downloadPDF } from "@/lib/export"
@@ -51,6 +51,7 @@ const PAGE_SIZE = 10
 export default function WorkCentersPage() {
   const [data, setData] = useState<WorkCenter[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -63,8 +64,8 @@ export default function WorkCentersPage() {
   useEffect(() => {
     fetch("/api/work-centers")
       .then((r) => r.json())
-      .then((d) => { if (Array.isArray(d)) setData(d) })
-      .finally(() => setLoading(false))
+      .then((json) => { if (json?.success && Array.isArray(json.data)) setData(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+      .catch((err) => { setError(err.message); setLoading(false) })
   }, [])
 
   const filterColumns: FilterColumn[] = [
@@ -126,9 +127,9 @@ export default function WorkCentersPage() {
       label: "Status",
       className: "w-[120px]",
       render: (w: WorkCenter) => (
-        <span className={statusBadge({ variant: w.isActive ? "success" : "secondary" })}>
+        <SemanticBadge semantic={w.isActive ? "active" : "inactive"} category="status" className="">
           {w.isActive ? "Active" : "Inactive"}
-        </span>
+        </SemanticBadge>
       ),
     },
   ]
@@ -172,7 +173,11 @@ export default function WorkCentersPage() {
         </div>
       </div>
 
-      {loading ? (
+      {error ? (
+        <div className="animate-fade-in pb-8 space-y-4">
+          <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+        </div>
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState

@@ -10,8 +10,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import { EmptyState } from "@/components/ui/empty-state"
 import { cn } from "@/lib/utils"
-import { Truck, MapPin, FileText, Building2, Calendar, Save, Warehouse, XCircle } from "lucide-react"
+import { AlertTriangle, Truck, MapPin, FileText, Building2, Calendar, Save, Warehouse, XCircle } from "lucide-react"
 import { SkeletonForm } from "@/components/ui/skeleton"
 
 const Field = ({ id, label, required, children, className }: { id?: string; label: React.ReactNode; required?: boolean; children: React.ReactNode; className?: string }) => (
@@ -38,6 +39,7 @@ export default function EditDeliveryPage({ params }: { params: Promise<{ id: str
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [distributors, setDistributors] = useState<SelectOption[]>([])
   const [warehouses, setWarehouses] = useState<SelectOption[]>([])
 
@@ -53,6 +55,7 @@ export default function EditDeliveryPage({ params }: { params: Promise<{ id: str
       fetch("/api/distributors").then(r => r.json()),
       fetch("/api/warehouses").then(r => r.json()),
     ]).then(([del, dists, whs]) => {
+      if (del.error) { setError(del.error); return }
       setDistributors(Array.isArray(dists) ? dists : [])
       setWarehouses(Array.isArray(whs) ? whs : [])
       setForm({
@@ -67,7 +70,7 @@ export default function EditDeliveryPage({ params }: { params: Promise<{ id: str
         distributorId: del.distributorId || "",
         warehouseId: del.warehouseId || "",
       })
-    }).finally(() => setLoading(false))
+    }).catch((err) => { setError(err.message); setLoading(false) }).finally(() => setLoading(false))
   }, [id])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -91,6 +94,11 @@ export default function EditDeliveryPage({ params }: { params: Promise<{ id: str
     }
   }
 
+  if (error) return (
+    <div className="animate-fade-in pb-8 space-y-4">
+      <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+    </div>
+  )
   if (loading) return <div className="animate-fade-in"><SkeletonForm fields={6} /></div>
 
   return (

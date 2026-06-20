@@ -69,7 +69,9 @@ export default function EditSupplierPage({ params }: { params: Promise<{ id: str
     if (!id) return
     fetch(`/api/suppliers/${id}`)
       .then((r) => r.json())
-      .then((data) => {
+      .then((json) => {
+        if (!json?.success) throw new Error(json?.error || "Failed to load")
+        const data = json.data
         setForm({
           name: data.name || "",
           email: data.email || "",

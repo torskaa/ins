@@ -10,22 +10,26 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
-import { XCircle, ClipboardEdit } from "lucide-react"
+import { AlertTriangle, XCircle, ClipboardEdit } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export default function EditOrderPage() {
   const router = useRouter()
   const params = useParams()
   const [loading, setLoading] = useState(false)
+  const [fetchError, setFetchError] = useState<string | null>(null)
   const [fetching, setFetching] = useState(true)
   const [form, setForm] = useState({ status: "draft", notes: "" })
 
   useEffect(() => {
     fetch(`/api/orders/${params.id}`)
       .then(r => r.json())
-      .then(d => {
-        if (d.error) { toast.error("Order not found"); router.push("/orders"); return }
+      .then(json => {
+        if (!json?.success) { toast.error(json?.error || "Order not found"); router.push("/orders"); return }
+        const d = json.data
         setForm({ status: d.status || "draft", notes: d.notes || "" })
       })
+      .catch((err) => { setFetchError(err.message); setFetching(false) })
       .finally(() => setFetching(false))
   }, [params.id, router])
 
@@ -45,6 +49,8 @@ export default function EditOrderPage() {
     } catch { toast.error("Failed to update") }
     finally { setLoading(false) }
   }
+
+  if (fetchError) return <EmptyState variant="error" title="Failed to load data" description={fetchError} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
 
   if (fetching) return <SkeletonForm fields={5} />
 

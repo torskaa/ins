@@ -14,6 +14,11 @@ export const GET = apiHandler(async (request: Request, { params }: { params: Pro
       supplier: true,
       warehouse: true,
       movements: { orderBy: { createdAt: "desc" } },
+      bomComponents: {
+        where: { organizationId: org.id },
+        include: { finishedGood: { select: { id: true, name: true, sku: true } } },
+        orderBy: { createdAt: "desc" },
+      },
     },
   })
 

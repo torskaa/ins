@@ -20,8 +20,8 @@ export function SalesCategoryWidget({ compact }: { compact?: boolean }) {
  <Card>
  <CardHeader className="pb-3">
  <div className="flex items-center gap-2">
- <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
- <PieChartIcon className="w-3.5 h-3.5 text-blue-500" />
+ <div className="w-7 h-7 rounded-lg bg-info/10 flex items-center justify-center">
+ <PieChartIcon className="w-3.5 h-3.5 text-info" />
  </div>
  <CardTitle>Sales by Category</CardTitle>
  </div>

@@ -66,7 +66,7 @@ function SyncToolModal({ open, onOpenChange }: ModalProps) {
  <div className="flex rounded-lg border border-border overflow-hidden">
  {["Google Drive", "Dropbox", "Local"].map((s) => (
  <button key={s} onClick={() => setSource(s)}
- className={`flex-1 px-3 py-1.5 text-xs font-medium transition-colors ${source === s ? "bg-primary text-white" : "bg-card text-muted-foreground hover:bg-surface"}`}
+ className={`flex-1 px-3 py-1.5 text-xs font-medium transition-colors ${source === s ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:bg-surface"}`}
  >{s}</button>
  ))}
  </div>
@@ -76,7 +76,7 @@ function SyncToolModal({ open, onOpenChange }: ModalProps) {
  <div className="flex rounded-lg border border-border overflow-hidden">
  {["Dashboard", "Archive", "External"].map((d) => (
  <button key={d} onClick={() => setDest(d)}
- className={`flex-1 px-3 py-1.5 text-xs font-medium transition-colors ${dest === d ? "bg-primary text-white" : "bg-card text-muted-foreground hover:bg-surface"}`}
+ className={`flex-1 px-3 py-1.5 text-xs font-medium transition-colors ${dest === d ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:bg-surface"}`}
  >{d}</button>
  ))}
  </div>
@@ -149,7 +149,7 @@ function ExportPDFModal({ open, onOpenChange }: ModalProps) {
  <div className="flex rounded-lg border border-border overflow-hidden">
  {(["portrait", "landscape"] as const).map((o) => (
  <button key={o} onClick={() => setOrientation(o)}
- className={`flex-1 px-4 py-1.5 text-xs font-medium capitalize transition-colors ${orientation === o ? "bg-primary text-white" : "bg-card text-muted-foreground hover:bg-surface"}`}
+ className={`flex-1 px-4 py-1.5 text-xs font-medium capitalize transition-colors ${orientation === o ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:bg-surface"}`}
  >{o}</button>
  ))}
  </div>
@@ -299,7 +299,7 @@ function ShareModal({ open, onOpenChange }: ModalProps) {
  { value: "full" as const, label: "Full access" },
  ].map((p) => (
  <button key={p.value} onClick={() => setPermission(p.value)}
- className={`flex-1 px-2 py-1.5 text-xs font-medium transition-colors ${permission === p.value ? "bg-primary text-white" : "bg-card text-muted-foreground hover:bg-surface"}`}
+ className={`flex-1 px-2 py-1.5 text-xs font-medium transition-colors ${permission === p.value ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:bg-surface"}`}
  >{p.label}</button>
  ))}
  </div>

@@ -601,6 +601,97 @@ Check:
 ✓ Maintainable
 ✓ Production ready
 
+
+# 26. AI-Native ERP Architecture Rules
+
+This project is an AI-native ERP Operating System.
+
+AI is not a chatbot feature.
+
+AI is an execution layer on top of ERP capabilities.
+
+Every major module should be designed to support:
+
+- AI Agents
+- MCP tools
+- Automation
+- Workflow execution
+
+
+## 27. AI Architecture Rules
+
+Never build AI features that directly access database.
+
+AI must interact through:
+
+Services
+APIs
+Tools
+MCP
+
+
+Architecture:
+
+AI Agent
+    |
+    |
+Tool Layer
+    |
+    |
+Business Services
+    |
+    |
+Database
+
+
+## 28.Agent Rules
+
+Agents must:
+
+- have identity
+- have permissions
+- have tools
+- have execution history
+- have audit logs
+
+
+Critical actions require approval.
+
+Examples:
+
+- create invoice
+- create purchase order
+- modify financial data
+
+
+## 29.MCP Rules
+
+MCP is a first-class interface.
+
+Any important ERP capability should be exposable as an MCP tool.
+
+Examples:
+
+inventory.getStock()
+order.createDraft()
+customer.search()
+report.generate()
+
+
+MCP must:
+
+- respect RBAC
+- respect organization isolation
+- reuse existing services
+
+
+## 30.Future Compatibility
+
+When creating modules, think:
+
+"Can an AI agent use this capability safely?"
+
+
 ---
 
 # Final Rule

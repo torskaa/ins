@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress"
 import { Upload, Database, ArrowLeft, ArrowRight, CheckCircle2, XCircle, AlertTriangle, FileSpreadsheet, Table2, Download } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { SkeletonPageHeader, Skeleton } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 import { toast } from "sonner"
 
 type EntityInfo = {
@@ -47,14 +48,15 @@ export default function MigrationPage() {
  const [mapping, setMapping] = useState<Record<string, string>>({})
  const [importing, setImporting] = useState(false)
  const [result, setResult] = useState<ImportResult | null>(null)
- const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
- useEffect(() => {
+  useEffect(() => {
  fetch("/api/migration")
  .then((r) => r.json())
- .then((data) => setEntities(data))
- .catch(() => toast.error("Failed to load migration options"))
- .finally(() => setLoading(false))
+ .then((json) => { if (json?.success) setEntities(json.data); else throw new Error(json?.error || "Failed to load") })
+  .catch((err) => { setError(err.message); setLoading(false) })
+  .finally(() => setLoading(false))
  }, [])
 
  async function selectEntity(key: string) {
@@ -66,7 +68,9 @@ export default function MigrationPage() {
  setMapping({})
  setStep(1)
  const res = await fetch("/api/migration")
- const all: EntityInfo[] = await res.json()
+ const json = await res.json()
+ if (!json.success) throw new Error(json.error)
+ const all: EntityInfo[] = json.data
  const entity = all.find((e) => e.key === key)
  if (entity) {
  const detailsRes = await fetch(`/api/migration?entity=${key}`)
@@ -202,8 +206,9 @@ export default function MigrationPage() {
  const res = await fetch("/api/migration/import", {
  method: "POST",
  body: formData})
- const data = await res.json()
- if (!res.ok) throw new Error(data.error)
+ const json = await res.json()
+ if (!json.success) throw new Error(json.error || "Import failed")
+ const data = json.data
  setResult(data)
  setStep(3)
  if (data.errors.length === 0) {
@@ -240,9 +245,17 @@ export default function MigrationPage() {
  URL.revokeObjectURL(url)
  }
 
- if (loading) {
- return <div className="animate-fade-in space-y-6 p-6"><SkeletonPageHeader /><Skeleton className="h-64 rounded-xl" /></div>
- }
+  if (error) {
+    return (
+      <div className="animate-fade-in pb-8 space-y-4">
+        <EmptyState variant="error" title="Failed to load data" description={error} icons={[<AlertTriangle key="e" className="w-6 h-6" />]} actions={[{ label: "Try again", onClick: () => window.location.reload() }]} />
+      </div>
+    )
+  }
+
+  if (loading) {
+    return <div className="animate-fade-in space-y-6 p-6"><SkeletonPageHeader /><Skeleton className="h-64 rounded-xl" /></div>
+  }
 
  const mappedCount = Object.values(mapping).filter(Boolean).length
  const requiredFields = fields.filter((f) => f.required)

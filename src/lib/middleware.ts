@@ -5,6 +5,10 @@ import { rateLimit, logApiRequest, timeRequest } from "@/lib/infrastructure"
 import { authenticateApiKey } from "@/lib/api-key"
 import { createAuditEntry } from "@/lib/audit"
 
+export function respond(data: unknown, status = 200) {
+  return Response.json({ success: true, data }, { status })
+}
+
 export type Role = string
 
 const FALLBACK_PERMISSIONS: Record<string, { create: string[]; read: string[]; update: string[]; delete: string[] }> = {
@@ -180,23 +184,29 @@ export function apiHandler(handler: (req: Request, ctx: any) => Promise<Response
       const ip = req.headers.get("x-forwarded-for") || "unknown"
       const rl = rateLimit(ip, 100, 60000)
       if (!rl.allowed) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded", code: "RATE_LIMITED" }), {
+        return Response.json({ success: false, data: null, error: "Rate limit exceeded", code: "RATE_LIMITED" }, {
           status: 429,
-          headers: { "Content-Type": "application/json", "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)) },
+          headers: { "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)) },
         })
       }
 
       const response = await handler(req, ctx)
       const duration = Math.round(performance.now() - start)
 
-      const cloned = response.clone()
-      cloned.json().then((body: any) => {
-        if (!path.startsWith("/api/health")) {
-          logApiRequest(req.method, path, cloned.status, duration, undefined, undefined)
+      let finalResponse = response
+      const ct = response.headers.get("content-type")
+      if (ct?.includes("application/json")) {
+        const clone = response.clone()
+        const body = await clone.json().catch(() => null)
+        if (body !== null && !(typeof body === "object" && "success" in body)) {
+          finalResponse = Response.json({ success: true, data: body }, { status: response.status })
         }
-      }).catch(() => {})
+      }
 
-      return response
+      if (!path.startsWith("/api/health")) {
+        logApiRequest(req.method, path, finalResponse.status, duration, undefined, undefined)
+      }
+      return finalResponse
     } catch (error) {
       const duration = Math.round(performance.now() - start)
       logApiRequest(req.method, path, error instanceof AppError ? error.statusCode || 500 : 500, duration)

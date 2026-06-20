@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { statusBadge } from "@/components/ui/data-table"
+import { SemanticBadge } from "@/components/ui/badge"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { SkeletonTable } from "@/components/ui/skeleton"
@@ -27,14 +27,6 @@ import {
   PaginationEllipsis,
 } from "@/components/ui/pagination"
 
-const quotationStatusColors: Record<string, "default" | "secondary" | "success" | "destructive" | "warning"> = {
-  draft: "secondary",
-  sent: "default",
-  confirmed: "success",
-  expired: "destructive",
-  cancelled: "warning",
-}
-
 type Quotation = {
   id: string
   number: string
@@ -57,6 +49,7 @@ const PAGE_SIZE = 10
 export default function QuotationsPage() {
   const [quotations, setQuotations] = useState<Quotation[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
@@ -69,7 +62,8 @@ export default function QuotationsPage() {
   useEffect(() => {
     fetch("/api/quotations")
       .then(r => r.json())
-      .then((data) => { if (Array.isArray(data)) setQuotations(data) })
+      .then((json) => { if (json?.success && Array.isArray(json.data)) setQuotations(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
+      .catch((err) => { setError(err.message); setLoading(false) })
       .finally(() => setLoading(false))
   }, [])
 
@@ -121,9 +115,9 @@ export default function QuotationsPage() {
       label: "Status",
       className: "w-[120px]",
       render: (q: Quotation) => (
-        <span className={statusBadge({ variant: quotationStatusColors[q.status] || "default" })}>
+        <SemanticBadge semantic={q.status} category="status" className="">
           {q.status}
-        </span>
+        </SemanticBadge>
       ),
     },
     {
@@ -174,7 +168,14 @@ export default function QuotationsPage() {
         </div>
       </div>
 
-      {loading ? (
+      {error ? (
+        <EmptyState
+          variant="error"
+          title="Failed to load data"
+          description={error}
+          actions={[{ label: "Try again", onClick: () => window.location.reload() }]}
+        />
+      ) : loading ? (
         <SkeletonTable rows={6} columns={columns.length} />
       ) : filtered.length === 0 ? (
         <EmptyState icons={[<FileSignature className="w-5 h-5" />, <FileText className="w-5 h-5" />, <File className="w-5 h-5" />]} title="No quotations yet" description="Create your first quotation from product catalog data." actions={[{ label: "Create Quotation", onClick: () => router.push("/quotations/new") }]} />

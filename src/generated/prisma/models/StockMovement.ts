@@ -44,6 +44,7 @@ export type StockMovementMinAggregateOutputType = {
   warehouseId: string | null
   orderId: string | null
   createdById: string | null
+  organizationId: string | null
   createdAt: Date | null
   lotId: string | null
   deliveryId: string | null
@@ -59,6 +60,7 @@ export type StockMovementMaxAggregateOutputType = {
   warehouseId: string | null
   orderId: string | null
   createdById: string | null
+  organizationId: string | null
   createdAt: Date | null
   lotId: string | null
   deliveryId: string | null
@@ -74,6 +76,7 @@ export type StockMovementCountAggregateOutputType = {
   warehouseId: number
   orderId: number
   createdById: number
+  organizationId: number
   createdAt: number
   lotId: number
   deliveryId: number
@@ -99,6 +102,7 @@ export type StockMovementMinAggregateInputType = {
   warehouseId?: true
   orderId?: true
   createdById?: true
+  organizationId?: true
   createdAt?: true
   lotId?: true
   deliveryId?: true
@@ -114,6 +118,7 @@ export type StockMovementMaxAggregateInputType = {
   warehouseId?: true
   orderId?: true
   createdById?: true
+  organizationId?: true
   createdAt?: true
   lotId?: true
   deliveryId?: true
@@ -129,6 +134,7 @@ export type StockMovementCountAggregateInputType = {
   warehouseId?: true
   orderId?: true
   createdById?: true
+  organizationId?: true
   createdAt?: true
   lotId?: true
   deliveryId?: true
@@ -231,6 +237,7 @@ export type StockMovementGroupByOutputType = {
   warehouseId: string | null
   orderId: string | null
   createdById: string | null
+  organizationId: string
   createdAt: Date
   lotId: string | null
   deliveryId: string | null
@@ -269,12 +276,14 @@ export type StockMovementWhereInput = {
   warehouseId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
   orderId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
   createdById?: Prisma.StringNullableFilter<"StockMovement"> | string | null
+  organizationId?: Prisma.StringFilter<"StockMovement"> | string
   createdAt?: Prisma.DateTimeFilter<"StockMovement"> | Date | string
   lotId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
   deliveryId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
   warehouse?: Prisma.XOR<Prisma.WarehouseNullableScalarRelationFilter, Prisma.WarehouseWhereInput> | null
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
+  organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   lot?: Prisma.XOR<Prisma.LotNullableScalarRelationFilter, Prisma.LotWhereInput> | null
   delivery?: Prisma.XOR<Prisma.DeliveryNullableScalarRelationFilter, Prisma.DeliveryWhereInput> | null
 }
@@ -289,12 +298,14 @@ export type StockMovementOrderByWithRelationInput = {
   warehouseId?: Prisma.SortOrderInput | Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   lotId?: Prisma.SortOrderInput | Prisma.SortOrder
   deliveryId?: Prisma.SortOrderInput | Prisma.SortOrder
   product?: Prisma.ProductOrderByWithRelationInput
   warehouse?: Prisma.WarehouseOrderByWithRelationInput
   order?: Prisma.OrderOrderByWithRelationInput
+  organization?: Prisma.OrganizationOrderByWithRelationInput
   lot?: Prisma.LotOrderByWithRelationInput
   delivery?: Prisma.DeliveryOrderByWithRelationInput
 }
@@ -312,12 +323,14 @@ export type StockMovementWhereUniqueInput = Prisma.AtLeast<{
   warehouseId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
   orderId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
   createdById?: Prisma.StringNullableFilter<"StockMovement"> | string | null
+  organizationId?: Prisma.StringFilter<"StockMovement"> | string
   createdAt?: Prisma.DateTimeFilter<"StockMovement"> | Date | string
   lotId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
   deliveryId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
   warehouse?: Prisma.XOR<Prisma.WarehouseNullableScalarRelationFilter, Prisma.WarehouseWhereInput> | null
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
+  organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   lot?: Prisma.XOR<Prisma.LotNullableScalarRelationFilter, Prisma.LotWhereInput> | null
   delivery?: Prisma.XOR<Prisma.DeliveryNullableScalarRelationFilter, Prisma.DeliveryWhereInput> | null
 }, "id">
@@ -332,6 +345,7 @@ export type StockMovementOrderByWithAggregationInput = {
   warehouseId?: Prisma.SortOrderInput | Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   lotId?: Prisma.SortOrderInput | Prisma.SortOrder
   deliveryId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -355,6 +369,7 @@ export type StockMovementScalarWhereWithAggregatesInput = {
   warehouseId?: Prisma.StringNullableWithAggregatesFilter<"StockMovement"> | string | null
   orderId?: Prisma.StringNullableWithAggregatesFilter<"StockMovement"> | string | null
   createdById?: Prisma.StringNullableWithAggregatesFilter<"StockMovement"> | string | null
+  organizationId?: Prisma.StringWithAggregatesFilter<"StockMovement"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"StockMovement"> | Date | string
   lotId?: Prisma.StringNullableWithAggregatesFilter<"StockMovement"> | string | null
   deliveryId?: Prisma.StringNullableWithAggregatesFilter<"StockMovement"> | string | null
@@ -371,6 +386,7 @@ export type StockMovementCreateInput = {
   product: Prisma.ProductCreateNestedOneWithoutMovementsInput
   warehouse?: Prisma.WarehouseCreateNestedOneWithoutStockMovementsInput
   order?: Prisma.OrderCreateNestedOneWithoutMovementsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutStockMovementsInput
   lot?: Prisma.LotCreateNestedOneWithoutMovementsInput
   delivery?: Prisma.DeliveryCreateNestedOneWithoutMovementsInput
 }
@@ -385,6 +401,7 @@ export type StockMovementUncheckedCreateInput = {
   warehouseId?: string | null
   orderId?: string | null
   createdById?: string | null
+  organizationId: string
   createdAt?: Date | string
   lotId?: string | null
   deliveryId?: string | null
@@ -401,6 +418,7 @@ export type StockMovementUpdateInput = {
   product?: Prisma.ProductUpdateOneRequiredWithoutMovementsNestedInput
   warehouse?: Prisma.WarehouseUpdateOneWithoutStockMovementsNestedInput
   order?: Prisma.OrderUpdateOneWithoutMovementsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutStockMovementsNestedInput
   lot?: Prisma.LotUpdateOneWithoutMovementsNestedInput
   delivery?: Prisma.DeliveryUpdateOneWithoutMovementsNestedInput
 }
@@ -415,6 +433,7 @@ export type StockMovementUncheckedUpdateInput = {
   warehouseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -430,6 +449,7 @@ export type StockMovementCreateManyInput = {
   warehouseId?: string | null
   orderId?: string | null
   createdById?: string | null
+  organizationId: string
   createdAt?: Date | string
   lotId?: string | null
   deliveryId?: string | null
@@ -455,6 +475,7 @@ export type StockMovementUncheckedUpdateManyInput = {
   warehouseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -480,6 +501,7 @@ export type StockMovementCountOrderByAggregateInput = {
   warehouseId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   lotId?: Prisma.SortOrder
   deliveryId?: Prisma.SortOrder
@@ -499,6 +521,7 @@ export type StockMovementMaxOrderByAggregateInput = {
   warehouseId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   lotId?: Prisma.SortOrder
   deliveryId?: Prisma.SortOrder
@@ -514,6 +537,7 @@ export type StockMovementMinOrderByAggregateInput = {
   warehouseId?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  organizationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   lotId?: Prisma.SortOrder
   deliveryId?: Prisma.SortOrder
@@ -521,6 +545,48 @@ export type StockMovementMinOrderByAggregateInput = {
 
 export type StockMovementSumOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
+}
+
+export type StockMovementCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.StockMovementCreateWithoutOrganizationInput, Prisma.StockMovementUncheckedCreateWithoutOrganizationInput> | Prisma.StockMovementCreateWithoutOrganizationInput[] | Prisma.StockMovementUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.StockMovementCreateOrConnectWithoutOrganizationInput | Prisma.StockMovementCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.StockMovementCreateManyOrganizationInputEnvelope
+  connect?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+}
+
+export type StockMovementUncheckedCreateNestedManyWithoutOrganizationInput = {
+  create?: Prisma.XOR<Prisma.StockMovementCreateWithoutOrganizationInput, Prisma.StockMovementUncheckedCreateWithoutOrganizationInput> | Prisma.StockMovementCreateWithoutOrganizationInput[] | Prisma.StockMovementUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.StockMovementCreateOrConnectWithoutOrganizationInput | Prisma.StockMovementCreateOrConnectWithoutOrganizationInput[]
+  createMany?: Prisma.StockMovementCreateManyOrganizationInputEnvelope
+  connect?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+}
+
+export type StockMovementUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.StockMovementCreateWithoutOrganizationInput, Prisma.StockMovementUncheckedCreateWithoutOrganizationInput> | Prisma.StockMovementCreateWithoutOrganizationInput[] | Prisma.StockMovementUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.StockMovementCreateOrConnectWithoutOrganizationInput | Prisma.StockMovementCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.StockMovementUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.StockMovementUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.StockMovementCreateManyOrganizationInputEnvelope
+  set?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  disconnect?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  delete?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  connect?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  update?: Prisma.StockMovementUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.StockMovementUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.StockMovementUpdateManyWithWhereWithoutOrganizationInput | Prisma.StockMovementUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
+}
+
+export type StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput = {
+  create?: Prisma.XOR<Prisma.StockMovementCreateWithoutOrganizationInput, Prisma.StockMovementUncheckedCreateWithoutOrganizationInput> | Prisma.StockMovementCreateWithoutOrganizationInput[] | Prisma.StockMovementUncheckedCreateWithoutOrganizationInput[]
+  connectOrCreate?: Prisma.StockMovementCreateOrConnectWithoutOrganizationInput | Prisma.StockMovementCreateOrConnectWithoutOrganizationInput[]
+  upsert?: Prisma.StockMovementUpsertWithWhereUniqueWithoutOrganizationInput | Prisma.StockMovementUpsertWithWhereUniqueWithoutOrganizationInput[]
+  createMany?: Prisma.StockMovementCreateManyOrganizationInputEnvelope
+  set?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  disconnect?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  delete?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  connect?: Prisma.StockMovementWhereUniqueInput | Prisma.StockMovementWhereUniqueInput[]
+  update?: Prisma.StockMovementUpdateWithWhereUniqueWithoutOrganizationInput | Prisma.StockMovementUpdateWithWhereUniqueWithoutOrganizationInput[]
+  updateMany?: Prisma.StockMovementUpdateManyWithWhereWithoutOrganizationInput | Prisma.StockMovementUpdateManyWithWhereWithoutOrganizationInput[]
+  deleteMany?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
 }
 
 export type StockMovementCreateNestedManyWithoutProductInput = {
@@ -737,6 +803,80 @@ export type StockMovementUncheckedUpdateManyWithoutDeliveryNestedInput = {
   deleteMany?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
 }
 
+export type StockMovementCreateWithoutOrganizationInput = {
+  id?: string
+  type: $Enums.StockMovementType
+  quantity: number
+  description?: string | null
+  reference?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  product: Prisma.ProductCreateNestedOneWithoutMovementsInput
+  warehouse?: Prisma.WarehouseCreateNestedOneWithoutStockMovementsInput
+  order?: Prisma.OrderCreateNestedOneWithoutMovementsInput
+  lot?: Prisma.LotCreateNestedOneWithoutMovementsInput
+  delivery?: Prisma.DeliveryCreateNestedOneWithoutMovementsInput
+}
+
+export type StockMovementUncheckedCreateWithoutOrganizationInput = {
+  id?: string
+  type: $Enums.StockMovementType
+  quantity: number
+  description?: string | null
+  reference?: string | null
+  productId: string
+  warehouseId?: string | null
+  orderId?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  lotId?: string | null
+  deliveryId?: string | null
+}
+
+export type StockMovementCreateOrConnectWithoutOrganizationInput = {
+  where: Prisma.StockMovementWhereUniqueInput
+  create: Prisma.XOR<Prisma.StockMovementCreateWithoutOrganizationInput, Prisma.StockMovementUncheckedCreateWithoutOrganizationInput>
+}
+
+export type StockMovementCreateManyOrganizationInputEnvelope = {
+  data: Prisma.StockMovementCreateManyOrganizationInput | Prisma.StockMovementCreateManyOrganizationInput[]
+}
+
+export type StockMovementUpsertWithWhereUniqueWithoutOrganizationInput = {
+  where: Prisma.StockMovementWhereUniqueInput
+  update: Prisma.XOR<Prisma.StockMovementUpdateWithoutOrganizationInput, Prisma.StockMovementUncheckedUpdateWithoutOrganizationInput>
+  create: Prisma.XOR<Prisma.StockMovementCreateWithoutOrganizationInput, Prisma.StockMovementUncheckedCreateWithoutOrganizationInput>
+}
+
+export type StockMovementUpdateWithWhereUniqueWithoutOrganizationInput = {
+  where: Prisma.StockMovementWhereUniqueInput
+  data: Prisma.XOR<Prisma.StockMovementUpdateWithoutOrganizationInput, Prisma.StockMovementUncheckedUpdateWithoutOrganizationInput>
+}
+
+export type StockMovementUpdateManyWithWhereWithoutOrganizationInput = {
+  where: Prisma.StockMovementScalarWhereInput
+  data: Prisma.XOR<Prisma.StockMovementUpdateManyMutationInput, Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationInput>
+}
+
+export type StockMovementScalarWhereInput = {
+  AND?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
+  OR?: Prisma.StockMovementScalarWhereInput[]
+  NOT?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
+  id?: Prisma.StringFilter<"StockMovement"> | string
+  type?: Prisma.EnumStockMovementTypeFilter<"StockMovement"> | $Enums.StockMovementType
+  quantity?: Prisma.IntFilter<"StockMovement"> | number
+  description?: Prisma.StringNullableFilter<"StockMovement"> | string | null
+  reference?: Prisma.StringNullableFilter<"StockMovement"> | string | null
+  productId?: Prisma.StringFilter<"StockMovement"> | string
+  warehouseId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
+  orderId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
+  createdById?: Prisma.StringNullableFilter<"StockMovement"> | string | null
+  organizationId?: Prisma.StringFilter<"StockMovement"> | string
+  createdAt?: Prisma.DateTimeFilter<"StockMovement"> | Date | string
+  lotId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
+  deliveryId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
+}
+
 export type StockMovementCreateWithoutProductInput = {
   id?: string
   type: $Enums.StockMovementType
@@ -747,6 +887,7 @@ export type StockMovementCreateWithoutProductInput = {
   createdAt?: Date | string
   warehouse?: Prisma.WarehouseCreateNestedOneWithoutStockMovementsInput
   order?: Prisma.OrderCreateNestedOneWithoutMovementsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutStockMovementsInput
   lot?: Prisma.LotCreateNestedOneWithoutMovementsInput
   delivery?: Prisma.DeliveryCreateNestedOneWithoutMovementsInput
 }
@@ -760,6 +901,7 @@ export type StockMovementUncheckedCreateWithoutProductInput = {
   warehouseId?: string | null
   orderId?: string | null
   createdById?: string | null
+  organizationId: string
   createdAt?: Date | string
   lotId?: string | null
   deliveryId?: string | null
@@ -790,24 +932,6 @@ export type StockMovementUpdateManyWithWhereWithoutProductInput = {
   data: Prisma.XOR<Prisma.StockMovementUpdateManyMutationInput, Prisma.StockMovementUncheckedUpdateManyWithoutProductInput>
 }
 
-export type StockMovementScalarWhereInput = {
-  AND?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
-  OR?: Prisma.StockMovementScalarWhereInput[]
-  NOT?: Prisma.StockMovementScalarWhereInput | Prisma.StockMovementScalarWhereInput[]
-  id?: Prisma.StringFilter<"StockMovement"> | string
-  type?: Prisma.EnumStockMovementTypeFilter<"StockMovement"> | $Enums.StockMovementType
-  quantity?: Prisma.IntFilter<"StockMovement"> | number
-  description?: Prisma.StringNullableFilter<"StockMovement"> | string | null
-  reference?: Prisma.StringNullableFilter<"StockMovement"> | string | null
-  productId?: Prisma.StringFilter<"StockMovement"> | string
-  warehouseId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
-  orderId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
-  createdById?: Prisma.StringNullableFilter<"StockMovement"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"StockMovement"> | Date | string
-  lotId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
-  deliveryId?: Prisma.StringNullableFilter<"StockMovement"> | string | null
-}
-
 export type StockMovementCreateWithoutLotInput = {
   id?: string
   type: $Enums.StockMovementType
@@ -819,6 +943,7 @@ export type StockMovementCreateWithoutLotInput = {
   product: Prisma.ProductCreateNestedOneWithoutMovementsInput
   warehouse?: Prisma.WarehouseCreateNestedOneWithoutStockMovementsInput
   order?: Prisma.OrderCreateNestedOneWithoutMovementsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutStockMovementsInput
   delivery?: Prisma.DeliveryCreateNestedOneWithoutMovementsInput
 }
 
@@ -832,6 +957,7 @@ export type StockMovementUncheckedCreateWithoutLotInput = {
   warehouseId?: string | null
   orderId?: string | null
   createdById?: string | null
+  organizationId: string
   createdAt?: Date | string
   deliveryId?: string | null
 }
@@ -871,6 +997,7 @@ export type StockMovementCreateWithoutWarehouseInput = {
   createdAt?: Date | string
   product: Prisma.ProductCreateNestedOneWithoutMovementsInput
   order?: Prisma.OrderCreateNestedOneWithoutMovementsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutStockMovementsInput
   lot?: Prisma.LotCreateNestedOneWithoutMovementsInput
   delivery?: Prisma.DeliveryCreateNestedOneWithoutMovementsInput
 }
@@ -884,6 +1011,7 @@ export type StockMovementUncheckedCreateWithoutWarehouseInput = {
   productId: string
   orderId?: string | null
   createdById?: string | null
+  organizationId: string
   createdAt?: Date | string
   lotId?: string | null
   deliveryId?: string | null
@@ -924,6 +1052,7 @@ export type StockMovementCreateWithoutOrderInput = {
   createdAt?: Date | string
   product: Prisma.ProductCreateNestedOneWithoutMovementsInput
   warehouse?: Prisma.WarehouseCreateNestedOneWithoutStockMovementsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutStockMovementsInput
   lot?: Prisma.LotCreateNestedOneWithoutMovementsInput
   delivery?: Prisma.DeliveryCreateNestedOneWithoutMovementsInput
 }
@@ -937,6 +1066,7 @@ export type StockMovementUncheckedCreateWithoutOrderInput = {
   productId: string
   warehouseId?: string | null
   createdById?: string | null
+  organizationId: string
   createdAt?: Date | string
   lotId?: string | null
   deliveryId?: string | null
@@ -978,6 +1108,7 @@ export type StockMovementCreateWithoutDeliveryInput = {
   product: Prisma.ProductCreateNestedOneWithoutMovementsInput
   warehouse?: Prisma.WarehouseCreateNestedOneWithoutStockMovementsInput
   order?: Prisma.OrderCreateNestedOneWithoutMovementsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutStockMovementsInput
   lot?: Prisma.LotCreateNestedOneWithoutMovementsInput
 }
 
@@ -991,6 +1122,7 @@ export type StockMovementUncheckedCreateWithoutDeliveryInput = {
   warehouseId?: string | null
   orderId?: string | null
   createdById?: string | null
+  organizationId: string
   createdAt?: Date | string
   lotId?: string | null
 }
@@ -1020,6 +1152,66 @@ export type StockMovementUpdateManyWithWhereWithoutDeliveryInput = {
   data: Prisma.XOR<Prisma.StockMovementUpdateManyMutationInput, Prisma.StockMovementUncheckedUpdateManyWithoutDeliveryInput>
 }
 
+export type StockMovementCreateManyOrganizationInput = {
+  id?: string
+  type: $Enums.StockMovementType
+  quantity: number
+  description?: string | null
+  reference?: string | null
+  productId: string
+  warehouseId?: string | null
+  orderId?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  lotId?: string | null
+  deliveryId?: string | null
+}
+
+export type StockMovementUpdateWithoutOrganizationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumStockMovementTypeFieldUpdateOperationsInput | $Enums.StockMovementType
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  product?: Prisma.ProductUpdateOneRequiredWithoutMovementsNestedInput
+  warehouse?: Prisma.WarehouseUpdateOneWithoutStockMovementsNestedInput
+  order?: Prisma.OrderUpdateOneWithoutMovementsNestedInput
+  lot?: Prisma.LotUpdateOneWithoutMovementsNestedInput
+  delivery?: Prisma.DeliveryUpdateOneWithoutMovementsNestedInput
+}
+
+export type StockMovementUncheckedUpdateWithoutOrganizationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumStockMovementTypeFieldUpdateOperationsInput | $Enums.StockMovementType
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  warehouseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type StockMovementUncheckedUpdateManyWithoutOrganizationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumStockMovementTypeFieldUpdateOperationsInput | $Enums.StockMovementType
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  warehouseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
 export type StockMovementCreateManyProductInput = {
   id?: string
   type: $Enums.StockMovementType
@@ -1029,6 +1221,7 @@ export type StockMovementCreateManyProductInput = {
   warehouseId?: string | null
   orderId?: string | null
   createdById?: string | null
+  organizationId: string
   createdAt?: Date | string
   lotId?: string | null
   deliveryId?: string | null
@@ -1044,6 +1237,7 @@ export type StockMovementUpdateWithoutProductInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   warehouse?: Prisma.WarehouseUpdateOneWithoutStockMovementsNestedInput
   order?: Prisma.OrderUpdateOneWithoutMovementsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutStockMovementsNestedInput
   lot?: Prisma.LotUpdateOneWithoutMovementsNestedInput
   delivery?: Prisma.DeliveryUpdateOneWithoutMovementsNestedInput
 }
@@ -1057,6 +1251,7 @@ export type StockMovementUncheckedUpdateWithoutProductInput = {
   warehouseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1071,6 +1266,7 @@ export type StockMovementUncheckedUpdateManyWithoutProductInput = {
   warehouseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1086,6 +1282,7 @@ export type StockMovementCreateManyLotInput = {
   warehouseId?: string | null
   orderId?: string | null
   createdById?: string | null
+  organizationId: string
   createdAt?: Date | string
   deliveryId?: string | null
 }
@@ -1101,6 +1298,7 @@ export type StockMovementUpdateWithoutLotInput = {
   product?: Prisma.ProductUpdateOneRequiredWithoutMovementsNestedInput
   warehouse?: Prisma.WarehouseUpdateOneWithoutStockMovementsNestedInput
   order?: Prisma.OrderUpdateOneWithoutMovementsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutStockMovementsNestedInput
   delivery?: Prisma.DeliveryUpdateOneWithoutMovementsNestedInput
 }
 
@@ -1114,6 +1312,7 @@ export type StockMovementUncheckedUpdateWithoutLotInput = {
   warehouseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deliveryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
@@ -1128,6 +1327,7 @@ export type StockMovementUncheckedUpdateManyWithoutLotInput = {
   warehouseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deliveryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
@@ -1141,6 +1341,7 @@ export type StockMovementCreateManyWarehouseInput = {
   productId: string
   orderId?: string | null
   createdById?: string | null
+  organizationId: string
   createdAt?: Date | string
   lotId?: string | null
   deliveryId?: string | null
@@ -1156,6 +1357,7 @@ export type StockMovementUpdateWithoutWarehouseInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   product?: Prisma.ProductUpdateOneRequiredWithoutMovementsNestedInput
   order?: Prisma.OrderUpdateOneWithoutMovementsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutStockMovementsNestedInput
   lot?: Prisma.LotUpdateOneWithoutMovementsNestedInput
   delivery?: Prisma.DeliveryUpdateOneWithoutMovementsNestedInput
 }
@@ -1169,6 +1371,7 @@ export type StockMovementUncheckedUpdateWithoutWarehouseInput = {
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1183,6 +1386,7 @@ export type StockMovementUncheckedUpdateManyWithoutWarehouseInput = {
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1197,6 +1401,7 @@ export type StockMovementCreateManyOrderInput = {
   productId: string
   warehouseId?: string | null
   createdById?: string | null
+  organizationId: string
   createdAt?: Date | string
   lotId?: string | null
   deliveryId?: string | null
@@ -1212,6 +1417,7 @@ export type StockMovementUpdateWithoutOrderInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   product?: Prisma.ProductUpdateOneRequiredWithoutMovementsNestedInput
   warehouse?: Prisma.WarehouseUpdateOneWithoutStockMovementsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutStockMovementsNestedInput
   lot?: Prisma.LotUpdateOneWithoutMovementsNestedInput
   delivery?: Prisma.DeliveryUpdateOneWithoutMovementsNestedInput
 }
@@ -1225,6 +1431,7 @@ export type StockMovementUncheckedUpdateWithoutOrderInput = {
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   warehouseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1239,6 +1446,7 @@ export type StockMovementUncheckedUpdateManyWithoutOrderInput = {
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   warehouseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deliveryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1254,6 +1462,7 @@ export type StockMovementCreateManyDeliveryInput = {
   warehouseId?: string | null
   orderId?: string | null
   createdById?: string | null
+  organizationId: string
   createdAt?: Date | string
   lotId?: string | null
 }
@@ -1269,6 +1478,7 @@ export type StockMovementUpdateWithoutDeliveryInput = {
   product?: Prisma.ProductUpdateOneRequiredWithoutMovementsNestedInput
   warehouse?: Prisma.WarehouseUpdateOneWithoutStockMovementsNestedInput
   order?: Prisma.OrderUpdateOneWithoutMovementsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutStockMovementsNestedInput
   lot?: Prisma.LotUpdateOneWithoutMovementsNestedInput
 }
 
@@ -1282,6 +1492,7 @@ export type StockMovementUncheckedUpdateWithoutDeliveryInput = {
   warehouseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
@@ -1296,6 +1507,7 @@ export type StockMovementUncheckedUpdateManyWithoutDeliveryInput = {
   warehouseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lotId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
@@ -1312,12 +1524,14 @@ export type StockMovementSelect<ExtArgs extends runtime.Types.Extensions.Interna
   warehouseId?: boolean
   orderId?: boolean
   createdById?: boolean
+  organizationId?: boolean
   createdAt?: boolean
   lotId?: boolean
   deliveryId?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   warehouse?: boolean | Prisma.StockMovement$warehouseArgs<ExtArgs>
   order?: boolean | Prisma.StockMovement$orderArgs<ExtArgs>
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   lot?: boolean | Prisma.StockMovement$lotArgs<ExtArgs>
   delivery?: boolean | Prisma.StockMovement$deliveryArgs<ExtArgs>
 }, ExtArgs["result"]["stockMovement"]>
@@ -1332,12 +1546,14 @@ export type StockMovementSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   warehouseId?: boolean
   orderId?: boolean
   createdById?: boolean
+  organizationId?: boolean
   createdAt?: boolean
   lotId?: boolean
   deliveryId?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   warehouse?: boolean | Prisma.StockMovement$warehouseArgs<ExtArgs>
   order?: boolean | Prisma.StockMovement$orderArgs<ExtArgs>
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   lot?: boolean | Prisma.StockMovement$lotArgs<ExtArgs>
   delivery?: boolean | Prisma.StockMovement$deliveryArgs<ExtArgs>
 }, ExtArgs["result"]["stockMovement"]>
@@ -1352,12 +1568,14 @@ export type StockMovementSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   warehouseId?: boolean
   orderId?: boolean
   createdById?: boolean
+  organizationId?: boolean
   createdAt?: boolean
   lotId?: boolean
   deliveryId?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   warehouse?: boolean | Prisma.StockMovement$warehouseArgs<ExtArgs>
   order?: boolean | Prisma.StockMovement$orderArgs<ExtArgs>
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   lot?: boolean | Prisma.StockMovement$lotArgs<ExtArgs>
   delivery?: boolean | Prisma.StockMovement$deliveryArgs<ExtArgs>
 }, ExtArgs["result"]["stockMovement"]>
@@ -1372,16 +1590,18 @@ export type StockMovementSelectScalar = {
   warehouseId?: boolean
   orderId?: boolean
   createdById?: boolean
+  organizationId?: boolean
   createdAt?: boolean
   lotId?: boolean
   deliveryId?: boolean
 }
 
-export type StockMovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "quantity" | "description" | "reference" | "productId" | "warehouseId" | "orderId" | "createdById" | "createdAt" | "lotId" | "deliveryId", ExtArgs["result"]["stockMovement"]>
+export type StockMovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "quantity" | "description" | "reference" | "productId" | "warehouseId" | "orderId" | "createdById" | "organizationId" | "createdAt" | "lotId" | "deliveryId", ExtArgs["result"]["stockMovement"]>
 export type StockMovementInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   warehouse?: boolean | Prisma.StockMovement$warehouseArgs<ExtArgs>
   order?: boolean | Prisma.StockMovement$orderArgs<ExtArgs>
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   lot?: boolean | Prisma.StockMovement$lotArgs<ExtArgs>
   delivery?: boolean | Prisma.StockMovement$deliveryArgs<ExtArgs>
 }
@@ -1389,6 +1609,7 @@ export type StockMovementIncludeCreateManyAndReturn<ExtArgs extends runtime.Type
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   warehouse?: boolean | Prisma.StockMovement$warehouseArgs<ExtArgs>
   order?: boolean | Prisma.StockMovement$orderArgs<ExtArgs>
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   lot?: boolean | Prisma.StockMovement$lotArgs<ExtArgs>
   delivery?: boolean | Prisma.StockMovement$deliveryArgs<ExtArgs>
 }
@@ -1396,6 +1617,7 @@ export type StockMovementIncludeUpdateManyAndReturn<ExtArgs extends runtime.Type
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   warehouse?: boolean | Prisma.StockMovement$warehouseArgs<ExtArgs>
   order?: boolean | Prisma.StockMovement$orderArgs<ExtArgs>
+  organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   lot?: boolean | Prisma.StockMovement$lotArgs<ExtArgs>
   delivery?: boolean | Prisma.StockMovement$deliveryArgs<ExtArgs>
 }
@@ -1406,6 +1628,7 @@ export type $StockMovementPayload<ExtArgs extends runtime.Types.Extensions.Inter
     product: Prisma.$ProductPayload<ExtArgs>
     warehouse: Prisma.$WarehousePayload<ExtArgs> | null
     order: Prisma.$OrderPayload<ExtArgs> | null
+    organization: Prisma.$OrganizationPayload<ExtArgs>
     lot: Prisma.$LotPayload<ExtArgs> | null
     delivery: Prisma.$DeliveryPayload<ExtArgs> | null
   }
@@ -1419,6 +1642,7 @@ export type $StockMovementPayload<ExtArgs extends runtime.Types.Extensions.Inter
     warehouseId: string | null
     orderId: string | null
     createdById: string | null
+    organizationId: string
     createdAt: Date
     lotId: string | null
     deliveryId: string | null
@@ -1819,6 +2043,7 @@ export interface Prisma__StockMovementClient<T, Null = never, ExtArgs extends ru
   product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   warehouse<T extends Prisma.StockMovement$warehouseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockMovement$warehouseArgs<ExtArgs>>): Prisma.Prisma__WarehouseClient<runtime.Types.Result.GetResult<Prisma.$WarehousePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   order<T extends Prisma.StockMovement$orderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockMovement$orderArgs<ExtArgs>>): Prisma.Prisma__OrderClient<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   lot<T extends Prisma.StockMovement$lotArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockMovement$lotArgs<ExtArgs>>): Prisma.Prisma__LotClient<runtime.Types.Result.GetResult<Prisma.$LotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   delivery<T extends Prisma.StockMovement$deliveryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockMovement$deliveryArgs<ExtArgs>>): Prisma.Prisma__DeliveryClient<runtime.Types.Result.GetResult<Prisma.$DeliveryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1859,6 +2084,7 @@ export interface StockMovementFieldRefs {
   readonly warehouseId: Prisma.FieldRef<"StockMovement", 'String'>
   readonly orderId: Prisma.FieldRef<"StockMovement", 'String'>
   readonly createdById: Prisma.FieldRef<"StockMovement", 'String'>
+  readonly organizationId: Prisma.FieldRef<"StockMovement", 'String'>
   readonly createdAt: Prisma.FieldRef<"StockMovement", 'DateTime'>
   readonly lotId: Prisma.FieldRef<"StockMovement", 'String'>
   readonly deliveryId: Prisma.FieldRef<"StockMovement", 'String'>
