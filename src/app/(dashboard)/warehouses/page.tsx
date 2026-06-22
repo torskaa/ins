@@ -14,6 +14,8 @@ import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { UploadFileMain } from "@/components/upload/upload-file-main"
+import { useUploadImport } from "@/hooks/use-upload-import"
 import { toast } from "sonner"
 import { downloadCSV, downloadPDF } from "@/lib/export"
 import { SkeletonTable } from "@/components/ui/skeleton"
@@ -58,6 +60,9 @@ export default function WarehousesPage() {
   const [showCreate, setShowCreate] = useState(false)
   const handleNew = useCallback(() => router.push("/warehouses/new"), [router])
   useHotkey("c", handleNew)
+  const [uploadOpen, setUploadOpen] = useState(false)
+  const { files, addFiles, removeFile } = useUploadImport("warehouses")
+  useHotkey("u", () => setUploadOpen(true))
   const [name, setName] = useState("")
   const [location, setLocation] = useState("")
 
@@ -151,9 +156,14 @@ export default function WarehousesPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Warehouses</h1>
           <p className="text-sm text-foreground mt-1">Manage your storage locations</p>
         </div>
-        <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
-          Add Warehouse <ShortcutBadge shortcut="⌘C" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => setUploadOpen(true)}>
+            Upload file <kbd className="text-[9px] px-1 py-0.5 rounded bg-muted/20 text-primary-foreground font-mono ml-0.5">⌘U</kbd>
+          </Button>
+          <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
+            Add Warehouse <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd>
+          </Button>
+        </div>
       </div>
       <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">
         <div className="flex items-center gap-3">
@@ -274,6 +284,17 @@ export default function WarehousesPage() {
             <Button variant="secondary" onClick={() => setShowCreate(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
             <Button onClick={handleCreate}>Create</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+        <DialogContent hideCloseButton className="sm:max-w-lg p-0 gap-0 overflow-hidden">
+          <UploadFileMain
+            files={files}
+            onFilesChange={addFiles}
+            onFileRemove={removeFile}
+            onClose={() => setUploadOpen(false)}
+            moduleLabel="warehouses files"
+          />
         </DialogContent>
       </Dialog>
     </div>

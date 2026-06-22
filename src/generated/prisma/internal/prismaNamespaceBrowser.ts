@@ -1052,7 +1052,13 @@ export const AiExecutionLogScalarFieldEnum = {
   durationMs: 'durationMs',
   ipAddress: 'ipAddress',
   userAgent: 'userAgent',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  action: 'action',
+  agentId: 'agentId',
+  provider: 'provider',
+  model: 'model',
+  inputTokens: 'inputTokens',
+  outputTokens: 'outputTokens'
 } as const
 
 export type AiExecutionLogScalarFieldEnum = (typeof AiExecutionLogScalarFieldEnum)[keyof typeof AiExecutionLogScalarFieldEnum]
@@ -1061,11 +1067,13 @@ export type AiExecutionLogScalarFieldEnum = (typeof AiExecutionLogScalarFieldEnu
 export const AgentRunScalarFieldEnum = {
   id: 'id',
   agentId: 'agentId',
+  agentName: 'agentName',
   organizationId: 'organizationId',
   userId: 'userId',
   task: 'task',
   status: 'status',
   summary: 'summary',
+  error: 'error',
   startedAt: 'startedAt',
   completedAt: 'completedAt',
   createdAt: 'createdAt',

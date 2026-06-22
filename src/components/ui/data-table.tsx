@@ -152,7 +152,7 @@ export function DataTable<T extends { id: string }>({
   animate="visible"
   variants={rowVariants}
   className={cn(
-  "border-b transition-colors hover:bg-muted/50 last:border-0",
+  "border-b transition-colors hover:bg-muted/10 last:border-0",
   onRowClick && "cursor-pointer"
   )}
   onClick={() => onRowClick?.(item)}
@@ -180,12 +180,12 @@ export function DataTable<T extends { id: string }>({
  Showing {(page - 1) * pageSize + 1}&ndash;{Math.min(page * pageSize, total)} of {total}
  </p>
  <div className="flex items-center gap-1">
- <button
- onClick={() => setPage(Math.max(1, page - 1))}
- disabled={page <= 1}
- className="px-2 py-1 text-xs rounded border border-border hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
- >
- Prev
+  <button
+  onClick={() => setPage(Math.max(1, page - 1))}
+  disabled={page <= 1}
+  className="px-2 py-1 text-xs rounded border border-border hover:bg-muted/10 disabled:opacity-30 disabled:cursor-not-allowed"
+  >
+  Prev
  </button>
  {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
  const p = totalPages <= 7 ? i + 1 : Math.max(1, Math.min(page - 3, totalPages - 6)) + i
@@ -195,19 +195,19 @@ export function DataTable<T extends { id: string }>({
  onClick={() => setPage(p)}
  className={cn(
  "px-2 py-1 text-xs rounded border",
- p === page ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted"
+  p === page ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted/10"
  )}
  >
  {p}
  </button>
  )
  })}
- <button
- onClick={() => setPage(Math.min(totalPages, page + 1))}
- disabled={page >= totalPages}
- className="px-2 py-1 text-xs rounded border border-border hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
- >
- Next
+  <button
+  onClick={() => setPage(Math.min(totalPages, page + 1))}
+  disabled={page >= totalPages}
+  className="px-2 py-1 text-xs rounded border border-border hover:bg-muted/10 disabled:opacity-30 disabled:cursor-not-allowed"
+  >
+  Next
  </button>
  </div>
  </div>

@@ -1,5 +1,6 @@
 import type { AgentRepository } from "./agent.repository"
 import { InMemoryAgentRepository } from "./mock-agent.repository"
+import { PrismaAgentRepository } from "./prisma-agent.repository"
 
 export type { AgentRepository } from "./agent.repository"
 export { InMemoryAgentRepository } from "./mock-agent.repository"
@@ -9,7 +10,9 @@ let repository: AgentRepository | null = null
 
 function getRepo(): AgentRepository {
   if (!repository) {
-    repository = new InMemoryAgentRepository()
+    repository = process.env.NODE_ENV === "production"
+      ? new PrismaAgentRepository()
+      : new InMemoryAgentRepository()
   }
   return repository
 }

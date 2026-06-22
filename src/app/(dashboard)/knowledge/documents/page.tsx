@@ -174,8 +174,8 @@ export default function DocumentsPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Document Center</h1>
           <p className="text-sm text-foreground mt-1">Uploaded files — PO, invoices, delivery notes, and more</p>
         </div>
-        <Button size="sm" className="h-9 gap-1.5" onClick={handleUpload}>
-          Upload Document <ShortcutBadge shortcut="⌘U" />
+        <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={handleUpload}>
+          Upload Document <kbd className="text-[9px] px-1 py-0.5 rounded bg-muted/20 text-primary-foreground font-mono ml-0.5">⌘U</kbd>
         </Button>
       </div>
       <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">

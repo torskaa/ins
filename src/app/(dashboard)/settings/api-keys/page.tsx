@@ -158,7 +158,7 @@ export default function ApiKeysPage() {
           <p className="text-sm text-foreground mt-1">Manage API keys for programmatic access</p>
         </div>
         <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
-          Create API Key <ShortcutBadge shortcut="⌘C" />
+          Create API Key <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd>
         </Button>
       </div>
       <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">

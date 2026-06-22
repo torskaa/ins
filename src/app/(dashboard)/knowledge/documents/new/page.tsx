@@ -164,7 +164,7 @@ export default function NewDocumentPage() {
         </div>
         <div className="flex items-center justify-end gap-3 pt-4 mt-4 border-t border-border">
           <Button type="button" variant="ghost" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
-          <Button type="submit" disabled={!file} loading={loading} className="gap-1.5">Upload Document <ShortcutBadge shortcut="⌘U" /></Button>
+          <Button type="submit" variant="outline" disabled={!file} loading={loading} className="gap-1.5">Upload Document <kbd className="text-[9px] px-1 py-0.5 rounded bg-muted/20 text-primary-foreground font-mono ml-0.5">⌘U</kbd></Button>
         </div>
       </form>
     </div>

@@ -8,6 +8,9 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { UploadFileMain } from "@/components/upload/upload-file-main"
+import { useUploadImport } from "@/hooks/use-upload-import"
 import { toast } from "sonner"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { useRouter } from "next/navigation"
@@ -78,6 +81,9 @@ export default function BOMPage() {
  const router = useRouter()
  const handleNew = useCallback(() => router.push("/bom/new"), [router])
  useHotkey("c", handleNew)
+ const [uploadOpen, setUploadOpen] = useState(false)
+ const { files, addFiles, removeFile } = useUploadImport("bom")
+ useHotkey("u", () => setUploadOpen(true))
 
  useEffect(() => {
  fetch("/api/bom")
@@ -185,8 +191,11 @@ export default function BOMPage() {
  <span className="text-warning ml-1"> · {draft.length} draft</span>
  </p>
  </div>
- <Button onClick={handleNew} className="gap-1.5">New BOM <ShortcutBadge shortcut="⌘C" />
- </Button>
+ <div className="flex items-center gap-2">
+  <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => setUploadOpen(true)}>  Upload file <kbd className="text-[9px] px-1 py-0.5 rounded bg-muted/20 text-primary-foreground font-mono ml-0.5">⌘U</kbd></Button>
+   <Button size="sm" onClick={handleNew} className="h-9 gap-1.5">New BOM <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd>
+  </Button>
+ </div>
  </div>
 
   {error ? (
@@ -304,14 +313,25 @@ export default function BOMPage() {
  </div>
  )}
 
- <ConfirmDialog
- open={!!deleteId}
- onOpenChange={(open) => { if (!open) setDeleteId(null) }}
- title="Delete BOM Entry"
- description="Are you sure you want to delete this material from the BOM? This action cannot be undone."
- onConfirm={handleDelete}
- loading={deleting}
- />
- </div>
- )
+  <ConfirmDialog
+  open={!!deleteId}
+  onOpenChange={(open) => { if (!open) setDeleteId(null) }}
+  title="Delete BOM Entry"
+  description="Are you sure you want to delete this material from the BOM? This action cannot be undone."
+  onConfirm={handleDelete}
+  loading={deleting}
+  />
+  <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+    <DialogContent hideCloseButton className="sm:max-w-lg p-0 gap-0 overflow-hidden">
+      <UploadFileMain
+        files={files}
+        onFilesChange={addFiles}
+        onFileRemove={removeFile}
+        onClose={() => setUploadOpen(false)}
+        moduleLabel="bom files"
+      />
+    </DialogContent>
+  </Dialog>
+  </div>
+  )
 }

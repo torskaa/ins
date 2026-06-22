@@ -56,13 +56,36 @@ async function getRolePermissions(roleName: string, orgId: string): Promise<Reco
   return null
 }
 
+let _devOrg: { org: { id: string; name: string; slug: string }; role: Role; userId: string } | null = null
+
+async function ensureDevOrg() {
+  if (_devOrg) return _devOrg
+  const existing = await prisma.organization.findFirst({ where: { slug: "ins-demo" } })
+    ?? await prisma.organization.findFirst({ where: { slug: "dev" } })
+    ?? await prisma.organization.findFirst({ orderBy: { createdAt: "asc" } })
+  if (existing) {
+    _devOrg = { org: { id: existing.id, name: existing.name, slug: existing.slug }, role: "admin", userId: "dev-user" }
+    return _devOrg
+  }
+  const created = await prisma.organization.create({
+    data: { id: "dev-org", name: "Development", slug: "dev" },
+  })
+  _devOrg = { org: { id: created.id, name: created.name, slug: created.slug }, role: "admin", userId: "dev-user" }
+  return _devOrg
+}
+
 export async function requireAuth() {
+  if (process.env.NODE_ENV === "development") {
+    const dev = await ensureDevOrg()
+    return { user: { id: dev.userId, name: "Dev User", email: "dev@example.com" } }
+  }
   const session = await auth()
   if (!session?.user?.id) throw new UnauthorizedError()
   return session as { user: { id: string; name?: string; email?: string } }
 }
 
 export async function requireOrg() {
+  if (process.env.NODE_ENV === "development") return await ensureDevOrg()
   const session = await requireAuth()
   const activeOrgId = (session as any).user?.activeOrganizationId as string | undefined
 

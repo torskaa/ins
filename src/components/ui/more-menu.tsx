@@ -32,27 +32,27 @@ export function MoreMenu({
  return (
  <DropdownMenu>
  <DropdownMenuTrigger asChild>
-   <Button variant="outline" size="icon" className="size-9">
+    <Button variant="outline" size="icon" className="size-8">
   <MoreVertical className="w-4 h-4" />
   </Button>
  </DropdownMenuTrigger>
- <DropdownMenuContent align="end" className="w-48">
- {actions.map((action, i) => {
- if (action === "separator") {
- return <DropdownMenuSeparator key={i} />
- }
- return (
- <DropdownMenuItem
- key={action.label}
- onClick={() => {
- if (action.href) router.push(action.href)
- action.onClick?.()
- }}
- className="text-sm gap-2"
- >
- {action.icon}
- {action.label}
- </DropdownMenuItem>
+  <DropdownMenuContent align="end" className="w-56">
+  {actions.map((action, i) => {
+  if (action === "separator") {
+  return <DropdownMenuSeparator key={i} />
+  }
+  return (
+  <DropdownMenuItem
+  key={action.label}
+  onClick={() => {
+  if (action.href) router.push(action.href)
+  action.onClick?.()
+  }}
+  className="text-xs gap-2.5"
+  >
+  <span className="text-muted-foreground">{action.icon}</span>
+  <span>{action.label}</span>
+  </DropdownMenuItem>
  )
  })}
  </DropdownMenuContent>

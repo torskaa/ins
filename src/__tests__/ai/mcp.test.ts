@@ -198,7 +198,7 @@ describe("McpToolAdapter", () => {
         },
         required: ["id"],
       },
-      requiredPermissions: ["inventory:read"] as const,
+      requiredPermissions: ["inventory:read"] as any,
       execute: async () => ({ success: true, data: null }),
     }
 

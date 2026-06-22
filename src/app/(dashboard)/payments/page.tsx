@@ -14,6 +14,8 @@ import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { UploadFileMain } from "@/components/upload/upload-file-main"
+import { useUploadImport } from "@/hooks/use-upload-import"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { formatCurrency, formatDateTime } from "@/lib/utils"
@@ -67,6 +69,9 @@ export default function PaymentsPage() {
   const [showCreate, setShowCreate] = useState(false)
   const handleCreate = useCallback(() => setShowCreate(true), [])
   useHotkey("c", handleCreate)
+  const [uploadOpen, setUploadOpen] = useState(false)
+  const { files, addFiles, removeFile } = useUploadImport("payments")
+  useHotkey("u", () => setUploadOpen(true))
 
   useEffect(() => {
     fetch("/api/payments").then(r => r.json()).then((json) => { if (json?.success && Array.isArray(json.data)) setPayments(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") }).catch((err) => { setError(err.message); setLoading(false) }).finally(() => setLoading(false))
@@ -138,9 +143,14 @@ export default function PaymentsPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Payments</h1>
           <p className="text-sm text-foreground mt-1">Track all incoming and outgoing payments</p>
         </div>
-        <Button size="sm" className="h-9 gap-1.5" onClick={handleCreate}>
-          Record Payment <ShortcutBadge shortcut="⌘C" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => setUploadOpen(true)}>
+            Upload file <kbd className="text-[9px] px-1 py-0.5 rounded bg-muted/20 text-primary-foreground font-mono ml-0.5">⌘U</kbd>
+          </Button>
+          <Button size="sm" className="h-9 gap-1.5" onClick={handleCreate}>
+            Record Payment <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd>
+          </Button>
+        </div>
       </div>
       <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">
         <div className="flex items-center gap-3">
@@ -249,6 +259,17 @@ export default function PaymentsPage() {
             <div className="space-y-1"><Label>Reference</Label><Input placeholder="Transaction ID" /></div>
           </div>
           <DialogFooter><Button variant="secondary" onClick={() => setShowCreate(false)}><XCircle className="w-4 h-4" /> Cancel</Button><Button>Record</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+        <DialogContent hideCloseButton className="sm:max-w-lg p-0 gap-0 overflow-hidden">
+          <UploadFileMain
+            files={files}
+            onFilesChange={addFiles}
+            onFileRemove={removeFile}
+            onClose={() => setUploadOpen(false)}
+            moduleLabel="payments files"
+          />
         </DialogContent>
       </Dialog>
     </div>

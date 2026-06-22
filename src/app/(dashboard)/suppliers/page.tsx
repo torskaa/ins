@@ -16,6 +16,9 @@ import { useRouter } from "next/navigation"
 import { downloadCSV, downloadPDF } from "@/lib/export"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { UploadFileMain } from "@/components/upload/upload-file-main"
+import { useUploadImport } from "@/hooks/use-upload-import"
 import {
   Pagination,
   PaginationContent,
@@ -57,6 +60,9 @@ export default function SuppliersPage() {
   const router = useRouter()
   const handleNew = useCallback(() => router.push("/suppliers/new"), [router])
   useHotkey("c", handleNew)
+  const [uploadOpen, setUploadOpen] = useState(false)
+  const { files, addFiles, removeFile } = useUploadImport("suppliers")
+  useHotkey("u", () => setUploadOpen(true))
 
   useEffect(() => {
     fetch("/api/suppliers").then(r => r.json()).then((json) => { if (json?.success && Array.isArray(json.data)) setSuppliers(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") }).catch((err) => { setError(err.message); setLoading(false) }).finally(() => setLoading(false))
@@ -138,7 +144,12 @@ export default function SuppliersPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Suppliers</h1>
           <p className="text-sm text-foreground mt-1">Manage your product suppliers and vendors</p>
         </div>
-        <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>Add Supplier <ShortcutBadge shortcut="⌘C" /></Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => setUploadOpen(true)}>
+            Upload file <kbd className="text-[9px] px-1 py-0.5 rounded bg-muted/20 text-primary-foreground font-mono ml-0.5">⌘U</kbd>
+          </Button>
+          <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>Add Supplier <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd></Button>
+        </div>
       </div>
       <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">
         <div className="flex items-center gap-3">
@@ -240,6 +251,17 @@ export default function SuppliersPage() {
           )}
         </div>
       )}
+      <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+        <DialogContent hideCloseButton className="sm:max-w-lg p-0 gap-0 overflow-hidden">
+          <UploadFileMain
+            files={files}
+            onFilesChange={addFiles}
+            onFileRemove={removeFile}
+            onClose={() => setUploadOpen(false)}
+            moduleLabel="suppliers files"
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

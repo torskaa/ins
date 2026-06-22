@@ -154,7 +154,7 @@ export const EmptyState = forwardRef<
  <Button key={i} variant={action.variant || "default"} size="sm" onClick={action.onClick}>
  {action.icon && <span className="mr-1.5">{action.icon}</span>}
  {action.label}
- {action.shortcut && <ShortcutBadge shortcut={action.shortcut} className="ml-1.5" />}
+ {action.shortcut && <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-1.5">{action.shortcut}</kbd>}
  </Button>
  ))}
  </motion.div>

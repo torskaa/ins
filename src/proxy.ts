@@ -14,6 +14,10 @@ export function proxy(req: NextRequest) {
     return NextResponse.next()
   }
 
+  if (process.env.NODE_ENV === "development") {
+    return NextResponse.next()
+  }
+
   const hasSession = req.cookies.has("next-auth.session-token")
     || req.cookies.has("__Secure-next-auth.session-token")
     || req.cookies.has("authjs.session-token")

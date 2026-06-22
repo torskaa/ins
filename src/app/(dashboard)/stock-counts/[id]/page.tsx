@@ -263,7 +263,7 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
             <div className="flex flex-col items-end gap-2 shrink-0">
               <div className="flex items-center gap-2">
                 {stockCount.status !== "completed" && (
-                  <Button size="sm" onClick={() => setShowEdit(true)} className="gap-1.5 h-9">Edit <ShortcutBadge shortcut="⌘E" /></Button>
+                  <Button size="sm" onClick={() => setShowEdit(true)} className="gap-1.5 h-9">Edit <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘E</kbd></Button>
                 )}
                 <MoreMenu actions={[
                   { label: "Delete", icon: <Trash2 className="w-4 h-4" />, onClick: () => setShowDelete(true) },
@@ -506,7 +506,7 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
           </div>
           <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
             <Button variant="outline" onClick={() => setShowEdit(false)}>Cancel</Button>
-            <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
+            <Button onClick={handleSave}>Save Changes <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘↵</kbd></Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

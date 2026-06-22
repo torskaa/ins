@@ -25,6 +25,10 @@ export abstract class BaseAgent implements AgentDefinition {
 
   protected abstract buildSummary(steps: AgentStep[], task: string): string
 
+  getPlanner(): Planner | null {
+    return this.planner
+  }
+
   setPlanner(planner: Planner): void {
     this.planner = planner
   }

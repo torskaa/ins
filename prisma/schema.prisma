@@ -1237,6 +1237,12 @@ model AiExecutionLog {
   ipAddress      String?
   userAgent      String?
   createdAt      DateTime @default(now())
+  action         String   @default("tool_execution")
+  agentId        String?
+  provider       String?
+  model          String?
+  inputTokens    Int?
+  outputTokens   Int?
 
   organization Organization @relation(fields: [organizationId], references: [id])
 
@@ -1248,11 +1254,13 @@ model AiExecutionLog {
 model AgentRun {
   id             String    @id @default(cuid())
   agentId        String
+  agentName      String
   organizationId String
   userId         String
   task           String
   status         String    @default("idle")
   summary        String?
+  error          String?
   startedAt      DateTime
   completedAt    DateTime?
   createdAt      DateTime  @default(now())
@@ -1313,4 +1321,73 @@ model TrainingProgram {
   updatedAt      DateTime @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Folder {
+  id            String   @id @default(cuid())
+  name          String
+  parentId      String?
+  workspaceId   String
+  createdBy     String
+  organizationId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  parent        Folder?  @relation("FolderTree", fields: [parentId], references: [id])
+  children      Folder[] @relation("FolderTree")
+  files         File[]
+  organization  Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([name, parentId, organizationId])
+  @@index([organizationId])
+  @@index([parentId])
+}
+
+model File {
+  id            String   @id @default(cuid())
+  name          String
+  folderId      String
+  content       String   @default("")
+  type          String   @default("text")
+  createdBy     String
+  organizationId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  folder        Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  organization  Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([name, folderId])
+  @@index([organizationId])
+  @@index([folderId])
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String
+  color     String   @default("#6366f1")
+  organizationId String
+  createdAt DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  entities   EntityTag[]
+
+  @@unique([name, organizationId])
+  @@index([organizationId])
+}
+
+model EntityTag {
+  id         String   @id @default(cuid())
+  tagId      String
+  entityId   String
+  entityType String
+  createdAt  DateTime @default(now())
+
+  tag Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([tagId, entityId, entityType])
+  @@index([entityId, entityType])
+  @@index([tagId])
 }

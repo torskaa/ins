@@ -28,10 +28,14 @@ export type AggregateAiExecutionLog = {
 
 export type AiExecutionLogAvgAggregateOutputType = {
   durationMs: number | null
+  inputTokens: number | null
+  outputTokens: number | null
 }
 
 export type AiExecutionLogSumAggregateOutputType = {
   durationMs: number | null
+  inputTokens: number | null
+  outputTokens: number | null
 }
 
 export type AiExecutionLogMinAggregateOutputType = {
@@ -45,6 +49,12 @@ export type AiExecutionLogMinAggregateOutputType = {
   ipAddress: string | null
   userAgent: string | null
   createdAt: Date | null
+  action: string | null
+  agentId: string | null
+  provider: string | null
+  model: string | null
+  inputTokens: number | null
+  outputTokens: number | null
 }
 
 export type AiExecutionLogMaxAggregateOutputType = {
@@ -58,6 +68,12 @@ export type AiExecutionLogMaxAggregateOutputType = {
   ipAddress: string | null
   userAgent: string | null
   createdAt: Date | null
+  action: string | null
+  agentId: string | null
+  provider: string | null
+  model: string | null
+  inputTokens: number | null
+  outputTokens: number | null
 }
 
 export type AiExecutionLogCountAggregateOutputType = {
@@ -73,16 +89,26 @@ export type AiExecutionLogCountAggregateOutputType = {
   ipAddress: number
   userAgent: number
   createdAt: number
+  action: number
+  agentId: number
+  provider: number
+  model: number
+  inputTokens: number
+  outputTokens: number
   _all: number
 }
 
 
 export type AiExecutionLogAvgAggregateInputType = {
   durationMs?: true
+  inputTokens?: true
+  outputTokens?: true
 }
 
 export type AiExecutionLogSumAggregateInputType = {
   durationMs?: true
+  inputTokens?: true
+  outputTokens?: true
 }
 
 export type AiExecutionLogMinAggregateInputType = {
@@ -96,6 +122,12 @@ export type AiExecutionLogMinAggregateInputType = {
   ipAddress?: true
   userAgent?: true
   createdAt?: true
+  action?: true
+  agentId?: true
+  provider?: true
+  model?: true
+  inputTokens?: true
+  outputTokens?: true
 }
 
 export type AiExecutionLogMaxAggregateInputType = {
@@ -109,6 +141,12 @@ export type AiExecutionLogMaxAggregateInputType = {
   ipAddress?: true
   userAgent?: true
   createdAt?: true
+  action?: true
+  agentId?: true
+  provider?: true
+  model?: true
+  inputTokens?: true
+  outputTokens?: true
 }
 
 export type AiExecutionLogCountAggregateInputType = {
@@ -124,6 +162,12 @@ export type AiExecutionLogCountAggregateInputType = {
   ipAddress?: true
   userAgent?: true
   createdAt?: true
+  action?: true
+  agentId?: true
+  provider?: true
+  model?: true
+  inputTokens?: true
+  outputTokens?: true
   _all?: true
 }
 
@@ -226,6 +270,12 @@ export type AiExecutionLogGroupByOutputType = {
   ipAddress: string | null
   userAgent: string | null
   createdAt: Date
+  action: string
+  agentId: string | null
+  provider: string | null
+  model: string | null
+  inputTokens: number | null
+  outputTokens: number | null
   _count: AiExecutionLogCountAggregateOutputType | null
   _avg: AiExecutionLogAvgAggregateOutputType | null
   _sum: AiExecutionLogSumAggregateOutputType | null
@@ -264,6 +314,12 @@ export type AiExecutionLogWhereInput = {
   ipAddress?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
   userAgent?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AiExecutionLog"> | Date | string
+  action?: Prisma.StringFilter<"AiExecutionLog"> | string
+  agentId?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
+  provider?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
+  model?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
+  inputTokens?: Prisma.IntNullableFilter<"AiExecutionLog"> | number | null
+  outputTokens?: Prisma.IntNullableFilter<"AiExecutionLog"> | number | null
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
 }
 
@@ -280,6 +336,12 @@ export type AiExecutionLogOrderByWithRelationInput = {
   ipAddress?: Prisma.SortOrderInput | Prisma.SortOrder
   userAgent?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  action?: Prisma.SortOrder
+  agentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  provider?: Prisma.SortOrderInput | Prisma.SortOrder
+  model?: Prisma.SortOrderInput | Prisma.SortOrder
+  inputTokens?: Prisma.SortOrderInput | Prisma.SortOrder
+  outputTokens?: Prisma.SortOrderInput | Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
 }
 
@@ -299,6 +361,12 @@ export type AiExecutionLogWhereUniqueInput = Prisma.AtLeast<{
   ipAddress?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
   userAgent?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AiExecutionLog"> | Date | string
+  action?: Prisma.StringFilter<"AiExecutionLog"> | string
+  agentId?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
+  provider?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
+  model?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
+  inputTokens?: Prisma.IntNullableFilter<"AiExecutionLog"> | number | null
+  outputTokens?: Prisma.IntNullableFilter<"AiExecutionLog"> | number | null
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
 }, "id">
 
@@ -315,6 +383,12 @@ export type AiExecutionLogOrderByWithAggregationInput = {
   ipAddress?: Prisma.SortOrderInput | Prisma.SortOrder
   userAgent?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  action?: Prisma.SortOrder
+  agentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  provider?: Prisma.SortOrderInput | Prisma.SortOrder
+  model?: Prisma.SortOrderInput | Prisma.SortOrder
+  inputTokens?: Prisma.SortOrderInput | Prisma.SortOrder
+  outputTokens?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.AiExecutionLogCountOrderByAggregateInput
   _avg?: Prisma.AiExecutionLogAvgOrderByAggregateInput
   _max?: Prisma.AiExecutionLogMaxOrderByAggregateInput
@@ -338,6 +412,12 @@ export type AiExecutionLogScalarWhereWithAggregatesInput = {
   ipAddress?: Prisma.StringNullableWithAggregatesFilter<"AiExecutionLog"> | string | null
   userAgent?: Prisma.StringNullableWithAggregatesFilter<"AiExecutionLog"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AiExecutionLog"> | Date | string
+  action?: Prisma.StringWithAggregatesFilter<"AiExecutionLog"> | string
+  agentId?: Prisma.StringNullableWithAggregatesFilter<"AiExecutionLog"> | string | null
+  provider?: Prisma.StringNullableWithAggregatesFilter<"AiExecutionLog"> | string | null
+  model?: Prisma.StringNullableWithAggregatesFilter<"AiExecutionLog"> | string | null
+  inputTokens?: Prisma.IntNullableWithAggregatesFilter<"AiExecutionLog"> | number | null
+  outputTokens?: Prisma.IntNullableWithAggregatesFilter<"AiExecutionLog"> | number | null
 }
 
 export type AiExecutionLogCreateInput = {
@@ -352,6 +432,12 @@ export type AiExecutionLogCreateInput = {
   ipAddress?: string | null
   userAgent?: string | null
   createdAt?: Date | string
+  action?: string
+  agentId?: string | null
+  provider?: string | null
+  model?: string | null
+  inputTokens?: number | null
+  outputTokens?: number | null
   organization: Prisma.OrganizationCreateNestedOneWithoutAiExecutionLogsInput
 }
 
@@ -368,6 +454,12 @@ export type AiExecutionLogUncheckedCreateInput = {
   ipAddress?: string | null
   userAgent?: string | null
   createdAt?: Date | string
+  action?: string
+  agentId?: string | null
+  provider?: string | null
+  model?: string | null
+  inputTokens?: number | null
+  outputTokens?: number | null
 }
 
 export type AiExecutionLogUpdateInput = {
@@ -382,6 +474,12 @@ export type AiExecutionLogUpdateInput = {
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  action?: Prisma.StringFieldUpdateOperationsInput | string
+  agentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  outputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutAiExecutionLogsNestedInput
 }
 
@@ -398,6 +496,12 @@ export type AiExecutionLogUncheckedUpdateInput = {
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  action?: Prisma.StringFieldUpdateOperationsInput | string
+  agentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  outputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type AiExecutionLogCreateManyInput = {
@@ -413,6 +517,12 @@ export type AiExecutionLogCreateManyInput = {
   ipAddress?: string | null
   userAgent?: string | null
   createdAt?: Date | string
+  action?: string
+  agentId?: string | null
+  provider?: string | null
+  model?: string | null
+  inputTokens?: number | null
+  outputTokens?: number | null
 }
 
 export type AiExecutionLogUpdateManyMutationInput = {
@@ -427,6 +537,12 @@ export type AiExecutionLogUpdateManyMutationInput = {
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  action?: Prisma.StringFieldUpdateOperationsInput | string
+  agentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  outputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type AiExecutionLogUncheckedUpdateManyInput = {
@@ -442,6 +558,12 @@ export type AiExecutionLogUncheckedUpdateManyInput = {
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  action?: Prisma.StringFieldUpdateOperationsInput | string
+  agentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  outputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type AiExecutionLogListRelationFilter = {
@@ -467,10 +589,18 @@ export type AiExecutionLogCountOrderByAggregateInput = {
   ipAddress?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  action?: Prisma.SortOrder
+  agentId?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
+  model?: Prisma.SortOrder
+  inputTokens?: Prisma.SortOrder
+  outputTokens?: Prisma.SortOrder
 }
 
 export type AiExecutionLogAvgOrderByAggregateInput = {
   durationMs?: Prisma.SortOrder
+  inputTokens?: Prisma.SortOrder
+  outputTokens?: Prisma.SortOrder
 }
 
 export type AiExecutionLogMaxOrderByAggregateInput = {
@@ -484,6 +614,12 @@ export type AiExecutionLogMaxOrderByAggregateInput = {
   ipAddress?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  action?: Prisma.SortOrder
+  agentId?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
+  model?: Prisma.SortOrder
+  inputTokens?: Prisma.SortOrder
+  outputTokens?: Prisma.SortOrder
 }
 
 export type AiExecutionLogMinOrderByAggregateInput = {
@@ -497,10 +633,18 @@ export type AiExecutionLogMinOrderByAggregateInput = {
   ipAddress?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  action?: Prisma.SortOrder
+  agentId?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
+  model?: Prisma.SortOrder
+  inputTokens?: Prisma.SortOrder
+  outputTokens?: Prisma.SortOrder
 }
 
 export type AiExecutionLogSumOrderByAggregateInput = {
   durationMs?: Prisma.SortOrder
+  inputTokens?: Prisma.SortOrder
+  outputTokens?: Prisma.SortOrder
 }
 
 export type AiExecutionLogCreateNestedManyWithoutOrganizationInput = {
@@ -557,6 +701,12 @@ export type AiExecutionLogCreateWithoutOrganizationInput = {
   ipAddress?: string | null
   userAgent?: string | null
   createdAt?: Date | string
+  action?: string
+  agentId?: string | null
+  provider?: string | null
+  model?: string | null
+  inputTokens?: number | null
+  outputTokens?: number | null
 }
 
 export type AiExecutionLogUncheckedCreateWithoutOrganizationInput = {
@@ -571,6 +721,12 @@ export type AiExecutionLogUncheckedCreateWithoutOrganizationInput = {
   ipAddress?: string | null
   userAgent?: string | null
   createdAt?: Date | string
+  action?: string
+  agentId?: string | null
+  provider?: string | null
+  model?: string | null
+  inputTokens?: number | null
+  outputTokens?: number | null
 }
 
 export type AiExecutionLogCreateOrConnectWithoutOrganizationInput = {
@@ -614,6 +770,12 @@ export type AiExecutionLogScalarWhereInput = {
   ipAddress?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
   userAgent?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AiExecutionLog"> | Date | string
+  action?: Prisma.StringFilter<"AiExecutionLog"> | string
+  agentId?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
+  provider?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
+  model?: Prisma.StringNullableFilter<"AiExecutionLog"> | string | null
+  inputTokens?: Prisma.IntNullableFilter<"AiExecutionLog"> | number | null
+  outputTokens?: Prisma.IntNullableFilter<"AiExecutionLog"> | number | null
 }
 
 export type AiExecutionLogCreateManyOrganizationInput = {
@@ -628,6 +790,12 @@ export type AiExecutionLogCreateManyOrganizationInput = {
   ipAddress?: string | null
   userAgent?: string | null
   createdAt?: Date | string
+  action?: string
+  agentId?: string | null
+  provider?: string | null
+  model?: string | null
+  inputTokens?: number | null
+  outputTokens?: number | null
 }
 
 export type AiExecutionLogUpdateWithoutOrganizationInput = {
@@ -642,6 +810,12 @@ export type AiExecutionLogUpdateWithoutOrganizationInput = {
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  action?: Prisma.StringFieldUpdateOperationsInput | string
+  agentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  outputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type AiExecutionLogUncheckedUpdateWithoutOrganizationInput = {
@@ -656,6 +830,12 @@ export type AiExecutionLogUncheckedUpdateWithoutOrganizationInput = {
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  action?: Prisma.StringFieldUpdateOperationsInput | string
+  agentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  outputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type AiExecutionLogUncheckedUpdateManyWithoutOrganizationInput = {
@@ -670,6 +850,12 @@ export type AiExecutionLogUncheckedUpdateManyWithoutOrganizationInput = {
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  action?: Prisma.StringFieldUpdateOperationsInput | string
+  agentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  outputTokens?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 
@@ -687,6 +873,12 @@ export type AiExecutionLogSelect<ExtArgs extends runtime.Types.Extensions.Intern
   ipAddress?: boolean
   userAgent?: boolean
   createdAt?: boolean
+  action?: boolean
+  agentId?: boolean
+  provider?: boolean
+  model?: boolean
+  inputTokens?: boolean
+  outputTokens?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aiExecutionLog"]>
 
@@ -703,6 +895,12 @@ export type AiExecutionLogSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   ipAddress?: boolean
   userAgent?: boolean
   createdAt?: boolean
+  action?: boolean
+  agentId?: boolean
+  provider?: boolean
+  model?: boolean
+  inputTokens?: boolean
+  outputTokens?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aiExecutionLog"]>
 
@@ -719,6 +917,12 @@ export type AiExecutionLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   ipAddress?: boolean
   userAgent?: boolean
   createdAt?: boolean
+  action?: boolean
+  agentId?: boolean
+  provider?: boolean
+  model?: boolean
+  inputTokens?: boolean
+  outputTokens?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["aiExecutionLog"]>
 
@@ -735,9 +939,15 @@ export type AiExecutionLogSelectScalar = {
   ipAddress?: boolean
   userAgent?: boolean
   createdAt?: boolean
+  action?: boolean
+  agentId?: boolean
+  provider?: boolean
+  model?: boolean
+  inputTokens?: boolean
+  outputTokens?: boolean
 }
 
-export type AiExecutionLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "organizationId" | "toolName" | "input" | "output" | "status" | "errorMessage" | "durationMs" | "ipAddress" | "userAgent" | "createdAt", ExtArgs["result"]["aiExecutionLog"]>
+export type AiExecutionLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "organizationId" | "toolName" | "input" | "output" | "status" | "errorMessage" | "durationMs" | "ipAddress" | "userAgent" | "createdAt" | "action" | "agentId" | "provider" | "model" | "inputTokens" | "outputTokens", ExtArgs["result"]["aiExecutionLog"]>
 export type AiExecutionLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }
@@ -766,6 +976,12 @@ export type $AiExecutionLogPayload<ExtArgs extends runtime.Types.Extensions.Inte
     ipAddress: string | null
     userAgent: string | null
     createdAt: Date
+    action: string
+    agentId: string | null
+    provider: string | null
+    model: string | null
+    inputTokens: number | null
+    outputTokens: number | null
   }, ExtArgs["result"]["aiExecutionLog"]>
   composites: {}
 }
@@ -1202,6 +1418,12 @@ export interface AiExecutionLogFieldRefs {
   readonly ipAddress: Prisma.FieldRef<"AiExecutionLog", 'String'>
   readonly userAgent: Prisma.FieldRef<"AiExecutionLog", 'String'>
   readonly createdAt: Prisma.FieldRef<"AiExecutionLog", 'DateTime'>
+  readonly action: Prisma.FieldRef<"AiExecutionLog", 'String'>
+  readonly agentId: Prisma.FieldRef<"AiExecutionLog", 'String'>
+  readonly provider: Prisma.FieldRef<"AiExecutionLog", 'String'>
+  readonly model: Prisma.FieldRef<"AiExecutionLog", 'String'>
+  readonly inputTokens: Prisma.FieldRef<"AiExecutionLog", 'Int'>
+  readonly outputTokens: Prisma.FieldRef<"AiExecutionLog", 'Int'>
 }
     
 

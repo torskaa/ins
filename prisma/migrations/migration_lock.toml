@@ -1,4 +1,4 @@
-{
-  "version": "5.2",
-  "kind": "sql"
-}
+# Prisma Migrate lock file
+provider = "sqlite"
+version = "5.2"
+kind = "sql"

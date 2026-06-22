@@ -332,7 +332,7 @@ export default function MaterialDetailPage({ params }: { params: Promise<{ id: s
             </div>
             <div className="flex flex-col items-end gap-2 shrink-0">
               <div className="flex items-center gap-2">
-                <Button size="sm" onClick={() => setShowAdjust(true)} className="h-9 gap-1.5">Adjust Stock <ShortcutBadge shortcut="⌘C" /></Button>
+                <Button size="sm" onClick={() => setShowAdjust(true)} className="h-9 gap-1.5">Adjust Stock <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd></Button>
                 <MoreMenu actions={[
                   { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: () => setShowEdit(true) },
                   "separator",
@@ -860,7 +860,7 @@ export default function MaterialDetailPage({ params }: { params: Promise<{ id: s
           </div>
           <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
             <Button variant="outline" onClick={() => setShowEdit(false)}>Cancel</Button>
-            <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
+            <Button onClick={handleSave}>Save Changes <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘↵</kbd></Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

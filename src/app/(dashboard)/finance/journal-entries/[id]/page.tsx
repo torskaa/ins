@@ -366,7 +366,7 @@ export default function JournalEntryDetailPage({ params }: { params: Promise<{ i
           </div>
           <DialogFooter className="shrink-0 px-6 py-4 border-t border-border/60">
             <Button variant="secondary" onClick={() => setShowEdit(false)}>Cancel</Button>
-            <Button onClick={handleSave}>Save Changes <ShortcutBadge shortcut="⌘↵" /></Button>
+            <Button onClick={handleSave}>Save Changes <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘↵</kbd></Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -45,7 +45,7 @@ export default function WorkspacesPage() {
  <div className="page-header flex items-center justify-between">
  <div><h1>Workspaces</h1><p>Manage your brands and organizations</p></div>
  <Link href="/workspaces/new">
- <Button className="gap-1.5">New Workspace <ShortcutBadge shortcut="⌘C" /></Button>
+   <Button className="gap-1.5">New Workspace <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd></Button>
  </Link>
  </div>
 

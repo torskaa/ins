@@ -433,7 +433,7 @@ export default function MigrationPage() {
  loading={importing}
  className="gap-1.5"
  >
- Import {previewData.length}+ Records <ShortcutBadge shortcut="⌘U" />
+ Import {previewData.length}+ Records <kbd className="text-[9px] px-1 py-0.5 rounded bg-muted/20 text-primary-foreground font-mono ml-0.5">⌘U</kbd>
  </Button>
  </div>
  </div>

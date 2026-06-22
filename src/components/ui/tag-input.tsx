@@ -137,7 +137,7 @@ export function TagInput({ value, onChange, placeholder, className, tagType }: T
  <div className={cn("relative", className)}>
  <div
  className={cn(
- "flex flex-wrap items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/50 transition-all duration-150 min-h-[38px]"
+ "flex flex-wrap items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm focus-within:ring-1 focus-within:ring-primary/30 focus-within:border-primary/50 transition-all duration-150 min-h-[38px]"
  )}
  >
  {tags.map((tag) => (

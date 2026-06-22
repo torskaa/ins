@@ -286,7 +286,7 @@ export default function NewSupplierPage() {
               <CardContent className="p-4 space-y-3">
                 <p className="text-xs text-muted-foreground">Upload contracts, quotations, or business registration documents.</p>
                 <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.png,.doc,.docx,.xls,.xlsx" onChange={handleFileUpload} className="hidden" />
-                <Button type="button" variant="outline" size="sm" onClick={handleUpload} className="gap-1.5 h-8 text-xs w-full"><Upload className="w-3.5 h-3.5" /> Upload Document <ShortcutBadge shortcut="⌘U" /></Button>
+                <Button type="button" variant="outline" size="sm" onClick={handleUpload} className="gap-1.5 h-8 text-xs w-full">Upload Document <kbd className="text-[9px] px-1 py-0.5 rounded bg-muted/20 text-primary-foreground font-mono ml-0.5">⌘U</kbd></Button>
                 {documents.length > 0 && (
                   <div className="space-y-1">
                     {documents.map((doc) => (

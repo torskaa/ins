@@ -19,6 +19,9 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { downloadCSV, downloadPDF } from "@/lib/export"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { UploadFileMain } from "@/components/upload/upload-file-main"
+import { useUploadImport } from "@/hooks/use-upload-import"
 import {
   Pagination,
   PaginationContent,
@@ -67,6 +70,9 @@ function OrdersContent() {
  const type = searchParams.get("type") || "sales"
  const handleNew = useCallback(() => router.push(`/orders/new?type=${type}`), [router, type])
  useHotkey("c", handleNew)
+ const [uploadOpen, setUploadOpen] = useState(false)
+ const { files, addFiles, removeFile } = useUploadImport("orders")
+ useHotkey("u", () => setUploadOpen(true))
 
  useEffect(() => {
  fetch(`/api/orders?type=${type}`)
@@ -150,9 +156,14 @@ function OrdersContent() {
           <h1 className="text-2xl font-semibold tracking-tight">Orders</h1>
           <p className="text-sm text-foreground mt-1">Manage sales and purchase orders</p>
         </div>
-        <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
-          New Order <ShortcutBadge shortcut="⌘C" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => setUploadOpen(true)}>
+            Upload file <kbd className="text-[9px] px-1 py-0.5 rounded bg-muted/20 text-primary-foreground font-mono ml-0.5">⌘U</kbd>
+          </Button>
+          <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
+            New Order <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd>
+          </Button>
+        </div>
       </div>
 
       <div className="mb-6">
@@ -267,6 +278,17 @@ function OrdersContent() {
           )}
         </div>
       )}
+      <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+        <DialogContent hideCloseButton className="sm:max-w-lg p-0 gap-0 overflow-hidden">
+          <UploadFileMain
+            files={files}
+            onFilesChange={addFiles}
+            onFileRemove={removeFile}
+            onClose={() => setUploadOpen(false)}
+            moduleLabel="orders files"
+          />
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

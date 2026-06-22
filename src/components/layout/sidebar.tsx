@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { useTheme } from "@/components/theme-provider"
 import WorkspaceSwitcher from "@/components/workspace/workspace-switcher"
 import { LanguageSwitcher } from "@/components/layout/language-switcher"
-import { LayoutDashboard, Package, ShoppingCart, Users, FileText, Receipt, BarChart3, Settings, ChevronLeft, Truck, Tags, Warehouse, FileSignature, GitBranch, Layers3, Layers, TrendingUp, BookOpen, GraduationCap, FolderOpen, ChevronDown, Moon, Sun, ClipboardList, Factory, Wrench, Activity, FolderKanban, Percent, Shield, Building2, Link2 } from "lucide-react"
+import { LayoutDashboard, Package, ShoppingCart, Users, FileText, Receipt, BarChart3, Settings, ChevronLeft, Truck, Tags, Warehouse, FileSignature, GitBranch, Layers3, Layers, TrendingUp, BookOpen, GraduationCap, FolderOpen, ChevronDown, Moon, Sun, ClipboardList, Factory, Wrench, Activity, FolderKanban, Percent, Shield, Building2, Link2, Bot, Cpu, History } from "lucide-react"
 
 type SubMenuItem = { label: string; href: string; icon?: any }
 type MenuItem = {
@@ -82,13 +82,23 @@ const menuGroups: { label: string; items: MenuItem[] }[] = [
  { label: "Projects", href: "/projects", icon: FolderKanban },
  ],
  },
- {
- label: "Automation",
- items: [
- { label: "Workflows", href: "/workflows", icon: GitBranch },
- { label: "Integration", href: "/settings/integration", icon: Link2 },
- ],
- },
+  {
+    label: "AI",
+    items: [
+      { label: "AI Copilot", icon: Bot,
+        submenu: [
+          { label: "Agent Runs", href: "/ai/runs", icon: History },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Automation",
+    items: [
+      { label: "Workflows", href: "/workflows", icon: GitBranch },
+      { label: "Integration", href: "/settings/integration", icon: Link2 },
+    ],
+  },
  {
  label: "Finance",
  items: [

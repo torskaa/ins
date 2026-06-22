@@ -17,6 +17,9 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { UploadFileMain } from "@/components/upload/upload-file-main"
+import { useUploadImport } from "@/hooks/use-upload-import"
 import {
   Pagination,
   PaginationContent,
@@ -61,6 +64,9 @@ export default function DeliveriesPage() {
   const router = useRouter()
  const handleNew = useCallback(() => router.push("/deliveries/new"), [router])
  useHotkey("c", handleNew)
+ const [uploadOpen, setUploadOpen] = useState(false)
+ const { files, addFiles, removeFile } = useUploadImport("deliveries")
+ useHotkey("u", () => setUploadOpen(true))
 
  useEffect(() => {
  fetch("/api/deliveries")
@@ -150,8 +156,11 @@ export default function DeliveriesPage() {
  <h1 className="text-2xl font-semibold tracking-tight">Deliveries</h1>
   <p className="text-sm text-foreground mt-1">Track and manage deliveries to distributors</p>
  </div>
- <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>New Delivery <ShortcutBadge shortcut="⌘C" />
- </Button>
+ <div className="flex items-center gap-2">
+  <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => setUploadOpen(true)}>  Upload file <kbd className="text-[9px] px-1 py-0.5 rounded bg-muted/20 text-primary-foreground font-mono ml-0.5">⌘U</kbd></Button>
+   <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>New Delivery <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd>
+  </Button>
+ </div>
  </div>
 
   <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">
@@ -245,6 +254,17 @@ export default function DeliveriesPage() {
   )}
   </div>
   )}
+  <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+    <DialogContent hideCloseButton className="sm:max-w-lg p-0 gap-0 overflow-hidden">
+      <UploadFileMain
+        files={files}
+        onFilesChange={addFiles}
+        onFileRemove={removeFile}
+        onClose={() => setUploadOpen(false)}
+        moduleLabel="deliveries files"
+      />
+    </DialogContent>
+  </Dialog>
   </div>
   )
 }

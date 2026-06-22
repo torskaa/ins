@@ -101,7 +101,7 @@ function SyncToolModal({ open, onOpenChange }: ModalProps) {
  <div className="px-6 pb-6 pt-3 border-t border-border/40 flex items-center justify-between">
  <span className="text-xs text-muted-foreground">{source || "—"} → {dest || "—"}</span>
  <Button onClick={handleSync} disabled={!source || !dest || syncing} size="sm">
- {syncing ? "Syncing..." : <>Sync Now <ShortcutBadge shortcut="⌘↵" /></>}
+ {syncing ? "Syncing..." : <>Sync Now <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘↵</kbd></>}
  </Button>
  </div>
  </DialogContent>
@@ -174,7 +174,7 @@ function ExportPDFModal({ open, onOpenChange }: ModalProps) {
  <div className="px-6 pb-6 pt-3 border-t border-border/40 flex items-center justify-between">
  <span className="text-xs text-muted-foreground capitalize">{orientation} · {printAll ? "all" : "visible"}</span>
  <Button onClick={handleExport} size="sm">
- Export PDF <ShortcutBadge shortcut="⌘↵" />
+ Export PDF <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘↵</kbd>
  </Button>
  </div>
  </DialogContent>
@@ -244,7 +244,7 @@ function ExportCSVModal({ open, onOpenChange }: ModalProps) {
  <div className="px-6 pb-6 pt-3 border-t border-border/40 flex items-center justify-between">
  <span className="text-xs text-muted-foreground">{selected.length} of {CSV_COLUMNS.length} columns</span>
  <Button onClick={handleExport} disabled={selected.length === 0} size="sm">
- Download CSV <ShortcutBadge shortcut="⌘↵" />
+ Download CSV <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘↵</kbd>
  </Button>
  </div>
  </DialogContent>
@@ -309,7 +309,7 @@ function ShareModal({ open, onOpenChange }: ModalProps) {
  <div className="px-6 pb-6 pt-3 border-t border-border/40 flex items-center justify-between">
  <span className="text-xs text-muted-foreground">{permission === "view" ? "View only" : permission === "edit" ? "Can edit" : "Full access"}</span>
  <Button onClick={handleCopy} size="sm">
- {copied ? <>Copied</> : <>Copy Link <ShortcutBadge shortcut="⌘↵" /></>}
+ {copied ? <>Copied</> : <>Copy Link <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘↵</kbd></>}
  </Button>
  </div>
  </DialogContent>
@@ -372,7 +372,7 @@ function LayoutSettingsModal({ open, onOpenChange }: ModalProps) {
  <div className="px-6 pb-6 pt-3 border-t border-border/40 flex items-center justify-between">
  <span className="text-xs text-muted-foreground">{compact ? "Compact" : "Default"} layout</span>
  <Button onClick={handleApply} size="sm">
- Apply <ShortcutBadge shortcut="⌘↵" />
+ Apply <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘↵</kbd>
  </Button>
  </div>
  </DialogContent>
@@ -442,7 +442,7 @@ function WidgetPreferencesModal({ open, onOpenChange }: ModalProps) {
  <div className="px-6 pb-6 pt-3 border-t border-border/40 flex items-center justify-between">
  <span className="text-xs text-muted-foreground">{count} of {nonCoreWidgets.length} widgets visible</span>
  <Button onClick={() => onOpenChange(false)} size="sm">
- Done <ShortcutBadge shortcut="⌘↵" />
+ Done <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘↵</kbd>
  </Button>
  </div>
  </DialogContent>

@@ -125,7 +125,7 @@ export default function TaxRatesPage() {
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="sm" onClick={() => router.push("/tax-rates/reports")} className="gap-1.5">Tax Reports</Button>
           <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
-            New Tax Rate <ShortcutBadge shortcut="⌘C" />
+            New Tax Rate <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd>
           </Button>
         </div>
       </div>

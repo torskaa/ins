@@ -17,6 +17,9 @@ import { useRouter } from "next/navigation"
 import { downloadCSV, downloadPDF } from "@/lib/export"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { UploadFileMain } from "@/components/upload/upload-file-main"
+import { useUploadImport } from "@/hooks/use-upload-import"
 import {
   Pagination,
   PaginationContent,
@@ -57,14 +60,17 @@ export default function InventoryPage() {
  const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
- const [search, setSearch] = useState("")
+  const [search, setSearch] = useState("")
   const [view, setView] = useState<"cards" | "rows">("rows")
   const [props, setProps] = useState<string[]>(DEFAULT_PROPS)
   const [filters, setFilters] = useState<Record<string, string | null>>({})
   const [page, setPage] = useState(1)
+  const [uploadOpen, setUploadOpen] = useState(false)
+  const { files, addFiles, removeFile } = useUploadImport("inventory")
   const router = useRouter()
   const handleNew = useCallback(() => router.push("/inventory/new"), [router])
- useHotkey("c", handleNew)
+  useHotkey("c", handleNew)
+  useHotkey("u", () => setUploadOpen(true))
 
  useEffect(() => {
  fetch("/api/products")
@@ -175,9 +181,14 @@ export default function InventoryPage() {
        <h1 className="text-2xl font-semibold tracking-tight">Inventory</h1>
        <p className="text-sm text-foreground mt-1">Manage your products and stock levels</p>
      </div>
-     <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
-       Add Product <ShortcutBadge shortcut="⌘C" />
-     </Button>
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => setUploadOpen(true)}>
+          Upload file <kbd className="text-[9px] px-1 py-0.5 rounded bg-muted/20 text-primary-foreground font-mono ml-0.5">⌘U</kbd>
+        </Button>
+        <Button size="sm" className="h-9 gap-1.5" onClick={handleNew}>
+          Add Product <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd>
+        </Button>
+      </div>
    </div>
     <div className="flex items-center justify-between flex-wrap gap-3 [&_.text-muted-foreground]:text-foreground">
     <div className="flex items-center gap-3">
@@ -195,11 +206,11 @@ export default function InventoryPage() {
       {filtered.length > 0 && (
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground" />
-          <Input placeholder="Search products..." className="pl-10 h-10 w-56 rounded-md" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Input placeholder="Search products..." className="pl-10 h-9 w-56 rounded-md" value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
       )}
       <MoreMenu actions={[
-        { label: "Import", icon: ActionIcons.AddNew },
+        { label: "Upload Files", icon: ActionIcons.AddNew, onClick: () => setUploadOpen(true) },
         "separator",
         { label: "Export CSV", icon: ActionIcons.ExportCSV, onClick: () => downloadCSV(["Name", "SKU", "Unit Price", "Cost Price", "Stock", "Status"], products.map(p => [p.name, p.sku, p.unitPrice, p.costPrice, p.stock, p.status]), "inventory.csv") },
         { label: "Export PDF", icon: ActionIcons.ExportPDF, onClick: () => downloadPDF("Inventory", []) },
@@ -207,6 +218,18 @@ export default function InventoryPage() {
         { label: "Low Stock Report", href: "/reports", icon: ActionIcons.ViewAll },
         { label: "Refresh", icon: ActionIcons.Refresh },
       ]} />
+
+      <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+        <DialogContent hideCloseButton className="sm:max-w-lg p-0 gap-0 overflow-hidden">
+          <UploadFileMain
+            files={files}
+            onFilesChange={addFiles}
+            onFileRemove={removeFile}
+            onClose={() => setUploadOpen(false)}
+            moduleLabel="inventory files"
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   </div>
 

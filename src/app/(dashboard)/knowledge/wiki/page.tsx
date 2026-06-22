@@ -54,7 +54,7 @@ export default function WikiPage() {
  <h1>Knowledge Base</h1>
  <p>Wiki articles, guides, and documentation</p>
  </div>
- <Button className="gap-1.5" onClick={handleNew}>New Article <ShortcutBadge shortcut="⌘C" />
+  <Button className="gap-1.5" onClick={handleNew}>New Article <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd>
  </Button>
  </div>
 

@@ -51,7 +51,7 @@ export default function TrainingPage() {
  <h1>Training Hub</h1>
  <p>Exercises, video tutorials, and learning paths</p>
  </div>
- <Button className="gap-1.5" onClick={handleNew}>New Program <ShortcutBadge shortcut="⌘C" />
+  <Button className="gap-1.5" onClick={handleNew}>New Program <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd>
  </Button>
  </div>
 

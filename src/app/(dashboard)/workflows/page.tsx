@@ -67,7 +67,7 @@ export default function WorkflowsPage() {
  <div className="animate-fade-in">
  <div className="page-header flex items-center justify-between">
  <div><h1>Workflow Engine</h1><p>Configure status transitions for orders, invoices, and more</p></div>
- <Button onClick={handleNew} className="gap-1.5">New Workflow <ShortcutBadge shortcut="⌘C" /></Button>
+   <Button onClick={handleNew} className="gap-1.5">New Workflow <kbd className="text-[9px] px-1 py-0.5 rounded bg-primary-foreground/20 text-primary-foreground/70 font-mono ml-0.5">⌘C</kbd></Button>
  </div>
 
  {showNew && (
