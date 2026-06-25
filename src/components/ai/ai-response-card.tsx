@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -35,6 +34,7 @@ interface AiResponseCardProps {
   summary: string
   metrics?: Metric[]
   toolCalls?: Array<{ toolName: string; output?: string }>
+  tag?: string | null
   timestamp?: Date
 }
 
@@ -96,6 +96,7 @@ export function AiResponseCard({
   summary,
   metrics,
   toolCalls,
+  tag,
   timestamp,
 }: AiResponseCardProps) {
   const [showDetails, setShowDetails] = useState(false)
@@ -113,20 +114,22 @@ export function AiResponseCard({
   }
 
   return (
-    <Card className="overflow-hidden border-border/50 shadow-sm rounded-lg">
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/30 bg-muted/20">
-        <div className="flex items-center gap-2.5">
-          <span className="text-foreground/70">{icon}</span>
-          <span className="text-sm font-medium">{name}</span>
-        </div>
-        <Badge variant="outline" className={cn("text-xs font-medium px-2 py-0.5 gap-1", st.className)}>
+    <div className="bg-card/60 backdrop-blur-sm rounded-xl p-4 space-y-3">
+      <div className="flex items-center gap-2.5">
+        <span className="text-muted-foreground">{icon}</span>
+        <span className="text-sm font-medium text-foreground">{name}</span>
+        {tag && (
+          <Badge variant="outline" className="text-xs font-medium px-2 py-0.5 text-muted-foreground/50 border-border/40">
+            {tag}
+          </Badge>
+        )}
+        <span className={cn("inline-flex items-center gap-1 ml-auto text-xs font-medium", st.className)}>
           {st.icon}
           {st.label}
-        </Badge>
+        </span>
       </div>
 
-      <CardContent className="p-4 space-y-3">
-        <p className="text-sm leading-relaxed text-foreground">{defaultSummary}</p>
+      <p className="text-sm leading-relaxed text-foreground">{defaultSummary}</p>
 
         {metrics && metrics.length > 0 && (
           <div className="flex flex-wrap gap-2">
@@ -198,7 +201,6 @@ export function AiResponseCard({
             {new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </p>
         )}
-      </CardContent>
-    </Card>
+    </div>
   )
 }

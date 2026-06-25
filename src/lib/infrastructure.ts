@@ -60,8 +60,8 @@ export async function logApiRequest(
         organizationId: organizationId || "",
       },
     })
-  } catch {
-    // Fail silently for logging
+  } catch (e) {
+    console.warn("Failed to log API request:", e)
   }
 }
 

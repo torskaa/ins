@@ -11,6 +11,7 @@ const REQUIRED_FIELDS: Record<CopilotEventType, string[]> = {
   planning: ["message"],
   tool_start: ["toolName", "input"],
   tool_progress: ["toolName", "message"],
+  content_chunk: ["chunk"],
   tool_result: ["toolName", "status"],
   approval_required: ["toolName", "input", "reason"],
   completed: ["toolCalls"],

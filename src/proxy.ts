@@ -14,7 +14,8 @@ export function proxy(req: NextRequest) {
     return NextResponse.next()
   }
 
-  if (process.env.NODE_ENV === "development") {
+  // In development, allow all paths but still check for static assets
+  if (process.env.NODE_ENV === "development" && pathname.startsWith("/api")) {
     return NextResponse.next()
   }
 

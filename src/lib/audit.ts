@@ -25,8 +25,8 @@ export async function createAuditEntry(opts: {
         userAgent: opts.userAgent?.slice(0, 255),
       },
     })
-  } catch {
-    // fail silently
+  } catch (e) {
+    console.warn("Failed to create audit entry:", e)
   }
 }
 

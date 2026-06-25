@@ -1,6 +1,5 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
 import { ShieldAlert } from "lucide-react"
 
 interface CopilotErrorCardProps {
@@ -15,8 +14,7 @@ export function CopilotErrorCard({
   onAction,
 }: CopilotErrorCardProps) {
   return (
-    <Card className="border-warning/20 bg-warning/5 shadow-sm">
-      <CardContent className="p-3.5 flex items-start gap-3">
+    <div className="bg-warning/5 backdrop-blur-sm rounded-xl p-3.5 flex items-start gap-3">
         <ShieldAlert className="w-5 h-5 text-warning shrink-0 mt-0.5" />
         <div className="min-w-0">
           <p className="text-sm font-medium text-foreground">Unable to complete request</p>
@@ -32,7 +30,6 @@ export function CopilotErrorCard({
             </button>
           )}
         </div>
-      </CardContent>
-    </Card>
+    </div>
   )
 }

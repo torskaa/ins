@@ -3,6 +3,7 @@ export const CopilotEventTypes = [
   "planning",
   "tool_start",
   "tool_progress",
+  "content_chunk",
   "tool_result",
   "approval_required",
   "completed",
@@ -55,6 +56,13 @@ export interface ToolResultEvent extends CopilotEventBase {
   durationMs?: number
 }
 
+export interface ContentChunkEvent extends CopilotEventBase {
+  type: "content_chunk"
+  agentId?: string
+  chunk: string
+  accumulated?: string
+}
+
 export interface ApprovalRequiredEvent extends CopilotEventBase {
   type: "approval_required"
   agentId?: string
@@ -84,6 +92,7 @@ export type CopilotEvent =
   | PlanningEvent
   | ToolStartEvent
   | ToolProgressEvent
+  | ContentChunkEvent
   | ToolResultEvent
   | ApprovalRequiredEvent
   | CompletedEvent

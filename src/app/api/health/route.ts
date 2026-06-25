@@ -1,5 +1,8 @@
-import { NextResponse } from "next/server"
+import { healthCheck } from "@/lib/infrastructure"
 
 export const GET = async () => {
-  return NextResponse.json({ status: "healthy", timestamp: new Date().toISOString() })
+  const result = await healthCheck()
+  return Response.json(result, {
+    status: result.status === "healthy" ? 200 : 503,
+  })
 }

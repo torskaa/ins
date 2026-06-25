@@ -16,22 +16,24 @@ interface AiModeSelectorProps {
   value: AiMode
   onChange: (mode: AiMode) => void
   className?: string
+  disabled?: boolean
 }
 
-export function AiModeSelector({ value, onChange, className }: AiModeSelectorProps) {
+export function AiModeSelector({ value, onChange, className, disabled }: AiModeSelectorProps) {
   return (
-    <div className={cn("inline-flex items-center p-0.5 rounded-lg bg-muted/50 border border-border/40", className)}>
+    <div className={cn("inline-flex items-center p-1 gap-2 rounded-lg bg-white dark:bg-zinc-900 border border-border/50", disabled && "opacity-50", className)}>
       {modes.map((mode) => {
         const isActive = mode.value === value
         return (
           <button
             key={mode.value}
-            onClick={() => onChange(mode.value)}
+            onClick={() => !disabled && onChange(mode.value)}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
+              "inline-flex shrink-0 items-center justify-center gap-1.5 px-2.5 h-8 rounded-[min(var(--radius-md),12px)] text-xs font-medium whitespace-nowrap transition-all",
               isActive
-                ? "bg-background shadow-sm text-foreground"
+                ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground",
+              disabled && "cursor-not-allowed",
             )}
           >
             {mode.icon}

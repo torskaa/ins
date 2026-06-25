@@ -258,7 +258,7 @@ export default function CategoryDetailPage({ params }: { params: Promise<{ id: s
             <CardContent className="p-4 space-y-2.5">
               <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
                 <FieldDisplay label="Created" value={formatDate(new Date(category.createdAt))} />
-                <FieldDisplay label="Updated" value={formatDate(new Date(category.createdAt))} />
+                <FieldDisplay label="Updated" value={category.updatedAt ? formatDate(new Date(category.updatedAt)) : "—"} />
               </div>
             </CardContent>
           </Card>

@@ -199,13 +199,13 @@ export function Sidebar({ collapsed, onCollapsedChange }: { collapsed?: boolean;
  onClick={() => toggleMenu(item.label)}
  className={cn(
  "nav-link group w-full flex items-center justify-between p-2 rounded-lg transition-all duration-150",
- anyChildActive ? "bg-primary/8 text-primary" : "text-sidebar-foreground hover:text-foreground hover:bg-sidebar-hover",
+  anyChildActive ? "bg-blue-50/80 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" : "text-sidebar-foreground hover:text-foreground hover:bg-sidebar-hover",
  isCollapsed && "justify-center"
  )}
  aria-expanded={isExpanded}
  >
  <div className="flex items-center gap-x-2 min-w-0">
- {Icon && <Icon className={cn("nav-icon w-[18px] h-[18px] shrink-0 transition-all duration-200 group-hover:scale-110 group-hover:-translate-y-0.5", anyChildActive && "text-primary")} />}
+  {Icon && <Icon className={cn("nav-icon w-[18px] h-[18px] shrink-0 transition-all duration-200 group-hover:scale-110 group-hover:-translate-y-0.5", anyChildActive && "text-blue-600 dark:text-blue-400")} />}
  {!isCollapsed && <span className="text-sm font-medium truncate">{item.label}</span>}
  </div>
  {!isCollapsed && (
@@ -223,7 +223,7 @@ export function Sidebar({ collapsed, onCollapsedChange }: { collapsed?: boolean;
  href={sub.href!}
  className={cn(
  "nav-link group flex items-center gap-x-2 p-2 rounded-lg text-sm font-medium transition-all duration-150",
- subActive ? "bg-primary/8 text-primary" : "text-sidebar-foreground hover:text-foreground hover:bg-sidebar-hover"
+  subActive ? "bg-blue-50/80 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" : "text-sidebar-foreground hover:text-foreground hover:bg-sidebar-hover"
  )}
  >
  {SubIcon && <SubIcon className="nav-icon w-4 h-4 shrink-0 transition-all duration-200 group-hover:scale-110 group-hover:-translate-y-0.5" />}
@@ -244,12 +244,12 @@ export function Sidebar({ collapsed, onCollapsedChange }: { collapsed?: boolean;
  href={item.href!}
  className={cn(
  "nav-link group flex items-center gap-x-2 p-2 rounded-lg text-sm font-medium transition-all duration-150",
- isActive(item.href!) ? "bg-primary/8 text-primary" : "text-sidebar-foreground hover:text-foreground hover:bg-sidebar-hover",
+  isActive(item.href!) ? "bg-blue-50/80 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" : "text-sidebar-foreground hover:text-foreground hover:bg-sidebar-hover",
  isCollapsed && "justify-center"
  )}
  title={isCollapsed ? item.label : undefined}
  >
- {Icon && <Icon className={cn("nav-icon w-[18px] h-[18px] shrink-0 transition-all duration-200 group-hover:scale-110 group-hover:-translate-y-0.5", isActive(item.href!) && "text-primary")} />}
+  {Icon && <Icon className={cn("nav-icon w-[18px] h-[18px] shrink-0 transition-all duration-200 group-hover:scale-110 group-hover:-translate-y-0.5", isActive(item.href!) && "text-blue-600 dark:text-blue-400")} />}
  {!isCollapsed && <span className="truncate">{item.label}</span>}
  </Link>
  )

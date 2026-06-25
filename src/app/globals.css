@@ -287,8 +287,13 @@
   }
 
   .nav-item.active {
-    background: var(--color-sidebar-active);
-    color: var(--color-primary);
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563EB;
+  }
+
+  .dark .nav-item.active {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60A5FA;
   }
 
   .page-wrapper {

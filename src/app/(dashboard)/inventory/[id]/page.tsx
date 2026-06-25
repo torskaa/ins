@@ -13,6 +13,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { ImageGallery } from "@/components/ui/image-gallery"
+import { PlaceholderImage } from "@/components/ui/placeholder-image"
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { AlertTriangle, Barcode, Boxes, Building2, Calendar, Clock, DollarSign, FileText, Hash, HouseIcon, ImageIcon, Layers, MapPin, Package, Pencil, Ruler, ShoppingCart, TagIcon, Tags, Trash2, Warehouse, Weight, XCircle } from "lucide-react"
@@ -301,12 +302,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
           <div className="flex items-start justify-between gap-6">
             <div className="flex gap-3 min-w-0 flex-1">
-              {product.image && (
+              {product.image ? (
                 <img
                   src={product.image}
                   alt={product.name}
                   className="w-14 self-stretch rounded-lg object-cover border border-border/60 shrink-0"
                 />
+              ) : (
+                <PlaceholderImage name={product.name} className="w-14 self-stretch min-h-14" />
               )}
               <div className="flex flex-col gap-2 w-auto">
                 <h1 className="text-2xl font-bold">{product.name}</h1>

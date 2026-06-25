@@ -75,12 +75,12 @@ export function ExecutionTimeline({ steps, className }: ExecutionTimelineProps) 
   if (!steps.length) return null
 
   return (
-    <Card className={cn("border-border/50 shadow-sm rounded-lg", className)}>
-      <CardHeader className="px-4 py-3 border-b border-border/30">
-        <CardTitle className="text-sm font-semibold flex items-center gap-2">
+    <Card className={cn("rounded-xl bg-card/60 backdrop-blur-sm border border-border", className)}>
+      <CardHeader className="px-4 py-3 border-b border-border/10">
+        <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
           <Clock className="size-4 text-muted-foreground" />
           Execution Timeline
-          <Badge variant="secondary" className="ml-auto text-xs">
+          <Badge variant="outline" className="ml-auto text-xs text-muted-foreground border-border/30">
             {steps.length} step{steps.length > 1 ? "s" : ""}
           </Badge>
         </CardTitle>

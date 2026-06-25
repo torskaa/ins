@@ -9,7 +9,9 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LogOut, User, Users, Bot } from "lucide-react"
+import { LogOut, User, Users } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { ButtonColorful } from "@/components/ui/button-colorful"
 import { CommandPalette } from "@/components/layout/command-palette"
 import { NotificationBell } from "@/components/layout/notification-bell"
 import { QuickCreate } from "@/components/layout/quick-create"
@@ -27,14 +29,13 @@ export function Header({ onWorkspaceOpen }: HeaderProps) {
 				<div className="flex items-center gap-3 flex-1">
 					<CommandPalette />
 				</div>
-				<div className="flex items-center gap-3">
-					<button
-						onClick={onWorkspaceOpen}
-						className="flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/10 transition-colors"
-					>
-						<Bot className="w-4 h-4" />
-					</button>
-					<QuickCreate />
+				<div className="flex items-center gap-2">
+					<div className="flex items-center gap-1.5 pr-2 border-r border-border/50">
+						<ButtonColorful onClick={onWorkspaceOpen} className="h-8 gap-1.5 text-xs shadow-sm">
+							Ask AI
+						</ButtonColorful>
+						<QuickCreate />
+					</div>
 					<NotificationBell />
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>

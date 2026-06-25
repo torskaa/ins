@@ -295,7 +295,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ id: 
             <CardContent className="p-4 space-y-2.5">
               <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
                 <FieldDisplay label="Created" value={formatDate(new Date(warehouse.createdAt))} />
-                <FieldDisplay label="Updated" value="—" />
+                <FieldDisplay label="Updated" value={warehouse.updatedAt ? formatDate(new Date(warehouse.updatedAt)) : "—"} />
               </div>
             </CardContent>
           </Card>

@@ -76,7 +76,7 @@ function buildDisplaySteps(steps: CopilotPlanStep[]): DisplayStep[] {
             </span>
           </div>
           {s.description && (
-            <div className="p-3 rounded-md bg-card border border-border shadow-sm text-muted-foreground">
+            <div className="p-3 rounded-md bg-card border border-border text-muted-foreground">
               {s.description}
             </div>
           )}
@@ -141,17 +141,17 @@ export function PlanCard({ plan, onApprove, onEdit, readOnly }: PlanCardProps) {
 
   return (
     <div className="w-full mx-auto font-sans text-foreground">
-      <div className="bg-card border border-border shadow-sm rounded-xl overflow-hidden transition-all duration-300">
+      <div className="bg-card/60 backdrop-blur-sm border border-border rounded-xl overflow-hidden transition-all duration-300">
         <div
           onClick={() => setIsMainExpanded(!isMainExpanded)}
           className={cn(
             "flex items-center justify-between px-4 py-3 cursor-pointer select-none transition-colors",
-            isMainExpanded ? "bg-secondary/30 border-b border-border/50" : "hover:bg-secondary/30",
+            isMainExpanded ? "bg-secondary/50 border-b border-border/10" : "hover:bg-secondary/30",
           )}
         >
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-5 h-5">{headerIcon}</div>
-            <span className="text-[15px] font-semibold text-foreground/90 tracking-tight">{headerTitle}</span>
+            <div className="flex items-center justify-center w-5 h-5 text-foreground">{headerIcon}</div>
+            <span className="text-[15px] font-semibold text-foreground tracking-tight">{headerTitle}</span>
           </div>
           <div className="flex items-center justify-center w-6 h-6 rounded-md hover:bg-secondary text-muted-foreground transition-colors">
             {isMainExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}

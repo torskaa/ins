@@ -26,7 +26,7 @@ function MessageContent({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="message-content"
       className={cn(
-        "px-4 py-2.5 text-sm leading-relaxed shadow-sm",
+        "px-4 py-2.5 text-sm leading-relaxed",
         className,
       )}
       {...props}

@@ -62,8 +62,8 @@ export function AiRunsDetailClient({ run: initialRun }: { run: SerializedRun }) 
         <h1 className="text-xl font-semibold">Run Details</h1>
       </div>
 
-      <Card>
-        <CardContent className="p-5">
+      <Card className="shadow-sm bg-white dark:bg-zinc-950">
+        <CardContent className="p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-3 min-w-0">
               <div className="mt-0.5 shrink-0">{statusIcon(run.status)}</div>

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import { useState } from "react"
 import {
   BotMessageSquare,
   CopyIcon,
@@ -9,13 +9,17 @@ import {
   ThumbsDownIcon,
   ThumbsUpIcon,
   User,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react"
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Message, MessageContent } from "@/components/ui/message"
 import { Actions } from "@/components/ui/actions"
-import { AiLoader } from "@/components/ai/ai-loader"
+import { Badge } from "@/components/ui/badge"
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 
 export interface MessageAction {
   id: string
@@ -29,9 +33,25 @@ export interface CopilotUserMessageProps {
   content: string
   avatarUrl?: string | null
   userName?: string | null
+  onEdit?: (newContent: string) => void
 }
 
-export function CopilotUserMessage({ content, avatarUrl, userName }: CopilotUserMessageProps) {
+export function CopilotUserMessage({ content, avatarUrl, userName, onEdit }: CopilotUserMessageProps) {
+  const [editing, setEditing] = useState(false)
+  const [editValue, setEditValue] = useState(content)
+
+  function handleSave() {
+    if (editValue.trim() && editValue !== content) {
+      onEdit?.(editValue)
+    }
+    setEditing(false)
+  }
+
+  function handleCancel() {
+    setEditValue(content)
+    setEditing(false)
+  }
+
   return (
     <Message from="user">
       <Avatar className="h-8 w-8">
@@ -43,9 +63,43 @@ export function CopilotUserMessage({ content, avatarUrl, userName }: CopilotUser
           </AvatarFallback>
         )}
       </Avatar>
-      <MessageContent className="max-w-[85%] rounded-2xl rounded-tr-md bg-primary text-primary-foreground">
-        {content}
-      </MessageContent>
+      {editing ? (
+        <div className="flex-1 max-w-[85%] space-y-2">
+          <textarea
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="w-full rounded-2xl rounded-tr-md bg-muted/20 px-4 py-2.5 text-sm text-foreground resize-none border border-border/30 focus:border-ring/50 focus:ring-1 focus:ring-ring/30 outline-none"
+            rows={3}
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSave() }
+              if (e.key === "Escape") handleCancel()
+            }}
+          />
+          <div className="flex items-center gap-1.5">
+            <Button size="sm" className="h-7 text-xs gap-1" onClick={handleSave}>
+              <Check className="size-3.5" />
+              Save
+            </Button>
+            <Button size="sm" variant="ghost" className="h-7 text-xs gap-1 text-muted-foreground" onClick={handleCancel}>
+              <X className="size-3.5" />
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <MessageContent className="max-w-[85%] rounded-2xl rounded-tr-md border border-border text-foreground group relative">
+          {content}
+          {onEdit && (
+            <button
+              onClick={() => { setEditValue(content); setEditing(true) }}
+              className="absolute -top-2 -right-2 size-6 rounded-full bg-card border border-border/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-muted/20"
+            >
+              <Pencil className="size-3 text-muted-foreground" />
+            </button>
+          )}
+        </MessageContent>
+      )}
     </Message>
   )
 }
@@ -56,9 +110,11 @@ export interface CopilotAssistantMessageProps {
   messageId?: string
   actions?: MessageAction[]
   onRetry?: () => void
+  streaming?: boolean
+  tag?: string | null
 }
 
-export function CopilotAssistantMessage({ content, timestamp, actions, onRetry }: CopilotAssistantMessageProps) {
+export function CopilotAssistantMessage({ content, timestamp, actions, onRetry, streaming, tag }: CopilotAssistantMessageProps) {
   const [feedback, setFeedback] = useState<"like" | "dislike" | null>(null)
 
   const defaultActions: MessageAction[] = [
@@ -101,13 +157,22 @@ export function CopilotAssistantMessage({ content, timestamp, actions, onRetry }
 
   return (
     <Message from="assistant">
-      <Avatar className="h-8 w-8">
-        <AvatarFallback className="bg-gradient-to-br from-success/20 to-success/10 text-success">
-          <BotMessageSquare className="size-4" />
-        </AvatarFallback>
-      </Avatar>
-      <MessageContent className="max-w-[85%] rounded-2xl rounded-tl-md bg-card border border-border/60 text-foreground shadow-sm">
-        <p className="whitespace-pre-wrap">{content}</p>
+      <div className="flex items-center gap-1.5">
+        <Avatar className="h-8 w-8 shrink-0">
+          <AvatarFallback className="bg-gradient-to-br from-success/20 to-success/10 text-success">
+            <BotMessageSquare className="size-4" />
+          </AvatarFallback>
+        </Avatar>
+        {tag && (
+          <Badge variant="outline" className="text-xs font-medium px-2 py-0.5 text-muted-foreground/50 border-border/40">
+            {tag}
+          </Badge>
+        )}
+      </div>
+      <MessageContent className="rounded-2xl rounded-tl-md text-foreground">
+        {content ? (
+          <MarkdownRenderer content={content} />
+        ) : null}
       </MessageContent>
       <Actions className="mt-1">
         {mergedActions.map((action) => (
@@ -141,9 +206,9 @@ export function CopilotLoadingDots() {
           <BotMessageSquare className="size-4" />
         </AvatarFallback>
       </Avatar>
-      <MessageContent className="rounded-2xl rounded-tl-md bg-card border border-border/60 shadow-sm">
-        <AiLoader variant="dots" />
-      </MessageContent>
+      <MessageContent className="rounded-2xl rounded-tl-md" />
     </Message>
   )
 }
+
+

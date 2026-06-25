@@ -416,6 +416,7 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
             <CardContent className="p-4 space-y-2.5">
               <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
                 <FieldDisplay label="Created" value={formatDate(new Date(customer.createdAt))} />
+                <FieldDisplay label="Updated" value={customer.updatedAt ? formatDate(new Date(customer.updatedAt)) : "—"} />
                 <FieldDisplay label="Tax ID" value={customer.taxId || "—"} mono />
               </div>
             </CardContent>

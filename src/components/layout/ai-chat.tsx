@@ -393,6 +393,7 @@ export function AiChat() {
                       <CopilotResultCard
                         type={detectResultType(msg.toolCalls)}
                         summary={msg.content}
+                        toolCalls={msg.toolCalls}
                       />
                     )}
 

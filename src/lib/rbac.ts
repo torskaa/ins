@@ -1,25 +1,26 @@
 import { prisma } from "@/lib/db"
 import { auth } from "@/lib/auth"
 
-type OrgInfo = { id: string; name: string; slug: string } | null
+type OrgInfo = { id: string; name: string; slug: string }
 
-export async function getCurrentOrganization(): Promise<OrgInfo> {
+export async function getCurrentOrganization(): Promise<OrgInfo | null> {
   const session = await auth()
   if (!session?.user?.id) return null
 
-  const activeOrgId = (session as any).user?.activeOrganizationId as string | undefined
+  const userId = session.user.id
+  const activeOrgId = (session.user as unknown as { activeOrganizationId?: string }).activeOrganizationId
 
   const membership = activeOrgId
     ? await prisma.organizationMember.findFirst({
-        where: { userId: session.user.id, organizationId: activeOrgId },
+        where: { userId, organizationId: activeOrgId },
         include: { organization: true },
       })
     : null
 
-  const result = membership || await prisma.organizationMember.findFirst({
-    where: { userId: session.user.id },
+  const result = membership ?? (await prisma.organizationMember.findFirst({
+    where: { userId },
     include: { organization: true },
-  })
+  }))
 
   if (!result) return null
 
@@ -30,41 +31,39 @@ export async function getCurrentOrganization(): Promise<OrgInfo> {
   }
 }
 
-export async function ensureUserHasOrganization() {
+export async function createOrganizationForUser(userId: string) {
+  const org = await prisma.organization.create({
+    data: {
+      name: "My Company",
+      slug: `company-${userId.slice(0, 6)}`,
+      settings: { create: {} },
+    },
+  })
+  await prisma.organizationMember.create({
+    data: { userId, organizationId: org.id, role: "owner" },
+  })
+  return { id: org.id, name: org.name, slug: org.slug }
+}
+
+export async function ensureUserHasOrganization(): Promise<OrgInfo> {
   const session = await auth()
+
   if (!session?.user?.id) {
-    const org = await prisma.organization.create({
-      data: {
-        name: "My Company",
-        slug: "my-company",
-        settings: { create: {} },
-      },
-    })
-    return { id: org.id, name: org.name, slug: org.slug }
+    return createOrganizationForUser("anonymous")
   }
 
-  let membership = await prisma.organizationMember.findFirst({
+  const membership = await prisma.organizationMember.findFirst({
     where: { userId: session.user.id },
     include: { organization: true },
   })
 
-  if (!membership) {
-    const org = await prisma.organization.create({
-      data: {
-        name: "My Company",
-        slug: `company-${session.user.id.slice(0, 6)}`,
-        settings: { create: {} },
-      },
-    })
-    membership = await prisma.organizationMember.create({
-      data: {
-        userId: session.user.id,
-        organizationId: org.id,
-        role: "owner",
-      },
-      include: { organization: true },
-    })
+  if (membership) {
+    return {
+      id: membership.organization.id,
+      name: membership.organization.name,
+      slug: membership.organization.slug,
+    }
   }
 
-  return { id: membership.organization.id, name: membership.organization.name, slug: membership.organization.slug }
+  return createOrganizationForUser(session.user.id)
 }

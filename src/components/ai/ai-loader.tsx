@@ -25,7 +25,7 @@ export function AiLoader({ variant = "shimmer-text", text = "Processing...", cla
 
   if (variant === "dots") {
     return (
-      <div className={`flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 backdrop-blur-md shadow-xs w-fit ${className}`}>
+      <div className={`flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 backdrop-blur-md w-fit ${className}`}>
         <div className="w-2 h-2 rounded-full bg-primary animate-[ai-dots-think_1.4s_ease-in-out_infinite]" style={{ animationDelay: "0ms" }} />
         <div className="w-2 h-2 rounded-full bg-primary animate-[ai-dots-think_1.4s_ease-in-out_infinite]" style={{ animationDelay: "160ms" }} />
         <div className="w-2 h-2 rounded-full bg-primary animate-[ai-dots-think_1.4s_ease-in-out_infinite]" style={{ animationDelay: "320ms" }} />
@@ -35,7 +35,7 @@ export function AiLoader({ variant = "shimmer-text", text = "Processing...", cla
 
   if (variant === "loading-line") {
     return (
-      <div className={`w-full h-[3px] bg-black/5 dark:bg-white/10 rounded-full overflow-hidden relative backdrop-blur-sm shadow-inner ${className}`}>
+      <div className={`w-full h-[3px] bg-black/5 dark:bg-white/10 rounded-full overflow-hidden relative backdrop-blur-sm ${className}`}>
         <div className="absolute top-0 bottom-0 -left-full w-full animate-[ai-loading-line-sweep_2s_cubic-bezier(0.4,0,0.2,1)_infinite]">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary to-transparent opacity-80" />
           <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-12 bg-black/40 dark:bg-white/90 blur-[1px] rounded-full" />
@@ -61,7 +61,7 @@ export function AiLoader({ variant = "shimmer-text", text = "Processing...", cla
           viewBox="0 0 50 50"
         >
           <circle
-            className="stroke-primary fill-none stroke-[4] animate-[ai-loading-ring_1.5s_ease-in-out_infinite] drop-shadow-sm dark:drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]"
+            className="stroke-primary fill-none stroke-[4] animate-[ai-loading-ring_1.5s_ease-in-out_infinite]"
             strokeLinecap="round"
             cx="25"
             cy="25"

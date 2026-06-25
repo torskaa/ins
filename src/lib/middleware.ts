@@ -52,7 +52,9 @@ async function getRolePermissions(roleName: string, orgId: string): Promise<Reco
       permissionCache.set(cacheKey, { permissions: perms, fetchedAt: Date.now() })
       return perms
     }
-  } catch { /* fallback */ }
+  } catch (e) {
+    console.warn("Failed to fetch role permissions:", e)
+  }
   return null
 }
 
@@ -81,13 +83,13 @@ export async function requireAuth() {
   }
   const session = await auth()
   if (!session?.user?.id) throw new UnauthorizedError()
-  return session as { user: { id: string; name?: string; email?: string } }
+  return { user: { id: session.user.id, name: session.user.name ?? undefined, email: session.user.email ?? undefined } }
 }
 
 export async function requireOrg() {
   if (process.env.NODE_ENV === "development") return await ensureDevOrg()
   const session = await requireAuth()
-  const activeOrgId = (session as any).user?.activeOrganizationId as string | undefined
+  const activeOrgId = (session as unknown as { user: { activeOrganizationId?: string } }).user?.activeOrganizationId
 
   const membership = activeOrgId
     ? await prisma.organizationMember.findFirst({
@@ -158,7 +160,9 @@ export async function logAudit(opts: {
       userId: opts.userId || session?.user?.id || undefined,
       organizationId: opts.organizationId,
     },
-  }).catch(() => {})
+  }).catch((e) => {
+    console.warn("Audit log failed:", e)
+  })
 }
 
 export async function createAuditSnapshot(entity: string, entityId: string, organizationId: string, data: Record<string, any>) {
@@ -173,7 +177,9 @@ export async function createAuditSnapshot(entity: string, entityId: string, orga
       userId: session?.user?.id || undefined,
       organizationId,
     },
-  }).catch(() => {})
+  }).catch((e) => {
+    console.warn("Audit snapshot failed:", e)
+  })
 }
 
 export async function checkStock(productId: string, quantity: number, organizationId: string) {

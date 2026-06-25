@@ -13,6 +13,7 @@ import { PropertySelector } from "@/components/ui/property-selector"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { useHotkey } from "@/hooks/use-hotkey"
 import { formatCurrency } from "@/lib/utils"
+import { PlaceholderImage } from "@/components/ui/placeholder-image"
 import { useRouter } from "next/navigation"
 import { downloadCSV, downloadPDF } from "@/lib/export"
 import { SkeletonTable } from "@/components/ui/skeleton"
@@ -117,8 +118,10 @@ export default function InventoryPage() {
   label: "Product",
   render: (p: Product) => (
     <div className="flex items-center gap-3">
-      {p.image && (
+      {p.image ? (
         <img src={p.image} alt={p.name} className="w-10 h-10 rounded-md object-cover border border-border/60 shrink-0" />
+      ) : (
+        <PlaceholderImage name={p.name} className="w-10 h-10 text-xs" />
       )}
       <div className="min-w-0">
         <p className="font-medium truncate">{p.name}</p>

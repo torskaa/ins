@@ -7,14 +7,14 @@ import { prisma } from "@/lib/db"
 import bcrypt from "bcryptjs"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma) as any,
+  adapter: PrismaAdapter(prisma) as any, // TODO: fix PrismaAdapter type once @auth/prisma-adapter fully supports custom Prisma clients
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
   },
   providers: [
-    Google({ clientId: process.env.AUTH_GOOGLE_ID || "", clientSecret: process.env.AUTH_GOOGLE_SECRET || "", allowDangerousEmailAccountLinking: true }),
-    GitHub({ clientId: process.env.AUTH_GITHUB_ID || "", clientSecret: process.env.AUTH_GITHUB_SECRET || "", allowDangerousEmailAccountLinking: true }),
+    Google({ clientId: process.env.AUTH_GOOGLE_ID || "", clientSecret: process.env.AUTH_GOOGLE_SECRET || "" }),
+    GitHub({ clientId: process.env.AUTH_GITHUB_ID || "", clientSecret: process.env.AUTH_GITHUB_SECRET || "" }),
     Credentials({
       credentials: {
         email: { label: "Email", type: "email" },

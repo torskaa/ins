@@ -13,6 +13,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { ImageGallery } from "@/components/ui/image-gallery"
+import { PlaceholderImage } from "@/components/ui/placeholder-image"
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import {
@@ -313,8 +314,10 @@ export default function MaterialDetailPage({ params }: { params: Promise<{ id: s
         <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
           <div className="flex items-start justify-between gap-6">
             <div className="flex gap-3 min-w-0 flex-1">
-              {material.image && (
+              {material.image ? (
                 <img src={material.image} alt={material.name} className="w-14 self-stretch rounded-lg object-cover border border-border/60 shrink-0" />
+              ) : (
+                <PlaceholderImage name={material.name} className="w-14 self-stretch min-h-14" />
               )}
               <div className="flex flex-col gap-2 min-w-0 flex-1">
                 <div className="flex items-center gap-3 flex-wrap">

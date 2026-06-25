@@ -10,7 +10,7 @@ const prismaClientSingleton = () => {
     adapter: new PrismaSqlite({
       url: process.env.DATABASE_URL || "file:./dev.db",
     }),
-  } as any)
+  })
 }
 
 export const prisma = globalForPrisma.prisma ?? prismaClientSingleton()

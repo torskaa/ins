@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ins — AI-Native ERP Operating System
+
+Ins is a modern, AI-native ERP system built for small to medium businesses. It combines inventory management, order processing, CRM, manufacturing, finance, and project management — all powered by an intelligent AI agent layer.
+
+## Features
+
+- **Inventory Management** — Products, warehouses, stock movements, BOM, MRP
+- **Sales & Procurement** — Orders, quotations, invoices, payments
+- **CRM** — Customers, distributors, deliveries
+- **Manufacturing** — Production orders, work centers, operations
+- **Finance** — Chart of accounts, journal entries, tax management
+- **Project Management** — Projects, tasks, workflows
+- **Knowledge Hub** — Wiki, training, document management
+- **AI Agents** — Intelligent automation across all modules
+- **Multi-tenant** — Organization-scoped with RBAC
+- **i18n** — English & Thai support
+
+## Tech Stack
+
+- **Framework:** Next.js 16, React 19
+- **Language:** TypeScript (strict mode)
+- **Database:** SQLite (dev) / PostgreSQL (production)
+- **ORM:** Prisma
+- **Auth:** NextAuth v5 (JWT) with Google, GitHub, Credentials
+- **UI:** Radix UI, Tailwind CSS 4, shadcn/ui
+- **Payments:** Stripe
+- **Monitoring:** Sentry
+- **AI:** Multi-agent system with MCP tools
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install dependencies
+npm install
+
+# Copy environment variables
+cp .env.example .env
+
+# Run database migration
+npx prisma migrate dev
+
+# Seed demo data
+npm run db:seed
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production build |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run typecheck` | Run TypeScript check |
+| `npm run test` | Run tests |
+| `npm run format` | Format code with Prettier |
+| `npm run ci` | Full CI pipeline (typecheck + lint + test + build) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment Variables
 
-## Learn More
+See `.env.example` for all available configuration options.
 
-To learn more about Next.js, take a look at the following resources:
+## Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Docker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+docker compose up --build
+```
 
-## Deploy on Vercel
+### Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+MIT
