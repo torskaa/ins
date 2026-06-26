@@ -274,7 +274,7 @@ export default function NewWikiArticlePage() {
                       <div className="space-y-1.5">
                         <Label className="text-xs text-muted-foreground/60">Category</Label>
                         <Combobox value={category} onValueChange={(v) => setCategory(v || "Getting Started")}>
-                          <ComboboxTrigger>
+                          <ComboboxTrigger className="flex h-9 w-full items-center gap-2 rounded-lg border border-input bg-transparent px-3 py-2 text-sm shadow-sm data-placeholder:text-muted-foreground">
                             <ComboboxValue placeholder="Select category" />
                           </ComboboxTrigger>
                           <ComboboxContent positionerClassName="z-[200]">
