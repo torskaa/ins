@@ -1204,6 +1204,20 @@ model WikiArticle {
   updatedAt      DateTime @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
+
+  blocks ArticleBlock[]
+}
+
+model ArticleBlock {
+  id        String @id @default(cuid())
+  articleId String
+  type      String
+  content   String // JSON — stores type-specific data (text, url, items, etc.)
+  order     Int    @default(0)
+
+  article WikiArticle @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId, order])
 }
 
 model KnowledgeDocument {

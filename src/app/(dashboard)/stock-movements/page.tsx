@@ -8,6 +8,7 @@ import { SemanticBadge } from "@/components/ui/badge"
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { SkeletonTable } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
+import { PlaceholderImage } from "@/components/ui/placeholder-image"
 import { Activity, AlertTriangle, Package, Warehouse, Search } from "lucide-react"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -22,18 +23,17 @@ import {
   PaginationEllipsis,
 } from "@/components/ui/pagination"
 
-type Movement = { id: string; type: string; quantity: number; reference: string; createdAt: string; product: { id: string; name: string; sku: string }; warehouse: { id: string; name: string } }
+type Movement = { id: string; type: string; quantity: number; reference: string; createdAt: string; product: { id: string; name: string; sku: string; image?: string }; warehouse: { id: string; name: string } }
 
 const PROPERTY_OPTIONS = [
-  { key: "createdAt", label: "Date" },
-  { key: "type", label: "Type" },
   { key: "product", label: "Product" },
   { key: "quantity", label: "Qty" },
   { key: "warehouse", label: "Warehouse" },
   { key: "reference", label: "Reference" },
+  { key: "type", label: "Type" },
 ]
 
-const DEFAULT_PROPS = ["type", "product", "quantity", "warehouse", "reference"]
+const DEFAULT_PROPS = ["reference", "product", "quantity", "warehouse", "type"]
 const PAGE_SIZE = 10
 
 export default function StockMovementsPage() {
@@ -82,18 +82,24 @@ export default function StockMovementsPage() {
       render: (m: Movement) => <span className="text-sm text-foreground">{formatDate(new Date(m.createdAt))}</span>,
     },
     {
-      key: "type",
-      label: "Type",
-      className: "w-[120px]",
-      render: (m: Movement) => <SemanticBadge semantic={m.type} category="type" className="">{m.type}</SemanticBadge>,
+      key: "reference",
+      label: "Reference",
+      render: (m: Movement) => <span className="text-xs font-mono text-foreground">{m.reference || "—"}</span>,
     },
     {
       key: "product",
       label: "Product",
       render: (m: Movement) => (
-        <div>
-          <p className="font-medium">{m.product?.name || "—"}</p>
-          {m.product?.sku && <p className="text-xs text-foreground font-mono">{m.product.sku}</p>}
+        <div className="flex items-center gap-3">
+          {m.product?.image ? (
+            <img src={m.product.image} alt={m.product.name} className="w-10 h-10 rounded-md object-cover border border-border/60 shrink-0" />
+          ) : (
+            <PlaceholderImage name={m.product?.name || "?"} className="w-10 h-10 text-xs shrink-0" />
+          )}
+          <div className="min-w-0">
+            <p className="font-medium truncate">{m.product?.name || "—"}</p>
+            {m.product?.sku && <p className="text-xs text-foreground font-mono truncate">{m.product.sku}</p>}
+          </div>
         </div>
       ),
     },
@@ -110,13 +116,14 @@ export default function StockMovementsPage() {
       render: (m: Movement) => <span className="text-sm text-foreground">{m.warehouse?.name || "—"}</span>,
     },
     {
-      key: "reference",
-      label: "Reference",
-      render: (m: Movement) => <span className="text-xs font-mono text-foreground">{m.reference || "—"}</span>,
+      key: "type",
+      label: "Type",
+      className: "w-[120px]",
+      render: (m: Movement) => <SemanticBadge semantic={m.type} category="type" className="">{m.type}</SemanticBadge>,
     },
   ]
 
-  const columns = allColumns.filter((c) => props.includes(c.key))
+  const columns = allColumns.filter((c) => c.key === "createdAt" || props.includes(c.key))
 
   return (
     <div className="space-y-6 animate-fade-in">

@@ -6,6 +6,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Award, Building2, Globe, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
@@ -99,9 +100,15 @@ export default function SuppliersPage() {
       className: undefined,
       cellClassName: undefined,
       render: (s: Supplier) => (
-        <div>
-          <p className="font-medium">{s.name}</p>
-          {s.contactPerson && <p className="text-xs text-foreground">Contact: {s.contactPerson}</p>}
+        <div className="flex items-center gap-3">
+          <Avatar className="size-8">
+            <AvatarImage src={`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(s.name)}`} />
+            <AvatarFallback>{s.name.split(/\s+/).map(n => n[0]).join("").slice(0, 2).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <p className="font-medium truncate">{s.name}</p>
+            {s.contactPerson && <p className="text-xs text-foreground truncate">Contact: {s.contactPerson}</p>}
+          </div>
         </div>
       ),
     },

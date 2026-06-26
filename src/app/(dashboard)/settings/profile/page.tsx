@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { abbreviateName } from "@/lib/utils"
 import { AlertTriangle, Eye, EyeOff, Save, User } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useRouter } from "next/navigation"
@@ -18,14 +20,18 @@ export default function ProfilePage() {
  const [showNew, setShowNew] = useState(false)
  const [currentPassword, setCurrentPassword] = useState("")
  const [newPassword, setNewPassword] = useState("")
- const [user, setUser] = useState<{ name?: string; email?: string } | null>(null)
+  const [user, setUser] = useState<{ name?: string; email?: string; image?: string } | null>(null)
 
- useEffect(() => {
- fetch("/api/users/me")
- .then((res) => res.json())
- .then((json) => { if (json?.success && json.data?.email) setUser(json.data); else if (!json?.success) throw new Error(json?.error || "Failed to load") })
-  .catch((err) => { setError(err.message) })
- }, [])
+  useEffect(() => {
+  fetch("/api/users/me")
+  .then((res) => res.json())
+  .then((json) => {
+    const data = json?.success ? json.data : json
+    if (data?.email) setUser(data)
+    else throw new Error(json?.error || "Failed to load")
+  })
+   .catch((err) => { setError(err.message) })
+  }, [])
 
  async function handleChangePassword(e: React.FormEvent) {
  e.preventDefault()
@@ -59,15 +65,16 @@ export default function ProfilePage() {
  <Card className="mb-6">
  <CardHeader><div className="flex items-center gap-2"><User className="w-4 h-4 text-primary" /><CardTitle>Account Info</CardTitle></div></CardHeader>
  <CardContent className="space-y-3">
- <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
- <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
- <span className="text-sm font-semibold text-primary">{user?.name?.charAt(0) || user?.email?.charAt(0) || "?"}</span>
- </div>
- <div>
- <p className="text-sm font-medium">{user?.name || "User"}</p>
- <p className="text-xs text-muted-foreground">{user?.email || "—"}</p>
- </div>
- </div>
+  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
+  <Avatar className="size-10">
+    <AvatarImage src={user?.image || `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(user?.name || "User")}`} alt={user?.name || "User"} />
+    <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">{user?.name?.charAt(0) || user?.email?.charAt(0) || "?"}</AvatarFallback>
+  </Avatar>
+  <div>
+  <p className="text-sm font-medium">{abbreviateName(user?.name) || user?.name || "User"}</p>
+  <p className="text-xs text-muted-foreground">{user?.email || "—"}</p>
+  </div>
+  </div>
  </CardContent>
  </Card>
 

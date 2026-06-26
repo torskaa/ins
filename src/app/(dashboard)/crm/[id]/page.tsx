@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Banknote, Building2, Calendar, ClipboardList, Clock, CreditCard, DollarSign, FileCode, FileSignature, FileText, Hash, HouseIcon, Mail, Package, Pencil, Phone, Receipt, ShoppingCart, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Frame, FramePanel } from "@/components/reui/frame"
@@ -232,6 +233,10 @@ export default function CustomerDetailPage({ params }: { params: Promise<{ id: s
         <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
           <div className="flex items-start justify-between gap-6">
             <div className="flex gap-3 min-w-0 flex-1">
+              <Avatar className="size-14 rounded-lg shrink-0">
+                <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(customer.name)}`} />
+                <AvatarFallback className="rounded-lg text-lg">{customer.name.split(/\s+/).map(n => n[0]).join("").slice(0, 2).toUpperCase()}</AvatarFallback>
+              </Avatar>
               <div className="flex flex-col gap-2 min-w-0 flex-1">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl font-bold">{customer.name}</h1>

@@ -6,6 +6,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { PlaceholderImage } from "@/components/ui/placeholder-image"
 import { AlertTriangle, Box, Package, Search, Truck } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
@@ -39,6 +40,7 @@ type Material = {
   stock: number
   minStock: number
   status: string
+  image?: string
   category: { name: string } | null
 }
 
@@ -112,9 +114,16 @@ export default function MaterialsPage() {
       key: "name",
       label: "Material",
       render: (m: Material) => (
-        <div>
-          <p className="font-medium">{m.name}</p>
-          {m.category && <p className="text-xs text-foreground">{m.category.name}</p>}
+        <div className="flex items-center gap-3">
+          {m.image ? (
+            <img src={m.image} alt={m.name} className="w-10 h-10 rounded-md object-cover border border-border/60 shrink-0" />
+          ) : (
+            <PlaceholderImage name={m.name} className="w-10 h-10 text-xs shrink-0" />
+          )}
+          <div className="min-w-0">
+            <p className="font-medium truncate">{m.name}</p>
+            {m.category && <p className="text-xs text-foreground truncate">{m.category.name}</p>}
+          </div>
         </div>
       ),
     },

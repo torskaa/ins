@@ -10,6 +10,7 @@ import { UploadFileMain } from "@/components/upload/upload-file-main"
 import { useUploadImport } from "@/hooks/use-upload-import"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Users, Building2, Mail, Phone, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
@@ -102,9 +103,15 @@ export default function CRMPage() {
       className: undefined,
       cellClassName: undefined,
       render: (c: Customer) => (
-        <div>
-          <p className="font-medium">{c.name}</p>
-          {c.company && <p className="text-xs text-foreground">{c.company}</p>}
+        <div className="flex items-center gap-3">
+          <Avatar className="size-8">
+            <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(c.name)}`} />
+            <AvatarFallback>{c.name.split(/\s+/).map(n => n[0]).join("").slice(0, 2).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <p className="font-medium truncate">{c.name}</p>
+            {c.company && <p className="text-xs text-foreground truncate">{c.company}</p>}
+          </div>
         </div>
       ),
     },

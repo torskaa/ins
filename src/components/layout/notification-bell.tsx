@@ -98,7 +98,7 @@ export function NotificationBell() {
  <>
  <button
  onClick={() => setOpen(true)}
- className="group relative p-2 rounded-lg hover:bg-surface hover:text-primary transition-all"
+  className="group relative p-2 rounded-md hover:bg-surface hover:text-primary transition-all"
  >
  <Bell className="w-4.5 h-4.5 text-muted-foreground transition-all duration-150 group-hover:scale-110 group-hover:text-primary" />
  {unreadCount > 0 && (

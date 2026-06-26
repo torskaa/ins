@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Badge, SemanticBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { PlaceholderImage } from "@/components/ui/placeholder-image"
 import { Activity, ArrowLeft, Calendar, Hash, Layers, Package, Warehouse } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Frame, FramePanel } from "@/components/reui/frame"
@@ -73,12 +74,21 @@ export default function StockMovementDetailPage({ params }: { params: Promise<{ 
             <h2 className="text-sm font-semibold">Movement Details</h2>
           </div>
           <div className="p-6">
+          <div className="flex gap-4 mb-6 pb-6 border-b border-border/60">
+            {data.product?.image ? (
+              <img src={data.product.image} alt={data.product.name} className="w-16 h-16 rounded-lg object-cover border border-border/60 shrink-0" />
+            ) : (
+              <PlaceholderImage name={data.product?.name || "?"} className="w-16 h-16 text-sm shrink-0" />
+            )}
+            <div className="min-w-0">
+              <p className="text-lg font-semibold">{data.product?.name || "—"}</p>
+              {data.product?.sku && <p className="text-xs font-mono text-foreground mt-0.5">{data.product.sku}</p>}
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Field label="Type" value={data.type} />
             <Field label="Quantity" value={`${data.quantity > 0 ? "+" : ""}${data.quantity}`} mono />
             <Field label="Reference" value={data.reference || "—"} mono />
-            <Field label="Product" value={data.product?.name || "—"} />
-            <Field label="SKU" value={data.product?.sku || "—"} mono />
             <Field label="Warehouse" value={data.warehouse?.name || "—"} />
             <Field label="Lot" value={data.lot?.number || "—"} mono />
             <Field label="Delivery" value={data.delivery?.number || "—"} mono />

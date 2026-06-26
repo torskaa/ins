@@ -208,7 +208,7 @@ export default function NewQuotationPage() {
       </div>
 
       <div className="border-t border-border pt-4 mt-4 flex items-center justify-end gap-3">
-        <Button variant="secondary" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
+        <Button variant="outline" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
         <Button onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save Quotation"}</Button>
       </div>
     </div>

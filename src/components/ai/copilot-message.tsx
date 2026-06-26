@@ -55,13 +55,10 @@ export function CopilotUserMessage({ content, avatarUrl, userName, onEdit }: Cop
   return (
     <Message from="user">
       <Avatar className="h-8 w-8">
-        {avatarUrl ? (
-          <AvatarImage src={avatarUrl} alt={userName || "User"} />
-        ) : (
-          <AvatarFallback>
-            <User className="size-4" />
-          </AvatarFallback>
-        )}
+        <AvatarImage src={avatarUrl || `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(userName || "User")}`} alt={userName || "User"} />
+        <AvatarFallback>
+          <User className="size-4" />
+        </AvatarFallback>
       </Avatar>
       {editing ? (
         <div className="flex-1 max-w-[85%] space-y-2">
@@ -114,6 +111,11 @@ export interface CopilotAssistantMessageProps {
   tag?: string | null
 }
 
+function getAgentAvatar(name?: string | null): string {
+  const seed = name?.replace(/\s+/g, "") || "AI"
+  return `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(seed)}`
+}
+
 export function CopilotAssistantMessage({ content, timestamp, actions, onRetry, streaming, tag }: CopilotAssistantMessageProps) {
   const [feedback, setFeedback] = useState<"like" | "dislike" | null>(null)
 
@@ -159,6 +161,7 @@ export function CopilotAssistantMessage({ content, timestamp, actions, onRetry, 
     <Message from="assistant">
       <div className="flex items-center gap-1.5">
         <Avatar className="h-8 w-8 shrink-0">
+          <AvatarImage src={getAgentAvatar(tag)} alt={tag || "AI"} />
           <AvatarFallback className="bg-gradient-to-br from-success/20 to-success/10 text-success">
             <BotMessageSquare className="size-4" />
           </AvatarFallback>
@@ -202,6 +205,7 @@ export function CopilotLoadingDots() {
   return (
     <Message from="assistant">
       <Avatar className="h-8 w-8">
+        <AvatarImage src={getAgentAvatar()} alt="AI" />
         <AvatarFallback className="bg-gradient-to-br from-success/20 to-success/10 text-success">
           <BotMessageSquare className="size-4" />
         </AvatarFallback>

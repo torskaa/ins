@@ -14,6 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Calendar, Clock, CreditCard, DollarSign, FileText, Hash, HouseIcon, Landmark, Pencil, Receipt, ShoppingCart, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Frame, FramePanel } from "@/components/reui/frame"
@@ -207,16 +208,24 @@ export default function PaymentDetailPage({ params }: { params: Promise<{ id: st
         {/* Page Header — bento card */}
         <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
           <div className="flex items-start justify-between gap-6">
-            <div className="flex flex-col gap-2 min-w-0 flex-1">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl font-bold">{payment.reference || "Payment"}</h1>
-                <SemanticBadge semantic={payment.method} category="method" className="gap-1 text-[11px]"><CreditCard className="w-3 h-3" />{payment.method.replace(/_/g, " ")}</SemanticBadge>
-                <SemanticBadge semantic={payment.reference || payment.id} category="id" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{payment.reference || payment.id}</SemanticBadge>
-              </div>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <span className="font-mono font-medium">{formatCurrency(payment.amount)}</span>
-                <span className="text-muted-foreground/30">·</span>
-                <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />{formatDate(new Date(payment.date))}</span>
+            <div className="flex gap-3 min-w-0 flex-1">
+              <Avatar className="size-14 rounded-lg shrink-0">
+                <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent("payment-" + payment.method)}`} alt={payment.method} />
+                <AvatarFallback className="rounded-lg text-lg bg-primary/10 text-primary">
+                  {payment.method === "bank_transfer" ? "BT" : payment.method === "credit_card" ? "CC" : payment.method[0].toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col gap-2 min-w-0 flex-1">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h1 className="text-2xl font-bold">{payment.reference || "Payment"}</h1>
+                  <SemanticBadge semantic={payment.method} category="method" className="gap-1 text-[11px]"><CreditCard className="w-3 h-3" />{payment.method.replace(/_/g, " ")}</SemanticBadge>
+                  <SemanticBadge semantic={payment.reference || payment.id} category="id" className="gap-1 font-mono text-[11px]"><Hash className="w-3 h-3" />{payment.reference || payment.id}</SemanticBadge>
+                </div>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <span className="font-mono font-medium">{formatCurrency(payment.amount)}</span>
+                  <span className="text-muted-foreground/30">·</span>
+                  <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />{formatDate(new Date(payment.date))}</span>
+                </div>
               </div>
             </div>
             <div className="flex flex-col items-end gap-2 shrink-0">

@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import { SemanticBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { abbreviateName } from "@/lib/utils"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Activity, AlertTriangle, FileText, Search, Shield } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { formatDateTime } from "@/lib/utils"
@@ -132,7 +134,15 @@ export default function AuditPage() {
       label: "User",
       className: undefined,
       cellClassName: undefined,
-      render: (e: AuditEntry) => <span className="text-sm text-foreground">{e.userName}</span>,
+      render: (e: AuditEntry) => (
+        <div className="flex items-center gap-2">
+          <Avatar className="size-6">
+            <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(e.userName || "User")}`} />
+            <AvatarFallback className="text-[10px]">{(e.userName || "U")[0]}</AvatarFallback>
+          </Avatar>
+          <span className="text-sm text-foreground">{abbreviateName(e.userName) || e.userName}</span>
+        </div>
+      ),
     },
     {
       key: "createdAt",

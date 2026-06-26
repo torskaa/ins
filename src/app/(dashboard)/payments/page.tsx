@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
-import { Banknote, DollarSign, Receipt, Search, XCircle } from "lucide-react"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Banknote, DollarSign, Landmark, Receipt, Search, Wallet, XCircle } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PropertySelector } from "@/components/ui/property-selector"
@@ -40,21 +41,21 @@ type Payment = {
   order?: { number: string }
 }
 
-const methodColors: Record<string, string> = {
-  bank_transfer: "bg-info/15 text-info",
-  cash: "bg-success/15 text-success",
-  credit_card: "bg-primary/15 text-primary",
-  cheque: "bg-warning/15 text-warning",
+const methodIcons: Record<string, { icon: React.ReactNode; color: string }> = {
+  bank_transfer: { icon: <Landmark className="w-3.5 h-3.5" />, color: "bg-info/15 text-info" },
+  cash: { icon: <Banknote className="w-3.5 h-3.5" />, color: "bg-success/15 text-success" },
+  credit_card: { icon: <Wallet className="w-3.5 h-3.5" />, color: "bg-primary/15 text-primary" },
+  cheque: { icon: <Receipt className="w-3.5 h-3.5" />, color: "bg-warning/15 text-warning" },
 }
 
 const PROPERTY_OPTIONS = [
-  { key: "method", label: "Method" },
   { key: "reference", label: "Reference" },
   { key: "source", label: "Source" },
   { key: "date", label: "Date" },
+  { key: "method", label: "Method" },
 ]
 
-const DEFAULT_PROPS = ["method", "reference", "source", "date"]
+const DEFAULT_PROPS = ["reference", "source", "date", "method"]
 const PAGE_SIZE = 10
 
 export default function PaymentsPage() {
@@ -102,25 +103,16 @@ export default function PaymentsPage() {
 
   const allColumns = [
     {
+      key: "reference",
+      label: "Reference",
+      render: (p: Payment) => <span className="text-sm text-foreground">{p.reference || "—"}</span>,
+    },
+    {
       key: "amount",
       label: "Amount",
       className: "text-right",
       cellClassName: "text-right",
       render: (p: Payment) => <span className="font-mono text-sm font-medium">{formatCurrency(p.amount)}</span>,
-    },
-    {
-      key: "method",
-      label: "Method",
-      render: (p: Payment) => (
-        <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-medium capitalize ${methodColors[p.method] || "bg-muted text-foreground"}`}>
-          {p.method.replace(/_/g, " ")}
-        </span>
-      ),
-    },
-    {
-      key: "reference",
-      label: "Reference",
-      render: (p: Payment) => <span className="text-sm text-foreground">{p.reference || "—"}</span>,
     },
     {
       key: "source",
@@ -131,6 +123,19 @@ export default function PaymentsPage() {
       key: "date",
       label: "Date",
       render: (p: Payment) => <span className="text-sm text-foreground">{formatDateTime(new Date(p.date))}</span>,
+    },
+    {
+      key: "method",
+      label: "Method",
+      render: (p: Payment) => {
+        const mi = methodIcons[p.method]
+        return (
+          <span className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-medium capitalize ${mi?.color || "bg-muted text-foreground"}`}>
+            {mi?.icon || null}
+            {p.method.replace(/_/g, " ")}
+          </span>
+        )
+      },
     },
   ]
 
@@ -258,7 +263,7 @@ export default function PaymentsPage() {
             </div>
             <div className="space-y-1"><Label>Reference</Label><Input placeholder="Transaction ID" /></div>
           </div>
-          <DialogFooter><Button variant="secondary" onClick={() => setShowCreate(false)}><XCircle className="w-4 h-4" /> Cancel</Button><Button>Record</Button></DialogFooter>
+          <DialogFooter><Button variant="outline" onClick={() => setShowCreate(false)}><XCircle className="w-4 h-4" /> Cancel</Button><Button>Record</Button></DialogFooter>
         </DialogContent>
       </Dialog>
       <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>

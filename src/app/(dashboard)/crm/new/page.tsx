@@ -91,7 +91,7 @@ export default function NewCustomerPage() {
             </Card>
             <div className="flex items-center justify-end gap-3 pt-4 mt-4 border-t border-border">
               <Button type="submit" loading={loading}>Create Customer</Button>
-              <Button type="button" variant="secondary" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
+              <Button type="button" variant="outline" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
             </div>
           </div>
           <div className="col-span-4 flex flex-col gap-4" />

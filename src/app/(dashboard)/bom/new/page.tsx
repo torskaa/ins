@@ -291,7 +291,7 @@ export default function NewBOMPage() {
             <kbd className="px-1.5 py-0.5 rounded border border-border bg-surface text-xs font-mono">Cmd+S</kbd> to save
           </p>
           <div className="flex items-center gap-3">
-            <Button type="button" variant="secondary" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
+            <Button type="button" variant="outline" onClick={() => router.back()}><XCircle className="w-4 h-4" /> Cancel</Button>
             <Button type="submit" loading={saving}>Create BOM</Button>
           </div>
         </div>

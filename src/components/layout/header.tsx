@@ -9,6 +9,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { abbreviateName } from "@/lib/utils"
 import { LogOut, User, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ButtonColorful } from "@/components/ui/button-colorful"
@@ -36,13 +37,14 @@ export function Header({ onWorkspaceOpen }: HeaderProps) {
 						</ButtonColorful>
 						<QuickCreate />
 					</div>
-					<NotificationBell />
-					<DropdownMenu>
+					<div className="flex items-center gap-2">
+						<NotificationBell />
+						<DropdownMenu>
 						<DropdownMenuTrigger asChild>
-							<button className="group flex items-center gap-2 rounded-lg p-1.5 hover:bg-surface transition-all duration-150">
-								<p className="text-sm text-muted-foreground hidden sm:block transition-all duration-150 group-hover:text-foreground">{session?.user?.name}</p>
+							<button className="group flex items-center gap-2 rounded-md p-1.5 hover:bg-surface transition-all duration-150">
+								<p className="text-sm text-muted-foreground hidden sm:block transition-all duration-150 group-hover:text-foreground">{abbreviateName(session?.user?.name) || session?.user?.name}</p>
 								<Avatar className="w-8 h-8 ring-1 ring-border/50 transition-all duration-150 group-hover:ring-primary/40 group-hover:ring-2">
-									<AvatarImage src={session?.user?.image || undefined} />
+									<AvatarImage src={session?.user?.image || `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(session?.user?.name || "User")}`} />
 									<AvatarFallback className="bg-primary/10 text-primary text-xs transition-all duration-150 group-hover:bg-primary group-hover:text-white">
 										{session?.user?.name?.[0] || "U"}
 									</AvatarFallback>
@@ -51,7 +53,7 @@ export function Header({ onWorkspaceOpen }: HeaderProps) {
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end" className="w-48">
 							<div className="px-3 py-2 border-b border-border/50">
-								<p className="text-sm font-medium">{session?.user?.name}</p>
+								<p className="text-sm font-medium">{abbreviateName(session?.user?.name) || session?.user?.name}</p>
 								<p className="text-xs text-muted-foreground">{session?.user?.email}</p>
 							</div>
 							<div className="p-1">
@@ -74,6 +76,7 @@ export function Header({ onWorkspaceOpen }: HeaderProps) {
 							</div>
 						</DropdownMenuContent>
 					</DropdownMenu>
+					</div>
 				</div>
 			</div>
 		</header>

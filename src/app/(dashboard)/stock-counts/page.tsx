@@ -102,11 +102,6 @@ export default function StockCountsPage() {
   ),
   },
   {
-  key: "status",
-  label: "Status",
-  render: (s: StockCount) => <SemanticBadge semantic={s.status} category="status" className="">{s.status.replace(/_/g, " ")}</SemanticBadge>,
-  },
-  {
   key: "warehouse",
   label: "Warehouse",
   render: (s: StockCount) => (
@@ -138,6 +133,11 @@ export default function StockCountsPage() {
    {s.discrepancyItems}
    </span>
    ),
+   },
+   {
+   key: "status",
+   label: "Status",
+   render: (s: StockCount) => <SemanticBadge semantic={s.status} category="status" className="">{s.status.replace(/_/g, " ")}</SemanticBadge>,
    },
  ]
 

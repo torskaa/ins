@@ -110,11 +110,6 @@ export default function DeliveriesPage() {
   ),
  },
  {
- key: "status",
- label: "Status",
- render: (d: Delivery) => <SemanticBadge semantic={d.status} category="status" className="">{d.status}</SemanticBadge>,
- },
- {
  key: "distributor",
  label: "Distributor",
  render: (d: Delivery) => (
@@ -144,6 +139,11 @@ export default function DeliveriesPage() {
    className: "text-right",
    cellClassName: "text-right font-mono text-sm",
    render: (d: Delivery) => <span>{d.totalItems}</span>,
+   },
+   {
+   key: "status",
+   label: "Status",
+   render: (d: Delivery) => <SemanticBadge semantic={d.status} category="status" className="">{d.status}</SemanticBadge>,
    },
  ]
 

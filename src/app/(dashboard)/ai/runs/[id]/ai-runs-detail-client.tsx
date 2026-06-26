@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { ToolStepCard } from "@/components/ai/tool-step-card"
 import { ApprovalCard } from "@/components/ai/approval-card"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Bot, CheckCircle2, XCircle, Clock, Loader2, ArrowLeft, RefreshCw } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -71,7 +72,10 @@ export function AiRunsDetailClient({ run: initialRun }: { run: SerializedRun }) 
                 <h2 className="font-medium">{run.task}</h2>
                 <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
-                    <Bot className="w-3.5 h-3.5" />
+                    <Avatar className="size-5">
+                      <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(run.agentName.replace(/\s+/g, ""))}`} />
+                      <AvatarFallback className="text-[8px]">{run.agentName[0]}</AvatarFallback>
+                    </Avatar>
                     {run.agentName}
                   </span>
                   {duration && <span>{duration}</span>}

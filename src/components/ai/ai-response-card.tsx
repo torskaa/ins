@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import {
   BotMessageSquare,
   Package,
@@ -46,10 +47,10 @@ const statusConfig: Record<AiResponseStatus, { label: string; icon: React.ReactN
 }
 
 const agentIcons: Record<string, React.ReactNode> = {
-  inventory: <Package className="size-4" />,
-  orders: <ShoppingCart className="size-4" />,
-  finance: <BarChart3 className="size-4" />,
-  sales: <TrendingUp className="size-4" />,
+  inventory: <AvatarImage src="https://api.dicebear.com/7.x/notionists/svg?seed=Inventory" />,
+  orders: <AvatarImage src="https://api.dicebear.com/7.x/notionists/svg?seed=Orders" />,
+  finance: <AvatarImage src="https://api.dicebear.com/7.x/notionists/svg?seed=Finance" />,
+  sales: <AvatarImage src="https://api.dicebear.com/7.x/notionists/svg?seed=Sales" />,
 }
 
 const businessSummaries: Record<string, string[]> = {
@@ -103,7 +104,6 @@ export function AiResponseCard({
   const [copied, setCopied] = useState(false)
   const type = detectAgentType(toolCalls)
   const name = agentName || agentNames[type] || agentNames.general
-  const icon = agentIcons[type] || <BotMessageSquare className="size-4" />
   const st = statusConfig[status]
   const defaultSummary = businessSummaries[type]?.[0] || summary
 
@@ -116,7 +116,10 @@ export function AiResponseCard({
   return (
     <div className="bg-card/60 backdrop-blur-sm rounded-xl p-4 space-y-3">
       <div className="flex items-center gap-2.5">
-        <span className="text-muted-foreground">{icon}</span>
+        <Avatar className="size-6">
+          {agentIcons[type] || <AvatarImage src="https://api.dicebear.com/7.x/notionists/svg?seed=AI" />}
+          <AvatarFallback className="text-[10px]">{name[0]}</AvatarFallback>
+        </Avatar>
         <span className="text-sm font-medium text-foreground">{name}</span>
         {tag && (
           <Badge variant="outline" className="text-xs font-medium px-2 py-0.5 text-muted-foreground/50 border-border/40">

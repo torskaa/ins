@@ -123,15 +123,15 @@ export default function InvoicesPage() {
       render: (inv: Invoice) => <span className="font-mono text-sm text-foreground">{formatCurrency(inv.paidAmount)}</span>,
     },
     {
+      key: "dueDate",
+      label: "Due Date",
+      render: (inv: Invoice) => <span className="text-sm text-foreground">{formatDate(new Date(inv.dueDate))}</span>,
+    },
+    {
       key: "status",
       label: "Status",
       className: "w-[120px]",
       render: (inv: Invoice) => <SemanticBadge semantic={inv.status} category="status" className="">{inv.status}</SemanticBadge>,
-    },
-    {
-      key: "dueDate",
-      label: "Due Date",
-      render: (inv: Invoice) => <span className="text-sm text-foreground">{formatDate(new Date(inv.dueDate))}</span>,
     },
   ]
 

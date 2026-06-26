@@ -248,7 +248,7 @@ export default function CategoriesPage() {
   </div>
  </div>
  <DialogFooter>
- <Button variant="secondary" onClick={() => setShowCreate(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
+ <Button variant="outline" onClick={() => setShowCreate(false)}><XCircle className="w-4 h-4" /> Cancel</Button>
  <Button onClick={handleCreate}>Create</Button>
  </DialogFooter>
  </DialogContent>

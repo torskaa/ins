@@ -262,7 +262,7 @@ export function Sidebar({ collapsed, onCollapsedChange }: { collapsed?: boolean;
  isCollapsed ? "w-16" : "w-60"
  )}
  >
- <div className={cn("flex items-center h-14 border-b border-sidebar-border px-3", isCollapsed && "justify-center px-0")}>
+  <div className={cn("flex items-center h-14 border-b border-sidebar-border px-4", isCollapsed && "justify-center px-0")}>
  <Link href="/dashboard" className="flex items-center gap-2.5">
  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shrink-0 shadow-sm">
  <span className="text-white font-bold text-xs">I</span>
@@ -271,11 +271,11 @@ export function Sidebar({ collapsed, onCollapsedChange }: { collapsed?: boolean;
  </Link>
  </div>
 
- <div className="px-3 pt-3 pb-2 border-b border-sidebar-border">
+  <div className="px-4 pt-3 pb-2 border-b border-sidebar-border">
  {!isCollapsed ? <WorkspaceSwitcher /> : <WorkspaceSwitcher collapsed />}
  </div>
 
- <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-5">
+  <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-5">
  {menuGroups.map((group) => (
  <div key={group.label}>
  {!isCollapsed && (
@@ -288,7 +288,7 @@ export function Sidebar({ collapsed, onCollapsedChange }: { collapsed?: boolean;
  ))}
  </nav>
 
- <div className="p-2 border-t border-sidebar-border space-y-1">
+  <div className="px-3 py-2 border-t border-sidebar-border space-y-1">
  <LanguageSwitcher collapsed={isCollapsed} />
  <button
  onClick={toggleTheme}

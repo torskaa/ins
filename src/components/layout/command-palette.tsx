@@ -87,7 +87,7 @@ async function fetchGroupedSearch(q: string): Promise<GroupedResults> {
  if (!res.ok) return empty
  const data = await res.json()
  return {
- products: (data.products || []).map((p: any) => ({ id: p.id, label: p.name, sublabel: p.sku ? `SKU: ${p.sku}` : p.type, href: `/inventory/${p.id}` })),
+  products: (data.products || []).map((p: any) => ({ id: p.id, label: p.name, sublabel: p.sku ? `SKU: ${p.sku}` : p.type, href: `/inventory/${p.id}`, image: p.image, fallback: p.name?.[0] })),
  customers: (data.customers || []).map((c: any) => ({ id: c.id, label: c.name, sublabel: c.email || c.company, href: `/crm/${c.id}`, fallback: c.name?.[0] })),
  invoices: (data.invoices || []).map((inv: any) => ({ id: inv.id, label: inv.number, sublabel: `${inv.customerName || "Customer"} — $${inv.total?.toLocaleString() || "0"} · ${inv.status}`, href: `/invoices/${inv.id}` })),
  orders: (data.orders || []).map((o: any) => ({ id: o.id, label: o.number, sublabel: `${o.customerName || "Customer"} — $${o.total?.toLocaleString() || "0"} · ${o.status}`, href: `/orders/${o.id}` })),
@@ -227,38 +227,32 @@ export function CommandPalette() {
  onClick={() => onSelect(item.href)}
  className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-muted/50 transition-colors"
  >
- {item.image || key === "customers" || key === "suppliers" ? (
- <Avatar className="size-7 shrink-0 ring-1 ring-slate-200">
- <AvatarImage src={item.image || undefined} alt={item.label} />
- <AvatarFallback className="bg-muted text-muted-foreground text-[10px]">{item.fallback || item.label[0]}</AvatarFallback>
- </Avatar>
- ) : (
- <div className="size-7 shrink-0 rounded-md bg-muted flex items-center justify-center">
- <Icon className="w-3.5 h-3.5 text-muted-foreground" />
- </div>
- )}
- <div className="flex-1 min-w-0">
- <p className="text-sm font-medium text-foreground truncate">{item.label}</p>
- {item.sublabel && (
- <p className="text-xs text-muted-foreground truncate">{item.sublabel}</p>
- )}
- </div>
- <span className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${meta.color}`}>
- {meta.label.slice(0, -1)}
- </span>
- </button>
- ))}
- </div>
- )
- })}
- </>
- )
- }
+  <Avatar className="size-7 shrink-0 ring-1 ring-slate-200">
+  <AvatarImage src={item.image || `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(item.label)}`} alt={item.label} />
+  <AvatarFallback className="bg-muted text-muted-foreground text-[10px]">{item.fallback || item.label[0]}</AvatarFallback>
+  </Avatar>
+  <div className="flex-1 min-w-0">
+  <p className="text-sm font-medium text-foreground truncate">{item.label}</p>
+  {item.sublabel && (
+  <p className="text-xs text-muted-foreground truncate">{item.sublabel}</p>
+  )}
+  </div>
+  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${meta.color}`}>
+  {meta.label.slice(0, -1)}
+  </span>
+  </button>
+  ))}
+  </div>
+  )
+  })}
+  </>
+  )
+  }
 
- return (
+  return (
  <>
  <div ref={ref} className="relative w-full max-w-lg">
- <div className="flex items-center gap-2 h-9 px-3 rounded-xl border border-border/60 bg-surface/80 focus-within:border-primary/40 focus-within:bg-white focus-within:shadow-sm transition-all duration-150">
+   <div className="flex items-center gap-2 h-9 px-3 rounded-md border border-border/70 bg-surface hover:bg-surface/90 hover:border-border/90 focus-within:border-primary/40 focus-within:bg-white focus-within:shadow-sm transition-all duration-150 cursor-text">
  <input
  ref={inputRef}
  type="text"
@@ -376,14 +370,10 @@ export function CommandPalette() {
  <CommandGroup key={key} heading={meta.label}>
  {items.map((item) => (
  <CommandItem key={`${key}-${item.id}`} onSelect={() => handleModalSelect(item.href)}>
- {item.image || key === "customers" || key === "suppliers" ? (
- <Avatar className="size-6 shrink-0 ring-1 ring-slate-200">
- <AvatarImage src={item.image || undefined} alt={item.label} />
- <AvatarFallback className="bg-muted text-muted-foreground text-[10px]">{item.fallback || item.label[0]}</AvatarFallback>
- </Avatar>
- ) : (
- <Icon className="w-4 h-4 text-muted-foreground" />
- )}
+  <Avatar className="size-6 shrink-0 ring-1 ring-slate-200">
+  <AvatarImage src={item.image || `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(item.label)}`} alt={item.label} />
+  <AvatarFallback className="bg-muted text-muted-foreground text-[10px]">{item.fallback || item.label[0]}</AvatarFallback>
+  </Avatar>
  <div className="flex-1 min-w-0">
  <span className="text-sm">{item.label}</span>
  {item.sublabel && (

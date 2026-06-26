@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { EmptyState } from "@/components/ui/empty-state"
 import { SearchInput } from "@/components/ui/search-input"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Bot, CheckCircle2, XCircle, Clock, Loader2 } from "lucide-react"
 
 type Run = {
@@ -103,7 +104,10 @@ export function AiRunsClient({ initialRuns }: { initialRuns: Run[] }) {
                       </div>
                       <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
-                          <Bot className="w-3 h-3" />
+                          <Avatar className="size-5">
+                            <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(run.agentName.replace(/\s+/g, ""))}`} />
+                            <AvatarFallback className="text-[8px]">{run.agentName[0]}</AvatarFallback>
+                          </Avatar>
                           {run.agentName}
                         </span>
                         {run.steps && (

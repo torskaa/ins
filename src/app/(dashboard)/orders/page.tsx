@@ -108,44 +108,44 @@ function OrdersContent() {
     setPage(1)
   }, [search, filters])
 
-  const allColumns = [
- {
- key: "number",
- label: "Order #",
-  render: (o: Order) => <span className="font-mono text-xs font-medium">{o.number}</span>,
-  },
+   const allColumns = [
   {
-  key: "party",
-  label: type === "sales" ? "Customer" : "Supplier",
-  render: (o: Order) => <span className="font-medium">{type === "sales" ? o.customer?.name || "—" : o.supplier?.name || "—"}</span>,
-  },
-   {
-   key: "items",
-   label: "Items",
-   render: (o: Order) => <span className="text-sm text-foreground">{o.items?.length || 0} items</span>,
+  key: "number",
+  label: "Order #",
+   render: (o: Order) => <span className="font-mono text-xs font-medium">{o.number}</span>,
    },
    {
-   key: "total",
-   label: "Total",
-   className: "text-right",
-   cellClassName: "text-right",
-   render: (o: Order) => <span className="font-mono text-sm font-medium">{formatCurrency(o.total)}</span>,
+   key: "party",
+   label: type === "sales" ? "Customer" : "Supplier",
+   render: (o: Order) => <span className="font-medium">{type === "sales" ? o.customer?.name || "—" : o.supplier?.name || "—"}</span>,
    },
-   {
-   key: "status",
-   label: "Status",
-   render: (o: Order) => (
+    {
+    key: "items",
+    label: "Items",
+    render: (o: Order) => <span className="text-sm text-foreground">{o.items?.length || 0} items</span>,
+    },
+    {
+    key: "total",
+    label: "Total",
+    className: "text-right",
+    cellClassName: "text-right",
+    render: (o: Order) => <span className="font-mono text-sm font-medium">{formatCurrency(o.total)}</span>,
+    },
+    {
+    key: "orderDate",
+    label: "Date",
+    render: (o: Order) => <span className="text-sm text-foreground">{formatDate(new Date(o.orderDate))}</span>,
+    },
+    {
+    key: "status",
+    label: "Status",
+    render: (o: Order) => (
 <SemanticBadge semantic={o.status} category="status" className="">
     {o.status}
     </SemanticBadge>
-   ),
-   },
-   {
-   key: "orderDate",
-   label: "Date",
-   render: (o: Order) => <span className="text-sm text-foreground">{formatDate(new Date(o.orderDate))}</span>,
-   },
- ]
+    ),
+    },
+  ]
 
  const columns = allColumns.filter((c) => c.key === "number" || props.includes(c.key))
 

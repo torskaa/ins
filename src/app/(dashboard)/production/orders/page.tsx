@@ -118,12 +118,6 @@ export default function ProductionOrdersPage() {
       ),
     },
     {
-      key: "status",
-      label: "Status",
-      className: "w-[120px]",
-      render: (o: ProdOrder) => <SemanticBadge semantic={o.status} category="status" className="">{o.status.replace(/_/g, " ")}</SemanticBadge>,
-    },
-    {
       key: "quantity",
       label: "Qty",
       className: "text-right",
@@ -152,6 +146,12 @@ export default function ProductionOrdersPage() {
       key: "warehouse",
       label: "Warehouse",
       render: (o: ProdOrder) => <span className="text-sm text-foreground">{o.warehouse?.name || "—"}</span>,
+    },
+    {
+      key: "status",
+      label: "Status",
+      className: "w-[120px]",
+      render: (o: ProdOrder) => <SemanticBadge semantic={o.status} category="status" className="">{o.status.replace(/_/g, " ")}</SemanticBadge>,
     },
   ]
 

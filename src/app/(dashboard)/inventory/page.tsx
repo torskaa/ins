@@ -6,6 +6,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { FilterButton, type FilterColumn } from "@/components/ui/filter-button"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { AlertTriangle, Package, Tag, BarChart3, Search } from "lucide-react"
 import { MoreMenu, ActionIcons } from "@/components/ui/more-menu"
 import { ViewToggle } from "@/components/ui/view-toggle"
@@ -159,20 +160,28 @@ export default function InventoryPage() {
  )
  },
  },
- {
- key: "status",
- label: "Status",
- className: "w-[120px]",
-  render: (p: Product) => (
-   <SemanticBadge semantic={p.status} category="status" className="">{p.status}</SemanticBadge>
-  ),
- },
- {
- key: "supplier",
- label: "Supplier",
- className: "w-[160px]",
- render: (p: Product) => <span className="text-sm text-foreground">{p.supplier?.name || "—"}</span>,
- },
+  {
+  key: "supplier",
+  label: "Supplier",
+  className: "w-[160px]",
+  render: (p: Product) => p.supplier ? (
+    <div className="flex items-center gap-2">
+      <Avatar className="size-6">
+        <AvatarImage src={`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(p.supplier.name)}`} />
+        <AvatarFallback className="text-[10px]">{p.supplier.name.split(/\s+/).map(n => n[0]).join("").slice(0, 2).toUpperCase()}</AvatarFallback>
+      </Avatar>
+      <span className="text-sm text-foreground truncate">{p.supplier.name}</span>
+    </div>
+  ) : <span className="text-sm text-foreground">—</span>,
+  },
+  {
+  key: "status",
+  label: "Status",
+  className: "w-[120px]",
+   render: (p: Product) => (
+    <SemanticBadge semantic={p.status} category="status" className="">{p.status}</SemanticBadge>
+   ),
+  },
   ]
 
   const columns = allColumns.filter((c) => c.key === "name" || props.includes(c.key))

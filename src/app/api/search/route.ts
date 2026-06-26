@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     const [products, customers, invoices, orders, suppliers, categories, quotations, payments, warehouses, distributors, deliveries, stockCounts] = await Promise.all([
       prisma.product.findMany({
         where: { organizationId: org.id, deletedAt: null, OR: [{ name: { contains: q } }, { sku: { contains: q } }] },
-        select: { id: true, name: true, sku: true, type: true },
+        select: { id: true, name: true, sku: true, type: true, image: true },
         take: 5,
       }),
       prisma.customer.findMany({
@@ -81,7 +81,7 @@ export async function GET(request: Request) {
       prisma.wikiArticle.findMany({ where: { organizationId: org.id, OR: [{ title: { contains: q } }, { excerpt: { contains: q } }, { category: { contains: q } }] }, take: 5, select: { id: true, title: true, category: true } }),
     ])
     return NextResponse.json({
-      products: products.map((p) => ({ id: p.id, name: p.name, sku: p.sku, type: p.type })),
+      products: products.map((p) => ({ id: p.id, name: p.name, sku: p.sku, type: p.type, image: p.image })),
       customers: customers.map((c) => ({ id: c.id, name: c.name, email: c.email, phone: c.phone, company: c.company })),
       invoices: invoices.map((inv) => ({ id: inv.id, number: inv.number, total: inv.total, status: inv.status, customerName: inv.customer?.name || null })),
       orders: orders.map((o) => ({ id: o.id, number: o.number, total: o.total, status: o.status, customerName: o.customer?.name || null })),

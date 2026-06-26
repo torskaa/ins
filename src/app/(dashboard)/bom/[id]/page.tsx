@@ -113,7 +113,8 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
     if (!id) return
     fetch(`/api/bom?finishedGoodId=${id}`)
       .then((r) => r.json())
-      .then((data: BOMLine[]) => {
+      .then((json) => {
+        const data: BOMLine[] = json?.success ? json.data : json
         setLines(data)
         const versions = groupByVersion(data)
         if (versions.length > 0) setSelectedVersion(versions[0].version)
@@ -122,6 +123,7 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
           setProductSku(data[0].finishedGood.sku)
           setProductType(data[0].finishedGood.type)
         }
+        if (!json?.success && !Array.isArray(json)) throw new Error(json?.error || "Failed to load")
       })
       .catch((err) => { setError(err.message || "Failed to load data") })
       .finally(() => setLoading(false))
@@ -153,7 +155,7 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
       toast.success(`v${targetVersion} ${newStatus}`)
 
       const refreshed = await fetch(`/api/bom?finishedGoodId=${id}`).then((r) => r.json())
-      setLines(refreshed)
+      setLines(refreshed?.success ? refreshed.data : refreshed)
     } catch (err: any) {
       toast.error(err.message)
     }
@@ -164,7 +166,10 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
     setLoadingImpact(true)
     try {
       const res = await fetch(`/api/bom/${activeVersion.items[0].id}/impact`)
-      if (res.ok) setImpact(await res.json())
+      if (res.ok) {
+        const json = await res.json()
+        setImpact(json?.success ? json.data : json)
+      }
     } catch {
       toast.error("Failed to load impact analysis")
     } finally {
@@ -194,7 +199,7 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
       toast.success("BOM entry updated")
       setShowEdit(false)
       const refreshed = await fetch(`/api/bom?finishedGoodId=${id}`).then((r) => r.json())
-      setLines(refreshed)
+      setLines(refreshed?.success ? refreshed.data : refreshed)
     } catch {
       toast.error("Failed to update BOM entry")
     } finally {

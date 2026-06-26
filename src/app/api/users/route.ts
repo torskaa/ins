@@ -7,7 +7,7 @@ export const GET = apiHandler(async () => {
   const { org } = await requireOrg()
   const members = await prisma.organizationMember.findMany({
     where: { organizationId: org.id },
-    include: { user: { select: { id: true, name: true, email: true } } },
+    include: { user: { select: { id: true, name: true, email: true, image: true } } },
     orderBy: { createdAt: "asc" },
   })
   return NextResponse.json(members.map((m) => ({ id: m.user.id, name: m.user.name, email: m.user.email, role: m.role })))

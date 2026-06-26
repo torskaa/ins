@@ -117,6 +117,11 @@ export default function QuotationsPage() {
       render: (q: Quotation) => <span className="font-mono text-sm font-medium">{formatCurrency(q.total)}</span>,
     },
     {
+      key: "validUntil",
+      label: "Valid Until",
+      render: (q: Quotation) => <span className="text-sm text-foreground">{formatDate(new Date(q.validUntil))}</span>,
+    },
+    {
       key: "status",
       label: "Status",
       className: "w-[120px]",
@@ -125,11 +130,6 @@ export default function QuotationsPage() {
           {q.status}
         </SemanticBadge>
       ),
-    },
-    {
-      key: "validUntil",
-      label: "Valid Until",
-      render: (q: Quotation) => <span className="text-sm text-foreground">{formatDate(new Date(q.validUntil))}</span>,
     },
   ]
 
