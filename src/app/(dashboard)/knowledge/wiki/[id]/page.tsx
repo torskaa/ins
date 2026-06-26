@@ -521,7 +521,7 @@ export default function WikiArticlePage({ params }: { params: Promise<{ id: stri
         <CoverImage url={article.coverImage || getCoverImage(article.content)} />
 
         {/* Content — 20px/32px serif style */}
-        <div className="mt-10 text-[20px] leading-[32px] tracking-[-0.003em] text-foreground/85 space-y-6 font-serif">
+        <div className="mt-10 text-[20px] leading-[32px] tracking-[-0.003em] text-foreground/85 space-y-6">
           <ArticleBlocksRenderer content={article.content} />
         </div>
 
