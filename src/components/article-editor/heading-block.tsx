@@ -40,6 +40,8 @@ export function HeadingBlock({
   const ref = useRef<HTMLDivElement>(null)
   const isUserChange = useRef(false)
   const [linkPreview, setLinkPreview] = useState<{ url: string; x: number; y: number } | null>(null)
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const previewRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (isUserChange.current) {
@@ -85,25 +87,36 @@ export function HeadingBlock({
     [onEnter, onBackspaceEmpty, onSlash]
   )
 
+  const showPreview = useCallback((url: string, el: HTMLElement) => {
+    clearTimeout(hideTimer.current)
+    const rect = el.getBoundingClientRect()
+    setLinkPreview({ url, x: rect.left, y: rect.bottom + 4 })
+  }, [])
+
+  const hidePreview = useCallback(() => {
+    clearTimeout(hideTimer.current)
+    hideTimer.current = setTimeout(() => setLinkPreview(null), 250)
+  }, [])
+
+  const cancelHide = useCallback(() => {
+    clearTimeout(hideTimer.current)
+  }, [])
+
   const handleMouseOver = useCallback((e: React.MouseEvent) => {
+    cancelHide()
     const el = e.target as HTMLElement
     if (el.tagName === "A") {
       const href = (el as HTMLAnchorElement).getAttribute("href")
       if (href) {
-        const rect = el.getBoundingClientRect()
-        setLinkPreview({ url: href, x: rect.left, y: rect.bottom + 4 })
+        showPreview(href, el)
         return
       }
     }
-    setLinkPreview(null)
-  }, [])
+  }, [showPreview, cancelHide])
 
-  const handleMouseOut = useCallback((e: React.MouseEvent) => {
-    const related = e.relatedTarget as HTMLElement | null
-    if (!related?.closest("[data-link-preview]")) {
-      setLinkPreview(null)
-    }
-  }, [])
+  const handleMouseOut = useCallback(() => {
+    hidePreview()
+  }, [hidePreview])
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const html = e.clipboardData?.getData("text/html")
@@ -237,15 +250,17 @@ export function HeadingBlock({
         onMouseOut={handleMouseOut}
         onBlur={handleInput}
       />
-    {linkPreview && (
-      <div
+    <div
+        ref={previewRef}
         data-link-preview
-        onMouseEnter={() => setLinkPreview(linkPreview)}
-        onMouseOut={() => setLinkPreview(null)}
+        onMouseEnter={cancelHide}
+        onMouseLeave={hidePreview}
+        className="contents"
       >
-        <LinkPreview url={linkPreview.url} position={{ x: linkPreview.x, y: linkPreview.y }} />
+        {linkPreview && (
+          <LinkPreview url={linkPreview.url} position={{ x: linkPreview.x, y: linkPreview.y }} />
+        )}
       </div>
-    )}
     </>
   )
 }
