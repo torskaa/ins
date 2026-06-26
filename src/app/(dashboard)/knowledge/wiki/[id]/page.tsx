@@ -37,6 +37,7 @@ import {
   Copy,
   Check,
   Search,
+  Link,
 } from "lucide-react"
 import {
   Dialog,
@@ -853,12 +854,13 @@ function InlineToolbar() {
         <button
           type="button"
           onClick={() => {
-            const url = window.prompt("Paste image URL:")
-            if (url) document.execCommand("insertImage", false, url)
+            const url = window.prompt("Enter link URL:")
+            if (url) document.execCommand("createLink", false, url)
           }}
-          className="ml-0.5 text-[10px] text-muted-foreground/30 hover:text-muted-foreground underline underline-offset-2 transition-colors"
+          className="size-6 flex items-center justify-center rounded text-muted-foreground/50 hover:text-foreground hover:bg-surface transition-colors"
+          title="Insert link"
         >
-          URL
+          <Link className="size-3.5" />
         </button>
         <input
           ref={fileInputRef}
