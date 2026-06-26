@@ -37,14 +37,20 @@ export function HeadingBlock({
   onPaste,
 }: HeadingBlockProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const isUserChange = useRef(false)
 
   useEffect(() => {
+    if (isUserChange.current) {
+      isUserChange.current = false
+      return
+    }
     if (ref.current && ref.current.innerHTML !== content) {
       ref.current.innerHTML = content
     }
   }, [content])
 
   const handleInput = useCallback(() => {
+    isUserChange.current = true
     if (ref.current) {
       onChange(ref.current.innerHTML)
     }
@@ -92,12 +98,17 @@ export function HeadingBlock({
     const hasQuote = body.querySelector("blockquote")
     const hasDivider = body.querySelector("hr")
 
+    const urlRegex = /(https?:\/\/[^\s<]+)/g
+    function autoLink(text: string): string {
+      return text.replace(urlRegex, (url) => `<a href="${url}" title="${url}">${url}</a>`)
+    }
+
     const allowedInline = new Set(["b", "strong", "i", "em", "u", "s", "a", "code", "br", "span"])
     function cleanInline(html: string): string {
       const d = document.createElement("div")
       d.innerHTML = html
       function clean(n: Node): string {
-        if (n.nodeType === 3) return n.textContent || ""
+        if (n.nodeType === 3) return autoLink(n.textContent || "")
         if (n.nodeType !== 1) return ""
         const e = n as HTMLElement
         const t = e.tagName.toLowerCase()
@@ -107,7 +118,7 @@ export function HeadingBlock({
         if (t === "br") return "<br>"
         if (t === "a") {
           const href = (e as HTMLAnchorElement).getAttribute("href")
-          return href ? `<a href="${href}">${inner}</a>` : inner
+          return href ? `<a href="${href}" title="${href}">${inner}</a>` : inner
         }
         if (t === "span") return inner
         return `<${t}>${inner}</${t}>`
@@ -148,7 +159,7 @@ export function HeadingBlock({
     const allowed = new Set(["b", "strong", "i", "em", "u", "s", "a", "code", "pre", "br", "span"])
 
     function clean(node: Node): string {
-      if (node.nodeType === 3) return node.textContent || ""
+      if (node.nodeType === 3) return autoLink(node.textContent || "")
       if (node.nodeType !== 1) return ""
       const el = node as HTMLElement
       const tag = el.tagName.toLowerCase()
@@ -160,7 +171,7 @@ export function HeadingBlock({
       if (tag === "br") return "<br>"
       if (tag === "a") {
         const href = (el as HTMLAnchorElement).getAttribute("href")
-        return href ? `<a href="${href}">${inner}</a>` : inner
+        return href ? `<a href="${href}" title="${href}">${inner}</a>` : inner
       }
       if (tag === "span") return inner
       return `<${tag}>${inner}</${tag}>`
@@ -168,18 +179,7 @@ export function HeadingBlock({
 
     const cleaned = Array.from(body.childNodes).map(clean).join("")
 
-    const sel = window.getSelection()
-    if (!sel?.rangeCount) {
-      document.execCommand("insertHTML", false, cleaned)
-      return
-    }
-    const range = sel.getRangeAt(0)
-    range.deleteContents()
-    const frag = range.createContextualFragment(cleaned)
-    range.insertNode(frag)
-    range.collapse(false)
-    sel.removeAllRanges()
-    sel.addRange(range)
+    document.execCommand("insertHTML", false, cleaned)
 
     handleInput()
   }, [handleInput, onPaste])

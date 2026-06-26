@@ -357,7 +357,7 @@ export default function NewWikiArticlePage() {
 
       {/* Content area */}
       <div className="max-w-5xl mx-auto px-4 lg:px-6 py-6">
-        <div className="max-w-[680px] mx-auto">
+        <div className="max-w-[800px] mx-auto">
           <ArticleEditor
             title={title}
             blocks={blocks}
