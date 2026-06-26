@@ -189,7 +189,21 @@ export function ParagraphBlock({
 
     const cleaned = Array.from(body.childNodes).map(clean).join("")
 
-    document.execCommand("insertHTML", false, cleaned)
+    const sel = window.getSelection()
+    if (sel?.rangeCount) {
+      const range = sel.getRangeAt(0)
+      range.deleteContents()
+      const temp = document.createElement("div")
+      temp.innerHTML = cleaned
+      const frag = document.createDocumentFragment()
+      while (temp.firstChild) {
+        frag.appendChild(temp.firstChild)
+      }
+      range.insertNode(frag)
+      range.collapse(false)
+      sel.removeAllRanges()
+      sel.addRange(range)
+    }
 
     handleInput()
   }, [handleInput, onPaste])
@@ -201,7 +215,7 @@ export function ParagraphBlock({
       suppressContentEditableWarning
       role="textbox"
       aria-multiline="true"
-      className={`outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground/30 ${className}`}
+      className={`outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground/30 [&_a]:text-blue-500 [&_a]:underline [&_a]:cursor-pointer ${className}`}
       data-placeholder={content ? "" : placeholder}
       onInput={handleInput}
       onKeyDown={handleKeyDown}

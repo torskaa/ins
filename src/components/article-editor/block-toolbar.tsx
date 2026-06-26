@@ -49,8 +49,23 @@ export function BlockToolbar({ editorRef }: BlockToolbarProps) {
   function handleLink() {
     const selection = window.getSelection()
     if (!selection || selection.isCollapsed) return
-    const url = window.prompt("Enter URL:", "https://")
-    if (url) {
+
+    // Check if already inside a link
+    let existingUrl = ""
+    let node = selection.anchorNode
+    while (node && node !== editorRef.current) {
+      if (node instanceof HTMLAnchorElement) {
+        existingUrl = node.getAttribute("href") || ""
+        break
+      }
+      node = node.parentNode
+    }
+
+    const url = window.prompt(existingUrl ? "Edit link URL:" : "Enter URL:", existingUrl || "https://")
+    if (url === null) return
+    if (url === "") {
+      exec("unlink")
+    } else {
       exec("createLink", url)
     }
   }
