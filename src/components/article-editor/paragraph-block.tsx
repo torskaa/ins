@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useCallback, useEffect } from "react"
+import { useRef, useState, useCallback, useEffect } from "react"
 
 interface PasteBlock {
   type: "paragraph" | "heading" | "list" | "code" | "quote" | "divider"
@@ -36,6 +36,7 @@ export function ParagraphBlock({
 }: ParagraphBlockProps) {
   const ref = useRef<HTMLDivElement>(null)
   const isUserChange = useRef(false)
+  const [linkPreview, setLinkPreview] = useState<{ url: string; x: number; y: number } | null>(null)
 
   useEffect(() => {
     if (autoFocus && ref.current) {
@@ -89,6 +90,26 @@ export function ParagraphBlock({
     },
     [onEnter, onBackspaceEmpty, onSlash]
   )
+
+  const handleMouseOver = useCallback((e: React.MouseEvent) => {
+    const el = e.target as HTMLElement
+    if (el.tagName === "A") {
+      const href = (el as HTMLAnchorElement).getAttribute("href")
+      if (href) {
+        const rect = el.getBoundingClientRect()
+        setLinkPreview({ url: href, x: rect.left, y: rect.bottom + 4 })
+        return
+      }
+    }
+    setLinkPreview(null)
+  }, [])
+
+  const handleMouseOut = useCallback((e: React.MouseEvent) => {
+    const related = e.relatedTarget as HTMLElement | null
+    if (!related?.closest("[data-link-preview]")) {
+      setLinkPreview(null)
+    }
+  }, [])
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const html = e.clipboardData?.getData("text/html")
@@ -209,18 +230,40 @@ export function ParagraphBlock({
   }, [handleInput, onPaste])
 
   return (
-    <div
-      ref={ref}
-      contentEditable
-      suppressContentEditableWarning
-      role="textbox"
-      aria-multiline="true"
-      className={`outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground/30 [&_a]:text-blue-500 [&_a]:underline [&_a]:cursor-pointer ${className}`}
-      data-placeholder={content ? "" : placeholder}
-      onInput={handleInput}
-      onKeyDown={handleKeyDown}
-      onPaste={handlePaste}
-      onBlur={handleInput}
-    />
+    <>
+      <div
+        ref={ref}
+        contentEditable
+        suppressContentEditableWarning
+        role="textbox"
+        aria-multiline="true"
+        className={`outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-muted-foreground/30 [&_a]:text-blue-500 [&_a]:underline [&_a]:cursor-pointer ${className}`}
+        data-placeholder={content ? "" : placeholder}
+        onInput={handleInput}
+        onKeyDown={handleKeyDown}
+        onPaste={handlePaste}
+        onMouseOver={handleMouseOver}
+        onMouseOut={handleMouseOut}
+        onBlur={handleInput}
+      />
+      {linkPreview && (
+        <div
+          data-link-preview
+          className="fixed z-[999] flex items-center gap-2 rounded-lg border bg-popover px-3 py-1.5 text-sm shadow-lg"
+          style={{ left: linkPreview.x, top: linkPreview.y }}
+          onMouseEnter={() => setLinkPreview(linkPreview)}
+          onMouseOut={() => setLinkPreview(null)}
+        >
+          <span className="text-muted-foreground truncate max-w-[240px]">{linkPreview.url}</span>
+          <button
+            type="button"
+            onMouseDown={(e) => { e.preventDefault(); window.open(linkPreview.url, "_blank") }}
+            className="shrink-0 text-blue-500 hover:text-blue-600 transition-colors"
+          >
+            Open ↗
+          </button>
+        </div>
+      )}
+    </>
   )
 }
