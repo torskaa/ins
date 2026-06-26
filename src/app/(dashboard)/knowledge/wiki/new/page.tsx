@@ -273,7 +273,7 @@ export default function NewWikiArticlePage() {
                         <Label className="text-xs text-muted-foreground/60">Category</Label>
                         <Combobox value={category} onValueChange={(v) => setCategory(v || "Getting Started")}>
                           <ComboboxInput placeholder="Select category" showTrigger />
-                          <ComboboxContent>
+                          <ComboboxContent positionerClassName="z-[200]">
                             <ComboboxList>
                               {categories.map((c) => (
                                 <ComboboxItem key={c} value={c}>{c}</ComboboxItem>
