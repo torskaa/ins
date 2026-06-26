@@ -11,6 +11,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
@@ -275,7 +276,9 @@ export function AiChat() {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+      <Tooltip>
+        <TooltipTrigger asChild>
+        <SheetTrigger asChild>
         <Button
           size="icon"
           variant="ghost"
@@ -283,7 +286,15 @@ export function AiChat() {
         >
           <BotMessageSquare className="w-4 h-4" />
         </Button>
-      </SheetTrigger>
+        </SheetTrigger>
+        </TooltipTrigger>
+        <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+  <p className="text-sm font-medium">AI Chat</p>
+  <p className="text-background/70 text-xs leading-snug">
+    Ask questions and get help from AI
+  </p>
+</TooltipContent>
+      </Tooltip>
       <SheetContent
         side="right"
         className={cn(

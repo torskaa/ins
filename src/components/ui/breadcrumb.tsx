@@ -33,15 +33,14 @@ function BreadcrumbLink({
 }) {
   if (render) {
     return React.cloneElement(render, {
-      className: cn('transition-colors hover:text-foreground', className),
-      children: <span className="flex items-center gap-1.5">{children}</span>,
+      className: cn('inline-flex items-center gap-1.5 transition-colors hover:text-foreground', className),
     } as Record<string, unknown>);
   }
   const Comp = asChild ? Slot : 'a';
   return (
     <Comp
       data-slot="breadcrumb-link"
-      className={cn('transition-colors hover:text-foreground', className)}
+      className={cn('inline-flex items-center gap-1.5 transition-colors hover:text-foreground', className)}
       {...props}
     >
       {children}

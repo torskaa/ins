@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "sonner"
 import { SkeletonForm } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -183,7 +184,17 @@ export default function EditBOMPage({ params }: { params: Promise<{ id: string }
                       <Label className="text-xs">Unit</Label>
                       <Select options={UNITS} value={row.unit} onChange={(e: any) => setRows(rows.map((r) => r.key === row.key ? { ...r, unit: e.target.value } : r))} />
                     </div>
-                    <Button type="button" variant="ghost" size="icon" className="mb-0.5" onClick={() => rows.length > 1 && setRows(rows.filter((r) => r.key !== row.key))}></Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button type="button" variant="ghost" size="icon" className="mb-0.5" onClick={() => rows.length > 1 && setRows(rows.filter((r) => r.key !== row.key))}></Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+                        <p className="text-sm font-medium">Remove row</p>
+                        <p className="text-background/70 text-xs leading-snug">
+                          Remove this row from the BOM
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 ))}
               </CardContent>

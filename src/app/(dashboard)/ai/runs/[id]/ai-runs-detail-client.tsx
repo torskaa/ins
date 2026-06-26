@@ -9,6 +9,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Bot, CheckCircle2, XCircle, Clock, Loader2, ArrowLeft, RefreshCw } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import type { SerializedRun } from "./page"
 import type { ApprovalStatus, StepStatus } from "@/ai/agents/types"
 
@@ -55,11 +56,21 @@ export function AiRunsDetailClient({ run: initialRun }: { run: SerializedRun }) 
   return (
     <div className="animate-fade-in max-w-4xl mx-auto space-y-6">
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/ai/runs">
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/ai/runs">
+                <ArrowLeft className="w-4 h-4" />
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+          <p className="text-sm font-medium">Back</p>
+          <p className="text-background/70 text-xs leading-snug">
+            Go back to AI runs list
+          </p>
+        </TooltipContent>
+        </Tooltip>
         <h1 className="text-xl font-semibold">Run Details</h1>
       </div>
 

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 type RichNotification = {
  id: string
@@ -96,17 +97,27 @@ export function NotificationBell() {
 
  return (
  <>
- <button
- onClick={() => setOpen(true)}
-  className="group relative p-2 rounded-md hover:bg-surface hover:text-primary transition-all"
- >
- <Bell className="w-4.5 h-4.5 text-muted-foreground transition-all duration-150 group-hover:scale-110 group-hover:text-primary" />
- {unreadCount > 0 && (
- <span className="absolute -top-0.5 -right-0.5 w-4.5 h-4.5 rounded-full bg-destructive text-white text-[9px] font-bold flex items-center justify-center shadow-sm">
- {unreadCount > 9 ? "9+" : unreadCount}
- </span>
- )}
- </button>
+  <Tooltip>
+  <TooltipTrigger asChild>
+  <button
+  onClick={() => setOpen(true)}
+   className="group relative p-2 rounded-md hover:bg-surface hover:text-primary transition-all"
+  >
+  <Bell className="w-4.5 h-4.5 text-muted-foreground transition-all duration-150 group-hover:scale-110 group-hover:text-primary" />
+  {unreadCount > 0 && (
+  <span className="absolute -top-0.5 -right-0.5 w-4.5 h-4.5 rounded-full bg-destructive text-white text-[9px] font-bold flex items-center justify-center shadow-sm">
+  {unreadCount > 9 ? "9+" : unreadCount}
+  </span>
+  )}
+  </button>
+  </TooltipTrigger>
+  <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+  <p className="text-sm font-medium">Notifications</p>
+  <p className="text-background/70 text-xs leading-snug">
+    View your notifications and updates
+  </p>
+</TooltipContent>
+  </Tooltip>
 
  {open && (
  <div

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { SelectNative } from "@/components/ui/select-native"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -208,9 +209,19 @@ export default function SetupPage() {
                     onChange={(e) => setInviteEmail(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addInvite())}
                   />
-                  <Button variant="outline" size="icon" onClick={addInvite} type="button">
-                    <Plus className="w-4 h-4" />
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="icon" onClick={addInvite} type="button">
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+                    <p className="text-sm font-medium">Add invite</p>
+                    <p className="text-background/70 text-xs leading-snug">
+                      Send another invitation to join
+                    </p>
+                  </TooltipContent>
+                  </Tooltip>
                 </div>
                 {invites.length > 0 && (
                   <div className="flex flex-wrap gap-2">

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { AlertTriangle, Truck, MapPin, Package, FileText, Building2, Calendar, Warehouse, Plus, Trash2, XCircle, ClipboardList } from "lucide-react"
@@ -247,9 +248,19 @@ export default function NewDeliveryPage() {
                         ฿{(item.quantity * item.unitPrice).toLocaleString()}
                       </div>
                     </div>
-                    <Button type="button" variant="ghost" size="icon" className="text-destructive mb-0.5" onClick={() => removeItem(idx)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button type="button" variant="ghost" size="icon" className="text-destructive mb-0.5" onClick={() => removeItem(idx)}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+                        <p className="text-sm font-medium">Remove item</p>
+                        <p className="text-background/70 text-xs leading-snug">
+                          Remove this item from the delivery
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 ))}
               </CardContent>

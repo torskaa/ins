@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { RefreshCw, FileText, FileSpreadsheet, Layout, Copy, Download, Loader2 } from "lucide-react"
@@ -285,9 +286,19 @@ function ShareModal({ open, onOpenChange }: ModalProps) {
  <input type="text" value={shareUrl} readOnly
  className="flex-1 h-9 px-3 rounded-lg border border-border text-sm text-muted-foreground bg-card font-mono select-all focus:outline-none"
  />
- <Button variant="outline" size="icon" className="h-9 w-9" onClick={handleCopy}>
- 
- </Button>
+  <Tooltip>
+  <TooltipTrigger asChild>
+  <Button variant="outline" size="icon" className="h-9 w-9" onClick={handleCopy}>
+  <Copy className="w-4 h-4" />
+  </Button>
+  </TooltipTrigger>
+  <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+  <p className="text-sm font-medium">Copy</p>
+  <p className="text-background/70 text-xs leading-snug">
+    Copy to clipboard
+  </p>
+</TooltipContent>
+  </Tooltip>
  </div>
  </div>
  <div>

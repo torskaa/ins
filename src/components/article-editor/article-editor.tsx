@@ -30,6 +30,16 @@ export function ArticleEditor({
   onReorder,
 }: ArticleEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const titleRef = useRef<HTMLTextAreaElement>(null)
+
+  function handleTitleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    onTitleChange(e.target.value)
+    const el = titleRef.current
+    if (el) {
+      el.style.height = "auto"
+      el.style.height = `${el.scrollHeight}px`
+    }
+  }
 
   const handleCoverUpload = useCallback(async (file: File) => {
     if (!file.type.startsWith("image/")) return
@@ -55,11 +65,13 @@ export function ArticleEditor({
   return (
     <div className="w-full">
       {/* Title */}
-      <input
+      <textarea
+        ref={titleRef}
         value={title}
-        onChange={(e) => onTitleChange(e.target.value)}
+        onChange={handleTitleChange}
         placeholder="Title"
-        className="w-full text-4xl font-bold tracking-tight text-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/20 pb-1 mb-8"
+        rows={1}
+        className="w-full text-4xl font-bold tracking-tight text-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/20 pb-1 mb-8 resize-none overflow-hidden"
       />
 
       {/* Cover Image */}

@@ -21,7 +21,7 @@ import { ImageBlock } from "./image-block"
 import { VideoBlock } from "./video-block"
 import { AddBlockMenu } from "./add-block-menu"
 import { BlockToolbar } from "./block-toolbar"
-import { type Block, type BlockType } from "./types"
+import { type Block, type BlockType, createBlock } from "./types"
 import { cn } from "@/lib/utils"
 
 interface BlockEditorProps {
@@ -116,6 +116,40 @@ export function BlockEditor({
     onRemoveBlock(id)
   }
 
+  function handlePasteBlocks(blockId: string, pasteBlocks: Array<{ type: BlockType | "list" | "code" | "quote" | "divider"; content?: string; level?: number; items?: string[]; language?: string; listType?: "bullet" | "ordered" }>) {
+    const idx = blocks.findIndex((b) => b.id === blockId)
+    if (idx === -1) return
+    const newBlocks = pasteBlocks.map((pb, i) => {
+      return createBlock(pb.type as BlockType, idx + i, {
+        content: pb.content,
+        level: pb.type === "heading" ? (pb.level as 1|2|3) || 2 : undefined,
+        items: pb.type === "list" ? pb.items || [""] : undefined,
+        language: pb.type === "code" ? pb.language || "plaintext" : undefined,
+        listType: pb.type === "list" ? (pb.listType || "bullet") : undefined,
+      })
+    })
+    const updated = [...blocks]
+    updated.splice(idx, 1, ...newBlocks)
+    onChange(updated)
+    requestAnimationFrame(() => {
+      const container = editorRef.current
+      if (!container) return
+      const editables = container.querySelectorAll<HTMLElement>('[contenteditable="true"]')
+      const last = editables[editables.length - 1]
+      if (last) {
+        last.focus()
+        const range = document.createRange()
+        range.selectNodeContents(last)
+        range.collapse(false)
+        const sel = window.getSelection()
+        if (sel) {
+          sel.removeAllRanges()
+          sel.addRange(range)
+        }
+      }
+    })
+  }
+
   return (
     <div ref={editorRef} className={cn("relative", className)}>
       <DndContext
@@ -144,6 +178,7 @@ export function BlockEditor({
                     onEnter={() => onAddBlock("paragraph", block.id)}
                     onBackspaceEmpty={() => mergeWithPrevious(block.id)}
                     onSlash={() => handleParagraphSlash(block.id, editorRef.current!)}
+                    onPaste={(pb) => handlePasteBlocks(block.id, pb)}
                     autoFocus={i === blocks.length - 1 && block.content === ""}
                   />
                 )}
@@ -155,6 +190,7 @@ export function BlockEditor({
                     onEnter={() => onAddBlock("paragraph", block.id)}
                     onBackspaceEmpty={() => mergeWithPrevious(block.id)}
                     onSlash={() => handleParagraphSlash(block.id, editorRef.current!)}
+                    onPaste={(pb) => handlePasteBlocks(block.id, pb)}
                   />
                 )}
                 {block.type === "video" && (
@@ -211,7 +247,7 @@ export function BlockEditor({
                     {(block.items || [""]).map((item, itemIdx) => (
                       <div key={itemIdx} className="flex items-start gap-2">
                         <span className="mt-0 text-muted-foreground select-none shrink-0 text-sm">
-                          {itemIdx + 1}.
+                          {block.listType === "ordered" ? `${itemIdx + 1}.` : "•"}
                         </span>
                         <ParagraphBlock
                           content={item}

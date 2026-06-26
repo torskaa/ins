@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Shield, XCircle } from "lucide-react"
@@ -48,7 +49,17 @@ export default function NewRolePage() {
   return (
     <div className="animate-fade-in pb-28">
       <div className="page-header flex items-center gap-4 mb-5">
-        <Button variant="ghost" size="icon" onClick={() => router.back()}></Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={() => router.back()}></Button>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+          <p className="text-sm font-medium">Back</p>
+          <p className="text-background/70 text-xs leading-snug">
+            Go back to roles list
+          </p>
+        </TooltipContent>
+        </Tooltip>
         <div><h1>Create Role</h1><p>Define a new access control role</p></div>
       </div>
       <form onSubmit={handleSubmit}>

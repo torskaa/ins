@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Select } from "@/components/ui/select"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -161,7 +162,17 @@ export default function NewProductionOrderPage() {
                       <Label className="text-xs">Qty Needed</Label>
                       <Input type="number" min="1" value={m.quantityNeeded} onChange={(e) => { const a = [...materials]; a[i].quantityNeeded = e.target.value; setMaterials(a) }} />
                     </div>
-                    <Button type="button" variant="ghost" size="icon" className="mb-0.5" onClick={() => setMaterials(materials.filter((_, j) => j !== i))}></Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button type="button" variant="ghost" size="icon" className="mb-0.5" onClick={() => setMaterials(materials.filter((_, j) => j !== i))}></Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+                        <p className="text-sm font-medium">Remove material</p>
+                        <p className="text-background/70 text-xs leading-snug">
+                          Remove this material from the production order
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 ))}
               </CardContent>
@@ -196,7 +207,17 @@ export default function NewProductionOrderPage() {
                       <Label className="text-xs">Run (min)</Label>
                       <Input type="number" min="0" value={o.runTime} onChange={(e) => { const a = [...operations]; a[i].runTime = e.target.value; setOperations(a) }} />
                     </div>
-                    <Button type="button" variant="ghost" size="icon" className="mb-0.5" onClick={() => setOperations(operations.filter((_, j) => j !== i))}></Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button type="button" variant="ghost" size="icon" className="mb-0.5" onClick={() => setOperations(operations.filter((_, j) => j !== i))}></Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+                        <p className="text-sm font-medium">Remove operation</p>
+                        <p className="text-background/70 text-xs leading-snug">
+                          Remove this operation from the production order
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 ))}
               </CardContent>

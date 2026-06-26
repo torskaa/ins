@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 export interface UploadedFile {
   id: string
@@ -75,9 +76,19 @@ export const UploadFileMain = React.forwardRef<HTMLDivElement, UploadFileMainPro
               </div>
             </div>
             {onClose && (
-              <Button variant="ghost" size="icon" className="rounded-full w-8 h-8" onClick={onClose}>
-                <X className="w-4 h-4" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full w-8 h-8" onClick={onClose}>
+                    <X className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+  <p className="text-sm font-medium">Close</p>
+  <p className="text-background/70 text-xs leading-snug">
+    Close the upload panel
+  </p>
+</TooltipContent>
+              </Tooltip>
             )}
           </div>
 
@@ -152,9 +163,19 @@ export const UploadFileMain = React.forwardRef<HTMLDivElement, UploadFileMainPro
                       </div>
                       <div className="flex items-center gap-2 shrink-0 ml-2">
                         {file.status === "completed" && <CheckCircle2 className="w-5 h-5 text-success" />}
-                        <Button variant="ghost" size="icon" className="rounded-full w-8 h-8" onClick={() => onFileRemove(file.id)}>
-                          {file.status === "completed" ? <Trash2 className="w-4 h-4" /> : <X className="w-4 h-4" />}
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="rounded-full w-8 h-8" onClick={() => onFileRemove(file.id)}>
+                              {file.status === "completed" ? <Trash2 className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+  <p className="text-sm font-medium">Remove</p>
+  <p className="text-background/70 text-xs leading-snug">
+    Remove this file from the upload list
+  </p>
+</TooltipContent>
+                        </Tooltip>
                       </div>
                     </motion.li>
                   ))}

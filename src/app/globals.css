@@ -197,6 +197,10 @@
     @apply bg-background text-foreground;
   }
 
+  .font-mono {
+    font-family: var(--font-satoshi), var(--font-general-sans), system-ui, sans-serif !important;
+  }
+
   svg[stroke-width] {
     stroke-width: 1.25 !important;
   }

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, type KeyboardEvent, type ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { CopilotContextBar } from "@/components/ai/copilot-context-bar"
 import { ActionCommandMenu } from "@/components/ai/action-command-menu"
 import { ModelSelector } from "@/components/ai/model-selector"
@@ -323,22 +324,42 @@ export function AiComposer({
                 onEffortChange={setEffort}
               />
               {isLoading || executing ? (
-                <Button
-                  onClick={onCancel}
-                  size="icon"
-                  className="size-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/30"
-                >
-                  <Square className="size-3.5" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={onCancel}
+                      size="icon"
+                      className="size-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/30"
+                    >
+                      <Square className="size-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+  <p className="text-sm font-medium">Cancel</p>
+  <p className="text-background/70 text-xs leading-snug">
+    Clear the current message
+  </p>
+</TooltipContent>
+                </Tooltip>
               ) : (
-                <Button
-                  onClick={onSend}
-                  size="icon"
-                  className="size-8 rounded-lg"
-                  disabled={!input.trim() || disabled}
-                >
-                  <Send className="size-4" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={onSend}
+                      size="icon"
+                      className="size-8 rounded-lg"
+                      disabled={!input.trim() || disabled}
+                    >
+                      <Send className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+  <p className="text-sm font-medium">Send</p>
+  <p className="text-background/70 text-xs leading-snug">
+    Send your message to the AI
+  </p>
+</TooltipContent>
+                </Tooltip>
               )}
             </div>
           </div>

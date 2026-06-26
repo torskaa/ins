@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { MoreVertical } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 export type MoreAction = {
  label: string
@@ -31,11 +32,21 @@ export function MoreMenu({
 
  return (
  <DropdownMenu>
- <DropdownMenuTrigger asChild>
-    <Button variant="outline" size="icon" className="size-8">
+  <Tooltip>
+  <TooltipTrigger asChild>
+  <DropdownMenuTrigger asChild>
+     <Button variant="outline" size="icon" className="size-8">
   <MoreVertical className="w-4 h-4" />
   </Button>
- </DropdownMenuTrigger>
+  </DropdownMenuTrigger>
+  </TooltipTrigger>
+  <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+  <p className="text-sm font-medium">More options</p>
+  <p className="text-background/70 text-xs leading-snug">
+    View additional actions for this item
+  </p>
+</TooltipContent>
+  </Tooltip>
   <DropdownMenuContent align="end" className="w-56">
   {actions.map((action, i) => {
   if (action === "separator") {

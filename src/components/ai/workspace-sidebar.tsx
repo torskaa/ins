@@ -21,6 +21,7 @@ import {
   Trash2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
 import { SearchInput } from "@/components/ui/search-input"
 import {
@@ -219,13 +220,23 @@ export function WorkspaceSidebar({
 
       <div className={cn("p-3", isCollapsed && "p-2")}>
         {isCollapsed ? (
-          <Button
-            onClick={onNewChat}
-            className="w-full h-9 rounded-lg"
-            size="icon"
-          >
-            <Plus className="size-4" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={onNewChat}
+                className="w-full h-9 rounded-lg"
+                size="icon"
+              >
+                <Plus className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+  <p className="text-sm font-medium">New chat</p>
+  <p className="text-background/70 text-xs leading-snug">
+    Start a new AI conversation
+  </p>
+</TooltipContent>
+          </Tooltip>
         ) : (
           <div className="space-y-2">
             <Button

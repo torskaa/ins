@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { MoreVertical, RefreshCw, FileText, FileSpreadsheet, Share2, Layout, SlidersHorizontal, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -31,11 +32,21 @@ export function RichMenu() {
 	return (
 		<>
 			<DropdownMenu>
-				<DropdownMenuTrigger asChild>
-					<Button variant="outline" size="icon" className="size-8">
-						<MoreVertical className="w-4 h-4" />
-					</Button>
-				</DropdownMenuTrigger>
+			<Tooltip>
+				<TooltipTrigger asChild>
+			<DropdownMenuTrigger asChild>
+				<Button variant="outline" size="icon" className="size-8">
+					<MoreVertical className="w-4 h-4" />
+				</Button>
+			</DropdownMenuTrigger>
+				</TooltipTrigger>
+				<TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+  <p className="text-sm font-medium">Quick menu</p>
+  <p className="text-background/70 text-xs leading-snug">
+    Open the quick actions menu
+  </p>
+</TooltipContent>
+			</Tooltip>
 				<DropdownMenuContent className="w-56" align="end">
 					<DropdownMenuItem onClick={() => { resetLayout() }} className="text-xs gap-2.5">
 						<RotateCcw className="w-4 h-4 text-muted-foreground" />

@@ -19,6 +19,7 @@ export interface Block {
   level?: 1 | 2 | 3
   items?: string[]
   language?: string
+  listType?: "bullet" | "ordered"
 }
 
 export interface ArticleDocument {

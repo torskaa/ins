@@ -18,6 +18,7 @@ import {
   ComboboxEmpty,
 } from "@/components/ui/combobox"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
 import { ImageGallery } from "@/components/ui/image-gallery"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -507,7 +508,17 @@ export default function NewMaterialPage() {
                       <div key={spec.id} className="flex items-start gap-2">
                         <Input placeholder="Property name (e.g. Color)" value={spec.key} onChange={(e) => updateCustomSpec(spec.id, "key", e.target.value)} className="flex-1" />
                         <Input placeholder="Value (e.g. Red)" value={spec.value} onChange={(e) => updateCustomSpec(spec.id, "value", e.target.value)} className="flex-1" />
-                        <Button type="button" variant="ghost" size="icon" className="size-9 shrink-0" onClick={() => removeCustomSpec(spec.id)}><X className="w-4 h-4" /></Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button type="button" variant="ghost" size="icon" className="size-9 shrink-0" onClick={() => removeCustomSpec(spec.id)}><X className="w-4 h-4" /></Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+                          <p className="text-sm font-medium">Remove</p>
+                          <p className="text-background/70 text-xs leading-snug">
+                            Remove this specification
+                          </p>
+                        </TooltipContent>
+                        </Tooltip>
                       </div>
                     ))}
                   </div>

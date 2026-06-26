@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { AlertTriangle, XCircle, Package, List } from "lucide-react"
@@ -257,15 +258,25 @@ export default function NewBOMPage() {
                           />
                         </div>
                         <div className="flex items-center pt-1 md:pt-0">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="text-muted-foreground hover:text-destructive h-8 w-8"
-                            onClick={() => removeRow(row.key)}
-                            disabled={rows.length <= 1}
-                          >
-                          </Button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="text-muted-foreground hover:text-destructive h-8 w-8"
+                                onClick={() => removeRow(row.key)}
+                                disabled={rows.length <= 1}
+                              >
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+                              <p className="text-sm font-medium">Remove row</p>
+                              <p className="text-background/70 text-xs leading-snug">
+                                Remove this row from the BOM
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
                         </div>
                       </div>
                     )

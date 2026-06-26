@@ -22,6 +22,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Spinner } from "@/components/ui/spinner"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { CircleAlertIcon, ImageIcon, StarIcon, XIcon, ZoomInIcon } from "lucide-react"
 
 interface ImageGalleryProps {
@@ -190,37 +191,66 @@ export function ImageGallery({
 
               <div className="bg-black/50 absolute inset-0 flex items-center justify-center gap-2 opacity-0 transition-opacity group-hover/item:opacity-100">
                 {selectable && (
-                  <Button
-                    onClick={() => handleSetPrimary(fileItem.id)}
-                    variant="secondary"
-                    size="icon"
-                    className={cn("size-7", primaryId === fileItem.id && "bg-amber-400 hover:bg-amber-500")}
-                    title={primaryId === fileItem.id ? "Display image" : "Set as display image"}
-                  >
-                    <StarIcon className={cn("opacity-80", primaryId === fileItem.id && "fill-amber-900 text-amber-900")} />
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={() => handleSetPrimary(fileItem.id)}
+                        variant="secondary"
+                        size="icon"
+                        className={cn("size-7", primaryId === fileItem.id && "bg-amber-400 hover:bg-amber-500")}
+                      >
+                        <StarIcon className={cn("opacity-80", primaryId === fileItem.id && "fill-amber-900 text-amber-900")} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+  <p className="text-sm font-medium">Set as primary</p>
+  <p className="text-background/70 text-xs leading-snug">
+    Use this image as the main product photo
+  </p>
+</TooltipContent>
+                  </Tooltip>
                 )}
                 {fileItem.preview && (
-                  <Button
-                    onClick={() => {
-                      setSelectedImage(fileItem.preview!)
-                      setIsPreviewLoading(true)
-                    }}
-                    variant="secondary"
-                    size="icon"
-                    className="size-7"
-                  >
-                    <ZoomInIcon className="opacity-80" />
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={() => {
+                          setSelectedImage(fileItem.preview!)
+                          setIsPreviewLoading(true)
+                        }}
+                        variant="secondary"
+                        size="icon"
+                        className="size-7"
+                      >
+                        <ZoomInIcon className="opacity-80" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+  <p className="text-sm font-medium">Preview</p>
+  <p className="text-background/70 text-xs leading-snug">
+    View image in full size
+  </p>
+</TooltipContent>
+                  </Tooltip>
                 )}
-                <Button
-                  onClick={() => removeFile(fileItem.id)}
-                  variant="secondary"
-                  size="icon"
-                  className="size-7"
-                >
-                  <XIcon className="opacity-80" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={() => removeFile(fileItem.id)}
+                      variant="secondary"
+                      size="icon"
+                      className="size-7"
+                    >
+                      <XIcon className="opacity-80" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+  <p className="text-sm font-medium">Remove</p>
+  <p className="text-background/70 text-xs leading-snug">
+    Remove this image from the gallery
+  </p>
+</TooltipContent>
+                </Tooltip>
               </div>
 
               <div className="rounded-b-lg absolute right-0 bottom-0 left-0 bg-black/70 p-2 text-white opacity-0 transition-opacity group-hover:opacity-100">

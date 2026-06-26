@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "sonner"
 import { formatCurrency } from "@/lib/utils"
 import { AlertTriangle, XCircle } from "lucide-react"
@@ -89,7 +90,12 @@ export default function NewJournalEntryPage() {
  <div className="col-span-2"><Input type="number" min="0" value={line.debit} onChange={(e) => setLines(lines.map(l => l.key === line.key ? { ...l, debit: e.target.value, credit: e.target.value !== "0" && l.credit === "0" ? "0" : l.credit } : l))} className="text-right" /></div>
  <div className="col-span-2"><Input type="number" min="0" value={line.credit} onChange={(e) => setLines(lines.map(l => l.key === line.key ? { ...l, credit: e.target.value, debit: e.target.value !== "0" && l.debit === "0" ? "0" : l.debit } : l))} className="text-right" /></div>
  <div className="col-span-2"><Input value={line.description} onChange={(e) => setLines(lines.map(l => l.key === line.key ? { ...l, description: e.target.value } : l))} placeholder="Note" /></div>
- <div className="col-span-1"><Button type="button" variant="ghost" size="icon" disabled={lines.length <= 1} onClick={() => setLines(lines.filter(l => l.key !== line.key))}></Button></div>
+  <div className="col-span-1"><Tooltip><TooltipTrigger asChild><Button type="button" variant="ghost" size="icon" disabled={lines.length <= 1} onClick={() => setLines(lines.filter(l => l.key !== line.key))}></Button></TooltipTrigger><TooltipContent className="max-w-xs flex-col items-start gap-1 px-3 py-2 text-left" side="bottom">
+                          <p className="text-sm font-medium">Remove line</p>
+                          <p className="text-background/70 text-xs leading-snug">
+                            Remove this journal entry line
+                          </p>
+                        </TooltipContent></Tooltip></div>
  </div>
  ))}
  <div className="grid grid-cols-12 gap-2 items-center pt-3 border-t border-border text-sm font-medium">
