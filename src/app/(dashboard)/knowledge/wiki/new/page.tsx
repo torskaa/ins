@@ -14,6 +14,8 @@ import {
   ComboboxContent,
   ComboboxList,
   ComboboxItem,
+  ComboboxTrigger,
+  ComboboxValue,
 } from "@/components/ui/combobox"
 import { ArrowLeft, ImagePlus, X } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -272,7 +274,9 @@ export default function NewWikiArticlePage() {
                       <div className="space-y-1.5">
                         <Label className="text-xs text-muted-foreground/60">Category</Label>
                         <Combobox value={category} onValueChange={(v) => setCategory(v || "Getting Started")}>
-                          <ComboboxInput placeholder="Select category" showTrigger />
+                          <ComboboxTrigger>
+                            <ComboboxValue placeholder="Select category" />
+                          </ComboboxTrigger>
                           <ComboboxContent positionerClassName="z-[200]">
                             <ComboboxList>
                               {categories.map((c) => (
