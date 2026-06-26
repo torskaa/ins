@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef, useState, useCallback, useEffect } from "react"
+import { LinkPreview } from "@/components/ui/link-preview"
 
 interface PasteBlock {
   type: "paragraph" | "heading" | "list" | "code" | "quote" | "divider"
@@ -246,24 +247,15 @@ export function ParagraphBlock({
         onMouseOut={handleMouseOut}
         onBlur={handleInput}
       />
-      {linkPreview && (
-        <div
-          data-link-preview
-          className="fixed z-[999] flex items-center gap-2 rounded-lg border bg-popover px-3 py-1.5 text-sm shadow-lg"
-          style={{ left: linkPreview.x, top: linkPreview.y }}
-          onMouseEnter={() => setLinkPreview(linkPreview)}
-          onMouseOut={() => setLinkPreview(null)}
-        >
-          <span className="text-muted-foreground truncate max-w-[240px]">{linkPreview.url}</span>
-          <button
-            type="button"
-            onMouseDown={(e) => { e.preventDefault(); window.open(linkPreview.url, "_blank") }}
-            className="shrink-0 text-blue-500 hover:text-blue-600 transition-colors"
-          >
-            Open ↗
-          </button>
-        </div>
-      )}
+    {linkPreview && (
+      <div
+        data-link-preview
+        onMouseEnter={() => setLinkPreview(linkPreview)}
+        onMouseOut={() => setLinkPreview(null)}
+      >
+        <LinkPreview url={linkPreview.url} position={{ x: linkPreview.x, y: linkPreview.y }} />
+      </div>
+    )}
     </>
   )
 }
