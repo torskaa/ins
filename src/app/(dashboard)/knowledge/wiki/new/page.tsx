@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Combobox,
-  ComboboxInput,
   ComboboxContent,
   ComboboxList,
   ComboboxItem,
@@ -274,7 +273,7 @@ export default function NewWikiArticlePage() {
                       <div className="space-y-1.5">
                         <Label className="text-xs text-muted-foreground/60">Category</Label>
                         <Combobox value={category} onValueChange={(v) => setCategory(v || "Getting Started")}>
-                          <ComboboxTrigger className="flex h-9 w-full items-center gap-2 rounded-lg border border-input bg-transparent px-3 py-2 text-sm shadow-sm data-placeholder:text-muted-foreground">
+                          <ComboboxTrigger className="flex h-11 w-full items-center justify-between gap-1.5 rounded-lg border border-input bg-transparent py-2 pr-2 pl-2.5 text-sm whitespace-nowrap transition-colors outline-none select-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50 data-placeholder:text-muted-foreground">
                             <ComboboxValue placeholder="Select category" />
                           </ComboboxTrigger>
                           <ComboboxContent positionerClassName="z-[200]">
