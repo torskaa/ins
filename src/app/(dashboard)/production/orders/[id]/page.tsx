@@ -194,7 +194,10 @@ export default function ProductionOrderDetailPage() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/production/orders")}>Orders</button>
+              <button onClick={() => router.push("/production/orders")}>
+                  <ClipboardList className="size-4" />
+                  Orders
+                </button>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

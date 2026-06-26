@@ -115,7 +115,7 @@ function ToolbarButton({
       title={`${label}${shortcut ? ` (${shortcut})` : ""}`}
       className={cn(
         "size-7 flex items-center justify-center rounded-sm transition-colors",
-        active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-surface",
       )}
     >
       {icon}

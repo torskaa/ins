@@ -106,7 +106,7 @@ export function BlockMenu({ open, anchorEl, onSelect, onClose }: BlockMenuProps)
               type="button"
               className={cn(
                 "w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-left transition-colors",
-                i === selectedIndex ? "bg-muted/50" : "hover:bg-muted/30",
+                i === selectedIndex ? "bg-surface" : "hover:bg-surface",
               )}
               onClick={() => { onSelect(opt.type); onClose() }}
               onMouseEnter={() => setSelectedIndex(i)}

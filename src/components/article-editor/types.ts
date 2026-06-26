@@ -2,6 +2,7 @@ export type BlockType =
   | "paragraph"
   | "heading"
   | "image"
+  | "video"
   | "quote"
   | "code"
   | "divider"
@@ -34,6 +35,7 @@ export function createBlock(type: BlockType, order: number, overrides?: Partial<
     case "paragraph": return { ...base, content: "", ...overrides }
     case "heading": return { ...base, level: 2, content: "", ...overrides }
     case "image": return { ...base, url: "", ...overrides }
+    case "video": return { ...base, url: "", ...overrides }
     case "quote": return { ...base, content: "", ...overrides }
     case "code": return { ...base, content: "", ...overrides }
     case "divider": return { ...base, ...overrides }

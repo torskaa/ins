@@ -5,6 +5,7 @@ import {
   Type,
   Heading1,
   ImageIcon,
+  Video,
   Quote,
   Code,
   Minus,
@@ -22,6 +23,7 @@ const menuItems: MenuItem[] = [
   { type: "paragraph", label: "Text", icon: <Type className="size-4" /> },
   { type: "heading", label: "Heading", icon: <Heading1 className="size-4" /> },
   { type: "image", label: "Image", icon: <ImageIcon className="size-4" /> },
+  { type: "video", label: "Video", icon: <Video className="size-4" /> },
   { type: "quote", label: "Quote", icon: <Quote className="size-4" /> },
   { type: "code", label: "Code", icon: <Code className="size-4" /> },
   { type: "divider", label: "Divider", icon: <Minus className="size-4" /> },
@@ -120,8 +122,8 @@ export function AddBlockMenu({ onSelect, onClose, anchorEl }: AddBlockMenuProps)
             type="button"
             className={`flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors ${
               i === activeIndex
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                ? "bg-surface text-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-surface"
             }`}
             onMouseDown={(e) => {
               e.preventDefault()

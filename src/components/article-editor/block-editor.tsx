@@ -18,6 +18,7 @@ import { BlockItem } from "./block-item"
 import { ParagraphBlock } from "./paragraph-block"
 import { HeadingBlock } from "./heading-block"
 import { ImageBlock } from "./image-block"
+import { VideoBlock } from "./video-block"
 import { AddBlockMenu } from "./add-block-menu"
 import { BlockToolbar } from "./block-toolbar"
 import { type Block, type BlockType } from "./types"
@@ -81,6 +82,24 @@ export function BlockEditor({
       }
       setMenuOpen(false)
       setPendingInsertAfter(null)
+
+      requestAnimationFrame(() => {
+        const container = editorRef.current
+        if (!container) return
+        const editable = container.querySelectorAll<HTMLElement>('[contenteditable="true"]')
+        const last = editable[editable.length - 1]
+        if (last) {
+          last.focus()
+          const range = document.createRange()
+          range.selectNodeContents(last)
+          range.collapse(false)
+          const sel = window.getSelection()
+          if (sel) {
+            sel.removeAllRanges()
+            sel.addRange(range)
+          }
+        }
+      })
     },
     [slashTarget, pendingInsertAfter, onAddBlock, onRemoveBlock]
   )
@@ -110,29 +129,11 @@ export function BlockEditor({
           strategy={verticalListSortingStrategy}
         >
           <div className="space-y-4">
-            {/* + Add block before first block */}
-            <div className="flex justify-center">
-              <button
-                type="button"
-                onClick={(e) => openAddMenu(e.currentTarget)}
-                className="flex items-center gap-1.5 text-sm text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors"
-              >
-                <span className="size-5 rounded-full border border-border/40 flex items-center justify-center">
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                    <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                </span>
-                Add block
-              </button>
-            </div>
-
             {blocks.map((block, i) => (
               <BlockItem
                 key={block.id}
                 id={block.id}
                 onDelete={() => onRemoveBlock(block.id)}
-                onAddBlock={(e) => openAddMenu(e.currentTarget, block.id)}
-                isFirst={i === 0}
               >
                 {block.type === "paragraph" && (
                   <ParagraphBlock
@@ -154,6 +155,14 @@ export function BlockEditor({
                     onEnter={() => onAddBlock("paragraph", block.id)}
                     onBackspaceEmpty={() => mergeWithPrevious(block.id)}
                     onSlash={() => handleParagraphSlash(block.id, editorRef.current!)}
+                  />
+                )}
+                {block.type === "video" && (
+                  <VideoBlock
+                    url={block.url}
+                    caption={block.caption}
+                    onChange={(data) => onUpdateBlock(block.id, data)}
+                    onDelete={() => onRemoveBlock(block.id)}
                   />
                 )}
                 {block.type === "image" && (
@@ -247,6 +256,21 @@ export function BlockEditor({
                 )}
               </BlockItem>
             ))}
+            {/* Add block after last block */}
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={(e) => openAddMenu(e.currentTarget)}
+                className="flex items-center gap-1.5 text-sm text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors"
+              >
+                <span className="size-5 rounded-full border border-border/40 flex items-center justify-center">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </span>
+                Add block
+              </button>
+            </div>
           </div>
         </SortableContext>
       </DndContext>

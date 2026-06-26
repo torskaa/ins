@@ -35,7 +35,7 @@ export function AgentMonitor({
         <span className="text-sm font-semibold text-muted-foreground">Agent Monitor</span>
         <button
           onClick={onTogglePanel}
-          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors"
+          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
         >
           <PanelRightClose className="size-4" />
         </button>

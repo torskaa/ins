@@ -84,7 +84,7 @@ export function CopilotEmptyState({ onSuggestionClick, mode }: CopilotEmptyState
             <button
               key={s.label}
               onClick={() => onSuggestionClick(s.query)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground bg-muted/10 rounded-full hover:bg-muted/20 hover:text-foreground transition-colors duration-150"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground bg-muted/10 rounded-full hover:bg-surface hover:text-foreground transition-colors duration-150"
             >
               <Icon className="size-3.5" />
               {s.label}

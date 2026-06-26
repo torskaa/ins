@@ -114,7 +114,7 @@ export function ActionCommandMenu({ onAction, onInsertText }: ActionCommandMenuP
       <button
         ref={buttonRef}
         onClick={() => { setOpen(!open); setSubmenuOpen(null) }}
-        className="flex items-center justify-center size-8 rounded-lg text-muted-foreground/60 hover:text-foreground hover:bg-muted/20 transition-colors"
+        className="flex items-center justify-center size-8 rounded-lg text-muted-foreground/60 hover:text-foreground hover:bg-surface transition-colors"
         aria-label="Action menu"
       >
         <Plus className="size-4" />
@@ -149,8 +149,8 @@ export function ActionCommandMenu({ onAction, onInsertText }: ActionCommandMenuP
                           }
                         }}
                         className={cn(
-                          "flex items-center justify-between w-full px-3 py-2 text-sm transition-colors hover:bg-muted/20",
-                          isSubmenuOpen && "bg-muted/10"
+                          "flex items-center justify-between w-full px-3 py-2 text-sm transition-colors hover:bg-surface",
+                          isSubmenuOpen && "bg-surface"
                         )}
                       >
                         <div className="flex items-center gap-2.5">
@@ -176,7 +176,7 @@ export function ActionCommandMenu({ onAction, onInsertText }: ActionCommandMenuP
                                   onAction?.(sub.id)
                                   setOpen(false)
                                 }}
-                                className="flex items-center gap-2.5 w-full px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/20 rounded-md transition-colors"
+                                className="flex items-center gap-2.5 w-full px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-surface rounded-md transition-colors"
                               >
                                 <SubIcon className="size-3.5" />
                                 {sub.label}

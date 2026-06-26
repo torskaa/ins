@@ -20,8 +20,8 @@
   --color-secondary: #c084fc;
   --color-secondary-dark: #a855f7;
 
-  --color-accent: #f59e0b;
-  --color-accent-foreground: #ffffff;
+  --color-accent: #f7f7f7;
+  --color-accent-foreground: #0c0c0c;
 
   --color-popover: #ffffff;
   --color-popover-foreground: #0c0c0c;
@@ -124,6 +124,8 @@
   --color-card-border: #27272a;
   --color-surface: #141417;
   --color-surface-hover: #1a1a1e;
+  --color-accent: #141417;
+  --color-accent-foreground: #ededed;
   --color-modal: #141417;
   --color-input: #27272a;
   --color-ring: #fafafa;

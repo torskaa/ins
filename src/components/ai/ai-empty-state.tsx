@@ -42,7 +42,7 @@ export function AiEmptyState({ onSuggestionClick }: AiEmptyStateProps) {
           <button
             key={cap.name}
             onClick={() => onSuggestionClick(cap.description.split(",")[0])}
-            className="flex items-start gap-2 p-2.5 rounded-lg border border-border/50 text-left hover:bg-muted/50 hover:border-border transition-colors group"
+            className="flex items-start gap-2 p-2.5 rounded-lg border border-border/50 text-left hover:bg-surface hover:border-border transition-colors group"
           >
             <span className="shrink-0 mt-0.5 text-muted-foreground group-hover:text-foreground transition-colors">
               {capabilityIcons[cap.name] || <Sparkles className="w-4 h-4" />}

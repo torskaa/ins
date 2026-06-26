@@ -140,7 +140,10 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ id: s
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/knowledge/documents")}>Documents</button>
+              <button onClick={() => router.push("/knowledge/documents")}>
+                  <FileText className="size-4" />
+                  Documents
+                </button>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

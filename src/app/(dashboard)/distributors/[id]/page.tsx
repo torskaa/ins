@@ -13,9 +13,9 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { Calendar, Clock, Hash, HouseIcon, Mail, MapPin, Package, Pencil, Phone, Trash2, Truck, User, XCircle } from "lucide-react"
+import { Building2, Calendar, Clock, Hash, Mail, MapPin, Package, Pencil, Phone, Trash2, Truck, User, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { Frame, FramePanel } from "@/components/reui/frame"
+
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -182,24 +182,22 @@ export default function DistributorDetailPage({ params }: { params: Promise<{ id
   return (
     <div className="animate-fade-in pb-8 space-y-4">
       {/* Breadcrumb */}
-      <Frame variant="ghost" className="w-fit">
-        <FramePanel className="gap-2 px-3! py-2! border-0!">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/distributors" className="flex items-center gap-1.5">
-                  <HouseIcon className="size-4" aria-hidden="true" />
-                  Distributors
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="font-semibold">{distributor.name}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </FramePanel>
-      </Frame>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <button onClick={() => router.push("/distributors")}>
+                <Building2 className="size-4" />
+                Distributors
+              </button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{distributor.name}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       <div className="grid grid-cols-12 gap-4">
         {/* Page Header */}

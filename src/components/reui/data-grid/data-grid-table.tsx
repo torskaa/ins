@@ -858,7 +858,7 @@ function DataGridTableBodyRowSkeleton({ children }: { children: ReactNode }) {
   return (
     <tr
       className={cn(
-        "hover:bg-muted/40 data-[state=selected]:bg-muted/50",
+        "hover:bg-surface data-[state=selected]:bg-muted/50",
         props.onRowClick && "cursor-pointer",
         !props.tableLayout?.stripped &&
           props.tableLayout?.rowBorder &&
@@ -951,7 +951,7 @@ function DataGridTableBodyRow<TData>({
       data-row-pinned-boundary={pinnedBoundary}
       onClick={() => props.onRowClick && props.onRowClick(row.original)}
       className={cn(
-        "hover:bg-muted/40 data-[state=selected]:bg-muted/50",
+        "hover:bg-surface data-[state=selected]:bg-muted/50",
         props.onRowClick && "cursor-pointer",
         !props.tableLayout?.stripped &&
           props.tableLayout?.rowBorder &&
@@ -962,7 +962,7 @@ function DataGridTableBodyRow<TData>({
         table.options.enableRowSelection && "*:first:relative",
         props.tableLayout?.rowsPinnable &&
           isRowPinned &&
-          "bg-muted/30 hover:bg-muted/50",
+          "bg-muted/30 hover:bg-surface",
         pinnedBoundary === "top" && "[&>td]:shadow-[0_2px_0_rgba(0,0,0,0.03)]",
         pinnedBoundary === "bottom" &&
           "[&>td]:shadow-[0_2px_0_rgba(0,0,0,0.03)]",

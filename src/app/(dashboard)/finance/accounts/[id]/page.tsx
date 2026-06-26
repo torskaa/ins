@@ -12,7 +12,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { AlertTriangle, Wallet, Clock, DollarSign, FileText, Hash, Pencil, Tag, Trash2, XCircle, Building2, Layers } from "lucide-react"
+import { AlertTriangle, Building2, Clock, DollarSign, FileText, Hash, Landmark, Layers, Pencil, Tag, Trash2, Wallet, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { formatCurrency, formatDate, cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -160,7 +160,10 @@ export default function AccountDetailPage({ params }: { params: Promise<{ id: st
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/finance/accounts")}>Accounts</button>
+              <button onClick={() => router.push("/finance/accounts")}>
+                  <Landmark className="size-4" />
+                  Accounts
+                </button>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

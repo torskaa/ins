@@ -14,9 +14,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { Activity, Banknote, Clock, DollarSign, FileText, Hash, HouseIcon, MoreHorizontal, Package, Pencil, Receipt, ShoppingCart, Tags, Trash2, XCircle } from "lucide-react"
+import { Activity, Banknote, Clock, DollarSign, FileText, Hash, MoreHorizontal, Package, Pencil, Receipt, ShoppingCart, Tags, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { Frame, FramePanel } from "@/components/reui/frame"
+
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -213,24 +213,22 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      <Frame variant="ghost" className="w-fit">
-        <FramePanel className="gap-2 px-3! py-2! border-0!">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/orders" className="flex items-center gap-1.5">
-                  <HouseIcon className="size-4" aria-hidden="true" />
-                  Orders
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="font-semibold">{order.number}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </FramePanel>
-      </Frame>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <button onClick={() => router.push("/orders")}>
+                <ShoppingCart className="size-4" />
+                Orders
+              </button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{order.number}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <div className="grid grid-cols-12 gap-4">
         {/* Page Header — bento card */}
         <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">

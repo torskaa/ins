@@ -25,7 +25,7 @@ export function useArticleEditor(initialBlocks?: Block[]): ArticleEditorState & 
   const [blocks, setBlocks] = useState<Block[]>(
     initialBlocks && initialBlocks.length > 0
       ? initialBlocks
-      : [createBlock("paragraph", 0)]
+      : [{ id: "initial-block", type: "paragraph" as const, order: 0, content: "" }]
   )
 
   const addBlock = useCallback((type: BlockType, afterId?: string) => {

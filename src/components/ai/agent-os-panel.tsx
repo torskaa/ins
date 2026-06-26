@@ -55,7 +55,7 @@ export function AgentOSPanel({
         </div>
         <button
           onClick={onTogglePanel}
-          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors"
+          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
         >
           <PanelRightClose className="size-4" />
         </button>

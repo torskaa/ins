@@ -47,7 +47,7 @@ export function CopilotContextBar({ activeContext, onSelectContext }: CopilotCon
       <button
         ref={buttonRef}
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 px-2 py-1.5 text-xs text-muted-foreground bg-transparent rounded-full hover:bg-muted/20 hover:text-foreground transition-colors duration-150"
+        className="inline-flex items-center gap-1.5 px-2 py-1.5 text-xs text-muted-foreground bg-transparent rounded-full hover:bg-surface hover:text-foreground transition-colors duration-150"
       >
         {activeContext && Icon ? (
           <>
@@ -72,8 +72,8 @@ export function CopilotContextBar({ activeContext, onSelectContext }: CopilotCon
             <button
               onClick={() => select(null)}
               className={cn(
-                "flex items-center gap-3 w-full px-3 py-2.5 text-sm text-left transition-colors hover:bg-muted/20",
-                !activeContext && "bg-muted/10"
+                "flex items-center gap-3 w-full px-3 py-2.5 text-sm text-left transition-colors hover:bg-surface",
+                !activeContext && "bg-surface"
               )}
             >
               <div className="flex items-center justify-center size-8 rounded-lg bg-muted/20 shrink-0">
@@ -94,10 +94,10 @@ export function CopilotContextBar({ activeContext, onSelectContext }: CopilotCon
                 <button
                   key={ctx.id}
                   onClick={() => select(ctx.id)}
-                  className={cn(
-                    "flex items-center gap-3 w-full px-3 py-2.5 text-sm text-left transition-colors hover:bg-muted/20",
-                    isActive && "bg-muted/10"
-                  )}
+              className={cn(
+                "flex items-center gap-3 w-full px-3 py-2.5 text-sm text-left transition-colors hover:bg-surface",
+                isActive && "bg-surface"
+              )}
                 >
                   <div className="flex items-center justify-center size-8 rounded-lg bg-muted/20 shrink-0">
                     <CtxIcon className={cn("size-4", isActive ? "text-foreground" : "text-muted-foreground")} />

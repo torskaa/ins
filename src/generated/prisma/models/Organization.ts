@@ -229,6 +229,9 @@ export type OrganizationWhereInput = {
   stockMovements?: Prisma.StockMovementListRelationFilter
   aiExecutionLogs?: Prisma.AiExecutionLogListRelationFilter
   agentRuns?: Prisma.AgentRunListRelationFilter
+  folders?: Prisma.FolderListRelationFilter
+  files?: Prisma.FileListRelationFilter
+  tags?: Prisma.TagListRelationFilter
 }
 
 export type OrganizationOrderByWithRelationInput = {
@@ -277,6 +280,9 @@ export type OrganizationOrderByWithRelationInput = {
   stockMovements?: Prisma.StockMovementOrderByRelationAggregateInput
   aiExecutionLogs?: Prisma.AiExecutionLogOrderByRelationAggregateInput
   agentRuns?: Prisma.AgentRunOrderByRelationAggregateInput
+  folders?: Prisma.FolderOrderByRelationAggregateInput
+  files?: Prisma.FileOrderByRelationAggregateInput
+  tags?: Prisma.TagOrderByRelationAggregateInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -328,6 +334,9 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   stockMovements?: Prisma.StockMovementListRelationFilter
   aiExecutionLogs?: Prisma.AiExecutionLogListRelationFilter
   agentRuns?: Prisma.AgentRunListRelationFilter
+  folders?: Prisma.FolderListRelationFilter
+  files?: Prisma.FileListRelationFilter
+  tags?: Prisma.TagListRelationFilter
 }, "id" | "slug">
 
 export type OrganizationOrderByWithAggregationInput = {
@@ -400,6 +409,9 @@ export type OrganizationCreateInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateInput = {
@@ -448,6 +460,9 @@ export type OrganizationUncheckedCreateInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUpdateInput = {
@@ -496,6 +511,9 @@ export type OrganizationUpdateInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
@@ -544,6 +562,9 @@ export type OrganizationUncheckedUpdateInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateManyInput = {
@@ -1158,6 +1179,48 @@ export type OrganizationUpdateOneRequiredWithoutTrainingProgramsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutTrainingProgramsInput, Prisma.OrganizationUpdateWithoutTrainingProgramsInput>, Prisma.OrganizationUncheckedUpdateWithoutTrainingProgramsInput>
 }
 
+export type OrganizationCreateNestedOneWithoutFoldersInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutFoldersInput, Prisma.OrganizationUncheckedCreateWithoutFoldersInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutFoldersInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutFoldersNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutFoldersInput, Prisma.OrganizationUncheckedCreateWithoutFoldersInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutFoldersInput
+  upsert?: Prisma.OrganizationUpsertWithoutFoldersInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutFoldersInput, Prisma.OrganizationUpdateWithoutFoldersInput>, Prisma.OrganizationUncheckedUpdateWithoutFoldersInput>
+}
+
+export type OrganizationCreateNestedOneWithoutFilesInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutFilesInput, Prisma.OrganizationUncheckedCreateWithoutFilesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutFilesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutFilesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutFilesInput, Prisma.OrganizationUncheckedCreateWithoutFilesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutFilesInput
+  upsert?: Prisma.OrganizationUpsertWithoutFilesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutFilesInput, Prisma.OrganizationUpdateWithoutFilesInput>, Prisma.OrganizationUncheckedUpdateWithoutFilesInput>
+}
+
+export type OrganizationCreateNestedOneWithoutTagsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutTagsInput, Prisma.OrganizationUncheckedCreateWithoutTagsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutTagsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutTagsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutTagsInput, Prisma.OrganizationUncheckedCreateWithoutTagsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutTagsInput
+  upsert?: Prisma.OrganizationUpsertWithoutTagsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutTagsInput, Prisma.OrganizationUpdateWithoutTagsInput>, Prisma.OrganizationUncheckedUpdateWithoutTagsInput>
+}
+
 export type OrganizationCreateWithoutMembersInput = {
   id?: string
   name: string
@@ -1203,6 +1266,9 @@ export type OrganizationCreateWithoutMembersInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutMembersInput = {
@@ -1250,6 +1316,9 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutMembersInput = {
@@ -1313,6 +1382,9 @@ export type OrganizationUpdateWithoutMembersInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutMembersInput = {
@@ -1360,6 +1432,9 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutRolesInput = {
@@ -1407,6 +1482,9 @@ export type OrganizationCreateWithoutRolesInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutRolesInput = {
@@ -1454,6 +1532,9 @@ export type OrganizationUncheckedCreateWithoutRolesInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutRolesInput = {
@@ -1517,6 +1598,9 @@ export type OrganizationUpdateWithoutRolesInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutRolesInput = {
@@ -1564,6 +1648,9 @@ export type OrganizationUncheckedUpdateWithoutRolesInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutApiKeysInput = {
@@ -1611,6 +1698,9 @@ export type OrganizationCreateWithoutApiKeysInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutApiKeysInput = {
@@ -1658,6 +1748,9 @@ export type OrganizationUncheckedCreateWithoutApiKeysInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutApiKeysInput = {
@@ -1721,6 +1814,9 @@ export type OrganizationUpdateWithoutApiKeysInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutApiKeysInput = {
@@ -1768,6 +1864,9 @@ export type OrganizationUncheckedUpdateWithoutApiKeysInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutAuditEntriesInput = {
@@ -1815,6 +1914,9 @@ export type OrganizationCreateWithoutAuditEntriesInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutAuditEntriesInput = {
@@ -1862,6 +1964,9 @@ export type OrganizationUncheckedCreateWithoutAuditEntriesInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutAuditEntriesInput = {
@@ -1925,6 +2030,9 @@ export type OrganizationUpdateWithoutAuditEntriesInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutAuditEntriesInput = {
@@ -1972,6 +2080,9 @@ export type OrganizationUncheckedUpdateWithoutAuditEntriesInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutCategoriesInput = {
@@ -2019,6 +2130,9 @@ export type OrganizationCreateWithoutCategoriesInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutCategoriesInput = {
@@ -2066,6 +2180,9 @@ export type OrganizationUncheckedCreateWithoutCategoriesInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutCategoriesInput = {
@@ -2129,6 +2246,9 @@ export type OrganizationUpdateWithoutCategoriesInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutCategoriesInput = {
@@ -2176,6 +2296,9 @@ export type OrganizationUncheckedUpdateWithoutCategoriesInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutProductsInput = {
@@ -2223,6 +2346,9 @@ export type OrganizationCreateWithoutProductsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutProductsInput = {
@@ -2270,6 +2396,9 @@ export type OrganizationUncheckedCreateWithoutProductsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutProductsInput = {
@@ -2333,6 +2462,9 @@ export type OrganizationUpdateWithoutProductsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutProductsInput = {
@@ -2380,6 +2512,9 @@ export type OrganizationUncheckedUpdateWithoutProductsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutBomItemsInput = {
@@ -2427,6 +2562,9 @@ export type OrganizationCreateWithoutBomItemsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutBomItemsInput = {
@@ -2474,6 +2612,9 @@ export type OrganizationUncheckedCreateWithoutBomItemsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutBomItemsInput = {
@@ -2537,6 +2678,9 @@ export type OrganizationUpdateWithoutBomItemsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutBomItemsInput = {
@@ -2584,6 +2728,9 @@ export type OrganizationUncheckedUpdateWithoutBomItemsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutLotsInput = {
@@ -2631,6 +2778,9 @@ export type OrganizationCreateWithoutLotsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutLotsInput = {
@@ -2678,6 +2828,9 @@ export type OrganizationUncheckedCreateWithoutLotsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutLotsInput = {
@@ -2741,6 +2894,9 @@ export type OrganizationUpdateWithoutLotsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutLotsInput = {
@@ -2788,6 +2944,9 @@ export type OrganizationUncheckedUpdateWithoutLotsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutForecastEntriesInput = {
@@ -2835,6 +2994,9 @@ export type OrganizationCreateWithoutForecastEntriesInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutForecastEntriesInput = {
@@ -2882,6 +3044,9 @@ export type OrganizationUncheckedCreateWithoutForecastEntriesInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutForecastEntriesInput = {
@@ -2945,6 +3110,9 @@ export type OrganizationUpdateWithoutForecastEntriesInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutForecastEntriesInput = {
@@ -2992,6 +3160,9 @@ export type OrganizationUncheckedUpdateWithoutForecastEntriesInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutWarehousesInput = {
@@ -3039,6 +3210,9 @@ export type OrganizationCreateWithoutWarehousesInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutWarehousesInput = {
@@ -3086,6 +3260,9 @@ export type OrganizationUncheckedCreateWithoutWarehousesInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutWarehousesInput = {
@@ -3149,6 +3326,9 @@ export type OrganizationUpdateWithoutWarehousesInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutWarehousesInput = {
@@ -3196,6 +3376,9 @@ export type OrganizationUncheckedUpdateWithoutWarehousesInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutStockMovementsInput = {
@@ -3243,6 +3426,9 @@ export type OrganizationCreateWithoutStockMovementsInput = {
   auditEntries?: Prisma.AuditEntryCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutStockMovementsInput = {
@@ -3290,6 +3476,9 @@ export type OrganizationUncheckedCreateWithoutStockMovementsInput = {
   auditEntries?: Prisma.AuditEntryUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutStockMovementsInput = {
@@ -3353,6 +3542,9 @@ export type OrganizationUpdateWithoutStockMovementsInput = {
   auditEntries?: Prisma.AuditEntryUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutStockMovementsInput = {
@@ -3400,6 +3592,9 @@ export type OrganizationUncheckedUpdateWithoutStockMovementsInput = {
   auditEntries?: Prisma.AuditEntryUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutSuppliersInput = {
@@ -3447,6 +3642,9 @@ export type OrganizationCreateWithoutSuppliersInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutSuppliersInput = {
@@ -3494,6 +3692,9 @@ export type OrganizationUncheckedCreateWithoutSuppliersInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutSuppliersInput = {
@@ -3557,6 +3758,9 @@ export type OrganizationUpdateWithoutSuppliersInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutSuppliersInput = {
@@ -3604,6 +3808,9 @@ export type OrganizationUncheckedUpdateWithoutSuppliersInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutCustomersInput = {
@@ -3651,6 +3858,9 @@ export type OrganizationCreateWithoutCustomersInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutCustomersInput = {
@@ -3698,6 +3908,9 @@ export type OrganizationUncheckedCreateWithoutCustomersInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutCustomersInput = {
@@ -3761,6 +3974,9 @@ export type OrganizationUpdateWithoutCustomersInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutCustomersInput = {
@@ -3808,6 +4024,9 @@ export type OrganizationUncheckedUpdateWithoutCustomersInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutOrdersInput = {
@@ -3855,6 +4074,9 @@ export type OrganizationCreateWithoutOrdersInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutOrdersInput = {
@@ -3902,6 +4124,9 @@ export type OrganizationUncheckedCreateWithoutOrdersInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutOrdersInput = {
@@ -3965,6 +4190,9 @@ export type OrganizationUpdateWithoutOrdersInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutOrdersInput = {
@@ -4012,6 +4240,9 @@ export type OrganizationUncheckedUpdateWithoutOrdersInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutQuotationsInput = {
@@ -4059,6 +4290,9 @@ export type OrganizationCreateWithoutQuotationsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutQuotationsInput = {
@@ -4106,6 +4340,9 @@ export type OrganizationUncheckedCreateWithoutQuotationsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutQuotationsInput = {
@@ -4169,6 +4406,9 @@ export type OrganizationUpdateWithoutQuotationsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutQuotationsInput = {
@@ -4216,6 +4456,9 @@ export type OrganizationUncheckedUpdateWithoutQuotationsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutInvoicesInput = {
@@ -4263,6 +4506,9 @@ export type OrganizationCreateWithoutInvoicesInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutInvoicesInput = {
@@ -4310,6 +4556,9 @@ export type OrganizationUncheckedCreateWithoutInvoicesInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutInvoicesInput = {
@@ -4373,6 +4622,9 @@ export type OrganizationUpdateWithoutInvoicesInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutInvoicesInput = {
@@ -4420,6 +4672,9 @@ export type OrganizationUncheckedUpdateWithoutInvoicesInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutPaymentsInput = {
@@ -4467,6 +4722,9 @@ export type OrganizationCreateWithoutPaymentsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutPaymentsInput = {
@@ -4514,6 +4772,9 @@ export type OrganizationUncheckedCreateWithoutPaymentsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutPaymentsInput = {
@@ -4577,6 +4838,9 @@ export type OrganizationUpdateWithoutPaymentsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutPaymentsInput = {
@@ -4624,6 +4888,9 @@ export type OrganizationUncheckedUpdateWithoutPaymentsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutDiscountsInput = {
@@ -4671,6 +4938,9 @@ export type OrganizationCreateWithoutDiscountsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutDiscountsInput = {
@@ -4718,6 +4988,9 @@ export type OrganizationUncheckedCreateWithoutDiscountsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutDiscountsInput = {
@@ -4781,6 +5054,9 @@ export type OrganizationUpdateWithoutDiscountsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutDiscountsInput = {
@@ -4828,6 +5104,9 @@ export type OrganizationUncheckedUpdateWithoutDiscountsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutActivityLogsInput = {
@@ -4875,6 +5154,9 @@ export type OrganizationCreateWithoutActivityLogsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutActivityLogsInput = {
@@ -4922,6 +5204,9 @@ export type OrganizationUncheckedCreateWithoutActivityLogsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutActivityLogsInput = {
@@ -4985,6 +5270,9 @@ export type OrganizationUpdateWithoutActivityLogsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutActivityLogsInput = {
@@ -5032,6 +5320,9 @@ export type OrganizationUncheckedUpdateWithoutActivityLogsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutNotificationsInput = {
@@ -5079,6 +5370,9 @@ export type OrganizationCreateWithoutNotificationsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutNotificationsInput = {
@@ -5126,6 +5420,9 @@ export type OrganizationUncheckedCreateWithoutNotificationsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutNotificationsInput = {
@@ -5189,6 +5486,9 @@ export type OrganizationUpdateWithoutNotificationsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutNotificationsInput = {
@@ -5236,6 +5536,9 @@ export type OrganizationUncheckedUpdateWithoutNotificationsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutSettingsInput = {
@@ -5283,6 +5586,9 @@ export type OrganizationCreateWithoutSettingsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutSettingsInput = {
@@ -5330,6 +5636,9 @@ export type OrganizationUncheckedCreateWithoutSettingsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutSettingsInput = {
@@ -5393,6 +5702,9 @@ export type OrganizationUpdateWithoutSettingsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutSettingsInput = {
@@ -5440,6 +5752,9 @@ export type OrganizationUncheckedUpdateWithoutSettingsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutDistributorsInput = {
@@ -5487,6 +5802,9 @@ export type OrganizationCreateWithoutDistributorsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutDistributorsInput = {
@@ -5534,6 +5852,9 @@ export type OrganizationUncheckedCreateWithoutDistributorsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutDistributorsInput = {
@@ -5597,6 +5918,9 @@ export type OrganizationUpdateWithoutDistributorsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutDistributorsInput = {
@@ -5644,6 +5968,9 @@ export type OrganizationUncheckedUpdateWithoutDistributorsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutDeliveriesInput = {
@@ -5691,6 +6018,9 @@ export type OrganizationCreateWithoutDeliveriesInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutDeliveriesInput = {
@@ -5738,6 +6068,9 @@ export type OrganizationUncheckedCreateWithoutDeliveriesInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutDeliveriesInput = {
@@ -5801,6 +6134,9 @@ export type OrganizationUpdateWithoutDeliveriesInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutDeliveriesInput = {
@@ -5848,6 +6184,9 @@ export type OrganizationUncheckedUpdateWithoutDeliveriesInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutStockCountsInput = {
@@ -5895,6 +6234,9 @@ export type OrganizationCreateWithoutStockCountsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutStockCountsInput = {
@@ -5942,6 +6284,9 @@ export type OrganizationUncheckedCreateWithoutStockCountsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutStockCountsInput = {
@@ -6005,6 +6350,9 @@ export type OrganizationUpdateWithoutStockCountsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutStockCountsInput = {
@@ -6052,6 +6400,9 @@ export type OrganizationUncheckedUpdateWithoutStockCountsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutWorkCentersInput = {
@@ -6099,6 +6450,9 @@ export type OrganizationCreateWithoutWorkCentersInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutWorkCentersInput = {
@@ -6146,6 +6500,9 @@ export type OrganizationUncheckedCreateWithoutWorkCentersInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutWorkCentersInput = {
@@ -6209,6 +6566,9 @@ export type OrganizationUpdateWithoutWorkCentersInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutWorkCentersInput = {
@@ -6256,6 +6616,9 @@ export type OrganizationUncheckedUpdateWithoutWorkCentersInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutOperationsInput = {
@@ -6303,6 +6666,9 @@ export type OrganizationCreateWithoutOperationsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutOperationsInput = {
@@ -6350,6 +6716,9 @@ export type OrganizationUncheckedCreateWithoutOperationsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutOperationsInput = {
@@ -6413,6 +6782,9 @@ export type OrganizationUpdateWithoutOperationsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutOperationsInput = {
@@ -6460,6 +6832,9 @@ export type OrganizationUncheckedUpdateWithoutOperationsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutProductionOrdersInput = {
@@ -6507,6 +6882,9 @@ export type OrganizationCreateWithoutProductionOrdersInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutProductionOrdersInput = {
@@ -6554,6 +6932,9 @@ export type OrganizationUncheckedCreateWithoutProductionOrdersInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutProductionOrdersInput = {
@@ -6617,6 +6998,9 @@ export type OrganizationUpdateWithoutProductionOrdersInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutProductionOrdersInput = {
@@ -6664,6 +7048,9 @@ export type OrganizationUncheckedUpdateWithoutProductionOrdersInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutAccountGroupsInput = {
@@ -6711,6 +7098,9 @@ export type OrganizationCreateWithoutAccountGroupsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutAccountGroupsInput = {
@@ -6758,6 +7148,9 @@ export type OrganizationUncheckedCreateWithoutAccountGroupsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutAccountGroupsInput = {
@@ -6821,6 +7214,9 @@ export type OrganizationUpdateWithoutAccountGroupsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutAccountGroupsInput = {
@@ -6868,6 +7264,9 @@ export type OrganizationUncheckedUpdateWithoutAccountGroupsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutAccountsInput = {
@@ -6915,6 +7314,9 @@ export type OrganizationCreateWithoutAccountsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutAccountsInput = {
@@ -6962,6 +7364,9 @@ export type OrganizationUncheckedCreateWithoutAccountsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutAccountsInput = {
@@ -7025,6 +7430,9 @@ export type OrganizationUpdateWithoutAccountsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutAccountsInput = {
@@ -7072,6 +7480,9 @@ export type OrganizationUncheckedUpdateWithoutAccountsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutJournalEntriesInput = {
@@ -7119,6 +7530,9 @@ export type OrganizationCreateWithoutJournalEntriesInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutJournalEntriesInput = {
@@ -7166,6 +7580,9 @@ export type OrganizationUncheckedCreateWithoutJournalEntriesInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutJournalEntriesInput = {
@@ -7229,6 +7646,9 @@ export type OrganizationUpdateWithoutJournalEntriesInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutJournalEntriesInput = {
@@ -7276,6 +7696,9 @@ export type OrganizationUncheckedUpdateWithoutJournalEntriesInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutTaxRatesInput = {
@@ -7323,6 +7746,9 @@ export type OrganizationCreateWithoutTaxRatesInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutTaxRatesInput = {
@@ -7370,6 +7796,9 @@ export type OrganizationUncheckedCreateWithoutTaxRatesInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutTaxRatesInput = {
@@ -7433,6 +7862,9 @@ export type OrganizationUpdateWithoutTaxRatesInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutTaxRatesInput = {
@@ -7480,6 +7912,9 @@ export type OrganizationUncheckedUpdateWithoutTaxRatesInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutProjectsInput = {
@@ -7527,6 +7962,9 @@ export type OrganizationCreateWithoutProjectsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutProjectsInput = {
@@ -7574,6 +8012,9 @@ export type OrganizationUncheckedCreateWithoutProjectsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutProjectsInput = {
@@ -7637,6 +8078,9 @@ export type OrganizationUpdateWithoutProjectsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutProjectsInput = {
@@ -7684,6 +8128,9 @@ export type OrganizationUncheckedUpdateWithoutProjectsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutTasksInput = {
@@ -7731,6 +8178,9 @@ export type OrganizationCreateWithoutTasksInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutTasksInput = {
@@ -7778,6 +8228,9 @@ export type OrganizationUncheckedCreateWithoutTasksInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutTasksInput = {
@@ -7841,6 +8294,9 @@ export type OrganizationUpdateWithoutTasksInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutTasksInput = {
@@ -7888,6 +8344,9 @@ export type OrganizationUncheckedUpdateWithoutTasksInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutWorkflowsInput = {
@@ -7935,6 +8394,9 @@ export type OrganizationCreateWithoutWorkflowsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutWorkflowsInput = {
@@ -7982,6 +8444,9 @@ export type OrganizationUncheckedCreateWithoutWorkflowsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutWorkflowsInput = {
@@ -8045,6 +8510,9 @@ export type OrganizationUpdateWithoutWorkflowsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutWorkflowsInput = {
@@ -8092,6 +8560,9 @@ export type OrganizationUncheckedUpdateWithoutWorkflowsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutWikiArticlesInput = {
@@ -8139,6 +8610,9 @@ export type OrganizationCreateWithoutWikiArticlesInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutWikiArticlesInput = {
@@ -8186,6 +8660,9 @@ export type OrganizationUncheckedCreateWithoutWikiArticlesInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutWikiArticlesInput = {
@@ -8249,6 +8726,9 @@ export type OrganizationUpdateWithoutWikiArticlesInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutWikiArticlesInput = {
@@ -8296,6 +8776,9 @@ export type OrganizationUncheckedUpdateWithoutWikiArticlesInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutKnowledgeDocumentsInput = {
@@ -8343,6 +8826,9 @@ export type OrganizationCreateWithoutKnowledgeDocumentsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutKnowledgeDocumentsInput = {
@@ -8390,6 +8876,9 @@ export type OrganizationUncheckedCreateWithoutKnowledgeDocumentsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutKnowledgeDocumentsInput = {
@@ -8453,6 +8942,9 @@ export type OrganizationUpdateWithoutKnowledgeDocumentsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutKnowledgeDocumentsInput = {
@@ -8500,6 +8992,9 @@ export type OrganizationUncheckedUpdateWithoutKnowledgeDocumentsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutAiExecutionLogsInput = {
@@ -8547,6 +9042,9 @@ export type OrganizationCreateWithoutAiExecutionLogsInput = {
   auditEntries?: Prisma.AuditEntryCreateNestedManyWithoutOrganizationInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutAiExecutionLogsInput = {
@@ -8594,6 +9092,9 @@ export type OrganizationUncheckedCreateWithoutAiExecutionLogsInput = {
   auditEntries?: Prisma.AuditEntryUncheckedCreateNestedManyWithoutOrganizationInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutAiExecutionLogsInput = {
@@ -8657,6 +9158,9 @@ export type OrganizationUpdateWithoutAiExecutionLogsInput = {
   auditEntries?: Prisma.AuditEntryUpdateManyWithoutOrganizationNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutAiExecutionLogsInput = {
@@ -8704,6 +9208,9 @@ export type OrganizationUncheckedUpdateWithoutAiExecutionLogsInput = {
   auditEntries?: Prisma.AuditEntryUncheckedUpdateManyWithoutOrganizationNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutAgentRunsInput = {
@@ -8751,6 +9258,9 @@ export type OrganizationCreateWithoutAgentRunsInput = {
   auditEntries?: Prisma.AuditEntryCreateNestedManyWithoutOrganizationInput
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutAgentRunsInput = {
@@ -8798,6 +9308,9 @@ export type OrganizationUncheckedCreateWithoutAgentRunsInput = {
   auditEntries?: Prisma.AuditEntryUncheckedCreateNestedManyWithoutOrganizationInput
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutAgentRunsInput = {
@@ -8861,6 +9374,9 @@ export type OrganizationUpdateWithoutAgentRunsInput = {
   auditEntries?: Prisma.AuditEntryUpdateManyWithoutOrganizationNestedInput
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutAgentRunsInput = {
@@ -8908,6 +9424,9 @@ export type OrganizationUncheckedUpdateWithoutAgentRunsInput = {
   auditEntries?: Prisma.AuditEntryUncheckedUpdateManyWithoutOrganizationNestedInput
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutTrainingProgramsInput = {
@@ -8955,6 +9474,9 @@ export type OrganizationCreateWithoutTrainingProgramsInput = {
   stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutTrainingProgramsInput = {
@@ -9002,6 +9524,9 @@ export type OrganizationUncheckedCreateWithoutTrainingProgramsInput = {
   stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
   agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutTrainingProgramsInput = {
@@ -9065,6 +9590,9 @@ export type OrganizationUpdateWithoutTrainingProgramsInput = {
   stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutTrainingProgramsInput = {
@@ -9112,6 +9640,657 @@ export type OrganizationUncheckedUpdateWithoutTrainingProgramsInput = {
   stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
   aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
   agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutFoldersInput = {
+  id?: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.OrganizationMemberCreateNestedManyWithoutOrganizationInput
+  warehouses?: Prisma.WarehouseCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  suppliers?: Prisma.SupplierCreateNestedManyWithoutOrganizationInput
+  distributors?: Prisma.DistributorCreateNestedManyWithoutOrganizationInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  quotations?: Prisma.QuotationCreateNestedManyWithoutOrganizationInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  discounts?: Prisma.DiscountRuleCreateNestedManyWithoutOrganizationInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutOrganizationInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutOrganizationInput
+  bomItems?: Prisma.BillOfMaterialCreateNestedManyWithoutOrganizationInput
+  lots?: Prisma.LotCreateNestedManyWithoutOrganizationInput
+  forecastEntries?: Prisma.ForecastEntryCreateNestedManyWithoutOrganizationInput
+  settings?: Prisma.OrganizationSettingCreateNestedOneWithoutOrganizationInput
+  deliveries?: Prisma.DeliveryCreateNestedManyWithoutOrganizationInput
+  stockCounts?: Prisma.StockCountCreateNestedManyWithoutOrganizationInput
+  workCenters?: Prisma.WorkCenterCreateNestedManyWithoutOrganizationInput
+  operations?: Prisma.OperationCreateNestedManyWithoutOrganizationInput
+  productionOrders?: Prisma.ProductionOrderCreateNestedManyWithoutOrganizationInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutOrganizationInput
+  workflows?: Prisma.WorkflowDefinitionCreateNestedManyWithoutOrganizationInput
+  accountGroups?: Prisma.AccountGroupCreateNestedManyWithoutOrganizationInput
+  accounts?: Prisma.ChartOfAccountCreateNestedManyWithoutOrganizationInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutOrganizationInput
+  taxRates?: Prisma.TaxRateCreateNestedManyWithoutOrganizationInput
+  wikiArticles?: Prisma.WikiArticleCreateNestedManyWithoutOrganizationInput
+  knowledgeDocuments?: Prisma.KnowledgeDocumentCreateNestedManyWithoutOrganizationInput
+  trainingPrograms?: Prisma.TrainingProgramCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutOrganizationInput
+  auditEntries?: Prisma.AuditEntryCreateNestedManyWithoutOrganizationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
+  aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutFoldersInput = {
+  id?: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+  warehouses?: Prisma.WarehouseUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutOrganizationInput
+  distributors?: Prisma.DistributorUncheckedCreateNestedManyWithoutOrganizationInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  quotations?: Prisma.QuotationUncheckedCreateNestedManyWithoutOrganizationInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  discounts?: Prisma.DiscountRuleUncheckedCreateNestedManyWithoutOrganizationInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutOrganizationInput
+  bomItems?: Prisma.BillOfMaterialUncheckedCreateNestedManyWithoutOrganizationInput
+  lots?: Prisma.LotUncheckedCreateNestedManyWithoutOrganizationInput
+  forecastEntries?: Prisma.ForecastEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  settings?: Prisma.OrganizationSettingUncheckedCreateNestedOneWithoutOrganizationInput
+  deliveries?: Prisma.DeliveryUncheckedCreateNestedManyWithoutOrganizationInput
+  stockCounts?: Prisma.StockCountUncheckedCreateNestedManyWithoutOrganizationInput
+  workCenters?: Prisma.WorkCenterUncheckedCreateNestedManyWithoutOrganizationInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutOrganizationInput
+  productionOrders?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrganizationInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutOrganizationInput
+  workflows?: Prisma.WorkflowDefinitionUncheckedCreateNestedManyWithoutOrganizationInput
+  accountGroups?: Prisma.AccountGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  accounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutOrganizationInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  taxRates?: Prisma.TaxRateUncheckedCreateNestedManyWithoutOrganizationInput
+  wikiArticles?: Prisma.WikiArticleUncheckedCreateNestedManyWithoutOrganizationInput
+  knowledgeDocuments?: Prisma.KnowledgeDocumentUncheckedCreateNestedManyWithoutOrganizationInput
+  trainingPrograms?: Prisma.TrainingProgramUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEntries?: Prisma.AuditEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
+  aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutFoldersInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutFoldersInput, Prisma.OrganizationUncheckedCreateWithoutFoldersInput>
+}
+
+export type OrganizationUpsertWithoutFoldersInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutFoldersInput, Prisma.OrganizationUncheckedUpdateWithoutFoldersInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutFoldersInput, Prisma.OrganizationUncheckedCreateWithoutFoldersInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutFoldersInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutFoldersInput, Prisma.OrganizationUncheckedUpdateWithoutFoldersInput>
+}
+
+export type OrganizationUpdateWithoutFoldersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+  warehouses?: Prisma.WarehouseUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  suppliers?: Prisma.SupplierUpdateManyWithoutOrganizationNestedInput
+  distributors?: Prisma.DistributorUpdateManyWithoutOrganizationNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  quotations?: Prisma.QuotationUpdateManyWithoutOrganizationNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  discounts?: Prisma.DiscountRuleUpdateManyWithoutOrganizationNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutOrganizationNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutOrganizationNestedInput
+  bomItems?: Prisma.BillOfMaterialUpdateManyWithoutOrganizationNestedInput
+  lots?: Prisma.LotUpdateManyWithoutOrganizationNestedInput
+  forecastEntries?: Prisma.ForecastEntryUpdateManyWithoutOrganizationNestedInput
+  settings?: Prisma.OrganizationSettingUpdateOneWithoutOrganizationNestedInput
+  deliveries?: Prisma.DeliveryUpdateManyWithoutOrganizationNestedInput
+  stockCounts?: Prisma.StockCountUpdateManyWithoutOrganizationNestedInput
+  workCenters?: Prisma.WorkCenterUpdateManyWithoutOrganizationNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutOrganizationNestedInput
+  productionOrders?: Prisma.ProductionOrderUpdateManyWithoutOrganizationNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutOrganizationNestedInput
+  workflows?: Prisma.WorkflowDefinitionUpdateManyWithoutOrganizationNestedInput
+  accountGroups?: Prisma.AccountGroupUpdateManyWithoutOrganizationNestedInput
+  accounts?: Prisma.ChartOfAccountUpdateManyWithoutOrganizationNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutOrganizationNestedInput
+  taxRates?: Prisma.TaxRateUpdateManyWithoutOrganizationNestedInput
+  wikiArticles?: Prisma.WikiArticleUpdateManyWithoutOrganizationNestedInput
+  knowledgeDocuments?: Prisma.KnowledgeDocumentUpdateManyWithoutOrganizationNestedInput
+  trainingPrograms?: Prisma.TrainingProgramUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutOrganizationNestedInput
+  auditEntries?: Prisma.AuditEntryUpdateManyWithoutOrganizationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
+  aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutFoldersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  warehouses?: Prisma.WarehouseUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutOrganizationNestedInput
+  distributors?: Prisma.DistributorUncheckedUpdateManyWithoutOrganizationNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  quotations?: Prisma.QuotationUncheckedUpdateManyWithoutOrganizationNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  discounts?: Prisma.DiscountRuleUncheckedUpdateManyWithoutOrganizationNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
+  bomItems?: Prisma.BillOfMaterialUncheckedUpdateManyWithoutOrganizationNestedInput
+  lots?: Prisma.LotUncheckedUpdateManyWithoutOrganizationNestedInput
+  forecastEntries?: Prisma.ForecastEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  settings?: Prisma.OrganizationSettingUncheckedUpdateOneWithoutOrganizationNestedInput
+  deliveries?: Prisma.DeliveryUncheckedUpdateManyWithoutOrganizationNestedInput
+  stockCounts?: Prisma.StockCountUncheckedUpdateManyWithoutOrganizationNestedInput
+  workCenters?: Prisma.WorkCenterUncheckedUpdateManyWithoutOrganizationNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutOrganizationNestedInput
+  productionOrders?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutOrganizationNestedInput
+  workflows?: Prisma.WorkflowDefinitionUncheckedUpdateManyWithoutOrganizationNestedInput
+  accountGroups?: Prisma.AccountGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  accounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  taxRates?: Prisma.TaxRateUncheckedUpdateManyWithoutOrganizationNestedInput
+  wikiArticles?: Prisma.WikiArticleUncheckedUpdateManyWithoutOrganizationNestedInput
+  knowledgeDocuments?: Prisma.KnowledgeDocumentUncheckedUpdateManyWithoutOrganizationNestedInput
+  trainingPrograms?: Prisma.TrainingProgramUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEntries?: Prisma.AuditEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
+  aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutFilesInput = {
+  id?: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.OrganizationMemberCreateNestedManyWithoutOrganizationInput
+  warehouses?: Prisma.WarehouseCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  suppliers?: Prisma.SupplierCreateNestedManyWithoutOrganizationInput
+  distributors?: Prisma.DistributorCreateNestedManyWithoutOrganizationInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  quotations?: Prisma.QuotationCreateNestedManyWithoutOrganizationInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  discounts?: Prisma.DiscountRuleCreateNestedManyWithoutOrganizationInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutOrganizationInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutOrganizationInput
+  bomItems?: Prisma.BillOfMaterialCreateNestedManyWithoutOrganizationInput
+  lots?: Prisma.LotCreateNestedManyWithoutOrganizationInput
+  forecastEntries?: Prisma.ForecastEntryCreateNestedManyWithoutOrganizationInput
+  settings?: Prisma.OrganizationSettingCreateNestedOneWithoutOrganizationInput
+  deliveries?: Prisma.DeliveryCreateNestedManyWithoutOrganizationInput
+  stockCounts?: Prisma.StockCountCreateNestedManyWithoutOrganizationInput
+  workCenters?: Prisma.WorkCenterCreateNestedManyWithoutOrganizationInput
+  operations?: Prisma.OperationCreateNestedManyWithoutOrganizationInput
+  productionOrders?: Prisma.ProductionOrderCreateNestedManyWithoutOrganizationInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutOrganizationInput
+  workflows?: Prisma.WorkflowDefinitionCreateNestedManyWithoutOrganizationInput
+  accountGroups?: Prisma.AccountGroupCreateNestedManyWithoutOrganizationInput
+  accounts?: Prisma.ChartOfAccountCreateNestedManyWithoutOrganizationInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutOrganizationInput
+  taxRates?: Prisma.TaxRateCreateNestedManyWithoutOrganizationInput
+  wikiArticles?: Prisma.WikiArticleCreateNestedManyWithoutOrganizationInput
+  knowledgeDocuments?: Prisma.KnowledgeDocumentCreateNestedManyWithoutOrganizationInput
+  trainingPrograms?: Prisma.TrainingProgramCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutOrganizationInput
+  auditEntries?: Prisma.AuditEntryCreateNestedManyWithoutOrganizationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
+  aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutFilesInput = {
+  id?: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+  warehouses?: Prisma.WarehouseUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutOrganizationInput
+  distributors?: Prisma.DistributorUncheckedCreateNestedManyWithoutOrganizationInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  quotations?: Prisma.QuotationUncheckedCreateNestedManyWithoutOrganizationInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  discounts?: Prisma.DiscountRuleUncheckedCreateNestedManyWithoutOrganizationInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutOrganizationInput
+  bomItems?: Prisma.BillOfMaterialUncheckedCreateNestedManyWithoutOrganizationInput
+  lots?: Prisma.LotUncheckedCreateNestedManyWithoutOrganizationInput
+  forecastEntries?: Prisma.ForecastEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  settings?: Prisma.OrganizationSettingUncheckedCreateNestedOneWithoutOrganizationInput
+  deliveries?: Prisma.DeliveryUncheckedCreateNestedManyWithoutOrganizationInput
+  stockCounts?: Prisma.StockCountUncheckedCreateNestedManyWithoutOrganizationInput
+  workCenters?: Prisma.WorkCenterUncheckedCreateNestedManyWithoutOrganizationInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutOrganizationInput
+  productionOrders?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrganizationInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutOrganizationInput
+  workflows?: Prisma.WorkflowDefinitionUncheckedCreateNestedManyWithoutOrganizationInput
+  accountGroups?: Prisma.AccountGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  accounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutOrganizationInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  taxRates?: Prisma.TaxRateUncheckedCreateNestedManyWithoutOrganizationInput
+  wikiArticles?: Prisma.WikiArticleUncheckedCreateNestedManyWithoutOrganizationInput
+  knowledgeDocuments?: Prisma.KnowledgeDocumentUncheckedCreateNestedManyWithoutOrganizationInput
+  trainingPrograms?: Prisma.TrainingProgramUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEntries?: Prisma.AuditEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
+  aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutFilesInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutFilesInput, Prisma.OrganizationUncheckedCreateWithoutFilesInput>
+}
+
+export type OrganizationUpsertWithoutFilesInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutFilesInput, Prisma.OrganizationUncheckedUpdateWithoutFilesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutFilesInput, Prisma.OrganizationUncheckedCreateWithoutFilesInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutFilesInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutFilesInput, Prisma.OrganizationUncheckedUpdateWithoutFilesInput>
+}
+
+export type OrganizationUpdateWithoutFilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+  warehouses?: Prisma.WarehouseUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  suppliers?: Prisma.SupplierUpdateManyWithoutOrganizationNestedInput
+  distributors?: Prisma.DistributorUpdateManyWithoutOrganizationNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  quotations?: Prisma.QuotationUpdateManyWithoutOrganizationNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  discounts?: Prisma.DiscountRuleUpdateManyWithoutOrganizationNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutOrganizationNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutOrganizationNestedInput
+  bomItems?: Prisma.BillOfMaterialUpdateManyWithoutOrganizationNestedInput
+  lots?: Prisma.LotUpdateManyWithoutOrganizationNestedInput
+  forecastEntries?: Prisma.ForecastEntryUpdateManyWithoutOrganizationNestedInput
+  settings?: Prisma.OrganizationSettingUpdateOneWithoutOrganizationNestedInput
+  deliveries?: Prisma.DeliveryUpdateManyWithoutOrganizationNestedInput
+  stockCounts?: Prisma.StockCountUpdateManyWithoutOrganizationNestedInput
+  workCenters?: Prisma.WorkCenterUpdateManyWithoutOrganizationNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutOrganizationNestedInput
+  productionOrders?: Prisma.ProductionOrderUpdateManyWithoutOrganizationNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutOrganizationNestedInput
+  workflows?: Prisma.WorkflowDefinitionUpdateManyWithoutOrganizationNestedInput
+  accountGroups?: Prisma.AccountGroupUpdateManyWithoutOrganizationNestedInput
+  accounts?: Prisma.ChartOfAccountUpdateManyWithoutOrganizationNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutOrganizationNestedInput
+  taxRates?: Prisma.TaxRateUpdateManyWithoutOrganizationNestedInput
+  wikiArticles?: Prisma.WikiArticleUpdateManyWithoutOrganizationNestedInput
+  knowledgeDocuments?: Prisma.KnowledgeDocumentUpdateManyWithoutOrganizationNestedInput
+  trainingPrograms?: Prisma.TrainingProgramUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutOrganizationNestedInput
+  auditEntries?: Prisma.AuditEntryUpdateManyWithoutOrganizationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
+  aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutFilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  warehouses?: Prisma.WarehouseUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutOrganizationNestedInput
+  distributors?: Prisma.DistributorUncheckedUpdateManyWithoutOrganizationNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  quotations?: Prisma.QuotationUncheckedUpdateManyWithoutOrganizationNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  discounts?: Prisma.DiscountRuleUncheckedUpdateManyWithoutOrganizationNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
+  bomItems?: Prisma.BillOfMaterialUncheckedUpdateManyWithoutOrganizationNestedInput
+  lots?: Prisma.LotUncheckedUpdateManyWithoutOrganizationNestedInput
+  forecastEntries?: Prisma.ForecastEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  settings?: Prisma.OrganizationSettingUncheckedUpdateOneWithoutOrganizationNestedInput
+  deliveries?: Prisma.DeliveryUncheckedUpdateManyWithoutOrganizationNestedInput
+  stockCounts?: Prisma.StockCountUncheckedUpdateManyWithoutOrganizationNestedInput
+  workCenters?: Prisma.WorkCenterUncheckedUpdateManyWithoutOrganizationNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutOrganizationNestedInput
+  productionOrders?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutOrganizationNestedInput
+  workflows?: Prisma.WorkflowDefinitionUncheckedUpdateManyWithoutOrganizationNestedInput
+  accountGroups?: Prisma.AccountGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  accounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  taxRates?: Prisma.TaxRateUncheckedUpdateManyWithoutOrganizationNestedInput
+  wikiArticles?: Prisma.WikiArticleUncheckedUpdateManyWithoutOrganizationNestedInput
+  knowledgeDocuments?: Prisma.KnowledgeDocumentUncheckedUpdateManyWithoutOrganizationNestedInput
+  trainingPrograms?: Prisma.TrainingProgramUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEntries?: Prisma.AuditEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
+  aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutTagsInput = {
+  id?: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.OrganizationMemberCreateNestedManyWithoutOrganizationInput
+  warehouses?: Prisma.WarehouseCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryCreateNestedManyWithoutOrganizationInput
+  suppliers?: Prisma.SupplierCreateNestedManyWithoutOrganizationInput
+  distributors?: Prisma.DistributorCreateNestedManyWithoutOrganizationInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderCreateNestedManyWithoutOrganizationInput
+  quotations?: Prisma.QuotationCreateNestedManyWithoutOrganizationInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOrganizationInput
+  discounts?: Prisma.DiscountRuleCreateNestedManyWithoutOrganizationInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutOrganizationInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutOrganizationInput
+  bomItems?: Prisma.BillOfMaterialCreateNestedManyWithoutOrganizationInput
+  lots?: Prisma.LotCreateNestedManyWithoutOrganizationInput
+  forecastEntries?: Prisma.ForecastEntryCreateNestedManyWithoutOrganizationInput
+  settings?: Prisma.OrganizationSettingCreateNestedOneWithoutOrganizationInput
+  deliveries?: Prisma.DeliveryCreateNestedManyWithoutOrganizationInput
+  stockCounts?: Prisma.StockCountCreateNestedManyWithoutOrganizationInput
+  workCenters?: Prisma.WorkCenterCreateNestedManyWithoutOrganizationInput
+  operations?: Prisma.OperationCreateNestedManyWithoutOrganizationInput
+  productionOrders?: Prisma.ProductionOrderCreateNestedManyWithoutOrganizationInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutOrganizationInput
+  workflows?: Prisma.WorkflowDefinitionCreateNestedManyWithoutOrganizationInput
+  accountGroups?: Prisma.AccountGroupCreateNestedManyWithoutOrganizationInput
+  accounts?: Prisma.ChartOfAccountCreateNestedManyWithoutOrganizationInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutOrganizationInput
+  taxRates?: Prisma.TaxRateCreateNestedManyWithoutOrganizationInput
+  wikiArticles?: Prisma.WikiArticleCreateNestedManyWithoutOrganizationInput
+  knowledgeDocuments?: Prisma.KnowledgeDocumentCreateNestedManyWithoutOrganizationInput
+  trainingPrograms?: Prisma.TrainingProgramCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutOrganizationInput
+  auditEntries?: Prisma.AuditEntryCreateNestedManyWithoutOrganizationInput
+  stockMovements?: Prisma.StockMovementCreateNestedManyWithoutOrganizationInput
+  aiExecutionLogs?: Prisma.AiExecutionLogCreateNestedManyWithoutOrganizationInput
+  agentRuns?: Prisma.AgentRunCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutTagsInput = {
+  id?: string
+  name: string
+  slug: string
+  logo?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+  warehouses?: Prisma.WarehouseUncheckedCreateNestedManyWithoutOrganizationInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutOrganizationInput
+  categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutOrganizationInput
+  suppliers?: Prisma.SupplierUncheckedCreateNestedManyWithoutOrganizationInput
+  distributors?: Prisma.DistributorUncheckedCreateNestedManyWithoutOrganizationInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutOrganizationInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutOrganizationInput
+  quotations?: Prisma.QuotationUncheckedCreateNestedManyWithoutOrganizationInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrganizationInput
+  discounts?: Prisma.DiscountRuleUncheckedCreateNestedManyWithoutOrganizationInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutOrganizationInput
+  bomItems?: Prisma.BillOfMaterialUncheckedCreateNestedManyWithoutOrganizationInput
+  lots?: Prisma.LotUncheckedCreateNestedManyWithoutOrganizationInput
+  forecastEntries?: Prisma.ForecastEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  settings?: Prisma.OrganizationSettingUncheckedCreateNestedOneWithoutOrganizationInput
+  deliveries?: Prisma.DeliveryUncheckedCreateNestedManyWithoutOrganizationInput
+  stockCounts?: Prisma.StockCountUncheckedCreateNestedManyWithoutOrganizationInput
+  workCenters?: Prisma.WorkCenterUncheckedCreateNestedManyWithoutOrganizationInput
+  operations?: Prisma.OperationUncheckedCreateNestedManyWithoutOrganizationInput
+  productionOrders?: Prisma.ProductionOrderUncheckedCreateNestedManyWithoutOrganizationInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrganizationInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutOrganizationInput
+  workflows?: Prisma.WorkflowDefinitionUncheckedCreateNestedManyWithoutOrganizationInput
+  accountGroups?: Prisma.AccountGroupUncheckedCreateNestedManyWithoutOrganizationInput
+  accounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutOrganizationInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  taxRates?: Prisma.TaxRateUncheckedCreateNestedManyWithoutOrganizationInput
+  wikiArticles?: Prisma.WikiArticleUncheckedCreateNestedManyWithoutOrganizationInput
+  knowledgeDocuments?: Prisma.KnowledgeDocumentUncheckedCreateNestedManyWithoutOrganizationInput
+  trainingPrograms?: Prisma.TrainingProgramUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutOrganizationInput
+  auditEntries?: Prisma.AuditEntryUncheckedCreateNestedManyWithoutOrganizationInput
+  stockMovements?: Prisma.StockMovementUncheckedCreateNestedManyWithoutOrganizationInput
+  aiExecutionLogs?: Prisma.AiExecutionLogUncheckedCreateNestedManyWithoutOrganizationInput
+  agentRuns?: Prisma.AgentRunUncheckedCreateNestedManyWithoutOrganizationInput
+  folders?: Prisma.FolderUncheckedCreateNestedManyWithoutOrganizationInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutTagsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTagsInput, Prisma.OrganizationUncheckedCreateWithoutTagsInput>
+}
+
+export type OrganizationUpsertWithoutTagsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutTagsInput, Prisma.OrganizationUncheckedUpdateWithoutTagsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTagsInput, Prisma.OrganizationUncheckedCreateWithoutTagsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutTagsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutTagsInput, Prisma.OrganizationUncheckedUpdateWithoutTagsInput>
+}
+
+export type OrganizationUpdateWithoutTagsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+  warehouses?: Prisma.WarehouseUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUpdateManyWithoutOrganizationNestedInput
+  suppliers?: Prisma.SupplierUpdateManyWithoutOrganizationNestedInput
+  distributors?: Prisma.DistributorUpdateManyWithoutOrganizationNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutOrganizationNestedInput
+  quotations?: Prisma.QuotationUpdateManyWithoutOrganizationNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOrganizationNestedInput
+  discounts?: Prisma.DiscountRuleUpdateManyWithoutOrganizationNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutOrganizationNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutOrganizationNestedInput
+  bomItems?: Prisma.BillOfMaterialUpdateManyWithoutOrganizationNestedInput
+  lots?: Prisma.LotUpdateManyWithoutOrganizationNestedInput
+  forecastEntries?: Prisma.ForecastEntryUpdateManyWithoutOrganizationNestedInput
+  settings?: Prisma.OrganizationSettingUpdateOneWithoutOrganizationNestedInput
+  deliveries?: Prisma.DeliveryUpdateManyWithoutOrganizationNestedInput
+  stockCounts?: Prisma.StockCountUpdateManyWithoutOrganizationNestedInput
+  workCenters?: Prisma.WorkCenterUpdateManyWithoutOrganizationNestedInput
+  operations?: Prisma.OperationUpdateManyWithoutOrganizationNestedInput
+  productionOrders?: Prisma.ProductionOrderUpdateManyWithoutOrganizationNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutOrganizationNestedInput
+  workflows?: Prisma.WorkflowDefinitionUpdateManyWithoutOrganizationNestedInput
+  accountGroups?: Prisma.AccountGroupUpdateManyWithoutOrganizationNestedInput
+  accounts?: Prisma.ChartOfAccountUpdateManyWithoutOrganizationNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutOrganizationNestedInput
+  taxRates?: Prisma.TaxRateUpdateManyWithoutOrganizationNestedInput
+  wikiArticles?: Prisma.WikiArticleUpdateManyWithoutOrganizationNestedInput
+  knowledgeDocuments?: Prisma.KnowledgeDocumentUpdateManyWithoutOrganizationNestedInput
+  trainingPrograms?: Prisma.TrainingProgramUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutOrganizationNestedInput
+  auditEntries?: Prisma.AuditEntryUpdateManyWithoutOrganizationNestedInput
+  stockMovements?: Prisma.StockMovementUpdateManyWithoutOrganizationNestedInput
+  aiExecutionLogs?: Prisma.AiExecutionLogUpdateManyWithoutOrganizationNestedInput
+  agentRuns?: Prisma.AgentRunUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutTagsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  warehouses?: Prisma.WarehouseUncheckedUpdateManyWithoutOrganizationNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutOrganizationNestedInput
+  categories?: Prisma.CategoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  suppliers?: Prisma.SupplierUncheckedUpdateManyWithoutOrganizationNestedInput
+  distributors?: Prisma.DistributorUncheckedUpdateManyWithoutOrganizationNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutOrganizationNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  quotations?: Prisma.QuotationUncheckedUpdateManyWithoutOrganizationNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrganizationNestedInput
+  discounts?: Prisma.DiscountRuleUncheckedUpdateManyWithoutOrganizationNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
+  bomItems?: Prisma.BillOfMaterialUncheckedUpdateManyWithoutOrganizationNestedInput
+  lots?: Prisma.LotUncheckedUpdateManyWithoutOrganizationNestedInput
+  forecastEntries?: Prisma.ForecastEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  settings?: Prisma.OrganizationSettingUncheckedUpdateOneWithoutOrganizationNestedInput
+  deliveries?: Prisma.DeliveryUncheckedUpdateManyWithoutOrganizationNestedInput
+  stockCounts?: Prisma.StockCountUncheckedUpdateManyWithoutOrganizationNestedInput
+  workCenters?: Prisma.WorkCenterUncheckedUpdateManyWithoutOrganizationNestedInput
+  operations?: Prisma.OperationUncheckedUpdateManyWithoutOrganizationNestedInput
+  productionOrders?: Prisma.ProductionOrderUncheckedUpdateManyWithoutOrganizationNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutOrganizationNestedInput
+  workflows?: Prisma.WorkflowDefinitionUncheckedUpdateManyWithoutOrganizationNestedInput
+  accountGroups?: Prisma.AccountGroupUncheckedUpdateManyWithoutOrganizationNestedInput
+  accounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutOrganizationNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  taxRates?: Prisma.TaxRateUncheckedUpdateManyWithoutOrganizationNestedInput
+  wikiArticles?: Prisma.WikiArticleUncheckedUpdateManyWithoutOrganizationNestedInput
+  knowledgeDocuments?: Prisma.KnowledgeDocumentUncheckedUpdateManyWithoutOrganizationNestedInput
+  trainingPrograms?: Prisma.TrainingProgramUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutOrganizationNestedInput
+  auditEntries?: Prisma.AuditEntryUncheckedUpdateManyWithoutOrganizationNestedInput
+  stockMovements?: Prisma.StockMovementUncheckedUpdateManyWithoutOrganizationNestedInput
+  aiExecutionLogs?: Prisma.AiExecutionLogUncheckedUpdateManyWithoutOrganizationNestedInput
+  agentRuns?: Prisma.AgentRunUncheckedUpdateManyWithoutOrganizationNestedInput
+  folders?: Prisma.FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 
@@ -9158,6 +10337,9 @@ export type OrganizationCountOutputType = {
   stockMovements: number
   aiExecutionLogs: number
   agentRuns: number
+  folders: number
+  files: number
+  tags: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -9199,6 +10381,9 @@ export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   stockMovements?: boolean | OrganizationCountOutputTypeCountStockMovementsArgs
   aiExecutionLogs?: boolean | OrganizationCountOutputTypeCountAiExecutionLogsArgs
   agentRuns?: boolean | OrganizationCountOutputTypeCountAgentRunsArgs
+  folders?: boolean | OrganizationCountOutputTypeCountFoldersArgs
+  files?: boolean | OrganizationCountOutputTypeCountFilesArgs
+  tags?: boolean | OrganizationCountOutputTypeCountTagsArgs
 }
 
 /**
@@ -9477,6 +10662,27 @@ export type OrganizationCountOutputTypeCountAgentRunsArgs<ExtArgs extends runtim
   where?: Prisma.AgentRunWhereInput
 }
 
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountFoldersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FolderWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountFilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FileWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TagWhereInput
+}
+
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -9524,6 +10730,9 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   stockMovements?: boolean | Prisma.Organization$stockMovementsArgs<ExtArgs>
   aiExecutionLogs?: boolean | Prisma.Organization$aiExecutionLogsArgs<ExtArgs>
   agentRuns?: boolean | Prisma.Organization$agentRunsArgs<ExtArgs>
+  folders?: boolean | Prisma.Organization$foldersArgs<ExtArgs>
+  files?: boolean | Prisma.Organization$filesArgs<ExtArgs>
+  tags?: boolean | Prisma.Organization$tagsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
@@ -9595,6 +10804,9 @@ export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   stockMovements?: boolean | Prisma.Organization$stockMovementsArgs<ExtArgs>
   aiExecutionLogs?: boolean | Prisma.Organization$aiExecutionLogsArgs<ExtArgs>
   agentRuns?: boolean | Prisma.Organization$agentRunsArgs<ExtArgs>
+  folders?: boolean | Prisma.Organization$foldersArgs<ExtArgs>
+  files?: boolean | Prisma.Organization$filesArgs<ExtArgs>
+  tags?: boolean | Prisma.Organization$tagsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -9642,6 +10854,9 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     stockMovements: Prisma.$StockMovementPayload<ExtArgs>[]
     aiExecutionLogs: Prisma.$AiExecutionLogPayload<ExtArgs>[]
     agentRuns: Prisma.$AgentRunPayload<ExtArgs>[]
+    folders: Prisma.$FolderPayload<ExtArgs>[]
+    files: Prisma.$FilePayload<ExtArgs>[]
+    tags: Prisma.$TagPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -10083,6 +11298,9 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   stockMovements<T extends Prisma.Organization$stockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$stockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   aiExecutionLogs<T extends Prisma.Organization$aiExecutionLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$aiExecutionLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AiExecutionLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   agentRuns<T extends Prisma.Organization$agentRunsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$agentRunsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgentRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  folders<T extends Prisma.Organization$foldersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$foldersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  files<T extends Prisma.Organization$filesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$filesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tags<T extends Prisma.Organization$tagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11437,6 +12655,78 @@ export type Organization$agentRunsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.AgentRunScalarFieldEnum | Prisma.AgentRunScalarFieldEnum[]
+}
+
+/**
+ * Organization.folders
+ */
+export type Organization$foldersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Folder
+   */
+  select?: Prisma.FolderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Folder
+   */
+  omit?: Prisma.FolderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FolderInclude<ExtArgs> | null
+  where?: Prisma.FolderWhereInput
+  orderBy?: Prisma.FolderOrderByWithRelationInput | Prisma.FolderOrderByWithRelationInput[]
+  cursor?: Prisma.FolderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FolderScalarFieldEnum | Prisma.FolderScalarFieldEnum[]
+}
+
+/**
+ * Organization.files
+ */
+export type Organization$filesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the File
+   */
+  select?: Prisma.FileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the File
+   */
+  omit?: Prisma.FileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileInclude<ExtArgs> | null
+  where?: Prisma.FileWhereInput
+  orderBy?: Prisma.FileOrderByWithRelationInput | Prisma.FileOrderByWithRelationInput[]
+  cursor?: Prisma.FileWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FileScalarFieldEnum | Prisma.FileScalarFieldEnum[]
+}
+
+/**
+ * Organization.tags
+ */
+export type Organization$tagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Tag
+   */
+  select?: Prisma.TagSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Tag
+   */
+  omit?: Prisma.TagOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TagInclude<ExtArgs> | null
+  where?: Prisma.TagWhereInput
+  orderBy?: Prisma.TagOrderByWithRelationInput | Prisma.TagOrderByWithRelationInput[]
+  cursor?: Prisma.TagWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TagScalarFieldEnum | Prisma.TagScalarFieldEnum[]
 }
 
 /**

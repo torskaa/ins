@@ -177,7 +177,7 @@ export default function EditWikiArticlePage({ params }: { params: Promise<{ id: 
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.back()}
-              className="size-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              className="size-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
             >
               <ArrowLeft className="size-4" />
             </button>

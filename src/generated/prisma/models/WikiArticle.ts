@@ -29,6 +29,11 @@ export type WikiArticleMinAggregateOutputType = {
   title: string | null
   category: string | null
   excerpt: string | null
+  subtitle: string | null
+  topics: string | null
+  coverImage: string | null
+  notifySubscribers: boolean | null
+  scheduledAt: Date | null
   author: string | null
   updated: string | null
   readTime: string | null
@@ -43,6 +48,11 @@ export type WikiArticleMaxAggregateOutputType = {
   title: string | null
   category: string | null
   excerpt: string | null
+  subtitle: string | null
+  topics: string | null
+  coverImage: string | null
+  notifySubscribers: boolean | null
+  scheduledAt: Date | null
   author: string | null
   updated: string | null
   readTime: string | null
@@ -57,6 +67,11 @@ export type WikiArticleCountAggregateOutputType = {
   title: number
   category: number
   excerpt: number
+  subtitle: number
+  topics: number
+  coverImage: number
+  notifySubscribers: number
+  scheduledAt: number
   author: number
   updated: number
   readTime: number
@@ -73,6 +88,11 @@ export type WikiArticleMinAggregateInputType = {
   title?: true
   category?: true
   excerpt?: true
+  subtitle?: true
+  topics?: true
+  coverImage?: true
+  notifySubscribers?: true
+  scheduledAt?: true
   author?: true
   updated?: true
   readTime?: true
@@ -87,6 +107,11 @@ export type WikiArticleMaxAggregateInputType = {
   title?: true
   category?: true
   excerpt?: true
+  subtitle?: true
+  topics?: true
+  coverImage?: true
+  notifySubscribers?: true
+  scheduledAt?: true
   author?: true
   updated?: true
   readTime?: true
@@ -101,6 +126,11 @@ export type WikiArticleCountAggregateInputType = {
   title?: true
   category?: true
   excerpt?: true
+  subtitle?: true
+  topics?: true
+  coverImage?: true
+  notifySubscribers?: true
+  scheduledAt?: true
   author?: true
   updated?: true
   readTime?: true
@@ -188,6 +218,11 @@ export type WikiArticleGroupByOutputType = {
   title: string
   category: string
   excerpt: string | null
+  subtitle: string | null
+  topics: string
+  coverImage: string | null
+  notifySubscribers: boolean
+  scheduledAt: Date | null
   author: string
   updated: string
   readTime: string
@@ -223,6 +258,11 @@ export type WikiArticleWhereInput = {
   title?: Prisma.StringFilter<"WikiArticle"> | string
   category?: Prisma.StringFilter<"WikiArticle"> | string
   excerpt?: Prisma.StringNullableFilter<"WikiArticle"> | string | null
+  subtitle?: Prisma.StringNullableFilter<"WikiArticle"> | string | null
+  topics?: Prisma.StringFilter<"WikiArticle"> | string
+  coverImage?: Prisma.StringNullableFilter<"WikiArticle"> | string | null
+  notifySubscribers?: Prisma.BoolFilter<"WikiArticle"> | boolean
+  scheduledAt?: Prisma.DateTimeNullableFilter<"WikiArticle"> | Date | string | null
   author?: Prisma.StringFilter<"WikiArticle"> | string
   updated?: Prisma.StringFilter<"WikiArticle"> | string
   readTime?: Prisma.StringFilter<"WikiArticle"> | string
@@ -231,6 +271,7 @@ export type WikiArticleWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"WikiArticle"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WikiArticle"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
+  blocks?: Prisma.ArticleBlockListRelationFilter
 }
 
 export type WikiArticleOrderByWithRelationInput = {
@@ -238,6 +279,11 @@ export type WikiArticleOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   excerpt?: Prisma.SortOrderInput | Prisma.SortOrder
+  subtitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  topics?: Prisma.SortOrder
+  coverImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  notifySubscribers?: Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   author?: Prisma.SortOrder
   updated?: Prisma.SortOrder
   readTime?: Prisma.SortOrder
@@ -246,6 +292,7 @@ export type WikiArticleOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
+  blocks?: Prisma.ArticleBlockOrderByRelationAggregateInput
 }
 
 export type WikiArticleWhereUniqueInput = Prisma.AtLeast<{
@@ -256,6 +303,11 @@ export type WikiArticleWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"WikiArticle"> | string
   category?: Prisma.StringFilter<"WikiArticle"> | string
   excerpt?: Prisma.StringNullableFilter<"WikiArticle"> | string | null
+  subtitle?: Prisma.StringNullableFilter<"WikiArticle"> | string | null
+  topics?: Prisma.StringFilter<"WikiArticle"> | string
+  coverImage?: Prisma.StringNullableFilter<"WikiArticle"> | string | null
+  notifySubscribers?: Prisma.BoolFilter<"WikiArticle"> | boolean
+  scheduledAt?: Prisma.DateTimeNullableFilter<"WikiArticle"> | Date | string | null
   author?: Prisma.StringFilter<"WikiArticle"> | string
   updated?: Prisma.StringFilter<"WikiArticle"> | string
   readTime?: Prisma.StringFilter<"WikiArticle"> | string
@@ -264,6 +316,7 @@ export type WikiArticleWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"WikiArticle"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WikiArticle"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
+  blocks?: Prisma.ArticleBlockListRelationFilter
 }, "id">
 
 export type WikiArticleOrderByWithAggregationInput = {
@@ -271,6 +324,11 @@ export type WikiArticleOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   excerpt?: Prisma.SortOrderInput | Prisma.SortOrder
+  subtitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  topics?: Prisma.SortOrder
+  coverImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  notifySubscribers?: Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   author?: Prisma.SortOrder
   updated?: Prisma.SortOrder
   readTime?: Prisma.SortOrder
@@ -291,6 +349,11 @@ export type WikiArticleScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"WikiArticle"> | string
   category?: Prisma.StringWithAggregatesFilter<"WikiArticle"> | string
   excerpt?: Prisma.StringNullableWithAggregatesFilter<"WikiArticle"> | string | null
+  subtitle?: Prisma.StringNullableWithAggregatesFilter<"WikiArticle"> | string | null
+  topics?: Prisma.StringWithAggregatesFilter<"WikiArticle"> | string
+  coverImage?: Prisma.StringNullableWithAggregatesFilter<"WikiArticle"> | string | null
+  notifySubscribers?: Prisma.BoolWithAggregatesFilter<"WikiArticle"> | boolean
+  scheduledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"WikiArticle"> | Date | string | null
   author?: Prisma.StringWithAggregatesFilter<"WikiArticle"> | string
   updated?: Prisma.StringWithAggregatesFilter<"WikiArticle"> | string
   readTime?: Prisma.StringWithAggregatesFilter<"WikiArticle"> | string
@@ -305,6 +368,11 @@ export type WikiArticleCreateInput = {
   title: string
   category: string
   excerpt?: string | null
+  subtitle?: string | null
+  topics?: string
+  coverImage?: string | null
+  notifySubscribers?: boolean
+  scheduledAt?: Date | string | null
   author?: string
   updated?: string
   readTime?: string
@@ -312,6 +380,7 @@ export type WikiArticleCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutWikiArticlesInput
+  blocks?: Prisma.ArticleBlockCreateNestedManyWithoutArticleInput
 }
 
 export type WikiArticleUncheckedCreateInput = {
@@ -319,6 +388,11 @@ export type WikiArticleUncheckedCreateInput = {
   title: string
   category: string
   excerpt?: string | null
+  subtitle?: string | null
+  topics?: string
+  coverImage?: string | null
+  notifySubscribers?: boolean
+  scheduledAt?: Date | string | null
   author?: string
   updated?: string
   readTime?: string
@@ -326,6 +400,7 @@ export type WikiArticleUncheckedCreateInput = {
   organizationId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  blocks?: Prisma.ArticleBlockUncheckedCreateNestedManyWithoutArticleInput
 }
 
 export type WikiArticleUpdateInput = {
@@ -333,6 +408,11 @@ export type WikiArticleUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subtitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifySubscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   author?: Prisma.StringFieldUpdateOperationsInput | string
   updated?: Prisma.StringFieldUpdateOperationsInput | string
   readTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -340,6 +420,7 @@ export type WikiArticleUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutWikiArticlesNestedInput
+  blocks?: Prisma.ArticleBlockUpdateManyWithoutArticleNestedInput
 }
 
 export type WikiArticleUncheckedUpdateInput = {
@@ -347,6 +428,11 @@ export type WikiArticleUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subtitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifySubscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   author?: Prisma.StringFieldUpdateOperationsInput | string
   updated?: Prisma.StringFieldUpdateOperationsInput | string
   readTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -354,6 +440,7 @@ export type WikiArticleUncheckedUpdateInput = {
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  blocks?: Prisma.ArticleBlockUncheckedUpdateManyWithoutArticleNestedInput
 }
 
 export type WikiArticleCreateManyInput = {
@@ -361,6 +448,11 @@ export type WikiArticleCreateManyInput = {
   title: string
   category: string
   excerpt?: string | null
+  subtitle?: string | null
+  topics?: string
+  coverImage?: string | null
+  notifySubscribers?: boolean
+  scheduledAt?: Date | string | null
   author?: string
   updated?: string
   readTime?: string
@@ -375,6 +467,11 @@ export type WikiArticleUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subtitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifySubscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   author?: Prisma.StringFieldUpdateOperationsInput | string
   updated?: Prisma.StringFieldUpdateOperationsInput | string
   readTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -388,6 +485,11 @@ export type WikiArticleUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subtitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifySubscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   author?: Prisma.StringFieldUpdateOperationsInput | string
   updated?: Prisma.StringFieldUpdateOperationsInput | string
   readTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -412,6 +514,11 @@ export type WikiArticleCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   excerpt?: Prisma.SortOrder
+  subtitle?: Prisma.SortOrder
+  topics?: Prisma.SortOrder
+  coverImage?: Prisma.SortOrder
+  notifySubscribers?: Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrder
   author?: Prisma.SortOrder
   updated?: Prisma.SortOrder
   readTime?: Prisma.SortOrder
@@ -426,6 +533,11 @@ export type WikiArticleMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   excerpt?: Prisma.SortOrder
+  subtitle?: Prisma.SortOrder
+  topics?: Prisma.SortOrder
+  coverImage?: Prisma.SortOrder
+  notifySubscribers?: Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrder
   author?: Prisma.SortOrder
   updated?: Prisma.SortOrder
   readTime?: Prisma.SortOrder
@@ -440,6 +552,11 @@ export type WikiArticleMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   excerpt?: Prisma.SortOrder
+  subtitle?: Prisma.SortOrder
+  topics?: Prisma.SortOrder
+  coverImage?: Prisma.SortOrder
+  notifySubscribers?: Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrder
   author?: Prisma.SortOrder
   updated?: Prisma.SortOrder
   readTime?: Prisma.SortOrder
@@ -447,6 +564,11 @@ export type WikiArticleMinOrderByAggregateInput = {
   organizationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type WikiArticleScalarRelationFilter = {
+  is?: Prisma.WikiArticleWhereInput
+  isNot?: Prisma.WikiArticleWhereInput
 }
 
 export type WikiArticleCreateNestedManyWithoutOrganizationInput = {
@@ -491,17 +613,37 @@ export type WikiArticleUncheckedUpdateManyWithoutOrganizationNestedInput = {
   deleteMany?: Prisma.WikiArticleScalarWhereInput | Prisma.WikiArticleScalarWhereInput[]
 }
 
+export type WikiArticleCreateNestedOneWithoutBlocksInput = {
+  create?: Prisma.XOR<Prisma.WikiArticleCreateWithoutBlocksInput, Prisma.WikiArticleUncheckedCreateWithoutBlocksInput>
+  connectOrCreate?: Prisma.WikiArticleCreateOrConnectWithoutBlocksInput
+  connect?: Prisma.WikiArticleWhereUniqueInput
+}
+
+export type WikiArticleUpdateOneRequiredWithoutBlocksNestedInput = {
+  create?: Prisma.XOR<Prisma.WikiArticleCreateWithoutBlocksInput, Prisma.WikiArticleUncheckedCreateWithoutBlocksInput>
+  connectOrCreate?: Prisma.WikiArticleCreateOrConnectWithoutBlocksInput
+  upsert?: Prisma.WikiArticleUpsertWithoutBlocksInput
+  connect?: Prisma.WikiArticleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WikiArticleUpdateToOneWithWhereWithoutBlocksInput, Prisma.WikiArticleUpdateWithoutBlocksInput>, Prisma.WikiArticleUncheckedUpdateWithoutBlocksInput>
+}
+
 export type WikiArticleCreateWithoutOrganizationInput = {
   id?: string
   title: string
   category: string
   excerpt?: string | null
+  subtitle?: string | null
+  topics?: string
+  coverImage?: string | null
+  notifySubscribers?: boolean
+  scheduledAt?: Date | string | null
   author?: string
   updated?: string
   readTime?: string
   content?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  blocks?: Prisma.ArticleBlockCreateNestedManyWithoutArticleInput
 }
 
 export type WikiArticleUncheckedCreateWithoutOrganizationInput = {
@@ -509,12 +651,18 @@ export type WikiArticleUncheckedCreateWithoutOrganizationInput = {
   title: string
   category: string
   excerpt?: string | null
+  subtitle?: string | null
+  topics?: string
+  coverImage?: string | null
+  notifySubscribers?: boolean
+  scheduledAt?: Date | string | null
   author?: string
   updated?: string
   readTime?: string
   content?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  blocks?: Prisma.ArticleBlockUncheckedCreateNestedManyWithoutArticleInput
 }
 
 export type WikiArticleCreateOrConnectWithoutOrganizationInput = {
@@ -550,6 +698,11 @@ export type WikiArticleScalarWhereInput = {
   title?: Prisma.StringFilter<"WikiArticle"> | string
   category?: Prisma.StringFilter<"WikiArticle"> | string
   excerpt?: Prisma.StringNullableFilter<"WikiArticle"> | string | null
+  subtitle?: Prisma.StringNullableFilter<"WikiArticle"> | string | null
+  topics?: Prisma.StringFilter<"WikiArticle"> | string
+  coverImage?: Prisma.StringNullableFilter<"WikiArticle"> | string | null
+  notifySubscribers?: Prisma.BoolFilter<"WikiArticle"> | boolean
+  scheduledAt?: Prisma.DateTimeNullableFilter<"WikiArticle"> | Date | string | null
   author?: Prisma.StringFilter<"WikiArticle"> | string
   updated?: Prisma.StringFilter<"WikiArticle"> | string
   readTime?: Prisma.StringFilter<"WikiArticle"> | string
@@ -559,11 +712,108 @@ export type WikiArticleScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"WikiArticle"> | Date | string
 }
 
+export type WikiArticleCreateWithoutBlocksInput = {
+  id?: string
+  title: string
+  category: string
+  excerpt?: string | null
+  subtitle?: string | null
+  topics?: string
+  coverImage?: string | null
+  notifySubscribers?: boolean
+  scheduledAt?: Date | string | null
+  author?: string
+  updated?: string
+  readTime?: string
+  content?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutWikiArticlesInput
+}
+
+export type WikiArticleUncheckedCreateWithoutBlocksInput = {
+  id?: string
+  title: string
+  category: string
+  excerpt?: string | null
+  subtitle?: string | null
+  topics?: string
+  coverImage?: string | null
+  notifySubscribers?: boolean
+  scheduledAt?: Date | string | null
+  author?: string
+  updated?: string
+  readTime?: string
+  content?: string | null
+  organizationId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type WikiArticleCreateOrConnectWithoutBlocksInput = {
+  where: Prisma.WikiArticleWhereUniqueInput
+  create: Prisma.XOR<Prisma.WikiArticleCreateWithoutBlocksInput, Prisma.WikiArticleUncheckedCreateWithoutBlocksInput>
+}
+
+export type WikiArticleUpsertWithoutBlocksInput = {
+  update: Prisma.XOR<Prisma.WikiArticleUpdateWithoutBlocksInput, Prisma.WikiArticleUncheckedUpdateWithoutBlocksInput>
+  create: Prisma.XOR<Prisma.WikiArticleCreateWithoutBlocksInput, Prisma.WikiArticleUncheckedCreateWithoutBlocksInput>
+  where?: Prisma.WikiArticleWhereInput
+}
+
+export type WikiArticleUpdateToOneWithWhereWithoutBlocksInput = {
+  where?: Prisma.WikiArticleWhereInput
+  data: Prisma.XOR<Prisma.WikiArticleUpdateWithoutBlocksInput, Prisma.WikiArticleUncheckedUpdateWithoutBlocksInput>
+}
+
+export type WikiArticleUpdateWithoutBlocksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subtitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifySubscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.StringFieldUpdateOperationsInput | string
+  updated?: Prisma.StringFieldUpdateOperationsInput | string
+  readTime?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutWikiArticlesNestedInput
+}
+
+export type WikiArticleUncheckedUpdateWithoutBlocksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subtitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifySubscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  author?: Prisma.StringFieldUpdateOperationsInput | string
+  updated?: Prisma.StringFieldUpdateOperationsInput | string
+  readTime?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type WikiArticleCreateManyOrganizationInput = {
   id?: string
   title: string
   category: string
   excerpt?: string | null
+  subtitle?: string | null
+  topics?: string
+  coverImage?: string | null
+  notifySubscribers?: boolean
+  scheduledAt?: Date | string | null
   author?: string
   updated?: string
   readTime?: string
@@ -577,12 +827,18 @@ export type WikiArticleUpdateWithoutOrganizationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subtitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifySubscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   author?: Prisma.StringFieldUpdateOperationsInput | string
   updated?: Prisma.StringFieldUpdateOperationsInput | string
   readTime?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  blocks?: Prisma.ArticleBlockUpdateManyWithoutArticleNestedInput
 }
 
 export type WikiArticleUncheckedUpdateWithoutOrganizationInput = {
@@ -590,12 +846,18 @@ export type WikiArticleUncheckedUpdateWithoutOrganizationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subtitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifySubscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   author?: Prisma.StringFieldUpdateOperationsInput | string
   updated?: Prisma.StringFieldUpdateOperationsInput | string
   readTime?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  blocks?: Prisma.ArticleBlockUncheckedUpdateManyWithoutArticleNestedInput
 }
 
 export type WikiArticleUncheckedUpdateManyWithoutOrganizationInput = {
@@ -603,6 +865,11 @@ export type WikiArticleUncheckedUpdateManyWithoutOrganizationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subtitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.StringFieldUpdateOperationsInput | string
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifySubscribers?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   author?: Prisma.StringFieldUpdateOperationsInput | string
   updated?: Prisma.StringFieldUpdateOperationsInput | string
   readTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -612,12 +879,46 @@ export type WikiArticleUncheckedUpdateManyWithoutOrganizationInput = {
 }
 
 
+/**
+ * Count Type WikiArticleCountOutputType
+ */
+
+export type WikiArticleCountOutputType = {
+  blocks: number
+}
+
+export type WikiArticleCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  blocks?: boolean | WikiArticleCountOutputTypeCountBlocksArgs
+}
+
+/**
+ * WikiArticleCountOutputType without action
+ */
+export type WikiArticleCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WikiArticleCountOutputType
+   */
+  select?: Prisma.WikiArticleCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * WikiArticleCountOutputType without action
+ */
+export type WikiArticleCountOutputTypeCountBlocksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ArticleBlockWhereInput
+}
+
 
 export type WikiArticleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
   category?: boolean
   excerpt?: boolean
+  subtitle?: boolean
+  topics?: boolean
+  coverImage?: boolean
+  notifySubscribers?: boolean
+  scheduledAt?: boolean
   author?: boolean
   updated?: boolean
   readTime?: boolean
@@ -626,6 +927,8 @@ export type WikiArticleSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  blocks?: boolean | Prisma.WikiArticle$blocksArgs<ExtArgs>
+  _count?: boolean | Prisma.WikiArticleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["wikiArticle"]>
 
 export type WikiArticleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -633,6 +936,11 @@ export type WikiArticleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   title?: boolean
   category?: boolean
   excerpt?: boolean
+  subtitle?: boolean
+  topics?: boolean
+  coverImage?: boolean
+  notifySubscribers?: boolean
+  scheduledAt?: boolean
   author?: boolean
   updated?: boolean
   readTime?: boolean
@@ -648,6 +956,11 @@ export type WikiArticleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   title?: boolean
   category?: boolean
   excerpt?: boolean
+  subtitle?: boolean
+  topics?: boolean
+  coverImage?: boolean
+  notifySubscribers?: boolean
+  scheduledAt?: boolean
   author?: boolean
   updated?: boolean
   readTime?: boolean
@@ -663,6 +976,11 @@ export type WikiArticleSelectScalar = {
   title?: boolean
   category?: boolean
   excerpt?: boolean
+  subtitle?: boolean
+  topics?: boolean
+  coverImage?: boolean
+  notifySubscribers?: boolean
+  scheduledAt?: boolean
   author?: boolean
   updated?: boolean
   readTime?: boolean
@@ -672,9 +990,11 @@ export type WikiArticleSelectScalar = {
   updatedAt?: boolean
 }
 
-export type WikiArticleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "category" | "excerpt" | "author" | "updated" | "readTime" | "content" | "organizationId" | "createdAt" | "updatedAt", ExtArgs["result"]["wikiArticle"]>
+export type WikiArticleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "category" | "excerpt" | "subtitle" | "topics" | "coverImage" | "notifySubscribers" | "scheduledAt" | "author" | "updated" | "readTime" | "content" | "organizationId" | "createdAt" | "updatedAt", ExtArgs["result"]["wikiArticle"]>
 export type WikiArticleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  blocks?: boolean | Prisma.WikiArticle$blocksArgs<ExtArgs>
+  _count?: boolean | Prisma.WikiArticleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type WikiArticleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -687,12 +1007,18 @@ export type $WikiArticlePayload<ExtArgs extends runtime.Types.Extensions.Interna
   name: "WikiArticle"
   objects: {
     organization: Prisma.$OrganizationPayload<ExtArgs>
+    blocks: Prisma.$ArticleBlockPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
     category: string
     excerpt: string | null
+    subtitle: string | null
+    topics: string
+    coverImage: string | null
+    notifySubscribers: boolean
+    scheduledAt: Date | null
     author: string
     updated: string
     readTime: string
@@ -1095,6 +1421,7 @@ readonly fields: WikiArticleFieldRefs;
 export interface Prisma__WikiArticleClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  blocks<T extends Prisma.WikiArticle$blocksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WikiArticle$blocksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArticleBlockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1128,6 +1455,11 @@ export interface WikiArticleFieldRefs {
   readonly title: Prisma.FieldRef<"WikiArticle", 'String'>
   readonly category: Prisma.FieldRef<"WikiArticle", 'String'>
   readonly excerpt: Prisma.FieldRef<"WikiArticle", 'String'>
+  readonly subtitle: Prisma.FieldRef<"WikiArticle", 'String'>
+  readonly topics: Prisma.FieldRef<"WikiArticle", 'String'>
+  readonly coverImage: Prisma.FieldRef<"WikiArticle", 'String'>
+  readonly notifySubscribers: Prisma.FieldRef<"WikiArticle", 'Boolean'>
+  readonly scheduledAt: Prisma.FieldRef<"WikiArticle", 'DateTime'>
   readonly author: Prisma.FieldRef<"WikiArticle", 'String'>
   readonly updated: Prisma.FieldRef<"WikiArticle", 'String'>
   readonly readTime: Prisma.FieldRef<"WikiArticle", 'String'>
@@ -1531,6 +1863,30 @@ export type WikiArticleDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Limit how many WikiArticles to delete.
    */
   limit?: number
+}
+
+/**
+ * WikiArticle.blocks
+ */
+export type WikiArticle$blocksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ArticleBlock
+   */
+  select?: Prisma.ArticleBlockSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ArticleBlock
+   */
+  omit?: Prisma.ArticleBlockOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ArticleBlockInclude<ExtArgs> | null
+  where?: Prisma.ArticleBlockWhereInput
+  orderBy?: Prisma.ArticleBlockOrderByWithRelationInput | Prisma.ArticleBlockOrderByWithRelationInput[]
+  cursor?: Prisma.ArticleBlockWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ArticleBlockScalarFieldEnum | Prisma.ArticleBlockScalarFieldEnum[]
 }
 
 /**

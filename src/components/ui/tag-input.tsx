@@ -185,7 +185,7 @@ export function TagInput({ value, onChange, placeholder, className, tagType }: T
  type="button"
  className={cn(
  "flex items-center gap-2 w-full px-3 py-2 text-sm text-left transition-colors",
- i === focusedIdx ? "bg-primary/10 text-primary" : "text-foreground hover:bg-accent"
+  i === focusedIdx ? "bg-primary/10 text-primary" : "text-foreground hover:bg-surface"
  )}
  onMouseDown={(e) => {
  e.preventDefault()

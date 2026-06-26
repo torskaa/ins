@@ -278,7 +278,7 @@ export function ChatSidebar({
               ) : (
                 <button
                   onClick={() => setFolderInput(true)}
-                  className="flex items-center gap-1.5 w-full px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground rounded-md hover:bg-muted/10 transition-colors"
+                  className="flex items-center gap-1.5 w-full px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground rounded-md hover:bg-surface transition-colors"
                 >
                   <FolderPlus className="size-3" />
                   New folder
@@ -319,7 +319,7 @@ export function ChatSidebar({
             ) : (
               <button
                 onClick={() => setFolderInput(true)}
-                className="flex items-center gap-1.5 w-full px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground rounded-md hover:bg-muted/10 transition-colors"
+                className="flex items-center gap-1.5 w-full px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground rounded-md hover:bg-surface transition-colors"
               >
                 <FolderPlus className="size-3" />
                 New folder
@@ -445,7 +445,7 @@ function FolderNode({
     <div>
       {/* Folder header */}
       <div
-        className="group flex items-center gap-1 px-2 py-1 rounded-md hover:bg-muted/10 cursor-pointer text-[11px]"
+        className="group flex items-center gap-1 px-2 py-1 rounded-md hover:bg-surface cursor-pointer text-[11px]"
         style={{ paddingLeft: 8 + depth * 12 }}
       >
         <button
@@ -592,7 +592,7 @@ function FolderNode({
             setShowInput(true)
             setIsOpen(true)
           }}
-          className="flex items-center gap-1.5 w-full px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground rounded-md hover:bg-muted/10 transition-colors"
+          className="flex items-center gap-1.5 w-full px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground rounded-md hover:bg-surface transition-colors"
           style={{ paddingLeft: 8 + (depth + 1) * 12 + 8 }}
         >
           <FolderPlus className="size-3" />

@@ -101,7 +101,7 @@ export function ExecutionTimeline({ steps, className }: ExecutionTimelineProps) 
                     onClick={() => toggleStep(i)}
                     className={cn(
                       "w-full text-left px-3 py-2 rounded-lg transition-colors border-l-2",
-                      "hover:bg-muted/20",
+                      "hover:bg-surface",
                       step.status === "success" && "border-l-success",
                       step.status === "running" && "border-l-info",
                       step.status === "error" && "border-l-destructive",

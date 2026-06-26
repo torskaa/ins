@@ -225,9 +225,9 @@ export function CommandPalette() {
  <button
  key={`${key}-${item.id}`}
  onClick={() => onSelect(item.href)}
- className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-muted/50 transition-colors"
- >
-  <Avatar className="size-7 shrink-0 ring-1 ring-slate-200">
+  className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-surface transition-colors"
+  >
+   <Avatar className="size-7 shrink-0 ring-1 ring-slate-200">
   <AvatarImage src={item.image || `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(item.label)}`} alt={item.label} />
   <AvatarFallback className="bg-muted text-muted-foreground text-[10px]">{item.fallback || item.label[0]}</AvatarFallback>
   </Avatar>
@@ -290,9 +290,9 @@ export function CommandPalette() {
  <button
  key={item.href}
  onClick={() => handleSelect(item.href)}
- className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-muted/50 transition-colors"
- >
- <div className="size-7 shrink-0 rounded-md bg-muted flex items-center justify-center">
+  className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-surface transition-colors"
+  >
+  <div className="size-7 shrink-0 rounded-md bg-muted flex items-center justify-center">
  </div>
  <p className="text-sm font-medium text-slate-900">{item.label}</p>
  </button>

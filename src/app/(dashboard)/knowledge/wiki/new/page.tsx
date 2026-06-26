@@ -11,7 +11,26 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, ImagePlus, X } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { ArticleEditor, useArticleEditor, serializeDocument } from "@/components/article-editor"
+import dynamic from "next/dynamic"
+import { useArticleEditor, serializeDocument } from "@/components/article-editor"
+const ArticleEditor = dynamic(() =>
+  import("@/components/article-editor").then((m) => ({ default: m.ArticleEditor })),
+  { ssr: false }
+)
+
+const topicColors = [
+  { border: "#60a5fa", text: "#2563eb" }, { border: "#34d399", text: "#059669" },
+  { border: "#c084fc", text: "#7c3aed" }, { border: "#fb923c", text: "#ea580c" },
+  { border: "#f472b6", text: "#db2777" }, { border: "#2dd4bf", text: "#0d9488" },
+  { border: "#22d3ee", text: "#0891b2" }, { border: "#fb7185", text: "#e11d48" },
+]
+
+function getTopicColor(topic: string): React.CSSProperties {
+  let hash = 0
+  for (let i = 0; i < topic.length; i++) hash = topic.charCodeAt(i) + ((hash << 5) - hash)
+  const c = topicColors[Math.abs(hash) % topicColors.length]
+  return { borderColor: c.border, color: c.text }
+}
 
 const categories = ["Getting Started", "Inventory", "Orders", "CRM", "Reports", "Settings"]
 
@@ -131,7 +150,7 @@ export default function NewWikiArticlePage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.back()}
-              className="size-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              className="size-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
             >
               <ArrowLeft className="size-4" />
             </button>
@@ -175,7 +194,7 @@ export default function NewWikiArticlePage() {
                       ) : (
                         <button
                           onClick={() => previewInputRef.current?.click()}
-                          className="w-full aspect-[2/1] rounded-xl border-2 border-dashed border-border/30 bg-muted/10 hover:bg-muted/20 hover:border-border/50 transition-colors flex flex-col items-center justify-center gap-1.5 text-muted-foreground/50"
+                          className="w-full aspect-[2/1] rounded-xl border-2 border-dashed border-border/30 bg-muted/10 hover:bg-surface hover:border-border/50 transition-colors flex flex-col items-center justify-center gap-1.5 text-muted-foreground/50"
                         >
                           <ImagePlus className="size-6" />
                           <span className="text-xs">Story preview image</span>
@@ -235,9 +254,9 @@ export default function NewWikiArticlePage() {
                         <Label className="text-xs text-muted-foreground/60">Topics</Label>
                         <div className="flex flex-wrap gap-1.5 mb-1.5">
                           {topics.map((t) => (
-                            <span key={t} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted/60 text-xs font-medium text-foreground/80">
+                            <span key={t} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border bg-transparent text-xs font-medium" style={getTopicColor(t)}>
                               {t}
-                              <button onClick={() => removeTopic(t)} className="text-muted-foreground/40 hover:text-foreground transition-colors">
+                              <button onClick={() => removeTopic(t)} className="opacity-50 hover:opacity-100 transition-opacity">
                                 <X className="size-3" />
                               </button>
                             </span>

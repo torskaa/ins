@@ -152,7 +152,7 @@ export function DataTable<T extends { id: string }>({
   animate="visible"
   variants={rowVariants}
   className={cn(
-  "border-b transition-colors hover:bg-muted/10 last:border-0",
+  "border-b transition-colors hover:bg-surface last:border-0",
   onRowClick && "cursor-pointer"
   )}
   onClick={() => onRowClick?.(item)}
@@ -183,7 +183,7 @@ export function DataTable<T extends { id: string }>({
   <button
   onClick={() => setPage(Math.max(1, page - 1))}
   disabled={page <= 1}
-  className="px-2 py-1 text-xs rounded border border-border hover:bg-muted/10 disabled:opacity-30 disabled:cursor-not-allowed"
+  className="px-2 py-1 text-xs rounded border border-border hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed"
   >
   Prev
  </button>
@@ -195,7 +195,7 @@ export function DataTable<T extends { id: string }>({
  onClick={() => setPage(p)}
  className={cn(
  "px-2 py-1 text-xs rounded border",
-  p === page ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-muted/10"
+  p === page ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-surface"
  )}
  >
  {p}
@@ -205,7 +205,7 @@ export function DataTable<T extends { id: string }>({
   <button
   onClick={() => setPage(Math.min(totalPages, page + 1))}
   disabled={page >= totalPages}
-  className="px-2 py-1 text-xs rounded border border-border hover:bg-muted/10 disabled:opacity-30 disabled:cursor-not-allowed"
+  className="px-2 py-1 text-xs rounded border border-border hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed"
   >
   Next
  </button>

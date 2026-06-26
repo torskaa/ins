@@ -3,6 +3,7 @@
 import { useState, useEffect, use, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +32,19 @@ import {
   Bold,
   Italic,
   Image,
+  Play,
+  Pause,
+  Copy,
+  Check,
+  Search,
 } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
 
@@ -40,6 +53,9 @@ type Article = {
   title: string
   category: string
   excerpt: string
+  subtitle?: string
+  topics?: string[]
+  coverImage?: string | null
   author: string
   updated: string
   readTime: string
@@ -72,6 +88,45 @@ function abbreviateName(name: string): string {
   return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
 }
 
+function getPlainText(content?: string | null): string {
+  if (!content) return ""
+  const doc = deserializeDocument(content)
+  if (!doc?.blocks) return ""
+  return doc.blocks.map((b) => {
+    switch (b.type) {
+      case "paragraph": case "heading": case "quote": case "code": return b.content
+      case "list": case "bulletList": return b.items.join(". ")
+      case "checklist": return b.items.map((i) => i.text).join(". ")
+      default: return ""
+    }
+  }).filter(Boolean).join(". ")
+}
+
+const topicColors = [
+  { border: "#60a5fa", text: "#2563eb" }, { border: "#34d399", text: "#059669" },
+  { border: "#c084fc", text: "#7c3aed" }, { border: "#fb923c", text: "#ea580c" },
+  { border: "#f472b6", text: "#db2777" }, { border: "#2dd4bf", text: "#0d9488" },
+  { border: "#22d3ee", text: "#0891b2" }, { border: "#fb7185", text: "#e11d48" },
+]
+
+function langFlag(lang: string): string {
+  const parts = lang.split("-")
+  if (parts.length < 2) return ""
+  const cc = parts[parts.length - 1].toUpperCase()
+  if (cc.length !== 2) return ""
+  const a = cc.charCodeAt(0)
+  const b = cc.charCodeAt(1)
+  if (a < 0x41 || a > 0x5a || b < 0x41 || b > 0x5a) return ""
+  return String.fromCodePoint(0x1f1e6 + a - 0x41, 0x1f1e6 + b - 0x41)
+}
+
+function getTopicColor(topic: string): React.CSSProperties {
+  let hash = 0
+  for (let i = 0; i < topic.length; i++) hash = topic.charCodeAt(i) + ((hash << 5) - hash)
+  const c = topicColors[Math.abs(hash) % topicColors.length]
+  return { borderColor: c.border, color: c.text }
+}
+
 export default function WikiArticlePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
@@ -81,6 +136,7 @@ export default function WikiArticlePage({ params }: { params: Promise<{ id: stri
 
   const responseEditorRef = useRef<HTMLDivElement>(null)
   const replyEditorRef = useRef<HTMLDivElement>(null)
+  const linkInputRef = useRef<HTMLInputElement>(null)
   const [showResponses, setShowResponses] = useState(false)
   const [liked, setLiked] = useState(false)
   const [bookmarked, setBookmarked] = useState(false)
@@ -94,6 +150,21 @@ export default function WikiArticlePage({ params }: { params: Promise<{ id: stri
   const [commentLikes, setCommentLikes] = useState<Record<string, number>>({})
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [collapsedThreads, setCollapsedThreads] = useState<Set<string>>(new Set())
+  const [playState, setPlayState] = useState<"idle" | "playing" | "paused">("idle")
+  const [copied, setCopied] = useState(false)
+  const [voiceDialogOpen, setVoiceDialogOpen] = useState(false)
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([])
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState<string>("")
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string>("")
+  const [voiceSearch, setVoiceSearch] = useState("")
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return
+    const update = () => setVoices(window.speechSynthesis.getVoices())
+    update()
+    window.speechSynthesis.onvoiceschanged = update
+    return () => { window.speechSynthesis.onvoiceschanged = null }
+  }, [])
 
   useEffect(() => {
     setLoading(true)
@@ -191,10 +262,17 @@ export default function WikiArticlePage({ params }: { params: Promise<{ id: stri
       {/* Article */}
       <article className="max-w-[860px] mx-auto px-6 py-8">
         {/* Category */}
-        <div className="mb-6">
+        <div className="mb-6 space-y-2">
           <SemanticBadge semantic={article.category} category="category">
             {article.category}
           </SemanticBadge>
+          {article.topics && article.topics.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {article.topics.map((t) => (
+                <span key={t} className="text-xs px-2 py-0.5 rounded-full border bg-transparent font-medium" style={getTopicColor(t)}>{t}</span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Title — 42px/52px Medium style */}
@@ -227,48 +305,195 @@ export default function WikiArticlePage({ params }: { params: Promise<{ id: stri
           <div className="flex items-center gap-1">
             <button
               onClick={handleClap}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground/60 hover:text-foreground"
+              className="inline-flex items-center justify-center gap-1.5 h-9 min-w-9 px-2.5 rounded-lg hover:bg-surface transition-colors text-muted-foreground/60 hover:text-foreground"
             >
-              <Heart className={`size-5 ${liked ? "fill-red-500 text-red-500" : ""}`} />
-              <span className="text-sm font-medium">{claps || ""}</span>
+              <Heart className={`size-[18px] ${liked ? "fill-red-500 text-red-500" : ""}`} />
+              {claps > 0 && <span className="text-sm font-medium tabular-nums">{claps}</span>}
             </button>
             <button
               onClick={() => setShowResponses(true)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground/60 hover:text-foreground"
+              className="inline-flex items-center justify-center gap-1.5 h-9 min-w-9 px-2.5 rounded-lg hover:bg-surface transition-colors text-muted-foreground/60 hover:text-foreground"
             >
-              <MessageSquare className="size-5" />
-              <span className="text-sm font-medium">{comments.length || ""}</span>
+              <MessageSquare className="size-[18px]" />
+              {comments.length > 0 && <span className="text-sm font-medium tabular-nums">{comments.length}</span>}
             </button>
             <button
               onClick={() => setReposts((p) => p + 1)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground/60 hover:text-foreground"
+              className="inline-flex items-center justify-center gap-1.5 h-9 min-w-9 px-2.5 rounded-lg hover:bg-surface transition-colors text-muted-foreground/60 hover:text-foreground"
             >
-              <Repeat2 className="size-5" />
-              <span className="text-sm font-medium">{reposts || ""}</span>
+              <Repeat2 className="size-[18px]" />
+              {reposts > 0 && <span className="text-sm font-medium tabular-nums">{reposts}</span>}
             </button>
           </div>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setBookmarked(!bookmarked)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground/60 hover:text-foreground"
+              className="inline-flex items-center justify-center size-9 rounded-lg hover:bg-surface transition-colors text-muted-foreground/60 hover:text-foreground"
             >
-              <Bookmark className={`size-5 ${bookmarked ? "fill-foreground text-foreground" : ""}`} />
-            </button>
-            <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground/60 hover:text-foreground">
-              <Headphones className="size-5" />
-              <span className="text-sm font-medium">Listen</span>
+              <Bookmark className={`size-[18px] ${bookmarked ? "fill-foreground text-foreground" : ""}`} />
             </button>
             <button
-              onClick={() => { setShares((p) => p + 1); navigator.clipboard?.writeText(window.location.href); toast.success("Link copied") }}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground/60 hover:text-foreground"
+              onClick={() => {
+                if (playState === "playing") {
+                  window.speechSynthesis.pause()
+                  setPlayState("paused")
+                  return
+                }
+                if (playState === "paused") {
+                  window.speechSynthesis.resume()
+                  setPlayState("playing")
+                  return
+                }
+                if (!article) return
+                setVoiceDialogOpen(true)
+              }}
+              className="inline-flex items-center justify-center gap-1.5 h-9 min-w-9 px-2.5 rounded-lg hover:bg-surface transition-colors text-muted-foreground/60 hover:text-foreground"
             >
-              <Share2 className="size-5" />
-              <span className="text-sm font-medium">{shares || ""}</span>
+              {playState === "playing" ? <Pause className="size-[18px]" /> : <Headphones className="size-[18px]" />}
+              <span className="text-sm font-medium">{playState === "playing" ? "Pause" : playState === "paused" ? "Resume" : "Listen"}</span>
             </button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="inline-flex items-center justify-center gap-1.5 h-9 min-w-9 px-2.5 rounded-lg hover:bg-surface transition-colors text-muted-foreground/60 hover:text-foreground">
+                  <Share2 className="size-[18px]" />
+                  {shares > 0 && <span className="text-sm font-medium tabular-nums">{shares}</span>}
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[400px]">
+                <DialogHeader>
+                  <DialogTitle>Share link</DialogTitle>
+                </DialogHeader>
+                <div className="flex items-center gap-2">
+                  <Input
+                    ref={linkInputRef}
+                    defaultValue={typeof window !== "undefined" ? window.location.href : ""}
+                    className="flex-1 h-9 text-sm"
+                    readOnly
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 gap-1.5 shrink-0"
+                    onClick={async () => {
+                      if (linkInputRef.current) {
+                        await navigator.clipboard.writeText(linkInputRef.current.value)
+                        setCopied(true)
+                        setShares((p) => p + 1)
+                        setTimeout(() => setCopied(false), 1500)
+                      }
+                    }}
+                  >
+                    {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+                    {copied ? "Copied" : "Copy"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Dialog open={voiceDialogOpen} onOpenChange={(open) => { setVoiceDialogOpen(open); if (!open) setVoiceSearch("") }}>
+              <DialogContent className="sm:max-w-[420px]">
+                <DialogHeader>
+                  <DialogTitle>Choose voice</DialogTitle>
+                </DialogHeader>
+                <div className="relative mb-3">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
+                  <Input
+                    value={voiceSearch}
+                    onChange={(e) => setVoiceSearch(e.target.value)}
+                    placeholder="Search voices..."
+                    className="pl-10 h-9 rounded-md"
+                  />
+                </div>
+                <div className="max-h-60 overflow-y-auto -mx-1 space-y-1">
+                  {voices.length === 0 && (
+                    <p className="text-sm text-muted-foreground/60 py-6 text-center">
+                      {typeof window !== "undefined" && !window.speechSynthesis
+                        ? "Text-to-speech is not supported in this browser."
+                        : "Loading voices..."}
+                    </p>
+                  )}
+                  {voices
+                    .filter((v) => {
+                      if (!voiceSearch) return true
+                      const q = voiceSearch.toLowerCase()
+                      return v.name.toLowerCase().includes(q) || v.lang.toLowerCase().includes(q)
+                    })
+                    .length === 0 && voices.length > 0 && (
+                      <p className="text-sm text-muted-foreground/60 py-6 text-center">No voices match your search.</p>
+                    )}
+                  {Object.entries(
+                    voices
+                      .filter((v) => {
+                        if (!voiceSearch) return true
+                        const q = voiceSearch.toLowerCase()
+                        return v.name.toLowerCase().includes(q) || v.lang.toLowerCase().includes(q)
+                      })
+                      .reduce<Record<string, SpeechSynthesisVoice[]>>((acc, v) => {
+                        const lang = v.lang || "unknown"
+                        if (!acc[lang]) acc[lang] = []
+                        acc[lang].push(v)
+                        return acc
+                      }, {})
+                  ).map(([lang, langVoices]) => (
+                    <div key={lang}>
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50 px-3 pt-3 pb-1 flex items-center gap-1.5">
+                        <span>{langFlag(lang) || lang}</span>
+                      </p>
+                      {langVoices.map((v) => (
+                        <button
+                          key={v.voiceURI}
+                          onClick={() => { setSelectedVoiceURI(v.voiceURI); setSelectedVoiceName(v.name) }}
+                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left text-sm transition-colors ${
+                            selectedVoiceURI === v.voiceURI
+                              ? "bg-surface text-foreground"
+                              : "text-muted-foreground/70 hover:text-foreground hover:bg-surface"
+                          }`}
+                        >
+                          <div className={`size-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                            selectedVoiceURI === v.voiceURI
+                              ? "border-foreground"
+                              : "border-muted-foreground/30"
+                          }`}>
+                            {selectedVoiceURI === v.voiceURI && (
+                              <div className="size-2 rounded-full bg-foreground" />
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate font-medium">{v.name}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-1">
+                  <Button
+                    className="w-full h-9 gap-1.5 text-sm"
+                    disabled={!selectedVoiceURI}
+                    onClick={() => {
+                      if (!article) return
+                      const text = `${article.title}. ${getPlainText(article.content)}`
+                      if (!text.trim()) return
+                      const utterance = new SpeechSynthesisUtterance(text)
+                      const voice = voices.find((v) => v.voiceURI === selectedVoiceURI)
+                      if (voice) utterance.voice = voice
+                      utterance.onend = () => setPlayState("idle")
+                      window.speechSynthesis.cancel()
+                      window.speechSynthesis.speak(utterance)
+                      setPlayState("playing")
+                      setVoiceDialogOpen(false)
+                      setVoiceSearch("")
+                    }}
+                  >
+                    <Play className="size-3.5" />
+                    Listen
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground/60 hover:text-foreground">
-                  <MoreHorizontal className="size-5" />
+                <button className="inline-flex items-center justify-center size-9 rounded-lg hover:bg-surface transition-colors text-muted-foreground/60 hover:text-foreground">
+                  <MoreHorizontal className="size-[18px]" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -292,7 +517,7 @@ export default function WikiArticlePage({ params }: { params: Promise<{ id: stri
         </div>
 
         {/* Cover Image */}
-        <CoverImage url={getCoverImage(article.content)} />
+        <CoverImage url={article.coverImage || getCoverImage(article.content)} />
 
         {/* Content — 20px/32px serif style */}
         <div className="mt-10 text-[20px] leading-[32px] tracking-[-0.003em] text-foreground/85 space-y-6 font-serif">
@@ -348,35 +573,7 @@ export default function WikiArticlePage({ params }: { params: Promise<{ id: stri
               <div className="space-y-2">
                 {/* Editor with built-in toolbar */}
                 <div className="relative rounded-lg border border-border/60 bg-background focus-within:ring-1 focus-within:ring-ring">
-                  <div className="flex items-center gap-0.5 px-2 pt-1.5 pb-0.5 border-b border-border/20">
-                    <button
-                      type="button"
-                      onMouseDown={(e) => { e.preventDefault(); document.execCommand("bold") }}
-                      className="size-6 flex items-center justify-center rounded text-muted-foreground/50 hover:text-foreground hover:bg-muted transition-colors"
-                      title="Bold"
-                    >
-                      <Bold className="size-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onMouseDown={(e) => { e.preventDefault(); document.execCommand("italic") }}
-                      className="size-6 flex items-center justify-center rounded text-muted-foreground/50 hover:text-foreground hover:bg-muted transition-colors"
-                      title="Italic"
-                    >
-                      <Italic className="size-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const url = window.prompt("Image URL:")
-                        if (url) document.execCommand("insertImage", false, url)
-                      }}
-                      className="size-6 flex items-center justify-center rounded text-muted-foreground/50 hover:text-foreground hover:bg-muted transition-colors"
-                      title="Image"
-                    >
-                      <Image className="size-3.5" />
-                    </button>
-                  </div>
+                  <InlineToolbar />
                   <div
                     ref={responseEditorRef}
                     contentEditable
@@ -443,6 +640,35 @@ export default function WikiArticlePage({ params }: { params: Promise<{ id: stri
           </div>
         </SheetContent>
       </Sheet>
+
+      {(playState === "playing" || playState === "paused") && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 pl-4 pr-3 py-2.5 rounded-2xl border border-border/40 bg-background/95 backdrop-blur-sm shadow-lg shadow-black/5">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground/40 opacity-75" />
+                <span className="relative inline-flex size-2 rounded-full bg-foreground/60" />
+              </span>
+              <span className="text-xs font-medium text-foreground/60">Listening</span>
+            </div>
+            <div className="w-px h-4 bg-border/60" />
+            <div className="min-w-0 max-w-[200px]">
+              <p className="text-sm font-semibold text-foreground truncate">{selectedVoiceName}</p>
+              <p className="text-xs text-muted-foreground/60 truncate">{article?.title}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              if (playState === "playing") { window.speechSynthesis.pause(); setPlayState("paused") }
+              else { window.speechSynthesis.resume(); setPlayState("playing") }
+            }}
+            className="size-8 flex items-center justify-center rounded-xl hover:bg-surface transition-colors text-muted-foreground/50 hover:text-foreground shrink-0"
+            title={playState === "playing" ? "Pause" : "Resume"}
+          >
+            {playState === "playing" ? <Pause className="size-4" /> : <Play className="size-4" />}
+          </button>
+        </div>
+      )}
     </>
   )
 }
@@ -528,35 +754,7 @@ function CommentThread({
       {replyingTo === comment.id && (
         <div className={`${indent} mt-2 space-y-2`}>
           <div className="relative rounded-lg border border-border/60 bg-background focus-within:ring-1 focus-within:ring-ring">
-            <div className="flex items-center gap-0.5 px-2 pt-1.5 pb-0.5 border-b border-border/20">
-              <button
-                type="button"
-                onMouseDown={(e) => { e.preventDefault(); document.execCommand("bold") }}
-                className="size-6 flex items-center justify-center rounded text-muted-foreground/50 hover:text-foreground hover:bg-muted transition-colors"
-                title="Bold"
-              >
-                <Bold className="size-3.5" />
-              </button>
-              <button
-                type="button"
-                onMouseDown={(e) => { e.preventDefault(); document.execCommand("italic") }}
-                className="size-6 flex items-center justify-center rounded text-muted-foreground/50 hover:text-foreground hover:bg-muted transition-colors"
-                title="Italic"
-              >
-                <Italic className="size-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const url = window.prompt("Image URL:")
-                  if (url) document.execCommand("insertImage", false, url)
-                }}
-                className="size-6 flex items-center justify-center rounded text-muted-foreground/50 hover:text-foreground hover:bg-muted transition-colors"
-                title="Image"
-              >
-                <Image className="size-3.5" />
-              </button>
-            </div>
+            <InlineToolbar />
             <div
               ref={replyEditorRef}
               contentEditable
@@ -599,6 +797,77 @@ function CommentThread({
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+function InlineToolbar() {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  async function handleImageFile(file: File) {
+    if (!file.type.startsWith("image/")) return
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+      const res = await fetch("/api/upload", { method: "POST", body: formData })
+      if (!res.ok) throw new Error("Upload failed")
+      const json = await res.json()
+      document.execCommand("insertImage", false, json.data?.url || json.url)
+    } catch {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const url = e.target?.result as string
+        if (url) document.execCommand("insertImage", false, url)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-0.5 px-2 pt-1.5 pb-0.5 border-b border-border/20">
+      <button
+        type="button"
+        onMouseDown={(e) => { e.preventDefault(); document.execCommand("bold") }}
+        className="size-6 flex items-center justify-center rounded text-muted-foreground/50 hover:text-foreground hover:bg-surface transition-colors"
+        title="Bold"
+      >
+        <Bold className="size-3.5" />
+      </button>
+      <button
+        type="button"
+        onMouseDown={(e) => { e.preventDefault(); document.execCommand("italic") }}
+        className="size-6 flex items-center justify-center rounded text-muted-foreground/50 hover:text-foreground hover:bg-surface transition-colors"
+        title="Italic"
+      >
+        <Italic className="size-3.5" />
+      </button>
+      <div className="relative flex items-center">
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="size-6 flex items-center justify-center rounded text-muted-foreground/50 hover:text-foreground hover:bg-surface transition-colors"
+          title="Upload image"
+        >
+          <Image className="size-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            const url = window.prompt("Paste image URL:")
+            if (url) document.execCommand("insertImage", false, url)
+          }}
+          className="ml-0.5 text-[10px] text-muted-foreground/30 hover:text-muted-foreground underline underline-offset-2 transition-colors"
+        >
+          URL
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageFile(f) }}
+        />
+      </div>
     </div>
   )
 }

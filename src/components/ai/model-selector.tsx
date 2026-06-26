@@ -64,7 +64,7 @@ export function ModelSelector({ value, effort, onValueChange, onEffortChange }: 
       <button
         ref={buttonRef}
         onClick={() => { setOpen(!open); setEffortOpen(false) }}
-        className="inline-flex items-center gap-1.5 px-2 py-1.5 text-xs text-muted-foreground bg-transparent rounded-full hover:bg-muted/20 hover:text-foreground transition-colors duration-150"
+        className="inline-flex items-center gap-1.5 px-2 py-1.5 text-xs text-muted-foreground bg-transparent rounded-full hover:bg-surface hover:text-foreground transition-colors duration-150"
       >
         <Bot className="size-3.5 text-muted-foreground" />
         <span className="truncate">{activeModel?.name ?? "Model"}</span>
@@ -90,8 +90,8 @@ export function ModelSelector({ value, effort, onValueChange, onEffortChange }: 
                     }
                   }}
                   className={cn(
-                    "flex items-center gap-3 w-full px-3 py-2.5 text-left transition-colors hover:bg-muted/20",
-                    isActive && "bg-muted/10"
+                    "flex items-center gap-3 w-full px-3 py-2.5 text-left transition-colors hover:bg-surface",
+                    isActive && "bg-surface"
                   )}
                 >
                   <div className="flex items-center justify-center size-8 rounded-lg bg-muted/20 shrink-0">
@@ -117,7 +117,7 @@ export function ModelSelector({ value, effort, onValueChange, onEffortChange }: 
             <div className="relative">
               <button
                 onClick={() => setEffortOpen(!effortOpen)}
-                className="flex items-center justify-between w-full px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors"
+                className="flex items-center justify-between w-full px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
               >
                 <span>Effort</span>
                 <div className="flex items-center gap-1.5">
@@ -126,12 +126,12 @@ export function ModelSelector({ value, effort, onValueChange, onEffortChange }: 
                 </div>
               </button>
               {effortOpen && (
-                <div ref={effortRef} className="border-t border-border/40 bg-muted/10">
+                <div ref={effortRef} className="border-t border-border/40 bg-surface">
                   {(Object.entries(effortLabels) as [Effort, string][]).map(([key, label]) => (
                     <button
                       key={key}
                       onClick={() => { onEffortChange(key); setEffortOpen(false) }}
-                      className="flex items-center justify-between w-full px-3 py-2 pl-10 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors"
+                      className="flex items-center justify-between w-full px-3 py-2 pl-10 text-sm text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
                     >
                       {label}
                       {effort === key && <Check className="size-3.5" />}
@@ -142,7 +142,7 @@ export function ModelSelector({ value, effort, onValueChange, onEffortChange }: 
             </div>
             <button
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 w-full px-3 py-2.5 text-sm text-muted-foreground/60 hover:text-foreground hover:bg-muted/20 transition-colors border-t border-border/50"
+              className="flex items-center gap-2 w-full px-3 py-2.5 text-sm text-muted-foreground/60 hover:text-foreground hover:bg-surface transition-colors border-t border-border/50"
             >
               <ExternalLink className="size-3.5" />
               More models

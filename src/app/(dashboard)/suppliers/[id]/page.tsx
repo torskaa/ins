@@ -15,9 +15,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { Award, BadgePercent, Boxes, Building2, CheckCircle, Clock, DollarSign, FileText, Hash, HouseIcon, MapPin, Package, Pencil, Phone, ShoppingCart, Trash2, User, XCircle } from "lucide-react"
+import { Award, BadgePercent, Boxes, Building2, CheckCircle, Clock, DollarSign, FileText, Hash, MapPin, Package, Pencil, Phone, ShoppingCart, Trash2, User, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { Frame, FramePanel } from "@/components/reui/frame"
+
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -272,24 +272,22 @@ export default function SupplierDetailPage({ params }: { params: Promise<{ id: s
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      <Frame variant="ghost" className="w-fit">
-        <FramePanel className="gap-2 px-3! py-2! border-0!">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/suppliers" className="flex items-center gap-1.5">
-                  <HouseIcon className="size-4" aria-hidden="true" />
-                  Suppliers
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="font-semibold">{supplier.name}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </FramePanel>
-      </Frame>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <button onClick={() => router.push("/suppliers")}>
+                <Building2 className="size-4" />
+                Suppliers
+              </button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{supplier.name}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <div className="grid grid-cols-12 gap-4">
         {/* Page Header */}
         <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">

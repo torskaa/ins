@@ -7,7 +7,7 @@ export const GET = apiHandler(async (request: Request, { params }: any) => {
   const { id } = await params
   const article = await prisma.wikiArticle.findFirst({ where: { id, organizationId: org.id } })
   if (!article) return NextResponse.json({ error: "Article not found" }, { status: 404 })
-  return NextResponse.json(article)
+  return NextResponse.json({ ...article, topics: JSON.parse(article.topics || "[]") })
 })
 
 export const PUT = apiHandler(async (request: Request, { params }: any) => {

@@ -14,6 +14,20 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { deserializeDocument } from "@/components/editor/types"
 import { cn } from "@/lib/utils"
 
+const topicColors = [
+  { border: "#60a5fa", text: "#2563eb" }, { border: "#34d399", text: "#059669" },
+  { border: "#c084fc", text: "#7c3aed" }, { border: "#fb923c", text: "#ea580c" },
+  { border: "#f472b6", text: "#db2777" }, { border: "#2dd4bf", text: "#0d9488" },
+  { border: "#22d3ee", text: "#0891b2" }, { border: "#fb7185", text: "#e11d48" },
+]
+
+function getTopicColor(topic: string): React.CSSProperties {
+  let hash = 0
+  for (let i = 0; i < topic.length; i++) hash = topic.charCodeAt(i) + ((hash << 5) - hash)
+  const c = topicColors[Math.abs(hash) % topicColors.length]
+  return { borderColor: c.border, color: c.text }
+}
+
 type Article = {
   id: string
   title: string
@@ -26,6 +40,7 @@ type Article = {
   views?: number
   commentsCount?: number
   likes?: number
+  topics?: string[]
 }
 
 const categories = ["Getting Started", "Inventory", "Orders", "CRM", "Reports", "Settings"]
@@ -161,7 +176,7 @@ export default function WikiPage() {
           <div className="relative">
             <button
               onClick={() => setShowSortMenu(!showSortMenu)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
             >
               <ArrowUpDown className="size-3" />
               {sortOptions.find((o) => o.value === sort)?.label}
@@ -177,7 +192,7 @@ export default function WikiPage() {
                       onClick={() => { setSort(opt.value); setShowSortMenu(false) }}
                       className={cn(
                         "w-full text-left px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors",
-                        sort === opt.value ? "bg-muted/50 text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/30",
+                        sort === opt.value ? "bg-muted/50 text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-surface",
                       )}
                     >
                       {opt.label}
@@ -227,7 +242,7 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
       onClick={onClick}
       className={cn(
         "px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors",
-        active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-surface",
       )}
     >
       {children}
@@ -237,7 +252,6 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
 
 function ArticleFeedCard({ article, onSelect }: { article: Article; onSelect: () => void }) {
   const coverImage = getCoverImage(article.content)
-  const status = getArticleStatus(article.content)
 
   return (
     <article className="group py-6 first:pt-0 last:pb-0 cursor-pointer" onClick={onSelect}>
@@ -268,9 +282,14 @@ function ArticleFeedCard({ article, onSelect }: { article: Article; onSelect: ()
           )}
 
           {/* Meta row */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <SemanticBadge semantic={article.category} category="category" className="text-[10px] px-1.5 py-0" />
-            <SemanticBadge semantic={status} category="status" className="text-[10px] px-1.5 py-0" />
+          <div className="flex items-center gap-2 flex-wrap">
+            {article.topics && article.topics.length > 0 ? (
+              article.topics.map((t) => (
+                <span key={t} className="text-[11px] px-1.5 py-0.5 rounded-full border bg-transparent font-medium" style={getTopicColor(t)}>{t}</span>
+              ))
+            ) : (
+              <SemanticBadge semantic={article.category} category="category" className="text-[10px] px-1.5 py-0" />
+            )}
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
               <Clock className="size-3" /> {article.readTime} read
             </span>

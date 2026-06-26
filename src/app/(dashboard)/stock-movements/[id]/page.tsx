@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Badge, SemanticBadge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { PlaceholderImage } from "@/components/ui/placeholder-image"
-import { Activity, ArrowLeft, Calendar, Hash, Layers, Package, Warehouse } from "lucide-react"
+import { Activity, ArrowLeft, ArrowLeftRight, Calendar, Hash, Layers, Package, Warehouse } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Frame, FramePanel } from "@/components/reui/frame"
 import { formatDateTime, cn } from "@/lib/utils"
@@ -61,7 +61,14 @@ export default function StockMovementDetailPage({ params }: { params: Promise<{ 
     <div className="animate-fade-in space-y-6">
       <Breadcrumb>
         <BreadcrumbList>
-          <BreadcrumbItem><BreadcrumbLink href="/stock-movements">Stock Movements</BreadcrumbLink></BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <button onClick={() => router.push("/stock-movements")}>
+                <ArrowLeftRight className="size-4" />
+                Stock Movements
+              </button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem><BreadcrumbPage>{data.reference || data.id.slice(0, 8)}</BreadcrumbPage></BreadcrumbItem>
         </BreadcrumbList>

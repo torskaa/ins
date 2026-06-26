@@ -13,9 +13,9 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { AlertTriangle, Banknote, Clock, DollarSign, FileText, Hash, HouseIcon, Mail, Package, Pencil, Trash2, XCircle } from "lucide-react"
+import { AlertTriangle, Banknote, Clock, DollarSign, FileText, Hash, Mail, Package, Pencil, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { Frame, FramePanel } from "@/components/reui/frame"
+
 import { formatCurrency, formatDate, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -208,24 +208,22 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      <Frame variant="ghost" className="w-fit">
-        <FramePanel className="gap-2 px-3! py-2! border-0!">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/invoices" className="flex items-center gap-1.5">
-                  <HouseIcon className="size-4" aria-hidden="true" />
-                  Invoices
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="font-semibold">{invoice.number}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </FramePanel>
-      </Frame>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <button onClick={() => router.push("/invoices")}>
+                <FileText className="size-4" />
+                Invoices
+              </button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{invoice.number}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <div className="grid grid-cols-12 gap-4">
         <div className="col-span-12 border border-border/60 rounded-lg bg-card p-4">
           <div className="flex items-start justify-between gap-6">

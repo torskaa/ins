@@ -221,7 +221,10 @@ export default function TrainingDetailPage({ params }: { params: Promise<{ id: s
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/knowledge/training")}>Training</button>
+              <button onClick={() => router.push("/knowledge/training")}>
+                <GraduationCap className="size-4" />
+                Training
+              </button>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

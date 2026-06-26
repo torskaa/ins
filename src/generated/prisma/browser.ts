@@ -278,6 +278,11 @@ export type WorkflowTransition = Prisma.WorkflowTransitionModel
  */
 export type WikiArticle = Prisma.WikiArticleModel
 /**
+ * Model ArticleBlock
+ * 
+ */
+export type ArticleBlock = Prisma.ArticleBlockModel
+/**
  * Model KnowledgeDocument
  * 
  */
@@ -307,3 +312,23 @@ export type AgentApproval = Prisma.AgentApprovalModel
  * 
  */
 export type TrainingProgram = Prisma.TrainingProgramModel
+/**
+ * Model Folder
+ * 
+ */
+export type Folder = Prisma.FolderModel
+/**
+ * Model File
+ * 
+ */
+export type File = Prisma.FileModel
+/**
+ * Model Tag
+ * 
+ */
+export type Tag = Prisma.TagModel
+/**
+ * Model EntityTag
+ * 
+ */
+export type EntityTag = Prisma.EntityTagModel

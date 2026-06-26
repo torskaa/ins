@@ -74,7 +74,7 @@ export function TableRow({
   return (
     <tr
       className={cn(
-        "border-b transition-colors hover:bg-muted/10 in-data-[slot=frame]:hover:bg-transparent data-[state=selected]:bg-muted/10 in-data-[slot=frame]:data-[state=selected]:bg-transparent",
+        "border-b transition-colors hover:bg-surface in-data-[slot=frame]:hover:bg-transparent data-[state=selected]:bg-muted/10 in-data-[slot=frame]:data-[state=selected]:bg-transparent",
         className,
       )}
       data-slot="table-row"

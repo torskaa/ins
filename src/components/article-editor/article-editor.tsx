@@ -134,21 +134,7 @@ export function ArticleEditor({
         onReorder={onReorder}
       />
 
-      {/* Add block at the bottom */}
-      <div className="mt-6 flex justify-center">
-        <button
-          type="button"
-          onClick={() => onAddBlock("paragraph")}
-          className="flex items-center gap-1.5 text-sm text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors"
-        >
-          <span className="size-5 rounded-full border border-border/40 flex items-center justify-center">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </span>
-          Add block
-        </button>
-      </div>
+
     </div>
   )
 }

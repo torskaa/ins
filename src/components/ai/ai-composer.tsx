@@ -233,7 +233,7 @@ export function AiComposer({
                 onClick={() => handleMentionSelect(item)}
                 className={cn(
                   "flex items-center gap-3 w-full px-3 py-2 text-left text-sm transition-colors",
-                  i === selectedIndex ? "bg-accent text-accent-foreground" : "hover:bg-muted/20"
+                  i === selectedIndex ? "bg-surface text-foreground" : "hover:bg-surface"
                 )}
               >
                 <div className="flex flex-col">
@@ -260,7 +260,7 @@ export function AiComposer({
                 onClick={() => handleCommandSelect(cmd)}
                 className={cn(
                   "flex items-center gap-3 w-full px-3 py-2 text-left text-sm transition-colors",
-                  i === selectedIndex ? "bg-accent text-accent-foreground" : "hover:bg-muted/20"
+                  i === selectedIndex ? "bg-surface text-foreground" : "hover:bg-surface"
                 )}
               >
                 <span className="font-medium">{cmd.label}</span>
@@ -301,7 +301,7 @@ export function AiComposer({
               />
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors"
+                className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
                 disabled={disabled}
               >
                 <Paperclip className="size-4" />

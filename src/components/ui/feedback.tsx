@@ -45,7 +45,7 @@ export function Feedback({ label = "Was this helpful?", onFeedback, className }:
               "size-7 flex items-center justify-center rounded-md transition-colors",
               selected === "positive"
                 ? "text-primary bg-primary/10"
-                : "text-muted-foreground/50 hover:text-foreground hover:bg-muted/50"
+                : "text-muted-foreground/50 hover:text-foreground hover:bg-surface"
             )}
           >
             <ThumbsUp className="size-3.5" />
@@ -57,7 +57,7 @@ export function Feedback({ label = "Was this helpful?", onFeedback, className }:
               "size-7 flex items-center justify-center rounded-md transition-colors",
               selected === "negative"
                 ? "text-destructive bg-destructive/10"
-                : "text-muted-foreground/50 hover:text-foreground hover:bg-muted/50"
+                : "text-muted-foreground/50 hover:text-foreground hover:bg-surface"
             )}
           >
             <ThumbsDown className="size-3.5" />

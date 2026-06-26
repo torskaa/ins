@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { Activity, ArrowLeft, Boxes, Building2, Calendar, Clock, DollarSign, Hash, Layers, MapPin, Package, Pencil, ShoppingCart, Trash2, XCircle } from "lucide-react"
+import { Activity, Boxes, Building2, Calendar, Clock, Cog, DollarSign, Hash, Layers, MapPin, Package, Pencil, ShoppingCart, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -138,7 +138,10 @@ export default function WorkCenterDetailPage({ params }: { params: Promise<{ id:
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/production/work-centers")}>Work Centers</button>
+              <button onClick={() => router.push("/production/work-centers")}>
+                  <Cog className="size-4" />
+                  Work Centers
+                </button>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

@@ -90,7 +90,7 @@ export function CopilotUserMessage({ content, avatarUrl, userName, onEdit }: Cop
           {onEdit && (
             <button
               onClick={() => { setEditValue(content); setEditing(true) }}
-              className="absolute -top-2 -right-2 size-6 rounded-full bg-card border border-border/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-muted/20"
+              className="absolute -top-2 -right-2 size-6 rounded-full bg-card border border-border/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-surface"
             >
               <Pencil className="size-3 text-muted-foreground" />
             </button>

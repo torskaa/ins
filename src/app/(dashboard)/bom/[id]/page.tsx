@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
-import { Clock, DollarSign, Hash, History, HouseIcon, Layers, Package, Pencil, ShoppingCart } from "lucide-react"
+import { Clock, DollarSign, GitBranch, Hash, History, Layers, Package, Pencil, ShoppingCart } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { Frame, FramePanel } from "@/components/reui/frame"
+
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { SkeletonDetail } from "@/components/ui/skeleton"
@@ -247,24 +247,22 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
 
   return (
     <div className="animate-fade-in pb-8 space-y-4">
-      <Frame variant="ghost" className="w-fit">
-        <FramePanel className="gap-2 px-3! py-2! border-0!">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/bom" className="flex items-center gap-1.5">
-                  <HouseIcon className="size-4" aria-hidden="true" />
-                  BOM
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="font-semibold">{productName}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </FramePanel>
-      </Frame>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <button onClick={() => router.push("/bom")}>
+                <GitBranch className="size-4" />
+                BOM
+              </button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{productName}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       <div className="grid grid-cols-12 gap-4">
         {/* Page Header */}
@@ -338,7 +336,7 @@ export default function BOMDetailPage({ params }: { params: Promise<{ id: string
               {activeVersion?.items.map((item) => (
                 <div
                   key={item.id}
-                  className="grid grid-cols-1 md:grid-cols-[1fr_80px_80px_80px_60px] gap-3 items-center px-3 py-3 border-t border-border/50 hover:bg-muted/30 transition-colors rounded-lg"
+                  className="grid grid-cols-1 md:grid-cols-[1fr_80px_80px_80px_60px] gap-3 items-center px-3 py-3 border-t border-border/50 hover:bg-surface transition-colors rounded-lg"
                 >
                   <div className="flex items-center gap-2">
                     <div>

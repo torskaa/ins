@@ -76,7 +76,7 @@ export function BlockWrapper({ block, children, onDelete, onFocus, onBlur, showI
           className={cn(
             "mt-1.5 -ml-6 flex items-center justify-center size-5 rounded opacity-0 group-hover/block:opacity-100 transition-opacity cursor-grab",
             focused && "opacity-100",
-            "text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/30",
+            "text-muted-foreground/40 hover:text-muted-foreground hover:bg-surface",
           )}
           onMouseDown={(e) => e.stopPropagation()}
         >

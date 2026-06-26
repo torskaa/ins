@@ -24,7 +24,7 @@ function Action({
       aria-label={label}
       title={label}
       className={cn(
-        "flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/10 transition-colors outline-none",
+        "flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-surface transition-colors outline-none",
         className,
       )}
       {...props}

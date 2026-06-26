@@ -13,7 +13,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { AlertTriangle, Clock, DollarSign, FileText, Hash, Pencil, Trash2, XCircle, Banknote } from "lucide-react"
+import { AlertTriangle, Banknote, BookOpen, Clock, DollarSign, FileText, Hash, Pencil, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { formatCurrency, formatDate, cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -164,7 +164,10 @@ export default function JournalEntryDetailPage({ params }: { params: Promise<{ i
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/finance/journal-entries")}>Journal Entries</button>
+              <button onClick={() => router.push("/finance/journal-entries")}>
+                  <BookOpen className="size-4" />
+                  Journal Entries
+                </button>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

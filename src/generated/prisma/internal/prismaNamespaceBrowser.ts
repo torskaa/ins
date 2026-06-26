@@ -103,12 +103,17 @@ export const ModelName = {
   WorkflowState: 'WorkflowState',
   WorkflowTransition: 'WorkflowTransition',
   WikiArticle: 'WikiArticle',
+  ArticleBlock: 'ArticleBlock',
   KnowledgeDocument: 'KnowledgeDocument',
   AiExecutionLog: 'AiExecutionLog',
   AgentRun: 'AgentRun',
   AgentStep: 'AgentStep',
   AgentApproval: 'AgentApproval',
-  TrainingProgram: 'TrainingProgram'
+  TrainingProgram: 'TrainingProgram',
+  Folder: 'Folder',
+  File: 'File',
+  Tag: 'Tag',
+  EntityTag: 'EntityTag'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1009,6 +1014,11 @@ export const WikiArticleScalarFieldEnum = {
   title: 'title',
   category: 'category',
   excerpt: 'excerpt',
+  subtitle: 'subtitle',
+  topics: 'topics',
+  coverImage: 'coverImage',
+  notifySubscribers: 'notifySubscribers',
+  scheduledAt: 'scheduledAt',
   author: 'author',
   updated: 'updated',
   readTime: 'readTime',
@@ -1019,6 +1029,17 @@ export const WikiArticleScalarFieldEnum = {
 } as const
 
 export type WikiArticleScalarFieldEnum = (typeof WikiArticleScalarFieldEnum)[keyof typeof WikiArticleScalarFieldEnum]
+
+
+export const ArticleBlockScalarFieldEnum = {
+  id: 'id',
+  articleId: 'articleId',
+  type: 'type',
+  content: 'content',
+  order: 'order'
+} as const
+
+export type ArticleBlockScalarFieldEnum = (typeof ArticleBlockScalarFieldEnum)[keyof typeof ArticleBlockScalarFieldEnum]
 
 
 export const KnowledgeDocumentScalarFieldEnum = {
@@ -1126,6 +1147,59 @@ export const TrainingProgramScalarFieldEnum = {
 } as const
 
 export type TrainingProgramScalarFieldEnum = (typeof TrainingProgramScalarFieldEnum)[keyof typeof TrainingProgramScalarFieldEnum]
+
+
+export const FolderScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  parentId: 'parentId',
+  workspaceId: 'workspaceId',
+  createdBy: 'createdBy',
+  organizationId: 'organizationId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type FolderScalarFieldEnum = (typeof FolderScalarFieldEnum)[keyof typeof FolderScalarFieldEnum]
+
+
+export const FileScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  folderId: 'folderId',
+  content: 'content',
+  type: 'type',
+  createdBy: 'createdBy',
+  organizationId: 'organizationId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type FileScalarFieldEnum = (typeof FileScalarFieldEnum)[keyof typeof FileScalarFieldEnum]
+
+
+export const TagScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  color: 'color',
+  organizationId: 'organizationId',
+  createdAt: 'createdAt'
+} as const
+
+export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
+
+
+export const EntityTagScalarFieldEnum = {
+  id: 'id',
+  tagId: 'tagId',
+  entityId: 'entityId',
+  entityType: 'entityType',
+  createdAt: 'createdAt'
+} as const
+
+export type EntityTagScalarFieldEnum = (typeof EntityTagScalarFieldEnum)[keyof typeof EntityTagScalarFieldEnum]
 
 
 export const SortOrder = {

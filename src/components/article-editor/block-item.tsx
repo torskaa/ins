@@ -2,17 +2,15 @@
 
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { GripVertical, Trash2, Plus } from "lucide-react"
+import { GripVertical, Trash2 } from "lucide-react"
 
 interface BlockItemProps {
   id: string
   children: React.ReactNode
   onDelete: () => void
-  onAddBlock: (e: React.MouseEvent) => void
-  isFirst?: boolean
 }
 
-export function BlockItem({ id, children, onDelete, onAddBlock, isFirst }: BlockItemProps) {
+export function BlockItem({ id, children, onDelete }: BlockItemProps) {
   const {
     attributes,
     listeners,
@@ -51,19 +49,6 @@ export function BlockItem({ id, children, onDelete, onAddBlock, isFirst }: Block
       </div>
 
       {children}
-
-      {/* Add block button between blocks */}
-      {isFirst && (
-        <div className="relative h-0">
-          <button
-            type="button"
-            onClick={onAddBlock}
-            className="absolute -top-3 left-1/2 -translate-x-1/2 opacity-0 group-hover/block:opacity-100 hover:opacity-100 transition-opacity flex items-center gap-1 text-xs text-muted-foreground/40 hover:text-primary bg-background border border-border/30 rounded-full px-2 py-0.5 shadow-sm"
-          >
-            <Plus className="size-3" /> Add block
-          </button>
-        </div>
-      )}
     </div>
   )
 }

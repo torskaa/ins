@@ -116,7 +116,7 @@ function DataGridColumnFilter<TData, TValue>({
                     }}
                     className={cn(
                       "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none",
-                      "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                      "hover:bg-surface hover:text-foreground focus:bg-surface focus:text-foreground"
                     )}
                   >
                     <div
@@ -149,7 +149,7 @@ function DataGridColumnFilter<TData, TValue>({
               <div className="p-1">
                 <div
                   onClick={() => column?.setFilterValue(undefined)}
-                  className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center justify-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none"
+                  className="hover:bg-surface hover:text-foreground focus:bg-surface focus:text-foreground relative flex cursor-default items-center justify-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none"
                 >
                   Clear filters
                 </div>

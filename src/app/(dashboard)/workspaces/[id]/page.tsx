@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { AlertTriangle, Building2, Clock, Hash, Pencil, Trash2, Users, XCircle } from "lucide-react"
+import { AlertTriangle, Building2, Clock, Hash, Layout, Pencil, Trash2, Users, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -139,7 +139,10 @@ export default function WorkspaceSettingsPage({ params }: { params: Promise<{ id
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/workspaces")}>Workspaces</button>
+              <button onClick={() => router.push("/workspaces")}>
+                  <Layout className="size-4" />
+                  Workspaces
+                </button>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

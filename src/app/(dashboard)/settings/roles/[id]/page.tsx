@@ -142,7 +142,10 @@ export default function EditRolePage({ params: paramsPromise }: { params: Promis
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/settings/roles")}>Roles</button>
+              <button onClick={() => router.push("/settings/roles")}>
+                  <Shield className="size-4" />
+                  Roles
+                </button>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

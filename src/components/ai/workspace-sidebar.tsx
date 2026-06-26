@@ -206,7 +206,7 @@ export function WorkspaceSidebar({
         {!isCollapsed && (
           <button
             onClick={() => onClose()}
-            className="ml-auto size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors"
+            className="ml-auto size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
           >
             <PanelLeft className="size-4" />
           </button>
@@ -259,7 +259,7 @@ export function WorkspaceSidebar({
               {quickActions.map((action) => (
                 <button
                   key={action.label}
-                  className="flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors"
+                  className="flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
                 >
                   <div className="flex items-center gap-2.5">
                     <action.icon className="size-4" />
@@ -317,7 +317,7 @@ export function WorkspaceSidebar({
                             disabled && "opacity-50 pointer-events-none",
                             item.active
                               ? "bg-blue-50/80 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-medium"
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted/20",
+                              : "text-muted-foreground hover:text-foreground hover:bg-surface",
                           )}
                         >
                           <span className="truncate">{item.label}</span>
@@ -375,7 +375,7 @@ export function WorkspaceSidebar({
                 </button>
                 <button
                   onClick={() => { if (!disabled) { setAddingProject(true); setProjectsOpen(true) } }}
-                  className={cn("size-6 flex items-center justify-center rounded-md transition-colors", disabled ? "text-muted-foreground/30 cursor-not-allowed" : "text-muted-foreground hover:text-foreground hover:bg-muted/20")}
+                  className={cn("size-6 flex items-center justify-center rounded-md transition-colors", disabled ? "text-muted-foreground/30 cursor-not-allowed" : "text-muted-foreground hover:text-foreground hover:bg-surface")}
                   title="New project"
                 >
                   <Plus className="size-3.5" />
@@ -424,7 +424,7 @@ export function WorkspaceSidebar({
                               disabled && "opacity-50 pointer-events-none",
                               activeProjectId === project.id
                                 ? "bg-blue-50/80 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-medium"
-                                : "text-muted-foreground hover:text-foreground hover:bg-muted/20",
+                                : "text-muted-foreground hover:text-foreground hover:bg-surface",
                             )}
                           >
                             <span className="truncate">{project.name}</span>
@@ -433,7 +433,7 @@ export function WorkspaceSidebar({
                         <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => { setEditingProjectId(project.id); setEditingProjectValue(project.name) }}
-                            className="size-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground hover:bg-muted/20"
+                            className="size-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground hover:bg-surface"
                           >
                             <span className="text-[10px]">✎</span>
                           </button>
@@ -463,7 +463,7 @@ export function WorkspaceSidebar({
                 </button>
                 <button
                   onClick={() => { if (!disabled) { setAddingTag(true); setTagsOpen(true) } }}
-                  className={cn("size-6 flex items-center justify-center rounded-md transition-colors", disabled ? "text-muted-foreground/30 cursor-not-allowed" : "text-muted-foreground hover:text-foreground hover:bg-muted/20")}
+                  className={cn("size-6 flex items-center justify-center rounded-md transition-colors", disabled ? "text-muted-foreground/30 cursor-not-allowed" : "text-muted-foreground hover:text-foreground hover:bg-surface")}
                   title="New tag"
                 >
                   <Plus className="size-3.5" />
@@ -523,7 +523,7 @@ export function WorkspaceSidebar({
         {isCollapsed ? (
           <button
             onClick={toggleTheme}
-            className="w-full flex items-center justify-center py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors"
+            className="w-full flex items-center justify-center py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
             title={theme === "dark" ? "Light mode" : "Dark mode"}
           >
             {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
@@ -531,7 +531,7 @@ export function WorkspaceSidebar({
         ) : (
           <button
             onClick={toggleTheme}
-            className="flex items-center gap-2 w-full px-2 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors"
+            className="flex items-center gap-2 w-full px-2 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
           >
             {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
             <span className="text-xs">{theme === "dark" ? "Light Mode" : "Light Mode"}</span>

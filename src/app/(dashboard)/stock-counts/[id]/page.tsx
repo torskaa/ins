@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 import { Progress } from "@/components/ui/progress"
 import { ShortcutBadge } from "@/components/ui/shortcut-badge"
-import { AlertTriangle, ArrowLeft, Barcode, Boxes, Building2, Calendar, Calculator, CheckCircle, ClipboardList, Clock, DollarSign, FileText, Hash, Layers, MapPin, Package, Pencil, Sparkles, Trash2, XCircle } from "lucide-react"
+import { AlertTriangle, Barcode, Boxes, Building2, Calendar, Calculator, CheckCircle, ClipboardList, Clock, DollarSign, FileText, Hash, Layers, MapPin, Package, Pencil, Sparkles, Trash2, XCircle } from "lucide-react"
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { formatCurrency, formatNumber, formatDate, formatDateTime, cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -228,7 +228,10 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <button onClick={() => router.push("/stock-counts")}>Stock Counts</button>
+              <button onClick={() => router.push("/stock-counts")}>
+                  <ClipboardList className="size-4" />
+                  Stock Counts
+                </button>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
@@ -333,7 +336,7 @@ export default function StockCountDetailPage({ params }: { params: Promise<{ id:
                               ? "bg-warning/5 border-warning/30 ring-1 ring-warning/30"
                               : item.difference !== 0
                                 ? "bg-destructive/10"
-                                : "hover:bg-muted/30"
+                                : "hover:bg-surface"
                           }`}
                           onClick={() => { setHighlightedId(null); focusEditingQty(item.id) }}
                         >
