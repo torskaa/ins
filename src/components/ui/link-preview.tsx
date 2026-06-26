@@ -56,8 +56,9 @@ export function LinkPreview({ url, position }: LinkPreviewProps) {
           {/* Preview image */}
           <div className="relative h-36 bg-muted overflow-hidden">
             {og?.image && !imageError ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={og.image}
+                src={`/api/og/image?url=${encodeURIComponent(og.image)}`}
                 alt=""
                 className="size-full object-cover"
                 onError={() => setImageError(true)}
