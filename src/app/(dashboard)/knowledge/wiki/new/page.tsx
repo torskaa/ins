@@ -5,10 +5,16 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Select } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxItem,
+} from "@/components/ui/combobox"
 import { ArrowLeft, ImagePlus, X } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import dynamic from "next/dynamic"
@@ -133,12 +139,31 @@ export default function NewWikiArticlePage() {
     return () => window.removeEventListener("keydown", handler)
   }, [showPublishModal, showScheduleInline, scheduleDate, scheduleTime])
 
+  const titleRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    if (showPublishModal) {
+      if (coverImage && !previewImage) setPreviewImage(coverImage)
+    } else {
+      setPreviewImage("")
+    }
+  }, [showPublishModal, coverImage])
+
   function handlePreviewUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (file) {
       const reader = new FileReader()
       reader.onload = (ev) => setPreviewImage(ev.target?.result as string)
       reader.readAsDataURL(file)
+    }
+  }
+
+  function handleModalTitleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setTitle(e.target.value)
+    const el = titleRef.current
+    if (el) {
+      el.style.height = "auto"
+      el.style.height = `${el.scrollHeight}px`
     }
   }
 
@@ -205,11 +230,13 @@ export default function NewWikiArticlePage() {
 
                     {/* Title */}
                     <div className="space-y-1.5">
-                      <input
+                      <textarea
+                        ref={titleRef}
                         value={title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        onChange={handleModalTitleChange}
                         placeholder="Title"
-                        className="w-full text-xl font-semibold tracking-tight bg-transparent border-none outline-none placeholder:text-muted-foreground/30 p-0"
+                        rows={1}
+                        className="w-full text-xl font-semibold tracking-tight bg-transparent border-none outline-none placeholder:text-muted-foreground/30 p-0 resize-none overflow-hidden"
                       />
                       <p className="text-xs text-muted-foreground/40">{title.length}/100</p>
                     </div>
@@ -244,11 +271,16 @@ export default function NewWikiArticlePage() {
                     <div className="space-y-3">
                       <div className="space-y-1.5">
                         <Label className="text-xs text-muted-foreground/60">Category</Label>
-                        <Select
-                          options={categories.map((c) => ({ value: c, label: c }))}
-                          value={category}
-                          onChange={(e) => setCategory(e.target.value)}
-                        />
+                        <Combobox value={category} onValueChange={(v) => setCategory(v || "Getting Started")}>
+                          <ComboboxInput placeholder="Select category" showTrigger />
+                          <ComboboxContent>
+                            <ComboboxList>
+                              {categories.map((c) => (
+                                <ComboboxItem key={c} value={c}>{c}</ComboboxItem>
+                              ))}
+                            </ComboboxList>
+                          </ComboboxContent>
+                        </Combobox>
                       </div>
                       <div className="space-y-1.5">
                         <Label className="text-xs text-muted-foreground/60">Topics</Label>
